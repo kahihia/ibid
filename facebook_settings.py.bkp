@@ -1,0 +1,6 @@
+FACEBOOK_API_KEY = "133860166738968"
+FACEBOOK_APP_ID = "133860166738968"
+FACEBOOK_APP_SECRET = "f18c094b412514b6f4f5306f366dc533"
+
+FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
+AUTH_REDIRECT_URI = '{protocol}://apps.facebook.com/ibidchat/login/'
