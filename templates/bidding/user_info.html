@@ -1,0 +1,22 @@
+{% extends "base_section.html" %}
+
+{% block title %}Info for user: {{ user.username }}{% endblock %}
+{% block contentheader %}Info for user: {{ user.username }}{% endblock %}
+
+{% block sectioncontent %}
+<div class="user_details">
+    <h2>General info</h2>
+    <p><b>Username:</b> {{ user.username }}<br/>
+    <b>Email:</b> <span class="auction_page_winner">{{ user.email }}</span><br/>
+    <b>Bids:</b> <span class="auction_page_price">{{ member.bids_left }}</span><br/>
+    <b>Date of birth:</b> {{ member.date_of_birth }}<br/>
+    <b>Phone:</b> {{ member.phone_number }}<br/>
+    <b>Removed from chat:</b> {{ member.remove_from_chat }}</p>
+    {% if address %}
+    <h2>Shipping address</h2>
+    <p>{{ address.street }}<br/>
+    {{ address.city }}, {{ address.state }}<br/>
+    {{ address.zip }} {{ address.country }}</p>
+    {% endif %}
+</div>
+{% endblock %}

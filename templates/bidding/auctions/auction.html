@@ -1,0 +1,53 @@
+{% load thumbnail routines_tags bidding_tags %}
+
+<div id="auct_{{ auction.id }}" class="auct_item {{ auction.status }}">
+	<header class="header">
+		<a href="{% url bidding_auction_detail auction.item.slug,auction.id %}">{{ auction.item.name }}</a> / Retail price: ${{ auction.item.retail_price|stringformat:"4.2f" }}
+		{% block status_span %}{% endblock %}
+		<div class="open-chat" title="Open Chat" onclick="$('#chat-{{auction.id}}').toggleClass('active');">
+			<img src="{% static "images/spechbubble_sq_line_aaa.png" %}" height="16" width="16">
+		</div>
+		{% block extra_button %}{% endblock %}
+	</header>
+	
+	<div class="details">
+		<div class="preview">
+			<a href="{% url bidding_auction_detail auction.item.slug,auction.id %}">
+			<img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "70x70" as thumb%}{{thumb.url}}{% endthumbnail%}" alt="">
+			</a>
+		</div>
+		
+		{% block price %}
+		<div class="price">
+			<header class="header">{% block price_header %}Price{% endblock %}</header>
+			<section class="value">{% block price_value %}{%endblock%}</section>
+		</div>
+		{% endblock %}
+		
+		{% block controls %}
+		<div class="controls">
+			<header class="header">{% block controls_header %}<span class="bids_left">{{ user|user_bids:auction }}</span> {{ auction.get_bid_type_display }}Left{% endblock%}</header>
+			
+			<!-- NEEDED TO STORE USER DATA -->
+			<header class="header" style="display:none;"><span class="bids_left">{{ user|user_bids:auction }}</span> {{ auction.gt_bid_type_display }} Bids Left</header>
+			
+			<section class="value">{% block controls_value %}<div class="btn">Bid</div>{% endblock %}</section>
+		</div>
+		{% endblock %}
+		
+		{% block time_left %}
+		<div class="time-left">
+			<header class="header">{% block time_left_header %}Time Left{% endblock %}</header>
+			<section class="value">{% block time_left_value %}{% endblock %}</section>
+		</div>
+		{% endblock %}
+		
+		{% block bidder %}
+		<div class="bidder">
+			<header class="header">{% block bidder_header %}Last Bidder{% endblock %}</header>
+			<section class="value">{% block bidder_value %}{% with auction.get_last_bidder as bidder %}{% if bidder %}{{ bidder|fb_link }}{% else %}Be the first!{% endif %}{% endwith %}{% endblock %}</section>
+		</div>
+		{% endblock %}
+		
+	</div>
+</div>

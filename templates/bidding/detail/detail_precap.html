@@ -1,0 +1,25 @@
+{% load bidding_tags routines_tags %}
+<!-- Details: Status, Controls -->
+<div class="details">
+	<div class="status">
+		<header class="header">Completion</header>
+		<section class="value">{{ auction.completion }}% / {{ auction.auction.bidders.all|length }} Bidders</section>
+	</div>
+	<div class="controls">
+		<header class="header">
+			 <span class="bids_info"><span class="bids_left">{{ user|user_bids:auction }}</span> {% if auction.bid_type == 'token' %}Tokens{% else %}Bids{% endif %} Left</span>
+			 <span style="display: none;" class="bids_input"><input type="text" id="precap_{{auction.id}}" name="bid1" value="{{ auction.minimum_precap }}" min="{{ auction.minimum_precap }}"/></span>
+			
+		</header>
+		
+		<section class="value">
+			<div style="display: none;" class="btn place-button" onclick="precap_bid('{% url bidding_precap_bid %}', {{ auction.id }}); this.blur(); return false;">Place {% if auction.bid_type == 'token' %}Tokens{% else %}Bids{% endif %}</div>
+			<div class="btn edit-button" onclick="edit_bids({{auction.id}});">Edit {% if auction.bid_type == 'token' %}Tokens{% else %}Bids{% endif %}</div>
+            <div style="display: none;" class="inprogress"><img src="{%  static "images/ajax-loader.gif" %}" /></div>
+			<a href="javascript:void(0)" onclick="sendRequestViaMultiFriendSelector({{auction.id}}, '{{auction.item.name}}', {% url fb_invite %})">Invite Friends</a>
+		</section>
+	</div>
+	<div class="clear"></div>
+</div> <!-- Details: Status, Controls -->
+	
+		

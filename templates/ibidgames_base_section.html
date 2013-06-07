@@ -1,0 +1,182 @@
+{% load routines_tags %}
+<!DOCTYPE html>
+
+<html ng-app >
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>iBidGames</title>
+		<link rel="stylesheet" href="{% static "css/main.css" %}">
+		<link rel="stylesheet" href="{% static "css/popup.css" %}">
+		<!---->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,500,600,700,800' rel='stylesheet' type='text/css'>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+        <script src="{% static "js/lib/jquery.json-2.2.min.js" %}"></script>
+        <script src="{% static "js/lib/jquery.center.js" %}"></script>
+        <script src="{% static "js/lib/TweenMax.min.js" %}"></script>
+        <script src="{% static "js/base_header.js" %}"></script>
+
+	</head>
+
+	<body>
+		<div id="fb-root"></div>
+		<script>
+			( function(d, s, id) {
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id))
+						return;
+					js = d.createElement(s);
+					js.id = id;
+					js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=148728218610989";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));
+		</script>
+		<div id="main-wrapper">
+			<div  id="top-wrapper">
+				<div id="top">
+
+					<div class="buttons">
+						<a href="#"><div class="invite"></div></a>
+						<a><div class="like"></div></a>
+						<a href=" https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target=_blank ><div class="share"></div></a>
+
+					</div>
+					<div class="logo">
+						<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+					</div>
+				</div>
+
+                <div id="user-info" ng-controller="userDetailsCtrl">
+					<div class="avatar"><img ng-src="{% templatetag openvariable %}user.profileFotoLink{% templatetag closevariable %}" width="50" height="50">
+					</div>
+					<div class="name">
+						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}
+					</div>
+					<div class="menu">
+						<ul>
+							<li>
+								<a href="/won_list/">Won Items</a>
+							</li>
+							<li style="display: none;">
+								<a href="">Auctions</a>
+							</li>
+							<li style="display: none;">
+								<a href="#">Currency history</a>
+							</li>
+						</ul>
+					</div>
+					<div class="credits">
+						TOKENS: {% templatetag openvariable %}user.tokens{% templatetag closevariable %}
+					</div>
+					<div class="credits" style="display:none;">
+						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
+					</div>
+					<div class="btn-credits" style="display:none;"></div>
+				</div>
+			</div>
+
+			<div id="menu-wrapper">
+				<div id="menu">
+					<a href="/canvashome/"><div class="btn-tokens"></div></a>
+					<a href="/canvashome/"  style="display:none;"><div class="btn-items"></div></a>
+					<div class="links">
+						<ul>
+
+							<li class="on" style="display: none;">
+								<a href="/faq/">FAQS</a>
+							</li>
+
+							<li>
+								<a href="/winners/">Winners</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+            <div class="color-frame-tokens"></div>
+			<div id="content-wrapper">
+				<div class="frame">
+    {% block graywindowcontent %}
+    {% block sectioncontent %}
+    {% endblock %}
+    <div class="clear_both"><!-- --></div>
+    <div class="ten_height_spacer"><!-- --></div>
+	{% endblock %}
+
+				</div>
+
+			</div>
+
+		</div>
+
+<!--popup section-->
+<!--buy credits popup-->
+<div class="buy-bids-popup" style="z-index:1001;">
+    <div class="popup">
+        <div class="title">
+            <span class="close">×</span>
+            <img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
+                 src="{% static "images/credits-big.png" %}">
+            <h1>You can buy Credits:</h1>
+        </div>
+        {% for package in packages %}
+        <section>
+            {% if package.description %}<span class="save">{{ package.description }}</span>{% endif %}
+            <div class="btn" onclick="buy_bids({% url place_order %}, {{ package.id }})">
+                {{ package.title }}
+            </div>
+        </section>
+        {% endfor %}
+
+        <!--hr>
+
+        <h1>You can convert Tokens to Credits:</h1>
+        <p class="comment">
+        You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
+        Tokens and you can convert it up to
+        <b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.<br>
+        Please select the required amount of Credits.
+        </p>
+        <div class="warning"></div>
+        <section>
+        <select id="tokens_to_convert">
+        {%  for conv in user.get_profile.gen_available_tokens_to_bids %}
+        <option value={{ conv }}>{{ conv }}</option>
+        {% endfor %}
+        </select>
+        Credits
+        <div class="btn" onclick="convertChips()">Convert Now</div>
+        </section-->
+    </div>
+</div>
+			<!--like popup-->
+			<div class="like-popup">
+				<div class="popup">
+					<div class="title">
+						<span class="close">×</span>
+						<h1>Like us!</h1>
+					</div>
+					<div class="info">
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Click Like button below to like us!</span></br>Also remember to invite friends, you will earn 1000 tokens for free.
+					</div>
+					<div style="margin: 30px 10px 10px 130px;">
+
+						<div class="fb-like" data-href="https://apps.facebook.com/ibidgames/canvashome/" data-send="false"  data-width="300" data-show-faces="false"></div>
+					</div>
+				</div>
+			</div>
+
+
+<div id="overlay" style="position:absolute;
+		top:0;
+		left:0;
+		right:0;
+		opacity:0;
+		bottom:0;
+		background-color:rgba(0, 0, 0, 0.5);
+		z-index:1000;
+		display:none;"></div>
+
+	</body>
+
+</html>

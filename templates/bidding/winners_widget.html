@@ -1,0 +1,24 @@
+<!-- Latest winners -->
+<div class="ten_height_spacer"><!-- --></div>
+<div class="blue_header_left"></div>
+<div class="blue_header_right"></div>
+<div class="blue_header yambidders_header">Latest Winners</div>
+<div class="white_window_bg text_align_center">
+    {% load thumbnail %}
+    {% for auction in auctions %}
+    <!-- Yambidder -->
+    <p class="small_gray_text bigger_text"><b style="color:#0B5196;">{{ auction.winner.get_profile.display_name }}</b> won:</p>
+	<div class="five_height_spacer"><!-- --></div>
+    <a href="{% url bidding_auction_detail slug=auction.item.slug,id=auction.id %}" class="won_item_small" title="Click to view details" style="background:url({% thumbnail auction.item.itemimage_set.all.0.image.name "120x120" as thumb %}{{ thumb.url}}{% endthumbnail %}) center center no-repeat;"></a>
+	<div class="five_height_spacer"><!-- --></div>
+    <p class="small_gray_text bigger_text">For only:&nbsp;<b class="green_text gray_background">${{ auction.won_price|stringformat:"4.2f" }}</b></p>
+    <div class="three_height_spacer"><!-- --></div>
+    <div class="gray_line_divider blue_line_devider"><!-- --></div>
+    <div class="three_height_spacer"><!-- --></div>
+    <!-- End yambidder -->
+    {% endfor %}
+</div>
+<div class="white_left_corner"></div>
+<div class="white_right_corner"></div>
+<div class="white_bar"><!-- --></div>
+<!-- End latest winners -->

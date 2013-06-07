@@ -1,0 +1,2 @@
+{% load markup thumbnail %}
+{'title':'{{ item.name }}', 'image':'{% thumbnail item.itemimage_set.all.0.image.name "250x250" %}', 'description':'<h3>{{ item.name }}</h3><p>${{ item.retail_price|stringformat:"4.2f" }}</p>{{ item.description|markdown|escapejs }}'}

@@ -1,0 +1,24 @@
+	{% load bidding_tags %}
+<div class="details">
+	<div class="status">
+		<header class="header">Completion</header>
+		<section class="value">100% / {{ auction.bidders.all|length }} Bidders</section>
+	</div>
+	<div class="time-to-start">
+		<header class="header">Time to start</header>
+		<section class="value"><span class="tick_time">{{ auction.get_time_left|minutes_from_seconds }}</span></section>
+	</div>
+	<div class="controls">
+		
+		<header class="header">
+			<span class="bids_info"><span class="bids_left">{{ user|user_bids:auction }}</span> {% if auction.bid_type == 'token' %}Tokens{% else %}Bids{% endif %} Left</span>
+			<span style="display: none;" class="bids_input"><input id="precap_{{auction.id}}" type="text" name="bid1" value="{{ auction.minimum_precap }}" min="{{ auction.minimum_precap }}" /> {% if auction.bid_type == 'token' %}Tokens{% else %}Bids{% endif %}</span>
+		</header>
+		
+		<section class="value">
+			<div style="display: none;" class="btn place-button" onclick="precap_bid('{% url bidding_precap_bid %}', {{ auction.id }}); this.blur(); return false;">Place {% if auction.bid_type == 'token' %}Tokens{% else %}Bids{% endif %}</div>
+		</section>
+		
+	</div>
+	<div class="clear"></div>
+</div> <!-- Details: Status, Controls -->

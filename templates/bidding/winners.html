@@ -1,0 +1,41 @@
+{% extends "base_section.html" %}
+
+{% load thumbnail bidding_tags pagination_tag %}
+
+{% block extracss %}
+{{ block.super }}
+    <link rel="stylesheet" href="/static/css/pagination.css" type="text/css" />
+{% endblock %}
+
+{% block title %}Winners{% endblock %}
+{% block contentheader %}Winners{% endblock %}
+
+{% block graywindowcontent %}
+<div class="float_left">
+{% paginate winners auctions current_page 10 10 pages %}
+{% for auction in pages %}
+    <!-- Winner -->
+    <div class="won_item winner gray_text">
+        <div class="ten_height_spacer"><!-- --></div>
+        <div class="gray_header_left"></div>
+        <div class="gray_header_right"></div>
+        <div class="gray_header"><h4>{{ auction.winner.username }} - {{ auction.item.name }}</h4></div>
+        <div class="white_window_bg">
+            <div style="float:left"><img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "164x92" as thumb %}{{thumb.url}}{% endthumbnail %}" /></div>
+            <div style="margin:3px">won the possibility to buy this product for $<b>{{ auction.won_price|stringformat:"4.2f" }}</b><br/>
+            on :&nbsp;{{ auction.won_date|date:"m/d/y" }}<br/></div>
+            <div class="clear_both"><!-- --></div>
+        </div>
+        <div class="white_left_corner"><!-- --></div>
+        <div class="white_right_corner"><!-- --></div>
+        <div class="white_bar"><!-- --></div>
+    </div>
+    <!-- End winner -->
+{% endfor %}
+</div>
+<div class="clear_both"><!-- --></div>
+<div class="ten_height_spacer"><!-- --></div>
+{% include 'pagination.html' %}
+<div class="clear_both"><!-- --></div>
+<div class="ten_height_spacer"><!-- --></div>
+{% endblock %}

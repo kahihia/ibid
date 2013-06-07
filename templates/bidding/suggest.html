@@ -1,0 +1,14 @@
+{% extends "base_section.html" %}
+
+{% block title %}Suggest your item{% endblock %}
+{% block contentheader %}Suggest your item{% endblock %}
+
+{% block sectioncontent %}
+<form action="." method="post" name="suggest_form" class="registration_form suggest_item">{% csrf_token %}
+    <p><b>{{ form.message.label_tag }}</b><br />
+    {{ form.message }}</p>
+	<button class="login_button" type="submit" name="confirm">
+		<span>Submit</span>
+	</button>
+</form>
+{% endblock %}

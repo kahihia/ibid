@@ -1,0 +1,19 @@
+{% extends "bidding/mainpage.html" %}
+{% load routines_tags %}
+
+{% block extra_sync %}
+$('.controls').hide();
+{% endblock%}
+
+{% block extra_update %}
+$('.controls').hide();
+{% endblock %}
+
+{% block tokens_section %}
+	{% include 'bidding/web_sections.html' %}
+{% endblock %}
+
+{% block bids_section %}
+	{% include 'bidding/web_sections.html' %}
+{% endblock %}
+

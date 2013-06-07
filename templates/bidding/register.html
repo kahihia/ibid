@@ -1,0 +1,149 @@
+{% extends "base_section.html" %}
+
+{% block title %}Please Register And Get 5 Free Bids!{% endblock %}
+{% block contentheader %}Please Register And Get 5 Free Bids!{% endblock %}
+
+{% block graywindowcontent %}
+    <div class="ten_height_spacer footer"><!-- --></div>
+    <div class="ten_height_spacer footer"><!-- --></div>
+    <div class="ten_height_spacer footer"><!-- --></div>
+    <form id="registration_form" class="registration_form" name="registration_form" action="." method="post">{% csrf_token %}
+        <div class="form_gray_bg">
+            <div class="form_label no_line_height">
+                <label for="id_username">Username:<br/><span>Letters, digits and underscores</span></label>
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input">
+                <input id="id_username" type="text" maxlength="12" name="username"/>
+            </div>
+            {% if form.username.errors %}
+            <span class="custom_error">{{ form.username.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <div class="form_gray_bg form_no_bg">
+            <div class="form_label">
+                <label for="id_firstname">First name:</label>
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input">
+                {{ form.first_name }}
+            </div>
+            {% if form.first_name.errors %}
+            <span class="custom_error">{{ form.first_name.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <div class="form_gray_bg">
+            <div class="form_label">
+                <label for="id_lastname">Last name:</label>
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input">
+                {{ form.last_name }}
+            </div>
+            {% if form.last_name.errors %}
+            <span class="custom_error">{{ form.last_name.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <div class="form_gray_bg form_no_bg">
+            <div class="form_label">
+                <label for="id_password">Password:</label>
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input">
+                {{ form.password }}
+            </div>
+            {% if form.password.errors %}
+            <span class="custom_error">{{ form.verify_password.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <div class="form_gray_bg">
+            <div class="form_label">
+                <label for="id_verify_password">Retype password:</label>
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input">
+                {{ form.verify_password }}
+            </div>
+            {% if form.verify_password.errors %}
+            <span class="custom_error">{{ form.verify_password.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <div class="form_gray_bg form_no_bg">
+            <div class="form_label">
+                <label for="id_email">Your email:</label>
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input">
+                {{ form.email }}
+            </div>
+            {% if form.email.errors %}
+            <span class="custom_error">{{ form.email.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <div class="form_gray_bg">
+            <div class="form_label">
+                <label for="id_date_of_birth_month">Date of birth:</label>
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input">
+                {{ form.date_of_birth }}
+            </div>
+            {% if form.date_of_birth.errors %}
+            <span class="custom_error">{{ form.date_of_birth.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <div class="form_gray_bg form_no_bg captcha">
+            <div class="form_label captcha">
+                <label for="id_captcha">Type the two words:</label>
+            </div>
+            <div class="red_cross captcha_red_cross">
+                *
+            </div>
+            <div class="captcha">
+                {% if captcha_error %}
+                <div class="captcha_error">
+				{{ captcha_error }}
+				</div>
+                {% endif %}
+				<div class="float_left">
+                {{ html_captcha|safe }}
+				</div>
+				<div class="clear_both"></div>
+            </div>
+        </div>
+        <div class="form_gray_bg">
+            <div class="form_label">
+                
+            </div>
+            <div class="red_cross">
+                *
+            </div>
+            <div class="form_input_checkbox">
+                {{ form.terms }}
+                <label for="id_terms">I agree to <a href="/terms/" target="_blank">terms and conditions</a></label>
+            </div>
+            {% if form.terms.errors %}
+            <span class="custom_error">{{ form.terms.errors|join:", " }}</span>
+            {% endif %}
+        </div>
+        <button type="submit" class="big_blue_button registration_submit"><span>REGISTER</span></button>
+    </form>
+    <div class="ten_height_spacer footer"><!-- --></div>
+    <div class="ten_height_spacer footer"><!-- --></div>
+    <div class="ten_height_spacer footer"><!-- --></div>
+{% endblock %}
+

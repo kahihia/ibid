@@ -1,0 +1,20 @@
+{% extends 'bidding/auctions/auction.html' %}
+
+{% load bidding_tags %}
+
+{% block time_left %}
+{% endblock %}
+
+{% block controls %}
+{% endblock %}
+
+{% block status_span %}
+<span style="display: none;" class="finished-status status-span">Finished</span>
+{% endblock %}
+
+{% block bidder_header%}Winner{% endblock%}
+{% block bidder_value %}{% with auction.winner.get_profile as bidder %}{% if bidder %}{{ bidder|fb_link }}{% endif %}{% endwith %}{% endblock %}
+
+{% block price_value %}
+	${{ auction.won_price|stringformat:"4.2f" }}
+{%endblock%}

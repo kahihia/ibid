@@ -1,0 +1,574 @@
+{% load routines_tags %}
+<!DOCTYPE html>
+{% templatetag openvariable %} current_user_db.fb_name {% templatetag closevariable %}
+<html ng-app style="overflow: hidden">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>iBidGames</title>
+    <link rel="stylesheet" href="{% static " css
+    /main.css" %}">
+    <link rel="stylesheet" href="{% static " css
+    /popup.css" %}">
+    <script language="javascript">
+        function preloadImage(url) {
+            var img = new Image();
+            img.src = url;
+        }
+        preloadImage("{% static "
+        images / btn - bid - play - disabled.png
+        " %}"
+        )
+        ;
+        preloadImage("{% static "
+        images / welcome.png
+        " %}"
+        )
+        ;
+        preloadImage("{% static "
+        images / help - img.png
+        " %}"
+        )
+        ;
+
+    </script>
+
+    <!---->
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
+          rel='stylesheet' type='text/css'>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+    <script src="{% static " js
+    /jquery.json-2.2.min.js" %}"></script>
+    <
+    script
+    src = "{% static "
+    js / TweenMax.min.js
+    " %}" ></script>
+    <script src="{% static " js
+    /base_header.js" %}"></script>
+    <
+    script
+    src = "{% static "
+    js / auctions.js
+    " %}" ></script>
+    <script src="{% static " js
+    /errorReport.js" %}"></script>
+    <
+    script
+    src = "{% static "
+    js / tutorial.js
+    " %}" ></script>
+
+</head>
+
+<body style="overflow: hidden">
+
+<div id="fb-root"></div>
+<div id="main-wrapper">
+
+<!--tutorial widget-->
+<div id="tooltip-help" style="position:relative;top:200px;left:300px;z-index:200; float:left;display:none;">
+    <div class="img">
+        <img src="{% static " images/help-img.png" %}" width="130" height="168">
+    </div>
+    <div class="box">
+        <div class="text">
+            <p>
+                TITULOS TIUTLOS TITULOS
+            </p>
+            Mensajemensaje mensaje mensajem
+
+        </div>
+        <div id="btn-tutorial" style=" text-align:right;float:right">
+            [next]
+        </div>
+    </div>
+</div>
+
+<div id="top-wrapper">
+    <div id="top">
+
+        <div class="buttons">
+            <a href="#">
+                <div class="invite disabled"></div>
+            </a>
+            <a>
+                <div class="like"></div>
+            </a>
+            <a href=" https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target=_blank>
+                <div class="share"></div>
+            </a>
+
+        </div>
+        <div class="logo">
+            <a href="index.html"><img src="{% static " images/logo.png" %}" width="293" height="105"></a>
+        </div>
+    </div>
+
+    <div id="user-info" ng-controller="userDetailsCtrl">
+        <div class="avatar"><img
+                ng-src="{% templatetag openvariable %}user.profileFotoLink{% templatetag closevariable %}" width="50"
+                height="50">
+        </div>
+        <div class="name">
+            {% templatetag openvariable %}user.displayName{% templatetag closevariable %}
+        </div>
+        <div class="menu">
+            <ul>
+                <li>
+                    <a href="/won_list/">Won Items</a>
+                </li>
+                &nbsp;|&nbsp;
+                <li>
+                    <a href="#">Auctions</a>
+                </li>
+                &nbsp;|&nbsp;
+                <li>
+                    <a href="#">Currency history</a>
+                </li>
+            </ul>
+        </div>
+        <div class="tokens">
+            TOKENS: {% templatetag openvariable %}user.tokens{% templatetag closevariable %}
+        </div>
+        <div class="credits">
+            CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
+        </div>
+        <div class="btn-credits"></div>
+    </div>
+</div>
+
+<div id="content-wrapper" ng-controller="AuctionsPanelController">
+<div id="menu-wrapper">
+    <div id="menu">
+        <div class="btn-tokens" ng-click="playForTokens()"></div>
+        <div class="btn-items" ng-click="playForItems()"></div>
+        <div class="links">
+            <ul>
+                <li>
+                    <a href="" id="interactiveTutotialBtn">Tutorial</a>
+                </li>
+                &nbsp; &nbsp; &nbsp;|&nbsp; &nbsp; &nbsp;
+                <li>
+                    <a href="/faq/">FAQS</a>
+                </li>
+                &nbsp; &nbsp; &nbsp;|&nbsp; &nbsp; &nbsp;
+                <li>
+                    <a href="/winners/">Winners</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div ng-class="{'TOKENS':'color-frame-tokens','ITEMS':'color-frame-items'}[playFor]"></div>
+<div id="user-auctions">
+<div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+    {% templatetag openvariable %}user.displayName{% templatetag closevariable %}'s Upcoming Auctions
+</div>
+
+<div ng-repeat="auction in auctionList[playFor].mine">
+    <input type="hidden" class="auction-id"
+           value="{% templatetag openvariable %}auction.id{% templatetag closevariable %}"/>
+
+    <div id="auction">
+        <div ng-switch on="auction.status">
+            <!-- TEMPLATE: precap -->
+            <div id="auction-top" ng-switch-when="precap">
+                <div class="img">
+                    <img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
+                         width="107" height="72">
+                    <!--img src="{% static "images/auction-img.jpg" %}" width="107" height="72"-->
+                </div>
+                <div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+                    {% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+                </div>
+                <div id="auction-retail-price">
+                    Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+                </div>
+                <div id="auction-status">
+                    <p>
+                        COMPLETION
+                    </p>
+                    {% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag
+                    openvariable %}auction.bidders{% templatetag closevariable %} Bidders
+                </div>
+                <div id="auction-bids">
+                    <p>
+                        PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} TOKENS
+                    </p>
+
+                    <div id="auction-precap-bid">
+                        <span>{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}</span> Bids
+                    </div>
+                    <div id="btn-bid-plus" ng-click="addBids(auctionList[playFor].mine[$index])"
+                         ng-class="{true:'btnRedEnabled', false:'btnRedDisabled'}[user.tokens>0]">
+                        +
+                    </div>
+                    <div id="btn-bid-less" class="btn-red" ng-click="remBids(auctionList[playFor].mine[$index])">
+                        -
+                    </div>
+
+                </div>
+                <div id="auction-btns">
+                    <div id="btn-invite-auction" class="disabled"><img src="{% static " images/btn-invite-auction-disabled.png"
+                        %}" width="36" height="42">
+                    </div>
+                    <div id="btn-chat-auction" class="disabled"><img src="{% static " images/btn-chat-auction-disabled.png"
+                        %}" width="36" height="43">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- TEMPLATE: waiting -->
+            <div id="auction-top" ng-switch-when="waiting">
+                <div class="img">
+                    <img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
+                         width="107" height="72">
+                </div>
+                <div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+                    {% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+                </div>
+                <div id="auction-retail-price">
+                    Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+                </div>
+                <div id="auction-play">
+                    <div class="syncing">
+                        SYNCING...
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- TEMPLATE: processing -->
+            <div id="auction-top" ng-switch-when="processing">
+                <div class="img">
+                    <img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
+                         width="107" height="72">
+                </div>
+                <div id="auction-item-title" ng-class="{'TOKENS':'title-token', 'ITEMS':'title-items'}[playFor]">
+                    {% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+                </div>
+                <div id="auction-retail-price">
+                    Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+                </div>
+                <div id="auction-play">
+                    <div class="time-left">
+                        <p>
+                            TIME LEFT
+                        </p>
+                        {% templatetag openvariable %}auction.timeleft{% templatetag closevariable %}
+                    </div>
+                    <div id="btn-bid-play">
+                        <a href="" ng-click="claim(auctionList[playFor].mine[$index])">
+                            <div ng-class="{true:'bidEnabled', false:'bidDisabled'}[auctionList[playFor].mine[$index].interface.bidEnabled]"></div>
+                        </a>
+                    </div>
+                    <div class="bids-left">
+                        <p>
+                            BIDS LEFT
+                        </p>
+                        {% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEMPLATE: pause -->
+            <div id="auction-top" ng-switch-when="pause">
+                <div class="img">
+                    <img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
+                         width="107" height="72">
+                </div>
+                <div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
+                    {% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+                </div>
+                <div id="auction-retail-price">
+                    Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+                </div>
+                <div id="auction-play">
+                    <div class="time-left">
+                        <p>
+                            TIME LEFT
+                        </p>
+                        PAUSED
+                    </div>
+                    <div id="btn-bid-play">
+                        <a href="#"><img src="{% static " images/btn-bid-play-disabled.png" %}" width="94" height="94"></a>
+                    </div>
+                    <div class="bids-left">
+                        <p>
+                            BIDS LEFT
+                        </p>
+                        18
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEMPLATE: waiting_payment -->
+            <div id="auction-top" ng-switch-when="waiting_payment">
+                <div class="img">
+                    <img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
+                         width="107" height="72">
+                </div>
+                <div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
+                    {% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+                </div>
+                <div id="auction-retail-price">
+                    Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+                </div>
+                <div id="auction-status-winner">
+                    <p>
+                        WINNER
+                    </p>
+                    {% templatetag openvariable %}auction.winner{% templatetag closevariable %}
+                </div>
+            </div>
+
+        </div>
+
+        <div id="auction-content">
+
+            <div id="auction-auctioneer">
+                <div class="img">
+                    <img src="{% static " images/auctioneer.jpg" %}" height="109" width="106">
+                </div>
+                <div id="auctioneer-message" class="token">
+                    <div ng-repeat="message in auction.auctioneerMessages">
+                        <div ng-bind-html-unsafe="message.text"></div>
+                    </div>
+
+                    <div id="btn-acutioneer-up" class="scroll">
+                        <img style="margin-top: 40px; display:none;" src="{% static " images/btn-auctioneer-down.png"
+                        %}" height="40" width="42">
+                        <img style="display:none;" src="{% static " images/btn-auctioneer-up.png" %}" height="40"
+                        width="42" >
+                    </div>
+                    <div id="btn-acutioneer-down"></div>
+                </div>
+
+            </div>
+
+            <div id="auction-chat">
+                <div class="chat-title">
+                    Live chat
+                </div>
+                <div class="chat-list">
+                    <div class="line" ng-repeat="message in messages">
+                        <div class="avatar">
+                            <img ng-src="{% templatetag openvariable %}message.user.profileFotoLink{% templatetag closevariable %}"
+                                 width="30" height="30">
+                        </div>
+                        <div class="txt">
+                            <p>
+                                {% templatetag openvariable %}message.user.displayName{% templatetag closevariable %}
+                            </p>
+                            {% templatetag openvariable %}message.text{% templatetag closevariable %}
+                        </div>
+                    </div>
+                </div>
+                <div class="user">
+
+                    <div style="margin: 0 auto; width: 685px;">
+                        <form ng-submit="sendChatMessage($index)">
+                            <input type="text" class="imput-txt" ng-model="message.data.text"
+                                   value="Your message here"/>
+                        </form>
+                    </div>
+                    <div class="enter-text">
+                        Press Enter to send
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<div id="upcoming-auctions">
+    <div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+        Other Upcoming Auctions
+    </div>
+
+    <div id="auction" ng-repeat="auction in auctionList[playFor].available">
+        <input type="hidden" class="auction-id"
+               value="{% templatetag openvariable %}auction.id{% templatetag closevariable %}"/>
+
+        <div id="auction-top">
+            <div class="img">
+                <img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}" width="107"
+                     height="72">
+            </div>
+            <div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+                {% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+            </div>
+            <div id="auction-retail-price">
+                Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+            </div>
+            <div id="auction-status">
+                <p>
+                    COMPLETION
+                </p>
+                {% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag
+                openvariable %}auction.bidders{% templatetag closevariable %} Bidders
+            </div>
+            <div id="auction-bids">
+
+                <div id="btn-start-bid" class="btn-red" ng-click="startBiding(auctionList[playFor].available[$index])">
+                    START BIDING
+                </div>
+            </div>
+            <div id="auction-btns">
+                <div id="btn-invite-auction"><img src="{% static " images/btn-invite-auction.png" %}" width="36"
+                    height="42">
+                </div>
+                <div id="btn-chat-auction"><img src="{% static " images/btn-chat-auction.png" %}" width="36"
+                    height="43">
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div id="finished-auctions">
+    <div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+        Recently Finished Auctions
+    </div>
+    <div id="auction" ng-repeat="auction in auctionList[playFor].finished">
+        <div id="auction-top">
+            <div class="img">
+                <img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}" width="107"
+                     height="72">
+            </div>
+            <div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+                {% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+            </div>
+            <div id="auction-retail-price">
+                Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+            </div>
+            <div id="auction-status-winner">
+                <p>
+                    WINNER
+                </p>
+                {% templatetag openvariable %}auction.winner{% templatetag closevariable %}
+            </div>
+
+        </div>
+    </div>
+</div>
+</div>
+</div>
+
+<div id="activateReportAnError" style="color:red; mouse:pointer;">
+    report an error
+</div>
+<div id="reportAnError" style="display:none;">
+    <form id="reportAnErrorForm">
+        <textarea id="reportAnErrorMessage"></textarea>
+        <input type="hidden" name="gameStateData"/>
+        <input type="button" id="reportAnErrorBtn"/>
+    </form>
+</div>
+
+<div id=pubnub pub-key="{{ PUBNUB_PUB }}" sub-key="{{ PUBNUB_SUB }}" origin="pubsub.pubnub.com"></div>
+<script src="https://cdn.pubnub.com/pubnub-3.4.min.js"></script>
+
+<div id="overlay" style="position:absolute;
+		top:0;
+		left:0;
+		right:0;
+		opacity:0;
+		bottom:0;
+		background-color:rgba(0, 0, 0, 0.5);
+		z-index:1000;
+		"></div>
+
+<script language="javascript">
+    window.fbAsyncInit = function () {
+        FB.init({
+            appId: '{{ fb_app_id }}'
+        });
+        FB.Canvas.setAutoGrow();
+    };
+    ( function () {
+        var e = document.createElement('script');
+        e.async = true;
+        e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
+        document.getElementById('fb-root').appendChild(e);
+    }());
+</script>
+
+<!--popup section-->
+<!--welcome widget-->
+<div id="welcome" style="display:none;">
+    <div class="text">
+        <p>
+            Welcome {{ member.user.first_name }}.</br> I'm Kenny, your interactive auctioneer.
+        </p></br>
+				<span style="font-size:15px">I think you are here because you want to buy items at <strong>90%</strong> off the retail cost. I'll be leading all auctions and giving you tips on how to play the interactive auction ™ game and win.
+					<br/>
+                    </br> Are you ready? Let's get started.</span>
+    </div>
+    <a href="#">
+        <div class="btn-welcome">
+            I'm ready, start interactive tutorial
+        </div>
+    </a>
+</div>
+<!--welcome popup-->
+{% if display_popup %}
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        initWelcome();
+    })
+</script>
+{% endif %}
+
+<!--buy credits popup-->
+<div class="buy-bids-popup">
+    <div class="popup">
+        <div class="title">
+            <span class="close">×</span>
+            <img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
+                 src="{% static " images/credits-big.png" %}">
+            <h1>You can buy Credits:</h1>
+        </div>
+        {% for package in packages %}
+        <section>
+            {% if package.description %}<span class="save">{{ package.description }}</span>{% endif %}
+            <div class="btn" onclick="buy_bids({% url place_order %}, {{ package.id }})">
+                {{ package.title }}
+            </div>
+        </section>
+        {% endfor %}
+
+        <!--hr>
+
+        <h1>You can convert Tokens to Credits:</h1>
+        <p class="comment">
+        You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
+        Tokens and you can convert it up to
+        <b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.<br>
+        Please select the required amount of Credits.
+        </p>
+        <div class="warning"></div>
+        <section>
+        <select id="tokens_to_convert">
+        {%  for conv in user.get_profile.gen_available_tokens_to_bids %}
+        <option value={{ conv }}>{{ conv }}</option>
+        {% endfor %}
+        </select>
+        Credits
+        <div class="btn" onclick="convertChips()">Convert Now</div>
+        </section-->
+    </div>
+</div>
+
+</body>
+
+</html>
+

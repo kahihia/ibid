@@ -1,0 +1,831 @@
+{% load routines_tags bidding_tags  %}
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/html"><head>
+<title>Ibidville.com - {% block title %}Home{% endblock %}</title>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="utf-8">
+
+	<title></title>
+	<meta name="description" content="">
+	<meta name="keywords" content="">
+
+	<!-- Web Font -->
+	<link href="{% static "css/css.css" %}" rel="stylesheet" type="text/css">
+      <link rel="shortcut icon" href="{% static "images/fav.png" %}">
+      <link rel="stylesheet" href="{% static "css/my.css" %}" type="text/css" >
+      <link rel="stylesheet" href="{% static "css/main.css" %}">
+      <link rel="stylesheet" href="{% static "css/custom-theme/jquery-ui-1.8.6.custom.css" %}">
+	<script type="text/javascript" src="{% static "js/jquery-1.7.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/jquery.json-2.2.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/jquery-ui-1.8.6.custom.min.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/jquery.glow.js" %}"></script>
+	<script type="text/javascript" src="{% static "js/facebook.js" %}"></script>
+
+    <script type="text/javascript" src="{% static "js/jquery.cookie.js" %}"></script>
+
+        {%  if display_popup %}
+
+            <script type="text/javascript">
+                /*<!-[CDATA[*/
+                $(document).ready(function(){
+                    openPopup("welcome-popup");
+                })
+                /*]]>*/
+            </script>
+        {%  endif %}
+	
+	{% block extracss %}
+    {% endblock %}
+
+  	<!--<link rel="shortcut icon" href="http://ibidchat.jazzpixels.com/global/img/fav.png"-->
+
+	<!--link rel="stylesheet" href="ibidchat.jazzpixels.com_files/main.css"-->
+
+	<!--script src="ibidchat.jazzpixels.com_files/jquery-1.js"></script>---->
+</head>
+<body>
+{% include 'fb_init.html' %}
+{% block body %}<ibody>
+
+<div class="underlay"></div>
+
+<div class="buy-bids-popup">
+	<div class="popup-outer">
+		<div class="popup-inner">
+			<div class="popup">
+				<span class="close" onclick="closePopup('buy-bids-popup')">×</span>
+				
+				<h1>You can buy Bids:</h1>
+                {%  for package in packages %}
+                    <section>
+                        {{ package.bids }} Bids ← {{ package.price }} $
+                        {% if package.description %}<span class="save">{{ package.description }}</span>{%  endif %}
+                        <div class="btn" onclick="buy_bids({% url place_order %}, {{ package.id }})">{{ package.title }}</div>
+                    </section>
+                {%  endfor %}
+				
+				<hr>
+				
+				<h1>You can convert Tokens to Bids:</h1>
+				<p class="comment">
+					You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
+                    Tokens and you can convert it up to
+                    <b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Bids.<br>
+					Please select the required amount of Bids.
+				</p>
+				<div class="warning"></div>
+				<section>
+                    <select id="tokens_to_convert">
+                    {%  for conv in user.get_profile.gen_available_tokens_to_bids %}
+                        <option value={{ conv }}>{{ conv }}</option>
+                    {% endfor %}
+                    </select>
+					 Bids
+					<div class="btn" onclick="convertChips()">Convert Now</div>
+				</section>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="blocking-popup">
+	<div class="popup-outer">
+		<div class="popup-inner">
+			<div class="popup">
+				<span class="close" onclick="closePopup('blocking-popup')">×</span>
+				
+				<h1>How It Works</h1>
+				
+				<section class="popup-content">
+					<h2>At First You Should Register</h2>
+					<section>You should register in order to Buy Bids. You need Bids to win a Real Items.</section>
+					<h2>Then You Can Play</h2>
+					<section>Place Bids, wait for auction to start and Bid item anytime to Win it.</section>
+					<h2>And Win a Real Items</h2>
+					<section>Most Latest Bidder Win auction and get a Real Prize.</section>
+				</section>
+				
+				<section class="popup-controls">
+					<div class="btn" onclick="closePopup('blocking-popup')">It's Easy, I want play!</div>
+				</section>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="invalid-entry-popup">
+    <div class="popup-outer">
+        <div class="popup-inner">
+            <div class="popup">
+                <span class="close" onclick="closePopup('invalid-entry-popup')">×</span>
+
+                <h1>Error</h1>
+
+                <section class="popup-content">
+                    <h2>You MUST provide an number</h2>
+                </section>
+
+                <section class="popup-controls">
+                    <div class="btn" onclick="closePopup('invalid-entry-popup')">Close</div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="no-tokens">
+    <div class="popup-outer">
+        <div class="popup-inner">
+            <div class="popup">
+                <span class="close" onclick="closePopup('no-tokens')">×</span>
+
+                <h1>Error</h1>
+
+                <section class="popup-content">
+                    <h2>You have not enough tokens</h2>
+                </section>
+
+                <section class="popup-controls">
+                    <div class="btn" onclick="closePopup('no-tokens')">Close</div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="general-error">
+    <div class="popup-outer">
+        <div class="popup-inner">
+            <div class="popup">
+                <span class="close" onclick="closePopup('general-error')">×</span>
+
+                <h1>Error</h1>
+
+                <section class="popup-content">
+                    <h2>Something went wrong. Please try again in a few minutes</h2>
+                </section>
+
+                <section class="popup-controls">
+                    <div class="btn" onclick="closePopup('general-error')">Close</div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="invalid-minimun-precap-popup">
+    <div class="popup-outer">
+        <div class="popup-inner">
+            <div class="popup">
+                <span class="close" onclick="closePopup('invalid-minimun-precap-popup')">×</span>
+
+                <h1>Error</h1>
+
+                <section class="popup-content">
+                    <h2>The minimun precap amount for this auction is: <span id="minimun_precap_auction"></span></h2>
+                </section>
+
+                <section class="popup-controls">
+                    <div class="btn" onclick="closePopup('invalid-minimun-precap-popup')">Close</div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="welcome-popup">
+    <div class="popup-outer">
+        <div class="popup-inner">
+            <div class="popup">
+                <span class="close" onclick="createCookieTOS()">×</span>
+
+                {{ tosintro|safe }}
+
+                <hr />
+                <section>
+                    <form action="." method=POST>
+                        <input id="id_dont_show" type=checkbox>
+                        <label for="id_dont_show">Don't show this message again</label>
+                    </form>
+                    <section class="popup-controls"><div class="btn" onclick="createCookieTOS()">Close</div></section>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<section class="homepage">
+
+	<div class="notification-list">
+		<div class="item">
+			<div class="timestamp">07/01/11 13:52:</div>
+			<div class="message">Your <a href="http://ibidchat.jazzpixels.com/details.html">auction</a> will start in 10 minutes.</div>
+			<div class="close" onclick="alert('Send Ajax request, mark as processed and remove it');">×</div>
+		</div>
+		<div class="item">
+			<div class="timestamp">07/01/11 12:10:</div>
+			<div class="message">You won Apple iPod Shuffle. We will email you details. You prize will be delivered within 2 weeks.</div>
+			<div class="close" onclick="alert('Send Ajax request, mark as processed and remove it');">×</div>
+		</div>
+		<div class="item">
+			<div class="timestamp">01/01/11 18:00:</div>
+			<div class="message">Welcome back, dear auctioneer. We wish you a happy new year.</div>
+			<div class="close" onclick="alert('Send Ajax request, mark as processed and remove it');">×</div>
+		</div>
+		<div class="item">
+			<div class="timestamp">01/01/11 18:00:</div>
+			<div class="message">Welcome back, dear auctioneer. We wish you a happy new year.</div>
+			<div class="close" onclick="alert('Send Ajax request, mark as processed and remove it');">×</div>
+		</div>
+		<div class="item">
+			<div class="timestamp">01/01/11 18:00:</div>
+			<div class="message">Welcome back, dear auctioneer. We wish you a happy new year.</div>
+			<div class="close" onclick="alert('Send Ajax request, mark as processed and remove it');">×</div>
+		</div>
+		<div class="all-notifications"><a onclick="$('.notification-list .item').toggleClass('active');">Your Notifications (5)</a></div>
+	</div>
+
+	<header class="header">
+	{% if user.is_authenticated %}
+		<img class="user-img" src="{{ user.get_profile.display_picture }}">
+		{{ user.get_profile.display_name }},
+		<a href="{% url bidding_auction_won_list %}">Won Items</a> |
+		<a href="#">{{ user.get_profile.get_active_auctions }} Auctions</a> |
+		<a href="javascript:void(0)"><span id="user_bids">{{ user.get_profile.get_bids_left }}</span> Bids</a> |
+		<a href="javascript:void(0)"><span id="user_tokens">{{ user.get_profile.get_tokens_left }}</span> Tokens</a> |
+        <a href="{% url history %}">Currency history</a> |
+		<!--a class="buy-bids" onclick="openPopup('buy-bids-popup')">Buy Bids</a-->
+		<!--<div class="fb-like" data-href="https://www.mrebid.com/" data-send="true" data-width="100" data-show-faces="false" data-layout="button_count"></div>-->
+        <!--script type="text/javascript">
+/*<![CDATA[*/
+            function fbs_click() {
+                var u="http://apps.facebook.com/ibidville/";
+                var t=document.title;
+                window.open('http://www.facebook.com/sharer.php?u='+encodeURIComponent(u)+'&t='+encodeURIComponent(t),'sharer','toolbar=0,status=0,width=700,height=500');
+                return false;
+            }
+/*]]>*/
+        </script-->
+        <a rel="nofollow" href="http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fapps.facebook.com%2Fibidville%2F&t=ibidville.com+-+Auctions" onclick="return fbs_click()" target="_blank" class="fb_share_link">Share on Facebook</a>
+		<div class="help" onclick="toggleHints();">
+			Hints Off
+			<div class="help-hint">
+				<div class="hint-triangle-up"></div>
+				Turn Hints On if you want to see helpful Tips
+			</div>
+		</div>
+		<!--a href="#" class="logout">Logout</a-->
+	{% endif %}
+	</header>
+	
+	<nav class="menu">
+
+		<!--
+<div class="logo">
+			Welcome to <img src="http://www.ibidchat.com/static/images/ibidchat.png" /> - first Interactive Auction 
+		</div>
+-->
+		<ul>
+			<li><a href="{% url bidding_home %}" {% comment %}class="selected"{% endcomment %}>Home</a></li>
+			<li><a href="#" onclick="openPopup('blocking-popup')">How It Works</a></li>
+			<li><a href="/faq/">FAQs</a></li>
+			<li><a href="/winners/">Winners</a></li>
+			<!--li><a href="/testimonials/">Testimonials</a></li-->
+			<li class="buy-bids"><a onclick="openPopup('buy-bids-popup')">Buy Bids</a></li>
+		</ul>
+	</nav>
+
+	<!-- Tab controls -->
+	{% block outcontent %}
+
+	{% block auction-selector %}
+	{% endblock %}
+	
+	<!-- Tab content -->
+    {%  block content %}
+	<section class="auctions earn-chips">
+
+<!--
+		<section class="filter">
+			<div>Filter: <a href="#">My Auctions</a> | <a href="#">Running</a> | <a href="#">Live</a> | <a href="#">Scheduled</a></div>
+		</section>
+-->
+
+<!--
+		<section class="sorting">
+			<div>Sort by: <a href="#">Start Date</a> | <a href="#">Amount of Bidders</a> | <a href="#">Retail Price</a></div>		
+		</section>
+-->
+
+		<!-- Auction List -->
+		<div class="auction-list running">
+		
+			<section class="my-running-auctions">
+				<header class="list-header my-running">
+					<input class="search" placeholder="You can search here" type="text">
+					<h2>My Running Auctions <!-- <a href="#">See All &rsaquo;</a> --></h2>
+					<div class="clear"></div>
+				</header>			
+			
+				<!-- Auction Item -->
+				<section class="item">
+				
+					<!-- Header: Title, Details Link, Chat Link -->
+					<header class="header">
+						<a href="http://ibidchat.jazzpixels.com/details.html">iPad 16 Gb Wi-Fi</a> / Retail price: $499
+						<div style="position: relative;" class="open-chat hint-holder" help="Click here to open Chat" onclick="$('#chat-1').toggleClass('active');"><div style="top: -66px;" class="hint"><div class="hint-header">Help Info:</div>Click here to open Chat<div class="hint-triangle"></div></div>
+							<img src="ibidchat.jazzpixels.com_files/spechbubble_sq_line_aaa.png" height="16" width="16">
+						</div>
+					</header> <!-- Header -->
+					
+					<!-- Details: Preview, Price, Bidder, Time Left, Controls -->
+					<div class="details">
+						<div class="preview">
+							<img src="ibidchat.jazzpixels.com_files/ipad-512x512.jpg">
+						</div>
+						<div class="price">
+							<header class="header">Price</header>
+							<section class="value">$80.63</section>
+						</div>
+						<div class="controls">
+							<header class="header">30 Bids Left</header>
+							<section class="value"><div class="btn">Bid</div></section>
+						</div>
+						<div class="time-left">
+							<header class="header">Time Left</header>
+							<section class="value">00:14</section>
+						</div>
+						<div class="bidder">
+							<header class="header">Last Bidder</header>
+							<section class="value">Martino Vincent</section>
+						</div>
+					</div> <!-- Details -->
+					
+					<!-- Chat -->
+					<section id="chat-1" class="chat">
+						<header>Live Chat:</header>
+						<!-- Message List -->
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/auctioneer_small.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">
+								<textarea type="text" placeholder="Your message"></textarea>
+							</div>
+							<div class="btn">Send</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/auctioneer_small.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">I'm going to win this item! I won the same auction last week. It was easy for me so you should be prepared.</div>
+							<div class="date-time">11/27/11 13:58</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/auctioneer_small.jpg"></div>
+							<div class="name">Facundo Olano:</div>
+							<div class="text">I do not know what to do?!<br>Hey!<br>I'll beat you!<br>Don't try to win me!</div>
+							<div class="date-time">11/27/11 13:57</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/auctioneer_small.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">Hi there!</div>
+							<div class="date-time">11/27/11 13:56</div>
+						</section>		
+					</section> <!-- Chat -->
+					
+				</section> <!-- Item -->
+			</section>
+			
+			
+
+			<section class="my-upcoming-auctions">
+				<header class="list-header my-upcoming">
+					<input class="search" placeholder="You can search here" type="text">
+					<h2>My Upcoming Auctions <a class="hint-holder" style="position: relative;" help="Click here to see all Your Upcoming auctions" href="http://ibidchat.jazzpixels.com/search.html"><div style="top: -82px;" class="hint"><div class="hint-header">Help Info:</div>Click here to see all Your Upcoming auctions<div class="hint-triangle"></div></div>See All ›</a></h2>
+					<div class="clear"></div>
+				</header>
+				
+				<!-- Upcoming Auction -->
+				<section class="item upcoming">
+					<header class="header">
+						<a href="http://ibidchat.jazzpixels.com/details-precap-completed.html">iPod Classic 160 Gb</a> / Retail price: $399
+						<div style="position: relative;" class="open-chat hint-holder" help="Click here to open Chat" onclick="$('#chat-3').toggleClass('active');"><div style="top: -66px;" class="hint"><div class="hint-header">Help Info:</div>Click here to open Chat<div class="hint-triangle"></div></div>
+							<img src="ibidchat.jazzpixels.com_files/spechbubble_sq_line_aaa.png" height="16" width="16">
+						</div>
+					</header>
+					<div class="details">
+						<div class="preview">
+							<img src="ibidchat.jazzpixels.com_files/ipod_classic_256.png">
+						</div>
+						<div class="price">
+							<header class="header">Price</header>
+							<section class="value">$0.01</section>
+						</div>
+						<div class="controls">
+							<header class="header">10 Bids</header>
+							<section class="value">
+								<div class="btn">Edit Bids</div>
+								<a href="#">Invite Friends</a>
+							</section>
+						</div>
+						<div class="time-to-start">
+							<header class="header">Time To Start</header>
+							<section class="value">9 minutes</section>
+						</div>
+						<div class="status">
+							<header class="header">Completion</header>
+							<section class="value">100% / 8 Bidders</section>
+						</div>
+					</div>
+					<section id="chat-3" class="chat">
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text"><input placeholder="" type="text"></div>
+							<div class="btn">Send</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">I'm going to win this item!</div>
+						</section>
+						<section class="message ">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/276338_1134802192_1445161425_q.jpg"></div>
+							<div class="name">Facundo Olano:</div>
+							<div class="text">I do not know what to do?!</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">Hi there!</div>
+						</section>			
+					</section>
+				</section>
+			</section>
+			
+			<section class="all-upcoming-auctions">
+				<header class="list-header all-upcoming">
+					<input class="search" placeholder="You can search here" type="text">
+					<h2>Other Upcoming Auctions <a class="hint-holder" style="position: relative;" help="Click here to see all other Upcoming auctions" href="http://ibidchat.jazzpixels.com/search.html"><div style="top: -82px;" class="hint"><div class="hint-header">Help Info:</div>Click here to see all other Upcoming auctions<div class="hint-triangle"></div></div>See All ›</a></h2>
+					<div class="clear"></div>
+				</header>
+				
+				<!-- Upcoming Auction -->
+				<section class="item upcoming">
+					<header class="header">
+						<a href="http://ibidchat.jazzpixels.com/details-precap.html">iMac 21"</a> / Retail price: $1299
+					</header>
+					<div class="details">
+						<div class="preview">
+							<img src="ibidchat.jazzpixels.com_files/new-imac.jpg">
+						</div>
+						<div class="price">
+							<header class="header">Price</header>
+							<section class="value">$0.01</section>
+						</div>
+						<div class="controls">
+							<header class="header">
+								<input name="bid1" value="5" min="5" type="text"> Bids
+							</header>
+							<section class="value">
+								<div class="btn">Place Bids</div>
+								<a href="#">Invite Friends</a>
+							</section>
+						</div>
+						<div class="status">
+							<header class="header">Completion</header>
+							<section class="value">70% / 16 Bidders</section>
+						</div>
+					</div>
+					<section id="chat-7" class="chat">
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text"><input placeholder="" type="text"></div>
+							<div class="btn">Send</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">I'm going to win this item!</div>
+						</section>
+						<section class="message ">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/276338_1134802192_1445161425_q.jpg"></div>
+							<div class="name">Facundo Olano:</div>
+							<div class="text">I do not know what to do?!</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">Hi there!</div>
+						</section>			
+					</section>		
+				</section>
+			</section>
+
+			<section class="all-running-auctions">
+				<header class="list-header all-running">
+					<input class="search" placeholder="You can search here" type="text">
+					<h2>Other Running Auctions <a class="hint-holder" style="position: relative;" help="Click here to see all other Running auctions" href="http://ibidchat.jazzpixels.com/search.html"><div style="top: -82px;" class="hint"><div class="hint-header">Help Info:</div>Click here to see all other Running auctions<div class="hint-triangle"></div></div>See All ›</a></h2>
+					<div class="clear"></div>
+				</header>
+				
+				<section class="item">
+					<header class="header">
+						<a href="http://ibidchat.jazzpixels.com/details.html">MacBook Pro 13"</a> / Retail price: $1199
+					</header>
+					<div class="details">
+						<div class="preview">
+							<img src="ibidchat.jazzpixels.com_files/macbook-pro.png" alt="">
+						</div>
+						<div class="price">
+							<header class="header">
+								Price
+							</header>
+							<section class="value">
+								$0.63
+							</section>
+						</div>
+						<div class="time-left">
+							<header class="header">
+								Time Left
+							</header>
+							<section class="value">
+								00:14
+							</section>
+						</div>
+	
+						<div class="bidder">
+							<header class="header">
+								Last Bidder
+							</header>
+							<section class="value">
+								Martino Vincent
+							</section>
+						</div>
+					</div>
+					<section id="chat-2" class="chat">
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text"><input placeholder="" type="text"></div>
+							<div class="btn">Send</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">I'm going to win this item!</div>
+						</section>
+						<section class="message ">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/276338_1134802192_1445161425_q.jpg"></div>
+							<div class="name">Facundo Olano:</div>
+							<div class="text">I do not know what to do?!</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">Hi there!</div>
+						</section>
+						<div class="clear"></div>			
+					</section>
+				</section>
+			</section>
+
+			<section class="finished-auctions">
+				<header class="list-header finished">
+					<input class="search" placeholder="You can search here" type="text">
+					<h2>Recently Finished Auctions <a class="hint-holder" style="position: relative;" help="Click here to see all Recently Finished auctions" href="http://ibidchat.jazzpixels.com/search.html"><div style="top: -82px;" class="hint"><div class="hint-header">Help Info:</div>Click here to see all Recently Finished auctions<div class="hint-triangle"></div></div>See All ›</a></h2>
+					<div class="clear"></div>
+				</header>
+				
+				<!-- Upcoming Auction -->
+				<section class="item upcoming">
+					<header class="header">
+						<a href="http://ibidchat.jazzpixels.com/details-finished.html">iMac 21"</a> / Retail price: $1299
+					</header>
+					<div class="details">
+						<div class="preview">
+							<img src="ibidchat.jazzpixels.com_files/new-imac.jpg">
+						</div>
+						<div class="price">
+							<header class="header">Price</header>
+							<section class="value">$164.93</section>
+						</div>
+						<div class="status">
+							<header class="header">Winner</header>
+							<section class="value">Martino Vincent</section>
+						</div>
+					</div>
+					<section id="chat-7" class="chat">
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text"><input placeholder="" type="text"></div>
+							<div class="btn">Send</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">I'm going to win this item!</div>
+						</section>
+						<section class="message ">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/276338_1134802192_1445161425_q.jpg"></div>
+							<div class="name">Facundo Olano:</div>
+							<div class="text">I do not know what to do?!</div>
+						</section>
+						<section class="message">
+							<div class="img"><img src="ibidchat.jazzpixels.com_files/273656_100002961003770_382121169_q.jpg"></div>
+							<div class="name">Martino Vincent:</div>
+							<div class="text">Hi there!</div>
+						</section>			
+					</section>		
+				</section>
+			</section>
+
+		</div> <!-- Auction List -->
+
+	</section> <!-- Auctions -->
+	
+	<section class="auctions real-items">
+
+		<div class="auction-list">
+			<h2></h2>
+		</div>
+
+	</section>
+    {%  endblock content %}
+
+        {% block rightpanel %}
+	<section class="right-pane debug">
+		Right Panel
+		<p>
+		Can be used for different purposes such as:
+		</p><ul>
+			<li>Navigation Menu</li>
+			<li>Latest News</li>
+			<li>Latest Winners</li>
+			<li>Recently finished auctions</li>
+			<li>Planned auctions</li>
+			<li>Recommended auctions</li>
+			<li>Online Friends</li>
+			<li>e.t.c.</li>
+		</ul>
+		<p></p>
+	</section>
+        {% endblock rightpanel %}
+
+	<div class="clear"></div>
+		
+	{% endblock outcontent %}
+	{% block aftercontent %}
+    {% endblock aftercontent%}
+	<footer class="footer">
+		<div class="safe">
+			iBidChat is Safe:
+            <img src="{% static "images/safe_icon.png"%}">
+		</div>
+		<div class="links">
+			<a href="/aboutus/">About Us</a> |
+			<a href="/privacy/">Privacy Policy</a> |
+			<a href="/contactus/">Contact Us</a> |
+			<a href="/terms/">Terms and Conditions</a>
+		</div>
+	</footer>
+
+</section>
+
+
+{% block extrajs %}
+{% endblock %}
+
+
+<script type="text/javascript">
+   /*<![CDATA[*/
+
+	// Popup related variables
+	var underlay = '.underlay';
+	var popupClass = '.popup';
+	var popupOuter = '.popup-outer';
+
+	function openPopup(popup) {
+		$('.' + popup + ' ' + popupOuter).css('display', 'table');
+		$(underlay).fadeIn(300);
+
+		$('.' + popup).addClass('active');
+		$('.' + popup + ' ' + popupClass).addClass('active');
+		$('.' + popup + ' ' + popupOuter).css('zIndex', 1000);
+	}
+
+	function closePopup(popup) {
+		$(underlay).fadeOut(300);
+
+		$('.' + popup).removeClass('active');
+		$('.' + popup + ' ' + popupClass).removeClass('active');
+		$('.' + popup + ' ' + popupOuter).css('zIndex', 0);
+		$('.' + popup + ' ' + popupOuter).css('display', 'none');
+	}
+
+
+
+	// Help Popups Functionality:
+	// In order to get hint on an element you need to set help="message" attribute to the element.
+	// Input elements are not allowed.
+	// After that you should run hintInit() function on document ready.
+	// When user hover the element hint will appear.
+	// Example: <div help="This is your custom div">Your custom div</div>
+	function hintInit() {
+		// Get list of elements with Help attribute
+		elems = $('[help]');
+
+		// Set event handlers
+		for(i = 0; i < elems.length; i++) {
+			elem = elems[i];
+
+			// Set position to 'relative' if it's not set
+			if ($(elem).css('position') == 'static') {
+				$(elem).css('position', 'relative');
+			}
+
+			// Prepare and add hint message to element
+			hint = '<div class="hint"><div class="hint-header">Help Info:</div>' + $(elem).attr('help') + '<div class="hint-triangle"></div></div>';
+			$(elem).html( hint + $(elem).html() );
+
+			// Set top position to hint holder
+			$(elem).addClass('hint-holder');
+			help = $(elem).children('.hint');
+			help.css('top', -(help.outerHeight(true) + 13));
+		}
+	}
+
+	// Turn On and Off help popups
+	function toggleHints() {
+		$('.hint-holder').toggleClass('on');
+
+		$('.help').toggleClass('active');
+		if ($('.help').hasClass('active')) {
+			$('.help').html('Hints On');
+		}
+		else {
+			$('.help').html('Hints Off');
+		}
+	}
+
+	$(document).ready(function() {
+		hintInit();
+	});
+
+	// Calculate Chips by Bids
+	function previewBids(obj) {
+		var bids = parseInt($(obj).val());
+
+		// Math formula should be there
+		chips = (bids ? bids : 0) * 20000;
+
+		$('.chips-to-convert').html( Math.floor(chips) );
+	}
+
+
+    function refresh_user_bids() {
+        data = {'member_id' : {{ user.get_profile.id }}}
+        $.post('{% url bidding_user_bids %}', data, function(data){
+            $('#user_bids').text(data.bids);
+            $('#user_tokens').text(data.tokens);
+            $('#convertible_tokens').text(data.tokens);
+            $('#maximun_bidsto').text(data.maximun_bidsto);
+            var options='';
+            for (var i = 0; i < data.convert_combo.length; i++) {
+                options += '<option value="' + data.convert_combo[i] + '">' + data.convert_combo[i] + '</option>';
+            }
+            $('select#tokens_to_convert').html(options);
+        }, "json");
+    }
+
+
+	function convertChips() {
+
+        $.post({%  url convert_tokens %}, {'amount': $('#tokens_to_convert').val()},
+               function(data) {
+                   $('#user_bids').text(data.bids);
+                   $('#user_tokens').text(data.tokens);
+                   $('#convertible_tokens').text(data.tokens);
+                   $('#maximun_bidsto').text(data.maximun_bidsto);
+                   var options='';
+                   for (var i = 0; i < data.convert_combo.length; i++) {
+                        options += '<option value="' + data.convert_combo[i] + '">' + data.convert_combo[i] + '</option>';
+                   }
+                   $('select#tokens_to_convert').html(options);
+               }, 'json');
+	}
+
+    function createCookieTOS() {
+        if ($('#id_dont_show').is(":checked")) {
+            $.cookie('dont_show_welcome_' + {{ user.get_profile.facebook_id }}, true, { expires: 36500 });
+        }
+        closePopup("welcome-popup");
+    }
+
+   /*]]>*/
+</script>
+
+</ibody>{% endblock body %}</body></html>

@@ -1,0 +1,34 @@
+{% load bidding_tags %}
+
+<section class="player-list">
+	<!-- Header -->
+	<header>
+		Participants:
+	</header>
+	
+	<!-- List of 8 participants -->
+	<section class="players">
+		{% for player in page.object_list %}
+		<div class="player" id="{{ player.id }}">
+			<div class="img">
+				<img src="{{ player.display_picture }}"/>
+			</div>
+			<div class="name">
+				{{ player|fb_link }}
+			</div>
+		</div>
+		{% endfor %}
+		<!-- Do not remove -->
+		<div class="clear"></div>
+	</section> <!-- players -->
+	
+	<!-- Paging -->
+	<section class="paging-holder">
+		{% if page.has_previous %}<div class="previous" onclick="get_page('{% url bidding_participants %}', {{auction.id}}, {{page.previous_page_number}})">←</div>{% endif %}
+		<span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+		{% if page.has_next %}<div class="next" onclick="get_page('{% url bidding_participants %}', {{auction.id}}, {{page.next_page_number}})">→</div>{% endif %}
+	</section>
+	
+	<!-- Do not remove -->
+	<div class="clear"></div>
+</section>  <!-- player-list -->

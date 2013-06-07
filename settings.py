@@ -18,7 +18,7 @@ EMAIL_PORT = 587
 #EMAIL_HOST_USER = 'daniel@nuske.com.ar'
 #EMAIL_HOST_PASSWORD = ''
 EMAIL_HOST_USER = 'info@ibidgames.com'
-EMAIL_HOST_PASSWORD = 'Supernuske13'
+EMAIL_HOST_PASSWORD = 'ibidgames'
 EMAIL_USE_TLS = True
 
 
@@ -101,6 +101,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     #'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'bidding.middleware.ProfileMiddleware',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -243,10 +244,10 @@ RECAPTCHA_PRIVATE_KEY = ""
 
 if not DEBUG:
     SITE_NAME = 'http://apps.facebook.com/interactivebids'
-    PAYPAL_RECEIVER_EMAIL = 'payment@ibidgames.com'
+    PAYPAL_RECEIVER_EMAIL = 'info@ibidgames.com'
 else:
     SITE_NAME = 'http://apps.facebook.com/interactivebids'
-    PAYPAL_RECEIVER_EMAIL = 'payment@ibidgames.com'
+    PAYPAL_RECEIVER_EMAIL = 'info@ibidgames.com'
 
 #see how to better handle this
 IMAGES_SITE = 'http://localhost:8000' #'http://apps.facebook.com/interactivebids'
@@ -276,7 +277,7 @@ except ImportError:
 #BROKER_PASSWORD = "guest"
 #BROKER_VHOST = "/"
 
-TOKENS_TO_BIDS_RATE = 0.001
+TOKENS_TO_BIDS_RATE = 0.0001
 
 PAGINATED_BY = 20
 

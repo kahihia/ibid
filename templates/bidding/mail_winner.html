@@ -1,0 +1,110 @@
+{% load routines_tags %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+	"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>HTML</title>
+	<meta name="iBidGames" content="iBidGames" />
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+	<!-- Date: 2013-03-04 -->
+	<style>
+	body{
+		width:600px;
+		border:1px solid #ebebeb;
+		font-family:'Open Sans', Arial, sans-serif;
+		-webkit-font-smoothing: antialiased;
+	}
+	p {
+		margin: 0px;
+		padding: 0px;
+	}
+	a {
+		color:#fff;
+		text-decoration: none;
+		margin: 0px;
+	}
+	#content {
+		background-color: #fff;
+		text-align: center;
+	}
+	#winner {
+		font-size: 18px;
+		font-style: italic;
+		color:#777;
+		margin-top: 20px;
+		line-height: 25px;
+	}
+	#winner p{
+		font-size: 30px;
+		font-style: normal;
+		color: #f26522;
+		font-weight: 600;
+	}
+	#item {
+		font-size:14px;
+		color:#484848;
+	}
+	#item img{
+		border:1px solid #91d3eb;
+		margin-top: 10px;
+	}
+	#click {
+		border-top: 1px solid #dcdcdc;
+		background-color: #ebebeb;
+		margin-top: 15px;
+		padding-bottom: 2px;
+		padding-top:12px;
+	}
+	#btn {
+		background-image: url({{ images_site }}{% static "images/mail/btn.jpg" %});
+		height:52px;
+		width: 320px;
+		margin:0 auto;
+		line-height: 50px;
+		font-size: 14px;
+		font-weight: 600;
+	}
+	#link {
+		font-size: 12px;
+		margin-top: 10px;
+		margin-bottom: 15px;
+		color:#666;
+
+	}
+	#link a{
+		color:#0574dc;
+	}
+
+	</style>
+	
+</head>
+<body>
+	<div id="top">
+		<img style="float:left;" src="{{images_site}}{% static "images/mail/top1.jpg" %}" height="116" width="194">
+		<a style="float:left;" href="{{ images_site }}"><img src="{{ images_site }}{% static "images/mail/top2.jpg" %}" height="116" width="221"></a>
+		<img src="{{ images_site }}{% static "images/mail/top3.jpg" %}" height="116" width="185">
+	</div>
+	<div id="content">
+		<div id="winner">
+			Congratulations <p>{{ user.get_profile.display_name|title }}</p>
+		</div>
+		<div style="margin-top:17px ; margin-bottom:17px ; color:#cbcbcb">..........................................................</div>
+		<div id="item"> You won {{ auction.item.name }} </br>
+			<img src="{{auction.item.get_thumbnail}}" height="72" width="107">
+		</div>
+		<div id="click">
+			<a href="{{ images_site }}{% url bidding_buy_item auction.id %}"><div id="btn">CLICK HERE TO RECEIVE IT!</div></a>
+			<div id="link">Or copy and paste it into your browser's address bar:</br>
+				<a href="">{{ images_site }}{% url bidding_buy_item auction.id %}</a>
+			</div>
+		</div>
+	</div>
+	<div><img src="{{ images_site }}{% static "images/mail/foot.jpg" %}" width="600" height="104"></div>
+
+</div>
+</body>
+</html>
+

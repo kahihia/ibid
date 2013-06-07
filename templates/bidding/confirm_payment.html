@@ -1,0 +1,18 @@
+{% extends "base_section.html" %}
+
+{% block contentheader %}Confirmation{% endblock %}
+{% block title %}Confirmation{% endblock %}
+
+{% block sectioncontent %}
+	<div class="thankyou_page">
+        <div class="ten_height_spacer"><!-- --></div>
+            <p>Thank you, for you purchase</p>
+            {% if invoice.auction %}
+            <p>Your order <b>{{ invoice.auction.item.name }}</b> is confirmed, and we will ship it shortly</p>
+            {% else %}
+            <p>Your payment was confirmed, and your bids should be on your account</p>
+            {% endif %}
+            <p>Your confirmation number is <b>{{ invoice.uid }}</b></p>
+            <p>Return to <a href="/">Auctions</a></p>
+    </div>
+{% endblock %}

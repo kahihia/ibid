@@ -1,0 +1,50 @@
+
+<div class="items">
+		<div class="auction-list running">
+		
+		{% if not has_played|default:True %}
+			<p>Don't know how to play yet? Check out our <a href="/faq/">FAQs</a></p>				
+		{% endif %}
+		
+		{% block my_auctions %}
+		<section id="my_auctions" class="my-upcoming-auctions wisedom">
+			<header class="list-header my-upcoming">
+					{% if user.is_authenticated %}
+					<input type="hidden" placeholder="You can serch here" value="" class="search">
+					<h2>{{ user.first_name }}'s Upcoming Auctions <!-- <a href="#">See All &rsaquo;</a> --></h2>
+					<div class="clear"></div>
+					{% endif %}
+			</header>			
+		
+
+		</section>
+		{% endblock %}
+		
+		{% block other_auctions %}
+		<section id="other_auctions" class="all-upcoming-auctions wisedom">
+			<header class="list-header all-upcoming">
+				{% if user.is_authenticated %}
+				<input type="hidden" placeholder="You can serch here" value="" class="search">
+				{% endif %}
+				<h2>{% block or_title %}Other Upcoming Auctions{% endblock %}{% if user.is_authenticated %}<!--a href="{% url bidding_browse %}">See All ›</a-->{% endif %}</h2>
+				<div class="clear"></div>
+			</header>
+		
+		</section>
+		{% endblock %}
+		
+		{% block finished %}
+		<section id="finished" class="finished-auctions wisedom">
+			<header class="list-header finished">
+				{% if user.is_authenticated %}
+				<input type="hidden" placeholder="You can serch here" value="" class="search">
+				{% endif %}
+				<h2>{% block fi_title%}Recently Finished Auctions{%endblock%} {% if user.is_authenticated %}<!--a href="{% url bidding_browse %}?status=Finished">See All ›</a-->{% endif %}</h2>
+				<div class="clear"></div>
+			</header>
+			
+		</section>
+		{% endblock %}
+		
+		</div>
+		</div>

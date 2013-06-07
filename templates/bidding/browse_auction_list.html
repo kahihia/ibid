@@ -1,0 +1,18 @@
+
+<section class="paging-holder">
+	{% if page.has_previous %}<div class="previous" onclick="get_page('{{ bid_type }}', {{page.previous_page_number}})">&larr;</div>{% endif %}
+	<span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+	{% if page.has_next %}<div class="next" onclick="get_page('{{ bid_type }}', {{page.next_page_number}})">&rarr;</div>{% endif %}
+</section>
+
+<div class="auction-list running">
+	{% for auction in page.object_list %}
+		{% include 'bidding/auctions/auction_widget.html' %}
+	{% endfor %}
+</div>
+
+<section class="paging-holder">
+	{% if page.has_previous %}<div class="previous" onclick="get_page('{{ bid_type }}', {{page.previous_page_number}})">&larr;</div>{% endif %}
+	<span>Page {{ page.number }} of {{ page.paginator.num_pages }}</span>
+	{% if page.has_next %}<div class="next" onclick="get_page('{{ bid_type }}', {{page.next_page_number}})">&rarr;</div>{% endif %}
+</section>

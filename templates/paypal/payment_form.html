@@ -1,0 +1,153 @@
+{% extends "base_section.html" %}
+
+{% block title %}{% if auction %}Pay for the item{% else %}Buy BIDs{% endif %}{% if test %} Test mode{% endif %}{% endblock %}
+{% block contentheader %}{% if auction %}Pay for the item{% else %}Buy BIDs{% endif %}{% if test %} Test mode{% endif %}{% endblock %}
+
+{% block graywindowcontent %}
+<div class="ten_height_spacer footer"><!-- --></div>
+<div class="ten_height_spacer footer"><!-- --></div>
+<div class="ten_height_spacer footer"><!-- --></div>
+<form id="checkout_form" class="registration_form" name="registration_form" action="." method="post">{% csrf_token %}
+    <div class="form_gray_bg">
+        <div class="form_label">
+            <label for="id_firstname">First name:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.firstname }}
+        </div>
+        {% if form.firstname.errors %}
+        <span class="custom_error">{{ form.firstname.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg form_no_bg">
+        <div class="form_label">
+            <label for="id_lastname">Last name:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.lastname }} 
+        </div>
+        {% if form.lastname.errors %}
+        <span class="custom_error">{{ form.lastname.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg">
+        <div class="form_label">
+            <label for="id_address">Street address:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.street }} 
+        </div>
+        {% if form.street.errors %}
+        <span class="custom_error">{{ form.street.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg form_no_bg">
+        <div class="form_label">
+            <label for="id_city">City:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.city }} 
+        </div>
+        {% if form.city.errors %}
+        <span class="custom_error">{{ form.city.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg">
+        <div class="form_label">
+            <label for="id_state">State:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.state }}
+        </div>
+        {% if form.state.errors %}
+        <span class="custom_error">{{ form.state.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg form_no_bg">
+        <div class="form_label">
+            <label for="id_zip">Postal/Zip code:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.zip }} 
+        </div>
+        {% if form.zip.errors %}
+        <span class="custom_error">{{ form.zip.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg">
+        <div class="form_label">
+            <label for="id_cardnumber">Card number:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.acct }} 
+        </div>
+        {% if form.acct.errors %}
+        <span class="custom_error">{{ form.acct.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg form_no_bg">
+        <div class="form_label">
+            <label for="id_expdate_0">Expiration date:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.expdate }}
+        </div>
+        {% if form.expdate.errors %}
+        <span class="custom_error">{{ form.expdate.errors|join:", " }}</span>
+        {% endif %}
+    </div>
+    <div class="form_gray_bg">
+        <div class="form_label">
+            <label for="id_cvv2">Card security code:</label>
+        </div>
+        <div class="red_cross">
+            *
+        </div>
+        <div class="form_input">
+            {{ form.cvv2 }} 
+        </div>
+        {% if form.cvv2.errors %}
+        <span class="custom_error">{{ form.cvv2.errors|join:", " }}</span>
+        {% endif %}
+        {{ form.countrycode }} 
+    </div>
+    <fieldset>
+        <legend>Where is Card Security Code?</legend>
+        <div class="card_security_code">
+            <img src="/static/images/visa_cvv.png" alt="Visa and Master Card CVV code location."/>
+            <p>This number is printed on your MasterCard &#38; Visa cards in the signature area of the back of the card. (it is the last 3 digits AFTER the credit card number in the signature area of the card).</p>
+            <img src="/static/images/amex_cvv.png" alt="American Express CVV code location."/>
+            <p>You can find your four-digit card verification number on the front of your American Express credit card above the credit card number on either the right or the left side of your credit card.</p>
+        </div>
+    </fieldset>
+    <button type="submit" class="big_blue_button registration_submit"><span>CHECKOUT</span></button>
+</form>
+<div class="ten_height_spacer footer"><!-- --></div>
+<div class="ten_height_spacer footer"><!-- --></div>
+<div class="ten_height_spacer footer"><!-- --></div>
+{% endblock %}
+

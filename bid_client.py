@@ -9,6 +9,7 @@ from django.utils import simplejson as json
 
 import uuid
 import urllib
+#from django.config import settings
 import settings
 
 

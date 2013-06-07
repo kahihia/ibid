@@ -1,0 +1,32 @@
+{% extends 'bidding/auctions/auction.html' %}
+{% load routines_tags bidding_tags %}
+
+{% block time_left %}
+{% endblock %}
+
+{% block status_span %}
+<span style="display: none;" class="my-upcoming-status status-span">Upcoming</span>
+{% endblock %}
+
+{% block extra_button %}<a href="javascript:void(0)" id="leave_{{auction.id}}" class="quit" {% if not user|has_joined:auction %}style="display:none;"{% endif %} href="#" onclick="leave_auction('{% url bidding_leave_auction %}', {{ auction.id }});">Leave Auction</a>{% endblock %}
+
+{% block controls_header %}
+<span class="bids_info"><span class="bids_left">{{ user|user_bids:auction }}</span> {{ auction.get_bid_type_display }} Left</span>
+<span style="display: none;" class="bids_input"><input id="precap_{{auction.id}}" type="text" name="bid1" value="{{ auction.minimum_precap }}" min="{{ auction.minimum_precap }}" /> {{ auction.get_bid_type_display }}</span>
+{% endblock %}
+
+{% block controls_value %}
+	<div class="btn edit-button" onclick="edit_bids({{auction.id}});">Edit {{ auction.get_bid_type_display }}</div>
+	<div style="display: none;" class="btn place-button" onclick="precap_bid('{% url bidding_precap_bid %}', {{ auction.id }});
+                                                                  this.blur();
+                                                                  return false;">Place {{ auction.get_bid_type_display }}</div>
+    <div style="display: none;" class="inprogress"><img src="{%  static "images/ajax-loader.gif" %}" /></div>
+	<a href="javascript:void(0)" onclick="sendRequestViaMultiFriendSelector({{auction.id}}, '{{auction.item.name}}', {% url fb_invite %})">Invite Friends</a>
+{% endblock %}
+
+{% block price %}{% endblock %}
+
+{% block bidder_header %}Completion{% endblock %}
+{% block bidder_value %}{{ auction.completion }}% / {{ auction.bidders.all|length }} Bidders{% endblock %}
+
+

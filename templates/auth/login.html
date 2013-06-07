@@ -1,0 +1,34 @@
+{% extends "base_section.html" %}
+
+{% block title %}Login Page{% endblock %}
+{% block contentheader %}Please login or Register{% endblock %}
+
+{% block sectioncontent %}
+	<form method="post" action="." class="registration_form">{% csrf_token %}
+		<div class="login_page_register">
+			<h2>New user?</h2>
+			<div class="ten_height_spacer"><!-- --></div>
+			<a href="/register/" class="glossy_blue_button"><span>REGISTER NOW!</span></a><br/><br/>
+			<div class="ten_height_spacer"><!-- --></div>
+			<p>And get <b>5 Free</b> BIDs.</p>
+		</div>
+		<div class="login_page_login">
+			<h2>Please login.</h2>
+			{% if form.errors %}
+			<p class="red_text">Your username and password didn't match. Please try again.</p>
+			{% endif %}
+			<label for="id_username">Username</label>
+			<input id="id_username" class="login_input" type="text" maxlength="40" value="" name="username"/>
+			<div class="ten_height_spacer"><!-- --></div>
+			<label for="id_password">Password</label>
+			<input id="id_password" class="login_input" type="password" maxlength="40" value="" name="password"/>
+			<input type="hidden" name="next" value="{{ next }}" />
+			<button class="login_button" type="submit">
+				<span>Login to site</span>
+			</button>
+			<div class="ten_height_spacer"><!-- --></div>
+			<a href="/accounts/password_reset/">Forgot password?</a>
+		</div>
+		<div class="clear_both"><!-- --></div>
+	</form>
+{% endblock %}

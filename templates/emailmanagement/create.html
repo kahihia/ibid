@@ -1,0 +1,26 @@
+{% extends "base_section.html" %}
+
+{% block title %}Add an email{% endblock %}
+{% block contentheader %}Add an email{% endblock %}
+
+{% block sectioncontent %}
+            <div class="ten_height_spacer"><!-- --></div>
+            <form action="." method="post" name="add_email_form" class="registration_form">{% csrf_token %}
+            {{ form.errors }}
+			   <div class="form_gray_bg">
+					<div class="form_label">
+						<label for="id_email">New Email:</label>
+			   		</div>
+					<div class="red_cross"> * </div>
+			   		<div class="form_input">
+					    {{ form.email }}	
+               		</div>
+                    {% if form.email.errors %}
+                    <label class="form_error">{% for error in form.email.errors %}{{ error }} {% endfor %}</label>
+                    {% endif %}
+			   </div>
+               <button class="login_button" type="submit" name="confirm">
+					<span>Add Email</span>
+			   </button>
+            </form>
+{% endblock %}

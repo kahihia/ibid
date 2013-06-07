@@ -1,0 +1,21 @@
+{% extends 'bidding/auctions/auction.html' %}
+{% load bidding_tags %}
+
+{% block time_left_value %}
+	<span class="tick_time">{{ auction.get_time_left|minutes_from_seconds }}</span>
+{% endblock %}
+
+{% block status_span %}
+<span style="display: none;" class="my-running-status status-span">Running</span>
+{% endblock %}
+
+{% block controls %}
+<div id="controls_{{auction.id}}" {% if not user|has_joined:auction %}style="display:none;"{% endif %} class="controls">
+	<header class="header"><span class="bids_left">{{ user|user_bids:auction }}</span> {{ auction.get_bid_type_display }} Left</header>
+	<section class="value"><div class="btn" onclick="bid('{% url bidding_bid %}', {{ auction.id }}, '#'); this.blur(); return false;">Bid</div></section>
+</div>
+{% endblock %}
+
+{% block price_value %}
+	${{ auction.price|stringformat:"4.2f" }}
+{%endblock%}

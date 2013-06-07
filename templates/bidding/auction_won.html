@@ -1,0 +1,126 @@
+{% extends "base_section.html" %}
+
+{% load thumbnail %}
+{% block title %}Confirm your age and shipping address{% endblock %}
+{% block contentheader %}Confirm your age and shipping address{% endblock %}
+
+{% block graywindowcontent %}
+    {% if auction_was_paid %}
+    <div class="thankyou_page">
+        <div class="ten_height_spacer"><!-- --></div>
+    	<p>Auction was paid</p>
+    </div>
+    {% else %}
+	    <form action="." method="post" name="won_item_form" class="registration_form">{% csrf_token %}
+			<div class="ten_height_spacer"><!-- --></div>
+			<div class="gray_header_left"></div>
+			<div class="gray_header_right"></div>
+			<div class="gray_header no_margin_ie6">Won item: {{ auction.item.name }}</div>
+			<div class="white_window_bg">
+				<div class="ten_height_spacer"><!-- --></div>
+				<div class="item_description_pictures">
+					<img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "202x202" as thumb %}{{ thumb.url }} {% endthumbnail %}" alt="{{ auction.item.name }}">
+				</div>
+				<div class="won_item_price">Price:&nbsp;<b class="green_text">${{ auction.won_price }}</b></div>
+			</div>
+			<div class="white_left_corner"><!-- --></div>
+			<div class="white_right_corner"><!-- --></div>
+			<div class="white_bar no_margin_ie6"><!-- --></div>
+			<div class="ten_height_spacer"><!-- --></div>
+			<div class="ten_height_spacer"><!-- --></div>
+			<b>Please enter your information:</b>
+			<div class="form_gray_bg">
+				<div class="form_label">
+					<label for="id_street">Street:</label>
+				</div>
+				<div class="red_cross">*</div>
+				<div class="form_input">
+				     {{ shipping_form.street }}	
+				</div>
+                {% if shipping_form.street.errors %}
+                <span class="custom_error">{{ shipping_form.street.errors|join:", " }}</span>
+                {% endif %}
+			</div>
+			<div class="form_gray_bg form_no_bg">
+				<div class="form_label">
+					<label for="id_city">City:</label>
+				</div>
+				<div class="red_cross">*</div>
+				<div class="form_input">
+					{{ shipping_form.city }}
+				</div>
+                {% if shipping_form.city.errors %}
+                <span class="custom_error">{{ shipping_form.city.errors|join:", " }}</span>
+                {% endif %}
+			</div>
+			<div class="form_gray_bg">
+				<div class="form_label">
+					<label for="id_state">State:</label>
+				</div>
+				<div class="red_cross">*</div>
+				<div class="form_input">
+                    {{ shipping_form.state }}
+				</div>
+                {% if shipping_form.state.errors %}
+                <span class="custom_error">{{ shipping_form.state.errors|join:", " }}</span>
+                {% endif %}
+			</div>
+			<div class="form_gray_bg form_no_bg">
+				<div class="form_label">
+					<label for="id_zip">Zip code:</label>
+				</div>
+				<div class="red_cross">*</div>
+				<div class="form_input">
+				    {{ shipping_form.zip }}	
+				</div>
+                {% if shipping_form.zip.errors %}
+                <span class="custom_error">{{ shipping_form.zip.errors|join:", " }}</span>
+                {% endif %}
+			</div>
+			<div class="form_gray_bg">
+				<div class="form_label">
+					<label for="id_country">Country:</label>
+				</div>
+				<div class="red_cross">*</div>
+				<div class="form_input">
+                    {{ shipping_form.country }}
+				</div>
+                {% if shipping_form.country.errors %}
+                <span class="custom_error">{{ shipping_form.country.errors|join:", " }}</span>
+                {% endif %}
+			</div>
+			<div class="form_gray_bg form_no_bg">
+				<div class="form_label">
+					<label for="id_phone_number">Phone number:</label>
+				</div>
+				<div class="red_cross"> </div>
+				<div class="form_input">
+				     {{ phone_form.phone_number }}	
+				</div>
+                {% if phone_form.phone_number.errors %}
+                <span class="custom_error">{{ shipping_form.phone_number.errors|join:", " }}</span>
+                {% endif %}
+			</div>
+			<div class="form_gray_bg">
+				<div class="form_label"></div>
+				<div class="red_cross"> * </div>
+				<div class="form_input_checkbox ie6_form_input_checkbox">
+				    {{ confirm_form.confirm_age }}	
+					<label for="id_confirm_age">
+						I confirm that I'm older than 18 y.o.
+					</label>
+				</div>
+                {% if confirm_form.confirm_age.errors %}
+                <span class="custom_error">Required field.</span>
+                {% endif %}
+			</div>
+			<div class="ten_height_spacer"><!-- --></div>
+			<div class="ten_height_spacer"><!-- --></div>
+		<div class="ten_height_spacer"><!-- --></div>
+		<button class="big_blue_button buy_bids_submit" type="submit">
+			<span>CONTINUE...</span>
+		</button>
+		<div class="ten_height_spacer"><!-- --></div>
+    </form>
+    {% endif %}
+{% endblock %}

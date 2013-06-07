@@ -1,0 +1,13 @@
+{% extends "base_section.html" %}
+
+{% block title %}Delete an email{% endblock %}
+{% block contentheader %}Delete an email{% endblock %}
+
+{% block sectioncontent %}
+        <form action="." method="post" class="registration_form">{% csrf_token %}
+              <p class="confirmation_message">Are you sure you want to delete an email <b>{{ email.email }}</b>?
+              <button class="login_button" type="submit" name="confirm">
+              <span>Confirm</span>
+              </button></p>
+        </form>
+{% endblock %}
