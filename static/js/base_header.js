@@ -63,6 +63,10 @@ jQuery(function () {
     jQuery('.like').click(openPopupLike);
     jQuery('.close', '.like-popup').click(closePopupLike);
 
+    jQuery('.friends-invited-popup').center();
+    jQuery('.friends-invited-popup').hide();
+    jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
+
     //jQuery('').click()
 })
 
@@ -158,11 +162,25 @@ function convertChips() {
 function sendRequestViaMultiFriendSelector() {
   FB.ui({method: 'apprequests',
     message: 'Come on and play Interactive Bid Games!'
-  }, requestCallback);
+  }, sendRequestViaMultiFriendSelectorCallback);
+}
+function sendRequestViaMultiFriendSelectorCallback(data){
+    console.log(data);
+    openPopupLike();
 }
 
-function requestCallback(data){
-    console.log(data);
+function openPopupLike() {
+    showOverlay();
+    setTimeout(function () {
+        jQuery('.friends-invited-popup').show();
+        TweenLite.fromTo('.friends-invited-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
+    }, 300);
+}
+function closePopupFriendsInvited() {
+    hideOverlay();
+    TweenLite.to('.friends-invited-popup', 1, {left: '-800px', onComplete: function () {
+        jQuery('.friends-invited-popup').hide()
+    }})
 }
 
 var ovarlayCount = 0;
