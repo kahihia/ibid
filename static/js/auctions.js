@@ -42,8 +42,8 @@ var gameState = {pubnubMessages:[]};
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
-    $scope.messages = [];
-    $scope.message = {'method': '', data: {}};
+    //$scope.messages = [];
+    //$scope.message = {'method': '', data: {}};
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
@@ -73,6 +73,13 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             'addBidEnabled': $scope.isAddBidsEnabled(),
             'remBidEnabled': true
         };
+
+        auction.chatMessage = '';
+        //initialize default variable values
+
+        if(typeof auction.chatMessages == 'undefined'){
+            auction.chatMessages = [];
+        }
         //initialize default variable values
         if(typeof auction.auctioneerMessages == 'undefined'){
             auction.auctioneerMessages = [];
@@ -230,23 +237,16 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.sendChatMessage = function (index) {
         console.log('sendChatMessage', $scope.message);
 
-        thisAuction = $scope.auctionList[$rootScope.playFor].mine[index];
-        //toggle the progress bar
-        //$('#progress_bar').slideToggle();
+        auction = $scope.auctionList[$rootScope.playFor].mine[index];
+        if (auction.chatMessage != ''){
+            console.log('sendChatMessage', auction.chatMessage);
+            $http.post('/api/sendMessage/', {id: auction.id, user: $rootScope.user, text:auction.chatMessage}).
+                success(function (rdata, status) {
+                    //console.log("chatmessage on auction " + auction.id);
+                });
 
-
-        $scope.message.method = "receiveChatMessage";
-        $scope.message.data.auctionId = thisAuction.id;
-        $scope.message.data.user = $rootScope.user;
-        PUBNUB.publish({
-            channel: $scope.channel,
-            message: $scope.message
-        })
-
-        //reset the message text
-        console.log('sendChatMessage', $scope.message);
-
-        $scope.message.data.text = '';
+            auction.chatMessage = '';
+        }
 
     }
 
@@ -286,7 +286,9 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             $scope.$apply(function () {
                 //read the method and do
                 if (message.method == 'receiveChatMessage') {
-                    $scope.messages.unshift(message.data);
+                    var auction = $scope.getLocalAuctionById(message.data.id);
+                    //$scope.messages.unshift(message.data);
+                    auction.chatMessages.push(message.data);
                 } else if (message.method == 'receiveAuctioneerMessage') {
                     var auction = $scope.getLocalAuctionById(message.data.id);
                     auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);

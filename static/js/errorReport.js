@@ -8,10 +8,17 @@ jQuery(document).ready(function(){
 
     jQuery('#reportAnErrorBtn').bind('click',function(e){
         //send report
-        console.log("ok, did it", gameState, jQuery.toJSON(gameState));
+        var data = {message:jQuery('#reportAnErrorMessage').val(), gameState:jQuery.toJSON(gameState)};
 
-        jQuery.post('/api/reportAnError/', {message:jQuery('#reportAnErrorMessage').val(), gameState:jQuery.toJSON(gameState)});
+        jQuery.post('/api/reportAnError/', data, function(){
+            console.log("ok, did it", gameState, jQuery.toJSON(gameState));
+            jQuery('#reportAnError').html('Thank you!');
+            setTimeout(function(){
+                jQuery('#reportAnErrorBtn').hide();
+                jQuery('#reportAnError').hide();
+            },4000);
+
+        });
     })
-
 
 })

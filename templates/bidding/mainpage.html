@@ -390,8 +390,8 @@ preloadImage("{% static "images/help-img.png" %}");
 										<img src="{% static "images/auctioneer.jpg" %}" height="109" width="106">
 									</div>
 									<div id="auctioneer-message" class="token">
-										<div ng-repeat="message in auction.auctioneerMessages">
-											<div ng-bind-html-unsafe="message.text"></div>
+										<div ng-repeat="auctioneerMessage in auction.auctioneerMessages">
+											<div ng-bind-html-unsafe="auctioneerMessage.text"></div>
 										</div>
 
 										<div id="btn-acutioneer-up" class="scroll">
@@ -408,16 +408,16 @@ preloadImage("{% static "images/help-img.png" %}");
 										Live chat
 									</div>
 									<div class="chat-list">
-										<div class="line" ng-repeat="message in messages">
+										<div class="line" ng-repeat="chatMessage in auction.chatMessages">
 											<div class="avatar">
-												<img ng-src="{% templatetag openvariable %}message.user.profileFotoLink{% templatetag closevariable %}"
+												<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
 												width="30" height="30">
 											</div>
 											<div class="txt">
 												<p>
-													{% templatetag openvariable %}message.user.displayName{% templatetag closevariable %}
+													{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
 												</p>
-												{% templatetag openvariable %}message.text{% templatetag closevariable %}
+												{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
 											</div>
 										</div>
 									</div>
@@ -425,7 +425,7 @@ preloadImage("{% static "images/help-img.png" %}");
 
 										<div style="margin: 0 auto; width: 685px;">
 											<form ng-submit="sendChatMessage($index)">
-												<input type="text" class="imput-txt" ng-model="message.data.text"
+												<input type="text" class="imput-txt" ng-model="auction.chatMessage"
 												value="Your message here"/>
 											</form>
 										</div>

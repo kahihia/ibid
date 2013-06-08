@@ -361,6 +361,32 @@ def convert_tokens(request):
         ConvertHistory.convert(member, int(request.POST['amount']))
         return __member_status(member)
 
+def sendMessage(request):
+    if request.POST:
+        requPOST = json.loads(request.raw_post_data)
+        auction_id = request.GET.get('id', int(requPOST['id']))
+        auction = Auction.objects.get(id=auction_id)
+
+        text = request.GET.get('text', requPOST['text'])
+        user = get_chat_user(request)
+
+        if user.can_chat(auction):
+            db_msg = Message.objects.create(text=text, user=user, auction=auction)
+
+            #do_send_message(db_msg)
+            client.do_send_chat_message(auction,db_msg)
+
+            return HttpResponse('{"result":true}')
+
+    return HttpResponse('{"result":false}')
+
+
+def get_chat_user(request):
+    if not request.user.is_authenticated():
+        raise Http404
+
+    chat_user, _ = ChatUser.objects.get_or_create(user=request.user)
+    return chat_user
 
 
 def update_participants_page(request):
@@ -457,6 +483,7 @@ API = {
     'claim': claim,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
-    'convert_tokens': convert_tokens
+    'convert_tokens': convert_tokens,
+    'sendMessage': sendMessage
 }
 

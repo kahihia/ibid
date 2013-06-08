@@ -181,19 +181,29 @@ def do_send_chat_message(auction, message):
     tmp = {'user_name':message.user.display_name(),
         'user_pic':message.user.picture(),
         'message':text,
-        'user_link': message.user.user_link(), 
+        'user_link': message.user.user_link(),
         'date': message.get_time()
         }
-          
+
     #tmp = {'chat_message': text,
     #          'username':message.user.display_name(),
     #          'user_link' : message.user.user_link(),
     #          'auction': message.auction.id, 
     #          'time':message.get_time(), 
     #          'avatar':message.user.picture()}
-              
-    result = {'auction_id': auction.id, 'method': 'addChatMessage', 'params': tmp}
-    send_stomp_message(json.dumps(result), '/topic/auction/%d/'%auction.id )
+
+
+
+    user = {};
+    user['displayName'] = message.user.display_name()
+    user['profileFotoLink'] = message.user.picture()
+    user['profileLink'] = message.user.user_link()
+    user['tokens'] = 0
+    user['credits'] = 0
+
+    result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
+
+    send_stomp_message(result, '')
 
 
 
