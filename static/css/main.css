@@ -637,7 +637,7 @@ body {
 	transition: .2s;
 }
 
-#btn-bid-plus-tutorial {
+.btn-bid-plus-tutorial {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background-color: #1a82f7;
@@ -1169,6 +1169,10 @@ body {
 	background-image: url(../images/bkg-box.gif);
 	background-repeat: repeat-y;
 	background-position: left;
+}
+#tooltip-help .close {
+    float:right;
+    cursor: pointer;
 }
 #tooltip-help .box .box-bkg {
 	width: 60px;

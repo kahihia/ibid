@@ -26,13 +26,13 @@ function initWelcome(){
 
 tutorialTexts = {
     slide2: 'Here you can see all available interactive auctions. Click <div class="btn-red-tutorial">start bidding</div> to participate',
-    slide3: 'Here you can see how many players are participating. You can chill out now, the auction has not started yet. It will start when completion reaches 100%.',
-    slide5: 'This is the auctioneer panel, Here I will inform you about who is joining the auction. You can click their names and see their FB profiles. Maybe someone you know has joined!',
-    slide6: "This is the chat panel. Here you can chat with all of the bidders whether they are your friends or not!  Isn't this exciting?",
+    slide3: 'Here you can see how many players are participating. You can chill out now, the auction has not yet started. It will start when completion reaches 100%.',
+    slide5: 'This is the Auctioneer Panel, here I will inform you about who is joining the auction. You can click their names and see their FB profiles. Maybe someone you know has joined!',
+    slide6: "This is the Chat Panel. Here you can chat with all of the bidders whether they are your friends or not!",
     slide7: 'Here you can see how many tokens you are spending to acquire bids. Each bid the bidders add raises the "completion." Quick...add <div class="btn-bid-plus-tutorial">+</div> more bids! until the auction starts',
     slide8: 'There we go. The auction has already started, Strategically click bid before the countdown hits 0.  Last Bid in... wins!',
     slide9: 'Here are the bids you previously bought for tokens. You choose how many, make a decision and plan your strategy. What is your lucky number?',
-    slide10: "In the auctioneer panel, I'll  tell you who placed the last bid.  IIf  no one else bids the current bidder will win the prize.",
+    slide10: "In the Auctioneer Panel, I'll  tell you who placed the last bid.  IIf  no one else bids the current bidder will win the prize.",
     slide11: 'Congratulations! That was your first auction. You have plenty of tokens to keep playing.',
     //slide12: 'You can either play for tokens or for real prizes like iPads, computers, etc...',
     //slide13: 'Playing for tokens allows you to win tokens that you can redeem for credits to play for real items.',
@@ -64,10 +64,12 @@ function initTutorial(){
     //jQuery('#tooltip-help').bind('tutorialEvent5c', function(e){displayTutorial(   tutorialAuctionId,{text:tutorialTexts.slide13, buttonDisplay:true, buttonEvent:'tutorialEvent5d',     position:{top:-116,left:-106}, referencePositionFunction:determineBtnTokenPosition});});
     //jQuery('#tooltip-help').bind('tutorialEvent5d', function(e){displayTutorial(   tutorialAuctionId,{text:tutorialTexts.slide14, buttonDisplay:true, buttonEvent:'tutorialEvent5e',     position:{top:-116,left:-106}, referencePositionFunction:determineBtnTokenPosition});});
     jQuery('#tooltip-help').bind('tutorialEvent5e', function(e){displayTutorial(   tutorialAuctionId,{text:tutorialTexts.slide15, buttonDisplay:true, buttonEvent:'tutorialEventFinish', position:{top:-112,left:224},  referencePositionFunction:determineBtnTokenPosition});});
-    jQuery('#tooltip-help').bind('tutorialEventFinish', function(e){TweenLite.to('#tooltip-help', 0.4, {left:'-800px'}); tutorialActive = true;});
+    jQuery('#tooltip-help').bind('tutorialEventFinish', function(e){TweenLite.to('#tooltip-help', 0.4, {left:'-800px'}); tutorialActive = false;});
     //jQuery('#tooltip-help').trigger('tutorialEvent1')
 
     jQuery('#tooltip-help').trigger('tutorialEventStart');
+
+    jQuery('.close','#tooltip-help').click(hideTutorial);
 }
 
 function displayTutorial(referenceAuctionId, data){
@@ -119,6 +121,16 @@ function displayTutorial(referenceAuctionId, data){
         console.log('error trapped',err, 'closing tutorial');
         jQuery('#tooltip-help').hide();
     }*/
+}
+
+function hideTutorial(){
+        TweenLite.to('#tooltip-help', 0.4, {left:'-800px'});
+        setTimeout(function(){jQuery('#tooltip-help').show()}, 400);
+        tutorialActive = true;
+
+
+        if ( ovarlayCount >0){hideOverlay();};
+
 }
 
 function determineFirstPrecapAuctionId(){
