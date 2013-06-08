@@ -1,6 +1,0 @@
-FACEBOOK_API_KEY = "401304753243728"
-FACEBOOK_APP_ID = "401304753243728"
-FACEBOOK_APP_SECRET = "334d9467b0da3a48d6b932a785af301d"
-
-FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream,user_birthday,user_location'
-AUTH_REDIRECT_URI = '{protocol}://apps.facebook.com/ibidville/fb/login/'
