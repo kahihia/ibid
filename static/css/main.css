@@ -671,16 +671,15 @@ body {
 	text-transform: uppercase;"
 }
 
-
 #btn-bid-plus {
 	width: 25px;
 	height: 25px;
 	font-size: 20px;
 	font-weight: bold;
-	float: left;
+	float: right;
 	margin-top: 3px;
 	margin-right: 3px;
-	margin-left: 10px;
+	margin-left: 0px;
 	line-height: 25px;
 }
 #btn-bid-less {
@@ -688,14 +687,14 @@ body {
 	height: 25px;
 	font-size: 20px;
 	font-weight: bold;
-	float: left;
+	float: right;
 	margin-top: 3px;
-	margin-right: 5px;
+	margin-right: 11px;
 	line-height: 22px;
 }
 #auction-precap-bid {
 	float: left;
-	margin-left: 13px;
+	width: 102px;
 	font-size: 22px;
 }
 #auction-precap-bid span {
@@ -870,11 +869,16 @@ body {
 }
 
 #auction-chat .chat-list {
-	height: 220px;
+	max-height: 220px;
+	min-height: 70px;
 	overflow-y: auto;
 	overflow-x: hidden;
 	width: 685px;
 	margin: 0 auto;
+}
+
+#auction-chat .chat-list ul {
+	direction: ltr;
 }
 
 #auction-chat .chat-list .line {
@@ -1059,7 +1063,6 @@ body {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
-	
 }
 #content-wrapper .frame .winners .winners-list .txt span {
 	color: #f36500;
@@ -1171,8 +1174,12 @@ body {
 	background-position: left;
 }
 #tooltip-help .close {
-    float:right;
-    cursor: pointer;
+	float: right;
+	cursor: pointer;
+	color: #484848;
+	font-weight: 700;
+	font-size: 16px;
+	margin-right: 8px;
 }
 #tooltip-help .box .box-bkg {
 	width: 60px;

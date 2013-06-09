@@ -57,7 +57,9 @@ preloadImage("{% static "images/help-img.png" %}");
 				</div>
 				<div class="box">
 
-                    <div class="close">[x]</div>
+					<div class="close">
+						x
+					</div>
 					<div class="text">
 						<p>
 							TITULOS TIUTLOS TITULOS
@@ -67,15 +69,15 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div id="btn-tutorial" style=" text-align:right;text-align:center;"><img src="{% static "images/btn-next.png" %}" />
 					</div>
 					<div style="width:100%;">
-					<!--	<div id="arrow-position" style="width: 100%;float: left;">
-							&nbsp;
-					</div>-->
+						<!--	<div id="arrow-position" style="width: 100%;float: left;">
+						&nbsp;
+						</div>-->
 						<div style="float: left;"></div>
 					</div>
 					<div><img src="/static/images/pico.png" style="float: right; margin: 0px 30px -30px 0px;">
-						</div>
+					</div>
 				</div>
-				
+
 			</div>
 			<!--buy credits popup-->
 			<div class="buy-bids-popup" style="z-index:1001;display:none;">
@@ -209,7 +211,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<li>
 									<a href="" id="interactiveTutotialBtn">Tutorial</a>
 								</li>
-                                &nbsp; &nbsp;|&nbsp; &nbsp;
+								&nbsp; &nbsp;|&nbsp; &nbsp;
 								<li style="display: none;">
 									<a href="/faq/">FAQS</a>
 								</li>
@@ -260,12 +262,12 @@ preloadImage("{% static "images/help-img.png" %}");
 										<div id="auction-precap-bid">
 											<span>{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}</span> Bids
 										</div>
+										<div id="btn-bid-less" class="btn-red" ng-click="remBids(auctionList[playFor].mine[$index])">
+											-
+										</div>
 										<div id="btn-bid-plus" ng-click="addBids(auctionList[playFor].mine[$index])"
 										ng-class="{true:'btnRedEnabled', false:'btnRedDisabled'}[user.tokens>0]">
 											+
-										</div>
-										<div id="btn-bid-less" class="btn-red" ng-click="remBids(auctionList[playFor].mine[$index])">
-											-
 										</div>
 
 									</div>
@@ -408,6 +410,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										Live chat
 									</div>
 									<div class="chat-list">
+
 										<div class="line" ng-repeat="chatMessage in auction.chatMessages">
 											<div class="avatar">
 												<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
@@ -419,7 +422,9 @@ preloadImage("{% static "images/help-img.png" %}");
 												</p>
 												{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
 											</div>
+
 										</div>
+
 									</div>
 									<div class="user">
 
@@ -513,14 +518,14 @@ preloadImage("{% static "images/help-img.png" %}");
 			</div>
 		</div>
 
-		<div id="activateReportAnError" style="color:red; mouse:pointer;">
+		<div id="activateReportAnError" style="color:#fff; text-decoration:underline; cursor:pointer; text-align: center;">
 			report an error
 		</div>
-		<div id="reportAnError" style="display:none;">
+		<div id="reportAnError" style="display:none; text-align: center;">
 			<form id="reportAnErrorForm">
 				<textarea id="reportAnErrorMessage"></textarea>
 				<input type="hidden" name="gameStateData"/>
-				<input type="button" id="reportAnErrorBtn"/>
+				<input type="button" id="reportAnErrorBtn" />
 			</form>
 		</div>
 
@@ -558,9 +563,9 @@ preloadImage("{% static "images/help-img.png" %}");
 					Welcome {{ member.user.first_name }}.</br> I'm Kenny, your interactive auctioneer.
 				</p></br>
 				<!--span>I think you are here because you want to buy items at <strong>90%</strong> off the retail cost.</br> I'll be leading all auctions and giving you tips on how to </br> play the interactive auction ™ game and win.
-					<br/>
-					</br></br> Are you ready?</br><strong> Let's get started with the Interactive Tutorial.</strong></span-->
-                <span>I think you are here because you want to have fun playing on auctions for virtual goods! I'll be leading all auctions and giving you tips on how to </br> play the interactive auction ™ game and win.
+				<br/>
+				</br></br> Are you ready?</br><strong> Let's get started with the Interactive Tutorial.</strong></span-->
+				<span>I think you are here because you want to have fun playing on auctions for virtual goods! I'll be leading all auctions and giving you tips on how to </br> play the interactive auction ™ game and win.
 					<br/>
 					</br></br> Are you ready?</br><strong> Let's get started with the Interactive Tutorial.</strong></span>
 			</div>
