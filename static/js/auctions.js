@@ -250,7 +250,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     }
 
-
     //getLocalAuctionsAll
     $scope.getLocalAuctionAll = function () {
         var auctions = [];
@@ -258,6 +257,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         auctions = [].concat(auctions, $scope.auctionList['ITEMS']['mine'], $scope.auctionList['ITEMS']['available'], $scope.auctionList['ITEMS']['finished']);
         return auctions;
     }
+
     //getLocalAuctionById
     $scope.getLocalAuctionById = function (_id) {
         var auctions = $scope.getLocalAuctionAll();
@@ -271,7 +271,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.getLocalAuctionByIndex = function (toksorcreds, mineoravailableorfinished, index) {
         return $scope.auctionList[toksorcreds][mineoravailableorfinished][index];
     }
-
 
     //we'll leave these ones as is so that pubnub can
     //automagically trigger the events
@@ -289,6 +288,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     var auction = $scope.getLocalAuctionById(message.data.id);
                     //$scope.messages.unshift(message.data);
                     auction.chatMessages.push(message.data);
+                    var scrollHeight = jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0])[0].scrollHeight;
+                    setTimeout(function(){ jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0]).scrollTop(scrollHeight)} ,200);
                 } else if (message.method == 'receiveAuctioneerMessage') {
                     var auction = $scope.getLocalAuctionById(message.data.id);
                     auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);

@@ -159,7 +159,7 @@ def getAuctionsInitialization(request):
                         'profileLink': mm.user.user_link()},
                 'auctionId': auct.id
                 }
-            tmp['chatMessages'].append(w)
+            tmp['chatMessages'].insert(0,w)
 
 
 
@@ -196,7 +196,7 @@ def getAuctionsInitialization(request):
                         'profileLink': mm.user.user_link()},
                 'auctionId': auct.id
                 }
-            tmp['chatMessages'].append(w)
+            tmp['chatMessages'].insert(0,w)
 
         auctions_bid_my.append(tmp)
 

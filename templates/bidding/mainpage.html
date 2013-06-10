@@ -409,23 +409,25 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="chat-title">
 										Live chat
 									</div>
-									<div class="chat-list">
+									<div class="chat-container">
+                                        <div class="chat-list">
 
-										<div class="line" ng-repeat="chatMessage in auction.chatMessages">
-											<div class="avatar">
-												<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
-												width="30" height="30">
-											</div>
-											<div class="txt">
-												<p>
-													{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
-												</p>
-												{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
-											</div>
+                                            <div class="line" ng-repeat="chatMessage in auction.chatMessages">
+                                                <div class="avatar">
+                                                    <img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
+                                                    width="30" height="30">
+                                                </div>
+                                                <div class="txt">
+                                                    <p>
+                                                        {% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
+                                                    </p>
+                                                    {% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
+                                                </div>
 
-										</div>
+                                            </div>
 
-									</div>
+                                        </div>
+                                    </div>
 									<div class="user">
 
 										<div style="margin: 0 auto; width: 685px;">
