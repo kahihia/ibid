@@ -166,10 +166,17 @@ function sendRequestViaMultiFriendSelector() {
 }
 function sendRequestViaMultiFriendSelectorCallback(data){
     console.log(data);
-    openPopupLike();
+    openPopupFrendsInvited();
 }
 
 function openPopupLike() {
+    showOverlay();
+    setTimeout(function () {
+        jQuery('.like-popup').show();
+        TweenLite.fromTo('.like-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
+    }, 300);
+}
+function openPopupFrendsInvited() {
     showOverlay();
     setTimeout(function () {
         jQuery('.friends-invited-popup').show();
