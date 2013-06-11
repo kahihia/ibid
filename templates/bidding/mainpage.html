@@ -148,7 +148,7 @@ preloadImage("{% static "images/help-img.png" %}");
 				<div class="popup">
 					<div class="title">
 						<span class="close">×</span>
-						<h1>Friends invited!</h1>
+						<h1>Friends invited!</h1> &nbsp;
 					</div>
 					<div class="info">
 						<span style="color:#f36500; font-weight: 700; font-size: 16px;">The invitations have been sent! Thank you!</span>
@@ -162,7 +162,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div class="buttons">
 						<a href=""> <div class="invite"></div> </a>
 						<a> <div class="like"></div> </a>
-						<a href=" https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"> <div class="share"></div> </a>
+						<a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"> <div class="share"></div> </a>
 
 					</div>
 					<div class="logo">
@@ -379,7 +379,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										<p>
 											WINNER
 										</p>
-										{% templatetag openvariable %}auction.winner{% templatetag closevariable %}
+                                        <a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
 									</div>
 								</div>
 
@@ -511,7 +511,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<p>
 									WINNER
 								</p>
-								{% templatetag openvariable %}auction.winner{% templatetag closevariable %}
+                                <a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
 							</div>
 
 						</div>
