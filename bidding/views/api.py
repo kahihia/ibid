@@ -111,7 +111,7 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail()
-        tmp['winner'] = auct.winner.get_profile().display_name()
+        tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name, 'displayName': auct.winner.get_profile().display_name(), 'facebookId':auct.winner.get_profile().facebook_id}
 
         auctions_token_finished.append(tmp)
 
@@ -122,7 +122,7 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail()
-        tmp['winner'] = auct.winner.get_profile().display_name()
+        tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name, 'displayName': auct.winner.get_profile().display_name(), 'facebookId':auct.winner.get_profile().facebook_id}
 
         #tmp['won_price'] = str(auct.won_price)
         auctions_bid_finished.append(tmp)
@@ -159,7 +159,7 @@ def getAuctionsInitialization(request):
                         'profileLink': mm.user.user_link()},
                 'auctionId': auct.id
                 }
-            tmp['chatMessages'].append(w)
+            tmp['chatMessages'].insert(0,w)
 
 
 
@@ -196,7 +196,7 @@ def getAuctionsInitialization(request):
                         'profileLink': mm.user.user_link()},
                 'auctionId': auct.id
                 }
-            tmp['chatMessages'].append(w)
+            tmp['chatMessages'].insert(0,w)
 
         auctions_bid_my.append(tmp)
 
