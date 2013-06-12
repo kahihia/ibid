@@ -3,7 +3,7 @@
 <div class="pagination">
 <ul>
 {% if pagination.previous %}
-<li ><span><a href="/{{ pagination.view }}/{{ pagination.previous }}/">&lt;&lt; Previous</a></span></li>
+<li ><span><a href="/{{ pagination.view }}/{{ pagination.previous }}/">&lt;&lt;</a></span></li>
 {% endif %}
 
 {% for page in pagination.left %}
@@ -26,7 +26,7 @@
 {% endif %}
 
 {% if pagination.next %}
-<li ><span><a href="/{{ pagination.view }}/{{ pagination.next }}/">Next &gt;&gt;</a></span></li>
+<li ><span><a href="/{{ pagination.view }}/{{ pagination.next }}/">&gt;&gt;</a></span></li>
 {% endif %}
 
 </ul>
