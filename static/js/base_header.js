@@ -166,7 +166,9 @@ function sendRequestViaMultiFriendSelector() {
 }
 function sendRequestViaMultiFriendSelectorCallback(data){
     console.log(data);
-    openPopupFrendsInvited();
+    if(data != null){
+        openPopupFrendsInvited();
+    }
 }
 
 function openPopupLike() {

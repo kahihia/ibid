@@ -542,6 +542,27 @@ preloadImage("{% static "images/help-img.png" %}");
 		bottom:0;
 		background-color:rgba(0, 0, 0, 0.5);
 		z-index:1000;"></div>
+		<div id="overlay-tutorial" style="position:absolute;
+		top:0;
+		left:0;
+		right:0;
+		opacity:0;
+		bottom:0;
+		background-color:rgba(0, 0, 0, 0.97);
+		z-index:1000;
+		vertical-align: middle;
+		text-align: center;
+		display:none;">
+            <br/>
+            <br/>
+            <br/>
+            <div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;">
+                <div style="position:relative;width:100%;display:block;" class="close"><img src="{% static "images/tutorial/close.png" %}" style="cursor:pointer;" /></div>
+                <div style="position:relative;float:left;padding-top: 180px;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/></div>
+                <div style="position:relative;float:left;height:100%;"><img class="tutorial-img" src="" /></div>
+                <div style="position:relative;float:left;padding-top: 180px;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/></div>
+            </div>
+        </div>
 
 		<script language="javascript">
 			window.fbAsyncInit = function() {
