@@ -21,6 +21,12 @@ import logging
 
 logger = logging.getLogger('django')
 
+
+def fb_redirect(request):
+    return HttpResponse(
+        json.dumps({'salutation':'hola'}), mimetype="text/javascript")
+    #return HttpResponseRedirect('http://google.com')
+
 def get_redirect_uri(request):
     """ 
     Returns the redirect uri to pass to facebook, using the correct protocol
