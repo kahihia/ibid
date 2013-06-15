@@ -12,7 +12,7 @@ from bidding.models import BidPackage
 
 from django.contrib.flatpages.models import FlatPage
 
-from settings import FBAPP_HOME, CANVAS_HOME
+from settings import FBAPP_HOME, CANVAS_HOME, AUTH_REDIRECT_URI
 
 
 def split_member_auctions(member, auction_list):
@@ -198,7 +198,9 @@ def web_home(request):
         </script>""")
 
     else:
-        return HttpResponseRedirect('/fb/')
+        return HttpResponse("""<script type='text/javascript'>
+        top.location.href = '""" + AUTH_REDIRECT_URI + """';
+        </script>""")
         #return HttpResponseRedirect('yahoo')
         #return redirect("fb_auth")
 

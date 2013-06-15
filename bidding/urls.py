@@ -45,7 +45,7 @@ urlpatterns += patterns('bidding.views.browse',
 )
 
 urlpatterns += patterns('bidding.views.facebook',
-    url(r'^fb/redirect/$', 'fb_redirect', name='fb_redirect'),
+    url(r'^fb_redirect/$', 'fb_redirect', name='fb_redirect'),
     url(r'^fb/$', 'fb_auth', name='fb_auth'),
     url(r'^fb/login/$', 'fb_login', name='fb_login'),
     url(r'^fb_test/$', 'fb_test_user', name='fb_test'),

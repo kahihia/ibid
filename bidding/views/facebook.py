@@ -23,8 +23,11 @@ logger = logging.getLogger('django')
 
 
 def fb_redirect(request):
-    return HttpResponse(
-        json.dumps({'salutation':'hola'}), mimetype="text/javascript")
+    return HttpResponse("""<script type="text/javascript">
+<!--
+window.location = "%s"
+//-->
+</script>"""%NOT_AUTHORIZED_PAGE)
     #return HttpResponseRedirect('http://google.com')
 
 def get_redirect_uri(request):
