@@ -199,7 +199,7 @@ def web_home(request):
 
     else:
         return HttpResponse("""<script type='text/javascript'>
-        top.location.href = '""" + AUTH_REDIRECT_URI + """';
+        top.location.href = '""" + AUTH_REDIRECT_URI.format(protocol=get_protocol(request)) + """';
         </script>""")
         #return HttpResponseRedirect('yahoo')
         #return redirect("fb_auth")
