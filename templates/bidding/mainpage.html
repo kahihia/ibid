@@ -556,11 +556,11 @@ preloadImage("{% static "images/help-img.png" %}");
             <br/>
             <br/>
             <br/>
-            <div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;">
-                <div style="position:relative;width:100%;display:block;" class="close"><img src="{% static "images/tutorial/close.png" %}" style="cursor:pointer;" /></div>
-                <div style="position:relative;float:left;padding-top: 180px;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/></div>
-                <div style="position:relative;float:left;height:100%;"><img class="tutorial-img" src="" /></div>
-                <div style="position:relative;float:left;padding-top: 180px;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/></div>
+            <div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
+                <div style="position:relative;width:100%;display:block;z-index: 1003;" ><img class="close" src="{% static "images/tutorial/close.png" %}" style="cursor:pointer;" /></div>
+                <div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/></div>
+                <div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" /></div>
+                <div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/></div>
             </div>
         </div>
 
@@ -570,12 +570,14 @@ preloadImage("{% static "images/help-img.png" %}");
 					appId : '{{ fb_app_id }}'
 				});
 				FB.Canvas.setAutoGrow();
-			}; ( function() {
+			};
+            ( function() {
 					var e = document.createElement('script');
 					e.async = true;
 					e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
 					document.getElementById('fb-root').appendChild(e);
-				}());
+				}()
+             );
 		</script>
 
 		<!--popup section-->
