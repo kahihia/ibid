@@ -13,7 +13,7 @@ from sslutils import get_protocol
 
 from django.contrib.flatpages.models import FlatPage
 
-from settings import FBAPP_HOME, CANVAS_HOME, AUTH_REDIRECT_URI
+from settings import FBAPP_HOME, CANVAS_HOME, APP_FIRST_REDIRECT
 
 
 def split_member_auctions(member, auction_list):
@@ -199,9 +199,15 @@ def web_home(request):
         </script>""")
 
     else:
-        return HttpResponse("""<script type='text/javascript'>
-        top.location.href = '""" + AUTH_REDIRECT_URI.format(protocol=get_protocol(request)) + """';
+        if request.COOKIES.get('FBAPP_VISITED'):
+            return HttpResponseRedirect(settings.FBAPP)
+        else:
+            return HttpResponse("""<script type='text/javascript'>
+        top.location.href = '""" + settings.APP_FIRST_REDIRECT + """';
         </script>""")
+        #return HttpResponse("""<script type='text/javascript'>
+        #top.location.href = '""" + APP_FIRST_REDIRECT + """';
+        #</script>""")
         #return HttpResponseRedirect('yahoo')
         #return redirect("fb_auth")
 
