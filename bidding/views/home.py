@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import redirect
 from django.conf import settings
 from bidding.models import BidPackage
+from sslutils import get_protocol
 
 from django.contrib.flatpages.models import FlatPage
 
