@@ -27,7 +27,7 @@ def fb_redirect(request):
 <!--
 window.location = "%s"
 //-->
-</script>"""%NOT_AUTHORIZED_PAGE)
+</script>"""%NOT_AUTHORIZED_PAGE.format(protocol=get_protocol(request)))
     #return HttpResponseRedirect('http://google.com')
 
 def get_redirect_uri(request):
