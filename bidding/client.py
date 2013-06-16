@@ -117,7 +117,9 @@ def auctionFinish(auction):
     tmp={}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
-    tmp['winner'] = auction.winner.get_profile().display_name()
+    tmp['winner'] = {'firstName': auction.winner.get_profile().user.first_name,
+                     'displayName': auction.winner.get_profile().display_name(),
+                     'facebookId': auction.winner.get_profile().facebook_id}
 
     result = {'method': 'updateAuction', 'data': tmp}
     send_stomp_message(result, '/topic/main/')
@@ -151,7 +153,6 @@ def someoneClaimed(auction):
 
     result = {'method': 'someoneClaimed', 'data': tmp}
     send_stomp_message(result, '/topic/main/')
-
 
 
 
