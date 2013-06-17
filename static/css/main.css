@@ -1228,12 +1228,12 @@ body {
 	font-weight: 700;
 	color: #484840;
 	line-height: 21px;
-	margin: 0 auto;
+	margin: 20px auto 0 auto;
+	text-align:left;
 	text-shadow: 0px 1px 1px #fff;
 }
 #overlay-tutorial .title .close {
-	position: absolute;
-	right: 8px;
+	float:right;
 	cursor: pointer;
 }
 #overlay-tutorial .title h1 {
