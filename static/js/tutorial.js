@@ -24,7 +24,6 @@ function initWelcome(){
 
 }
 
-
 tutorialImages = {
     slide1: '/static/images/tutorial/1.png',
     slide2: '/static/images/tutorial/2.png',
@@ -35,7 +34,8 @@ tutorialImages = {
     slide7: '/static/images/tutorial/7.png',
     slide8: '/static/images/tutorial/8.png',
     slide9: '/static/images/tutorial/9.png'
-   }
+    }
+
 preloadImage(tutorialImages.slide1);
 preloadImage(tutorialImages.slide2);
 preloadImage(tutorialImages.slide3);
@@ -66,7 +66,7 @@ function initTutorial(){
 
     jQuery('#tutorial-dialog').trigger('tutorialEventStart');
 
-    jQuery('.close','#tutorial-dialog').click(hideTutorial);
+    jQuery('.close','#overlay-tutorial').click(hideTutorial);
 }
 
 function displayTutorial(data){
@@ -108,20 +108,6 @@ function displayTutorial(data){
         jQuery('#prev','#tutorial-dialog').css('opacity',0);
     }
 
-    /*
-    jQuery('.text','#tutorial-dialog').html(dataDefault['text']);
-    if(dataDefault.buttonDisplay){
-        jQuery('#btn-tutorial','#tutorial-dialog').show();
-        jQuery('#btn-tutorial','#tutorial-dialog').unbind('click');
-        jQuery('#btn-tutorial','#tutorial-dialog').bind('click',function(e
-        ){jQuery('#btn-tutorial','#tutorial-dialog').trigger(dataDefault['buttonEvent']);})
-    }else{
-        jQuery('#btn-tutorial','#tutorial-dialog').hide();
-    }
-    console.log('dataDefault',dataDefault);
-    console.log('data',data);
-    TweenLite.to('#tutorial-dialog', 0.2, {left:200, top: 200,ease:Back.easeOut});
-    */
 }
 
 function hideTutorial(){
@@ -158,20 +144,17 @@ function determineBtnTokenPosition(auctionId){
     return jQuery(jQuery('.btn-tokens')[0]).offset();
 }
 
-
 function showOverlayTutorial(){
     jQuery('#overlay-tutorial').show();
     TweenLite.to('#overlay-tutorial', 0.6, {opacity:1});
 }
+
 function hideOverlayTutorial(){
     TweenLite.to('#overlay-tutorial', 0.6, {opacity:0, onComplete:function(){jQuery('#overlay-tutorial').hide()}});
 }
-
 
 window.onload = function(){
     //initTutorial();
     jQuery('#interactiveTutotialBtn').click(function(e){initTutorial();});
 }
-
-
 
