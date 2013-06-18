@@ -1,6 +1,5 @@
 from django.conf import settings
 from bidding.models import BidPackage
-from lib.orbited_utils import get_pid, get_connection_number
 from sslutils import is_secure, get_protocol
 
 def orbited_address(request):
@@ -11,9 +10,6 @@ def orbited_address(request):
             'ORBITED_PORT':port,
             'ORBITED_STATIC_URL':settings.ORBITED_STATIC_URL,
             'ORBITED_PROTOCOL' : protocol}
-
-def connections(request):
-    return {'connections': get_connection_number(get_pid(name=settings.MESSAGING_PROCESS))}
 
 def settings_context(request):
     return {'SITE_NAME' : settings.SITE_NAME.strip('http://')}

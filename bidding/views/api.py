@@ -314,27 +314,32 @@ def claim(request):
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.get(id=auction_id)
 
+    bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
+
     member = request.user.get_profile()
 
     tmp = {}
 
     if auction.status == 'processing' and auction.can_bid(member):
 
-        auctioneer.member_claim_message(auction, member)
+        if auction.used_bids()/settings.TODO_BID_PRICE == bidNumber:
+            auctioneer.member_claim_message(auction, member)
 
-        auction.bid(member)
+            auction.bid(member)
 
-        bid = auction.bid_set.get(bidder=member)
-        tmp['id'] = auction_id
-        tmp["placed_amount"] = bid.placed_amount
-        tmp["used_amount"] = bid.used_amount
+            bid = auction.bid_set.get(bidder=member)
+            tmp['id'] = auction_id
+            tmp["placed_amount"] = bid.placed_amount
+            tmp["used_amount"] = bid.used_amount
 
-        tmp["result"] = True
+            tmp["result"] = True
+        else:
+            #else ignore! because the claim is old, based on a previous timer.
+            tmp["result"] = False
     else:
         tmp["result"] = False
 
-
-    return HttpResponse('')
+    return HttpResponse(json.dumps(tmp))
 
 def reportAnError(request):
     """

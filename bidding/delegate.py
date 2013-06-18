@@ -267,7 +267,6 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         
         client.someoneClaimed(self.auction)
 
-        
         if self._check_thresholds():
             self.auction.pause()
         else:

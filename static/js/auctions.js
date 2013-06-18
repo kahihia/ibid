@@ -76,6 +76,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
         auction.chatMessage = '';
         //initialize default variable values
+        auction.bidNumber = 0;
 
         if(typeof auction.chatMessages == 'undefined'){
             auction.chatMessages = [];
@@ -204,9 +205,16 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             auction.bids = (auction.bids-5);
             auction.interface.bidEnabled = false;
 
-            $http.post('/api/claim/', {'id': auction.id}).
+            $http.post('/api/claim/', {'id': auction.id, 'bidNumber': auction.bidNumber}).
                 success(function (rdata, status) {
-                    $rootScope.$emit('reloadUserDataEvent');
+                    console.log('-- rdata --');
+                    console.log(rdata);
+                    if (rdata['result']){
+                        $rootScope.$emit('reloadUserDataEvent');
+                    }else{
+                        //TODO: add loading state.
+                        auction.interface.bidEnabled = true;
+                    }
                 });
         }
     };
@@ -330,6 +338,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         auction.interface.bidEnabled = true;
                     }else{console.log('------------AAAARRRRRLGGGGGHHHH-----------')}
                     auction.timeleft = message.data.timeleft;
+                    auction.bidNumber = message.data.bidNumber;
                     $scope.startCounter(auction.id);
                 }
             });

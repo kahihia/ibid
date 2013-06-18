@@ -7,7 +7,6 @@ Function shortcuts for auction messages.
 from django.template.loader import render_to_string
 from django.utils import simplejson as json
 
-from lib import stomp
 import models
 
 from Pubnub import Pubnub
@@ -15,8 +14,6 @@ pubnub = Pubnub( settings.PUBNUB_PUB, settings.PUBNUB_SUB, settings.PUBNUB_SECRE
 
 
 def send_multiple_messages(pairs):
-
-    from lib import stomp
 
     # conn = stomp.Connection([('localhost', settings.STOMP_PORT)])
     # conn.start()
@@ -150,11 +147,13 @@ def someoneClaimed(auction):
     tmp['timeleft'] = auction.get_time_left()
     tmp['lastClaimer'] = auction.get_last_bidder().display_name()
     tmp['facebook_id'] = auction.get_last_bidder().facebook_id
+    tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
+                     'displayName': auction.get_last_bidder().display_name(),
+                     'facebookId': auction.get_last_bidder().facebook_id}
+    tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
 
     result = {'method': 'someoneClaimed', 'data': tmp}
     send_stomp_message(result, '/topic/main/')
-
-
 
 
 
