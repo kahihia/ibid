@@ -161,7 +161,7 @@ function convertChips() {
 
 function sendRequestViaMultiFriendSelector() {
   FB.ui({method: 'apprequests',
-    message: 'Come on and play Interactive Bid Games!'
+    message: 'Come join me to play and win amazing deals at iBidGames!'
   }, sendRequestViaMultiFriendSelectorCallback);
 }
 function sendRequestViaMultiFriendSelectorCallback(data){
