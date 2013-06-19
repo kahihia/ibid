@@ -476,7 +476,7 @@ preloadImage("{% static "images/help-img.png" %}");
 							</div>
 							<div id="auction-bids">
 								<div id="btn-start-bid" class="btn-red" ng-click="startBiding(auctionList[playFor].available[$index])">
-									START BIDDING
+									JOIN AUCTION
 								</div>
 							</div>
 							<div id="auction-btns">
@@ -543,6 +543,9 @@ preloadImage("{% static "images/help-img.png" %}");
 		background-color:rgba(0, 0, 0, 0.5);
 		z-index:1000;"></div>
 		<div id="overlay-tutorial">
+			<div class="logo">
+						<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+					</div>
           <div class="title"><span class="close">×</span> <h1>TUTORIAL</h1>  </div>
             <div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
                
