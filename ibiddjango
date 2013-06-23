@@ -22,10 +22,6 @@ function start {
 	#pid=$!
 	#echo $pid > $PROJECT_PATH/commands.pid
 	
-	#orbited
-	#/usr/local/bin/orbited --config $PROJECT_PATH/lib/orbited.cfg &
-	#pid=$!
-	#echo $pid > $PROJECT_PATH/orbited.pid
 }
 
 function stop {
@@ -35,8 +31,6 @@ function stop {
 	#pid=$(cat < $PROJECT_PATH/commands.pid)
 	#kill -TERM $pid
 	
-	#pid=$(cat < $PROJECT_PATH/orbited.pid)
-	#kill -TERM $pid
 }
 
 function restart {
@@ -49,11 +43,6 @@ function restart {
 	#pid=$!
 	#echo $pid > $PROJECT_PATH/commands.pid
 	
-	#pid=$(cat < $PROJECT_PATH/orbited.pid)
-	#kill -TERM $pid
-	#/usr/local/bin/orbited --config $PROJECT_PATH/lib/orbited.cfg &
-	#pid=$!
-	#echo $pid > $PROJECT_PATH/orbited.pid
 }
 
 

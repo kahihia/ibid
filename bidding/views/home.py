@@ -6,14 +6,12 @@ from routines.shortcuts import render_response
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from bidding.models import Auction, ConvertHistory, PrePromotedAuction, PromotedAuction
 from django.core.urlresolvers import reverse
-from django.shortcuts import redirect
 from django.conf import settings
 from bidding.models import BidPackage
-from sslutils import get_protocol
 
 from django.contrib.flatpages.models import FlatPage
 
-from settings import FBAPP_HOME, CANVAS_HOME, APP_FIRST_REDIRECT
+from settings import CANVAS_HOME
 
 
 def split_member_auctions(member, auction_list):
@@ -26,7 +24,6 @@ def split_member_auctions(member, auction_list):
     other = auction_list.exclude(bidders=member)
 
     return mine, other
-
 
 def split_bid_type(queryset, bids_auctions, tokens_auctions, key, limit=None):
     """ 
@@ -107,11 +104,6 @@ def canvashome(request):
                                 'pre_promoted_auctions': pre_promoted_auctions, 'facebook_user_id': member.facebook_id,
                                 'promoted_auctions': promoted_auctions, 'tosintro': tosintro, 'member': member, 'packages':packages})
 
-    #return HttpResponse("""----c-----"""+str(response))
-
-
-    #response["P3P"] = 'CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"'
-
     return response
 
 
@@ -119,33 +111,14 @@ def faq(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
-    #TODO try catch to avoid ugly error when admin is logged
     member = request.user.get_profile()
 
-    bids_auctions = {}
-    tokens_auctions = {}
-
-    display_popup = False
     if not request.session.get("revisited"):
         request.session["revisited"] = True
-        display_popup = True
-
-    if request.COOKIES.get('dont_show_welcome_%s' %
-            request.user.get_profile().facebook_id):
-        display_popup = False
-
-    active = Auction.objects.filter(is_active=True).exclude(status__in=(
-        'waiting_payment', 'paid')
-    ).order_by('-status')
 
     response = render_response(request, 'bidding/ibidgames_faq.html',
                                {'PUBNUB_PUB': settings.PUBNUB_PUB, 'PUBNUB_SUB': settings.PUBNUB_SUB,
                                 'facebook_user_id': member.facebook_id})
-
-    #return HttpResponse("""----c-----"""+str(response))
-
-
-    #response["P3P"] = 'CP="IDC DSP COR ADM DEVi TAIi PSA PSD IVAi IVDi CONi HIS OUR IND CNT"'
 
     return response
 
@@ -193,10 +166,10 @@ def promoted(request, auction_id):
 
 def web_home(request):
     if request.user.is_authenticated():
-        #return HttpResponseRedirect('yahoo')
-        return HttpResponse("""<script type='text/javascript'>
-        top.location.href = '""" + CANVAS_HOME + """';
-        </script>""")
+        return HttpResponseRedirect(settings.FBAPP)
+        #return HttpResponse("""<script type='text/javascript'>
+        #top.location.href = '""" + CANVAS_HOME + """';
+        #</script>""")
 
     else:
         if request.COOKIES.get('FBAPP_VISITED'):
@@ -205,31 +178,6 @@ def web_home(request):
             return HttpResponse("""<script type='text/javascript'>
         top.location.href = '""" + settings.APP_FIRST_REDIRECT + """';
         </script>""")
-        #return HttpResponse("""<script type='text/javascript'>
-        #top.location.href = '""" + APP_FIRST_REDIRECT + """';
-        #</script>""")
-        #return HttpResponseRedirect('yahoo')
-        #return redirect("fb_auth")
-
-
-#    bids_auctions = {}
-#    tokens_auctions = {}
-#
-#    active = Auction.objects.filter(is_active=True).exclude(status__in=(
-#                                                'waiting_payment', 'paid')
-#                                          ).order_by('-status')
-#
-#    split_bid_type(active, bids_auctions, tokens_auctions, 'other_auctions', 5)
-#
-#    finished = Auction.objects.filter(is_active=True, status__in=(
-#                                            'waiting_payment', 'paid')
-#                                      ).order_by('-won_date')
-#    split_bid_type(finished, bids_auctions, tokens_auctions, 'finished', 5)
-#
-#    return render_response(request, 'bidding/web_home.html',
-#        {'bids_auctions' : bids_auctions, 'tokens_auctions' : tokens_auctions,
-#         'finished' : finished,
-#         })
 
 def history(request):
     member = request.user.get_profile()
