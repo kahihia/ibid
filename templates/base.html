@@ -59,7 +59,7 @@
                     <section>
                         {{ package.bids }} Bids ← {{ package.price }} $
                         {% if package.description %}<span class="save">{{ package.description }}</span>{%  endif %}
-                        <div class="btn" onclick="buy_bids({% url place_order %}, {{ package.id }})">{{ package.title }}</div>
+                        <div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }})">{{ package.title }}</div>
                     </section>
                 {%  endfor %}
 				
@@ -249,11 +249,11 @@
 	{% if user.is_authenticated %}
 		<img class="user-img" src="{{ user.get_profile.display_picture }}">
 		{{ user.get_profile.display_name }},
-		<a href="{% url bidding_auction_won_list %}">Won Items</a> |
+		<a href="{% url "bidding_auction_won_list" %}">Won Items</a> |
 		<a href="#">{{ user.get_profile.get_active_auctions }} Auctions</a> |
 		<a href="javascript:void(0)"><span id="user_bids">{{ user.get_profile.get_bids_left }}</span> Bids</a> |
 		<a href="javascript:void(0)"><span id="user_tokens">{{ user.get_profile.get_tokens_left }}</span> Tokens</a> |
-        <a href="{% url history %}">Currency history</a> |
+        <a href="{% url "history" %}">Currency history</a> |
 		<!--a class="buy-bids" onclick="openPopup('buy-bids-popup')">Buy Bids</a-->
 		<!--<div class="fb-like" data-href="https://www.mrebid.com/" data-send="true" data-width="100" data-show-faces="false" data-layout="button_count"></div>-->
         <!--script type="text/javascript">
@@ -286,7 +286,7 @@
 		</div>
 -->
 		<ul>
-			<li><a href="{% url bidding_home %}" {% comment %}class="selected"{% endcomment %}>Home</a></li>
+			<li><a href="{% url "bidding_home" %}" {% comment %}class="selected"{% endcomment %}>Home</a></li>
 			<li><a href="#" onclick="openPopup('blocking-popup')">How It Works</a></li>
 			<li><a href="/faq/">FAQs</a></li>
 			<li><a href="/winners/">Winners</a></li>
@@ -787,7 +787,7 @@
 
     function refresh_user_bids() {
         data = {'member_id' : {{ user.get_profile.id }}}
-        $.post('{% url bidding_user_bids %}', data, function(data){
+        $.post('{% url "bidding_user_bids" %}', data, function(data){
             $('#user_bids').text(data.bids);
             $('#user_tokens').text(data.tokens);
             $('#convertible_tokens').text(data.tokens);

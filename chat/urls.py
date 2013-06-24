@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url, include
 
 urlpatterns = patterns('chat.views',
     url(r'^send_message/$', 'send_message', name='chat_send_message'),

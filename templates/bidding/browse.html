@@ -83,7 +83,7 @@
 				'category' : $('#category').text(),
 				'status' : $('#status').text(),
 				'term' : $('#search_term').val()}
-		$.post('{% url bidding_update_browse %}', data, update_page, "json");	
+		$.post('{% url "bidding_update_browse" %}', data, update_page, "json");
 	}
 	
 	function update_page(data) {
@@ -120,7 +120,7 @@
     		});
 		
 		$('#search_term').autocomplete({
-			source: "{% url bidding_autocomplete %}",
+			source: "{% url "bidding_autocomplete" %}",
 			minLength:3,
 			select: function(event, ui){
 				$('#search_term').val(ui.item.value);

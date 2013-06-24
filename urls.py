@@ -1,4 +1,5 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url, include
+from django.shortcuts import redirect
 from bidding.sitemaps import AuctionSitemap
 from django.contrib.sitemaps import FlatPageSitemap
 from django.conf import settings
@@ -21,14 +22,16 @@ urlpatterns = patterns('',
     (r'^admin/', include(admin.site.urls)),
     (r'^facebook/', include('django_facebook.urls')),
     (r'^accounts/', include('django_facebook.auth_urls')),
-    
+
+
     url(r'^admin_tools/', include('admin_tools.urls')),
 
     url(r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps':sitemaps}, name="sitemap"),
 )
 
-urlpatterns += patterns('django.views.generic.simple',
-	url(r'^winners/$', 'redirect_to', {'url':'/winners/1/'}, name='bidding_winners_redirect'),
+urlpatterns += patterns('django.shortcuts',
+	url(r'^winners/$', 'redirect', {'url':'/winners/1/'}, name='bidding_winners_redirect'),
+    (r'^favicon\.ico$', 'redirect', {'url': '/static/images/favicon.ico'}),
 )
 
 if settings.DEBUG:

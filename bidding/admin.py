@@ -14,7 +14,10 @@ class BidAdmin(admin.ModelAdmin):
 
 
 def winner_name(obj):
-    return " ".join([obj.winner.first_name, obj.winner.last_name])
+    if obj.winner:
+        return " ".join([obj.winner.first_name, obj.winner.last_name])
+    else:
+        return "[None]"
 
 
 class AuctionAdmin(admin.ModelAdmin):
