@@ -6,11 +6,13 @@ media/profile_images
 settings.py
 facebook_settings.py
 settings_local.py
-.gitignore
 .idea
 lib
 src
 
 deploy.sh
 nohup.out
+
+!static/js/lib
+!static/css/blueprint/src
 
