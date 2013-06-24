@@ -2,7 +2,7 @@
 Browse auctions views.
 '''
 from bidding import models
-from routines.shortcuts import render_response
+from bidding.views.home import render_response
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from django.http import HttpResponse

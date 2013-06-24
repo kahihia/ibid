@@ -2,7 +2,6 @@
 Home page views.
 '''
 from django.views.generic.list import ListView
-from routines.shortcuts import render_response
 from django.http import HttpResponseRedirect, Http404, HttpResponse
 from bidding.models import Auction, ConvertHistory, PrePromotedAuction, PromotedAuction
 from django.core.urlresolvers import reverse
@@ -190,3 +189,11 @@ class CurrencyHistory(ListView):
 
     def get_queryset(self):
         return ConvertHistory.objects.filter(member=self.request.user.get_profile())
+
+
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
+def render_response(req, *args, **kwargs):
+    kwargs['context_instance'] = RequestContext(req)
+    return render_to_response(*args, **kwargs)

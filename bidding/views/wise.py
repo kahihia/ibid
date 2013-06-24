@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from routines.shortcuts import render_response
+from bidding.views.home import render_response
 
 from django.db.models import Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect

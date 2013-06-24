@@ -1,6 +1,6 @@
 from paypal.standard.forms import PayPalPaymentsForm
 from django.contrib.auth.decorators import login_required
-from routines.shortcuts import render_response
+from bidding.views.home import render_response
 
 from django.conf import settings
 from bidding.models import BidPackage, AuctionInvoice, Auction

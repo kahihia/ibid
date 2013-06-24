@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand, NoArgsCommand
 from django.contrib.auth.models import User
 from chat.models import ChatUser
-from routines.templatetags.routines_tags import gravatar
+#from routines.templatetags.routines_tags import gravatar
 
 #TODO remove this
 
@@ -20,6 +20,6 @@ class Command(BaseCommand):
                  chatuser.avatar = chatuser.picture()
                  chatuser.save()
              except User.DoesNotExist:
-                 chatuser.avatar = gravatar(chatuser.username+"@ibiddjango.com", size=size)
+                 chatuser.avatar = chatuser.picture() #gravatar(chatuser.username+"@ibiddjango.com", size=size)
                  chatuser.save()
 

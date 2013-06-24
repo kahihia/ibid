@@ -12,11 +12,11 @@ from django.utils import simplejson as json
 from open_facebook.api import FacebookAuthorization
 from bidding import models
 
-from routines.shortcuts import render_response
 from sslutils import get_protocol
 from django.utils.http import urlencode
 from django.conf import settings
 from bidding.views.auctions import get_auction_or_404
+from bidding.views.home import render_response
 from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
 from django.views.decorators.csrf import csrf_exempt
 from settings import IMAGES_SITE, MEDIA_URL, NOT_AUTHORIZED_PAGE

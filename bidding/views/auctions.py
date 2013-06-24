@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-from routines.shortcuts import render_response
-
 from django.db.models import Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
@@ -9,6 +7,7 @@ from django.utils import simplejson as json
 from bidding.models import Auction, Item, AuctionFixture, Member, ConvertHistory, PrePromotedAuction, PromotedAuction
 from bidding.utils import render_details, send_member_left
 from django.views.decorators.csrf import csrf_exempt
+from bidding.views.home import render_response
 from django.core.paginator import Paginator
 from django.template.loader import render_to_string
 from chat.auctioneer import member_joined_message, member_left_message

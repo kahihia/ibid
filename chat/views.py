@@ -41,7 +41,6 @@ def send_message(request):
 def do_send_message(message):
     """ Creates a message for the given action and user and sends it. """
     
-    #from routines.templatetags.routines_tags import truncatechars
     #result = {'chat_message': escape(message.text),
     # We mark the message escape when getting it from user
     text = message.format_message()

@@ -174,7 +174,6 @@ def do_send_auctioneer_message(auction,message):
 
 def do_send_chat_message(auction, message):
     
-    #from routines.templatetags.routines_tags import truncatechars
     #result = {'chat_message': escape(message.text),
     # We mark the message escape when getting it from user
     text = message.format_message()

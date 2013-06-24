@@ -1,4 +1,4 @@
-{% load routines_tags %}
+{% load staticfiles %}
 <!DOCTYPE html>
 {% templatetag openvariable %} current_user_db.fb_name {% templatetag closevariable %}
 <html ng-app style="overflow: hidden">
@@ -548,7 +548,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					</div>
           <div class="title"><span class="close">×</span> <h1>TUTORIAL</h1>  </div>
             <div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
-               
+
                 <div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/></div>
                 <div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" /></div>
                 <div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/></div>
