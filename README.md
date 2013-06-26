@@ -1,3 +1,7 @@
-Penny bidding auction website on http://www.yambid.com/
+Interactive Bid Games Inc. http://ibidgames.com
 
-Written using Django 1.2.3 and Orbited 0.7.10
+
+Written using Django 1.5.1
+
+see requirements.txt for requirements list
+

@@ -238,8 +238,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<!-- TEMPLATE: precap -->
 								<div id="auction-top" ng-switch-when="precap">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
-										width="107" height="72">
+										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 										<!--img src="{% static "images/auction-img.jpg" %}" width="107" height="72"-->
 									</div>
 									<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
@@ -283,8 +282,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<!-- TEMPLATE: waiting -->
 								<div id="auction-top" ng-switch-when="waiting">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
-										width="107" height="72">
+										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
 									<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
@@ -304,8 +302,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<!-- TEMPLATE: processing -->
 								<div id="auction-top" ng-switch-when="processing">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
-										width="107" height="72">
+										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
 									<div id="auction-item-title" ng-class="{'TOKENS':'title-token', 'ITEMS':'title-items'}[playFor]">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
@@ -335,8 +332,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<!-- TEMPLATE: pause -->
 								<div id="auction-top" ng-switch-when="pause">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
-										width="107" height="72">
+										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
 									<div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
@@ -366,8 +362,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<!-- TEMPLATE: waiting_payment -->
 								<div id="auction-top" ng-switch-when="waiting_payment">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}"
-										width="107" height="72">
+										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
 									<div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
@@ -459,8 +454,7 @@ preloadImage("{% static "images/help-img.png" %}");
 
 						<div id="auction-top">
 							<div class="img">
-								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}" width="107"
-								height="72">
+								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 							</div>
 							<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
@@ -498,8 +492,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div id="auction" ng-repeat="auction in auctionList[playFor].finished">
 						<div id="auction-top">
 							<div class="img">
-								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}" width="107"
-								height="72">
+								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 							</div>
 							<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}

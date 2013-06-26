@@ -65,8 +65,7 @@ def initialize_phrases():
         phrase.description = "Displayed when a user joins an auction.\
                              {user} is replaced by the username."
         phrase.save()
-        client.auctioneerMessage()
-    
+
     phrase, created = AuctioneerPhrase.objects.get_or_create(key='left')
     if created:
         phrase.text = "{user} has left the auction."
@@ -98,4 +97,4 @@ def initialize_phrases():
                             {user} is replaced by the username."
         phrase.save()
 
-initialize_phrases()
+#initialize_phrases()

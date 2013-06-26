@@ -423,6 +423,8 @@ body {
 	float: left;
 	margin: 10px;
 	position: absolute;
+    text-align:center;
+    width:107px;
 }
 #auction-item-title {
 	width: 243px;
