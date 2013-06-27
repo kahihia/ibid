@@ -217,7 +217,7 @@ def startBidding(request):
 
     #auction_id = int(request.GET.get('id', int(request.POST.get('id', 0))))
 
-    requPOST = json.loads(request.raw_post_data)
+    requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
 
@@ -246,7 +246,7 @@ def startBidding(request):
 def addBids(request):
     """ The users commits bids before the auction starts. """
 
-    requPOST = json.loads(request.raw_post_data)
+    requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
 
@@ -270,7 +270,7 @@ def addBids(request):
 def remBids(request):
     """ The users commits bids before the auction starts. """
 
-    requPOST = json.loads(request.raw_post_data)
+    requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.get(id=auction_id)
 
@@ -287,7 +287,7 @@ def remBids(request):
     return HttpResponse('')
 
 def stopBidding(request):
-    requPOST = json.loads(request.raw_post_data)
+    requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
 
@@ -310,7 +310,7 @@ def claim(request):
     The user uses the bids that commited before to try to win the auction in
     process.
     """
-    requPOST = json.loads(request.raw_post_data)
+    requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.get(id=auction_id)
 
@@ -367,8 +367,8 @@ def convert_tokens(request):
         return __member_status(member)
 
 def sendMessage(request):
-    if request.POST:
-        requPOST = json.loads(request.raw_post_data)
+    if request.method == 'POST':
+        requPOST = json.loads(request.body)
         auction_id = request.GET.get('id', int(requPOST['id']))
         auction = Auction.objects.get(id=auction_id)
 

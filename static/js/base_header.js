@@ -11,10 +11,10 @@
 
 
 var userDetailsData = {
-    displayName: 'guisepe',
-    tokens: 234234,
+    displayName: '',
+    tokens: 0,
     profileFotoLink: '',
-    credits: 3333,
+    credits: 0,
     profileLink: ''
 };
 
@@ -22,7 +22,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
 
     //initialization
     $rootScope.user = {};
-    $rootScope.user.displayName = 'guisepe';
+    $rootScope.user.displayName = '';
     $rootScope.user.profileFotoLink = '';
     $rootScope.user.profileLink = '';
     $rootScope.user.tokens = 0;

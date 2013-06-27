@@ -243,14 +243,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     //publish a chat message
     $scope.sendChatMessage = function (index) {
-        console.log('sendChatMessage', $scope.message);
-
         auction = $scope.auctionList[$rootScope.playFor].mine[index];
         if (auction.chatMessage != ''){
             console.log('sendChatMessage', auction.chatMessage);
             $http.post('/api/sendMessage/', {id: auction.id, user: $rootScope.user, text:auction.chatMessage}).
                 success(function (rdata, status) {
-                    //console.log("chatmessage on auction " + auction.id);
+                    console.log("chatmessage on auction " + auction.id);
                 });
 
             auction.chatMessage = '';
