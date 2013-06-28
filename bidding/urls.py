@@ -6,7 +6,7 @@ import bidding.more_signals
 
 
 urlpatterns = patterns('bidding.views.home',
-            url(r'^$', 'web_home', name='bidding_anonym_home'),
+            url(r'^$', 'we_home', name='bidding_anonym_home'),
             url(r'^home/$', 'mainpage', name='bidding_home'),
             url(r'^canvashome/$', 'canvashome', name='canvashome'),
             #url(r'^canvaslogin/$', 'canvaslogin', name='canvaslogin'),

@@ -1,4 +1,10 @@
-{% extends "base.html" %}
+{% load staticfiles %}
 {% block content %}
-<p>Oops. Error happened.</p>
+<div class="logo">
+	<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+</br>
+</br>
+<img src="{% static "images/404.png" %}" width="807" height="247">
+</div>
+
 {% endblock %}

@@ -40,3 +40,5 @@ if settings.DEBUG:
         (r'^media/(?P<path>.*)$', 'serve', {'document_root': os.path.join(settings.PROJECT_PATH, 'media')}),
 
     )
+
+handler500 = 'django.views.defaults.server_error'
