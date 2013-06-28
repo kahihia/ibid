@@ -132,6 +132,8 @@ def fb_login(request):
 
     #try:
     token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
+    print "-----------------------------connect_user--------------"
+    print token
     connect_user(request, token)
     #except OAuthException:
     #    return redirect("fb_auth")

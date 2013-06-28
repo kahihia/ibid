@@ -1,5 +1,5 @@
 from django.conf.urls import patterns, url, include
-from django.shortcuts import redirect
+from django.views.generic.base import RedirectView
 from bidding.sitemaps import AuctionSitemap
 from django.contrib.sitemaps import FlatPageSitemap
 from django.conf import settings
@@ -29,9 +29,9 @@ urlpatterns = patterns('',
     url(r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps':sitemaps}, name="sitemap"),
 )
 
-urlpatterns += patterns('django.shortcuts',
-	url(r'^winners/$', 'redirect', {'url':'/winners/1/'}, name='bidding_winners_redirect'),
-    (r'^favicon\.ico$', 'redirect', {'url': '/static/images/favicon.ico'}),
+urlpatterns += patterns('',
+	url(r'^winners/$', RedirectView.as_view(url='/winners/1/'), name='bidding_winners_redirect'),
+    (r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
 )
 
 if settings.DEBUG:
