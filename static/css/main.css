@@ -153,6 +153,9 @@ body {
 	font-weight: 600;
 	text-transform: uppercase;
 	width: 335px;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 }
 
 #user-info .menu {
@@ -423,8 +426,8 @@ body {
 	float: left;
 	margin: 10px;
 	position: absolute;
-    text-align:center;
-    width:107px;
+	text-align: center;
+	width: 107px;
 }
 #auction-item-title {
 	width: 243px;
@@ -1236,11 +1239,11 @@ body {
 	color: #484840;
 	line-height: 21px;
 	margin: 20px auto 0 auto;
-	text-align:left;
+	text-align: left;
 	text-shadow: 0px 1px 1px #fff;
 }
 #overlay-tutorial .title .close {
-	float:right;
+	float: right;
 	cursor: pointer;
 }
 #overlay-tutorial .title h1 {
