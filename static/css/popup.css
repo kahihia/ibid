@@ -2,8 +2,8 @@
 	z-index: 1001;
 	top: 50px !important;
 	width: 890px !important;
-	margin:0 auto !important;
-	left:p !important;
+	margin: 0 auto !important;
+	left: p !important;
 	text-align: center !important;
 }
 .buy-bids-popup.active {
@@ -131,7 +131,7 @@
 	zoom: 1;
 	width: 520px;
 	margin: 110px auto 0 auto;
-	margin-top: expression((parentNode.offsetHeight - this.offsetHeight)<0 ? "0" : (parentNode.offsetHeight - this.offsetHeight)/2              + "px" );
+	margin-top: expression((parentNode.offsetHeight - this.offsetHeight)<0 ? "0" : (parentNode.offsetHeight - this.offsetHeight)/2               + "px" );
 	color: #888;
 	text-align: left;
 	background-color: #fff;
@@ -192,6 +192,11 @@
 
 .like-popup {
 	z-index: 1001;
+	top: 50px !important;
+	width: 890px !important;
+	margin: 0 auto !important;
+	left: p !important;
+	text-align: center !important;
 }
 .like-popup .info {
 	font-size: 13px;
