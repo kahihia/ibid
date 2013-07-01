@@ -58,7 +58,7 @@ jQuery(function () {
     jQuery('.btn-credits').click(openPopupBuyBids);
     jQuery('.close', '.buy-bids-popup').click(closePopupBuyBids);
     jQuery('.invite').click(sendRequestViaMultiFriendSelector);
-    jQuery('.like-popup').center();
+   // jQuery('.like-popup').center();
     jQuery('.like-popup').hide();
     jQuery('.like').click(openPopupLike);
     jQuery('.close', '.like-popup').click(closePopupLike);
