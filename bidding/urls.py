@@ -29,7 +29,7 @@ urlpatterns += patterns('',
     url(r'^leave/$', 'bidding.views.auctions.leave_auction', name='bidding_leave_auction'),
     url(r'^sync_timers/$', 'bidding.views.auctions.sync_timers', name='bidding_sync_timers'),
     url(r'^auct_timers/(?P<auction_id>\d+)/$', 'bidding.views.auctions.sync_auction_timer', name='bidding_auct_timers'),
-    
+
     url(r'^item_price/$', 'bidding.views.auctions.item_price', name='bidding_item_price'),
     url(r'^run_fixture/$', 'bidding.views.auctions.run_fixture', name='bidding_run_fixture'),
     url(r'^item_info/$', 'bidding.views.auctions.item_info', name='bidding_item_info'),

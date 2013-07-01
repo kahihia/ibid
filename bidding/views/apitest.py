@@ -33,6 +33,7 @@ def getUserDetails(request):
 
     data = {
         u'displayName':member.display_name(),
+        u'displayName':member.display_name(),
         u'facebook_id':member.facebook_id,
         u'profileFotoLink':member.display_picture(),
         u'profileLink':member.facebook_profile_url,
@@ -407,6 +408,15 @@ def stopBidding(request):
 
     return HttpResponse('')
 
+def wallpost(request):
+    member = request.user.get_profile()
+    args = {'name' : u'test',
+            'caption' : u'yep',
+            'link' : 'https://apps.facebook.com/ibidgames',
+            }
+    return HttpResponse(str(member.post_to_wall(**args)))
+
+
 
 
 
@@ -670,6 +680,7 @@ API = {
     'addBids': addBids,
     'remBids': remBids,
     'claim': claim,
-    'stopBidding': stopBidding
+    'stopBidding': stopBidding,
+    'wallpost': wallpost
 }
 

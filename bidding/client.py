@@ -9,6 +9,10 @@ from django.utils import simplejson as json
 
 import models
 
+import uuid
+import threading
+
+
 from Pubnub import Pubnub
 pubnub = Pubnub( settings.PUBNUB_PUB, settings.PUBNUB_SUB, settings.PUBNUB_SECRET, False)
 
@@ -23,11 +27,18 @@ def send_multiple_messages(pairs):
         #conn.send(message, destination=destination)
         #print 'pubnub ', {'channel': destination, 'message': message}
         #pubnub.publish({'channel': '/topic/main/', 'message': message})
-        info = pubnub.publish({
+
+        th = threading.Thread(target=pubnub.publish, args=[{
                'channel' : '/topic/main/',
                'message' : message
-           })
-        print(info)
+           }])
+        th.start()
+
+        #info = pubnub.publish({
+        #       'channel' : '/topic/main/',
+        #       'message' : message
+        #   })
+        #print(info)
 
 
 

@@ -35,14 +35,8 @@ def send_win_email(sender, **kwargs):
         auction = kwargs['auction']
         user = auction.winner
 
-
-        print "por mandar el mail"
         if user and  auction.bid_type == 'bid':
-
-
-
-
-
+            print "sending email"
 
             from django.core.mail import EmailMultiAlternatives
             from django.template.loader import render_to_string
@@ -65,8 +59,6 @@ def send_win_email(sender, **kwargs):
             msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
             msg.attach_alternative(html_content, "text/html")
             msg.send()
-
-            print "y mandooo"
 
     except Exception:
         logging.info('blah', exc_info=True)
@@ -160,10 +152,4 @@ def send_in_thread(signal, **kwargs):
     
     #th = threading.Thread(target=signal.send, kwargs=kwargs)
     #th.start()
-
-
-
-
-
-
 

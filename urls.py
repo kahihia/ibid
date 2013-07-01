@@ -41,4 +41,5 @@ if settings.DEBUG:
 
     )
 
-handler500 = 'django.views.defaults.server_error'
+#handler500 = 'django.views.defaults.server_error'
+
