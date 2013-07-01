@@ -262,7 +262,7 @@ class Item(models.Model):
 
 class ItemImage(models.Model):
     item = models.ForeignKey(Item)
-    image = models.ImageField(upload_to='/')
+    image = models.ImageField(upload_to='items/')
 
 class AbstractAuction(models.Model):
     item = models.ForeignKey(Item)
