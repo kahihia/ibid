@@ -1076,6 +1076,7 @@ body {
 	width: 100px;
 	float: left;
 	height: 100%;
+	text-align:center;
 }
 #content-wrapper .frame .winners .winners-list .pic img {
 	margin: 4px 0 0 2px;

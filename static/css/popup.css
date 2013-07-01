@@ -1,5 +1,10 @@
 .buy-bids-popup {
 	z-index: 1001;
+	top: 50px !important;
+	width: 890px !important;
+	margin:0 auto !important;
+	left:p !important;
+	text-align: center !important;
 }
 .buy-bids-popup.active {
 	z-index: 1001;
