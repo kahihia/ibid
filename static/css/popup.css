@@ -5,6 +5,7 @@
 	margin: 0 auto !important;
 	left: p !important;
 	text-align: center !important;
+	position:absolute;
 }
 .buy-bids-popup.active {
 	z-index: 1001;
@@ -197,6 +198,7 @@
 	margin: 0 auto !important;
 	left: p !important;
 	text-align: center !important;
+	position:absolute;
 }
 .like-popup .info {
 	font-size: 13px;
