@@ -5,7 +5,7 @@ from django.conf import settings
 from django.db.models import Count
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404
-from django.utils import simplejson as json
+import json
 
 from bidding.models import Auction, Item, AuctionFixture, Member, ConvertHistory, PrePromotedAuction, PromotedAuction, Invitation
 from chat.models import Message, ChatUser
@@ -71,12 +71,12 @@ def getAuctionsInitialization(request):
     pre_promoted_auctions = PrePromotedAuction.objects.all() #.filter(is_active=True)
     promoted_auctions = PromotedAuction.objects.filter(promoter = member)
 
-    auctions_token_available = [] #[{u'completion': 0, u'status': u'upcoming', u'tokens_or_bids_in_it': 0, u'bid_type': u'tokens', u'title': u'pepe4', u'chat_enabled': False, u'bidders_count': 0, u'bids_left': 0, u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0}],
-    auctions_token_finished = [] #[{u'status': u'waiting_payment', u'title': u'pepe3', u'chat_enabled': False, u'last_bidder': u'ta-dah', u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0, u'won_price': 5}],
-    auctions_token_my = [] #[{u'completion': 0, u'status': u'upcoming', u'tokens_or_bids_in_it': 0, u'bid_type': u'tokens', u'title': u'pepeasdasd', u'chat_enabled': True, u'chat_info': {u'user_pic': u'https://graph.facebook.com/100001640641493/picture', u'messages': [{u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'hola', u'user_name': u'Auctioneer'}, {u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'chau', u'user_name': u'Auctioneer'}], u'user_name': u'Daniel Nuske', u'id': 23}, u'bidders_count': 0, u'bids_left': 0, u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0}, {u'completion': 0, u'status': u'upcoming', u'tokens_or_bids_in_it': 0, u'bid_type': u'tokens', u'title': u'pep2we', u'chat_enabled': True, u'chat_info': {u'user_pic': u'https://graph.facebook.com/100001640641493/picture', u'messages': [{u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'hola', u'user_name': u'Auctioneer'}, {u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'chau', u'user_name': u'Auctioneer'}], u'user_name': u'Daniel Nuske', u'id': 23}, u'bidders_count': 0, u'bids_left': 0, u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0}]
-    auctions_bid_available = [] #[{u'completion': 0, u'status': u'upcoming', u'tokens_or_bids_in_it': 0, u'bid_type': u'tokens', u'title': u'pepe4', u'chat_enabled': False, u'bidders_count': 0, u'bids_left': 0, u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0}],
-    auctions_bid_finished = [] #[{u'status': u'waiting_payment', u'title': u'pepe3', u'chat_enabled': False, u'last_bidder': u'ta-dah', u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0, u'won_price': 5}],
-    auctions_bid_my = [] #[{u'completion': 0, u'status': u'upcoming', u'tokens_or_bids_in_it': 0, u'bid_type': u'tokens', u'title': u'pepeasdasd', u'chat_enabled': True, u'chat_info': {u'user_pic': u'https://graph.facebook.com/100001640641493/picture', u'messages': [{u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'hola', u'user_name': u'Auctioneer'}, {u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'chau', u'user_name': u'Auctioneer'}], u'user_name': u'Daniel Nuske', u'id': 23}, u'bidders_count': 0, u'bids_left': 0, u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0}, {u'completion': 0, u'status': u'upcoming', u'tokens_or_bids_in_it': 0, u'bid_type': u'tokens', u'title': u'pep2we', u'chat_enabled': True, u'chat_info': {u'user_pic': u'https://graph.facebook.com/100001640641493/picture', u'messages': [{u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'hola', u'user_name': u'Auctioneer'}, {u'date': u'10/29/12 16:40', u'user_pic': u'/static/images/auctioneer_small.jpg', u'message': u'chau', u'user_name': u'Auctioneer'}], u'user_name': u'Daniel Nuske', u'id': 23}, u'bidders_count': 0, u'bids_left': 0, u'retail_price': 0, u'img_url': u'/media/cache/e7/7c/e77cc052833a6118e8752e462469c242.jpg', u'id': 0}]
+    auctions_token_available = []
+    auctions_token_finished = []
+    auctions_token_my = []
+    auctions_bid_available = []
+    auctions_bid_finished = []
+    auctions_bid_my = []
 
     #data = {'id':bids_auctions['other_auctions'][0].id}
 
@@ -323,9 +323,8 @@ def claim(request):
     if auction.status == 'processing' and auction.can_bid(member):
 
         if auction.used_bids()/settings.TODO_BID_PRICE == bidNumber:
-            auctioneer.member_claim_message(auction, member)
-
             auction.bid(member)
+            auctioneer.member_claim_message(auction, member)
 
             bid = auction.bid_set.get(bidder=member)
             tmp['id'] = auction_id

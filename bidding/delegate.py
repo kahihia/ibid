@@ -10,6 +10,8 @@ from bidding import client
 logger = logging.getLogger('django')
 
 from threading import Timer
+#from bid_client import bidServerClient
+import bid_client
 
 class AuctionDelegate(object):
     def __init__(self, auction):
@@ -126,10 +128,11 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
 
         client.auctionAwait(self.auction)
 
-        from bid_client import bidServerClient
+
         #bidServerClient.start(**{'auctionId':self.auction.id, 'params':{'timeLeft':self.auction.bidding_time}})
-        t = Timer(5.0, bidServerClient.start, kwargs={'auctionId':self.auction.id, 'params':{'timeLeft':self.auction.bidding_time}})
-        t.start()
+        bid_client.delayStart(self.auction.id, 0, 5.0)
+        #t = Timer(5.0, bidServerClient.start, kwargs={'auctionId':self.auction.id, 'params':{'timeLeft':self.auction.bidding_time}})
+        #t.start()
 
         send_in_thread(precap_finished_signal, sender=self, auction=self.auction)
         
@@ -269,15 +272,14 @@ class RunningAuctionDelegate(StateAuctionDelegate):
 
         if self._check_thresholds():
             self.auction.pause()
+            bid_client.delayResume(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
         else:
             ##self._stop_command()
-            from bid_client import bidServerClient
-            bidServerClient.bid(self.auction.id, {'timeLeft':self.auction.bidding_time})
-
+            bid_client.bid(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            #bidServerClient.bid(self.auction.id, {'timeLeft':self.auction.bidding_time})
 
             #send_in_thread(task_auction_bid, sender=self, auction=self.auction)
 
-    
     
     def get_time_left(self):
             
@@ -307,8 +309,9 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         ##FinishAuctionTask.cancel(self.auction)
         
         client.auctionPause(self.auction)
-        from bid_client import bidServerClient
-        bidServerClient.pause(self.auction.id, {'timeLeft':10})
+
+        bid_client.delayResume(self.auction.id,self.auction.getBidNumber(),10)
+        #bidServerClient.pause(self.auction.id, {'timeLeft':10})
 
         send_in_thread(task_auction_pause, sender=self, auction=self.auction)
         
