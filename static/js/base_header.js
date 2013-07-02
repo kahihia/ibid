@@ -53,7 +53,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
 
 
 jQuery(function () {
-    jQuery('.buy-bids-popup').center();
+    //jQuery('.buy-bids-popup').center();
     jQuery('.buy-bids-popup').hide();
     jQuery('.btn-credits').click(openPopupBuyBids);
     jQuery('.close', '.buy-bids-popup').click(closePopupBuyBids);
@@ -63,7 +63,7 @@ jQuery(function () {
     jQuery('.like').click(openPopupLike);
     jQuery('.close', '.like-popup').click(closePopupLike);
 
-    jQuery('.friends-invited-popup').center();
+    //jQuery('.friends-invited-popup').center();
     jQuery('.friends-invited-popup').hide();
     jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
 
@@ -80,7 +80,7 @@ function openPopupBuyBids() {
     showOverlay();
     setTimeout(function () {
         jQuery('.buy-bids-popup').show();
-        TweenLite.fromTo('.buy-bids-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
+        TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
     }, 300);
 }
 

@@ -1,11 +1,26 @@
-
 {% load staticfiles %}
 {% block content %}
-<div class="logo">
-	<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
-</br>
-</br>
-<img src="{% static "images/404.png" %}" width="807" height="247">
+<div style="width: 100%;
+background-color: #fff;
+font-family: 'Open Sans', sans-serif;
+-webkit-font-smoothing: antialiased;
+background-image: url("../images/bkg-body2.jpg");
+padding-bottom: 30px;" >
+	<div style="width: 860px;
+	background-image: url("../images/bkg-top.jpg");
+	margin: 0 auto;
+	border-left: 1px solid #000;
+	border-right: 1px solid #000;
+	background-color: #000;
+	box-shadow: 0 0 10px #000;">
+		<div style="	margin: 0 auto;
+		width: 293px;
+		padding-top: 25px;">
+			<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+			</br>
+			</br>
+			<img src="{% static "images/404.png" %}" width="807" height="247">
+		</div>
+	</div>
 </div>
-
 {% endblock %}

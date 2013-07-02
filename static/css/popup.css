@@ -2,8 +2,7 @@
 	z-index: 1001;
 	top: 50px !important;
 	width: 890px !important;
-	margin: 0 auto !important;
-	left: p !important;
+	margin: 0 auto;
 	text-align: center !important;
 	position:absolute;
 }
