@@ -2,30 +2,17 @@
 
 from django.dispatch.dispatcher import receiver, Signal
 from django.db.models.signals import post_save
-from django.dispatch import dispatcher
 from django.db.models import signals
 
 import client
-from django.utils import simplejson as json
 
-from bidding.models import Bid, Auction, Invitation
+from bidding.models import Auction, Invitation
 
 import open_facebook
 
 
 precap_finished_signal = Signal(providing_args=["auction"])
 
-
-#@receiver(precap_finished_signal)
-def firstBid(sender, **kwargs):
-    client.send_stomp_message(json.dumps({'method':'log','params':'SERVER: auctionStarted'}), '/topic/main/')
-
-    auction = kwargs['auction']
-
-    #Auctioneer = AuctioneerProxy() #try instantiate this to put the first bid, didn't work.
-    
-    b = Bid(auction=auction, unixtime = Decimal("%f" % time.time()))
-    b.save()
 
 def auctionCreated(**kwargs):
     if 'created' in kwargs and kwargs['created']:
@@ -39,7 +26,6 @@ post_save.connect(auctionCreated, Auction)
 
 from django.contrib.auth.models import User
 from django_facebook import signals
-from django_facebook.utils import get_profile_class
 
 import urlparse
 

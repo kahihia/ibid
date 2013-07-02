@@ -1,8 +1,6 @@
-from django.conf.urls import patterns, url, include
+from django.conf.urls import patterns, url
 from django.views.generic.base import TemplateView
 from bidding.views.home import CurrencyHistory
-import bidding.client
-import bidding.more_signals
 
 
 urlpatterns = patterns('bidding.views.home',
@@ -75,6 +73,10 @@ urlpatterns += patterns('bidding.views.apitest',
     url(r'^apitest/(?P<method>\w+)/$', 'apitest', name='apitest'),
 )
 
+urlpatterns += patterns('bidding.views.bidapi',
+    url(r'^bid_service/api/(?P<method>\w+)/$', 'api', name='api'),
+)
+
 
 urlpatterns += patterns('bidding.views.paypal_views',
     url(r'^buy_item/(?P<id>[-\w]+)/$', 'buy_item', name='bidding_buy_item'), #REMOVED:{'SSL':True}
@@ -84,3 +86,4 @@ urlpatterns += patterns('',
     url(r'^leave/$', TemplateView.as_view(template_name = "404.html"), name='bidding_leave_auction'),
 )
 
+import more_signals

@@ -190,6 +190,7 @@ class Member(models.Model):
     date_of_birth = models.DateField(blank=True, null=True)
     raw_data = models.TextField(blank=True)
 
+
     def display_name(self):
         return "%s %s" % (self.user.first_name,
                           self.user.last_name)
@@ -237,6 +238,21 @@ class Member(models.Model):
 
     def extend_access_token(self):
         pass
+
+    def update_access_token(self, new_value):
+        '''
+        Updates the access token
+
+        **Example**::
+
+            # updates to 123 and sets new_token_required to False
+            profile.update_access_token(123)
+
+        :param new_value:
+            The new value for access_token
+        '''
+        self.access_token = new_value
+        #self.new_token_required = False
 
     def __unicode__(self):
         return self.user.username
@@ -344,6 +360,9 @@ class Auction(AbstractAuction):
         """ Returns a list of mails of members that have joined this auction. """
 
         return self.bidders.values_list('user__email', flat=True)
+
+    def getBidNumber(self):
+        return self.used_bids()/settings.TODO_BID_PRICE
 
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())

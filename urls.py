@@ -16,6 +16,7 @@ urlpatterns = patterns('',
     
     (r'', include('bidding.urls')),
     (r'^chat/', include('chat.urls')),
+    (r'^countdown/', include('countdown.urls')),
     (r'^paypal/ipn/', include('paypal.standard.ipn.urls')),
 
     # Uncomment the next line to enable the admin:

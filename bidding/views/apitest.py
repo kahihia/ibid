@@ -410,9 +410,10 @@ def stopBidding(request):
 
 def wallpost(request):
     member = request.user.get_profile()
+
     args = {'name' : u'test',
             'caption' : u'yep',
-            'link' : 'https://apps.facebook.com/ibidgames',
+            'link' : 'https://apps.facebook.com/interactivebids/',
             }
     return HttpResponse(str(member.post_to_wall(**args)))
 
