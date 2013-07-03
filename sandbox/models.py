@@ -52,6 +52,9 @@ class User(AuditedModel):
             'email': self.email,
         }
 
+    def __unicode__(self):
+        return self.name
+
 
 class Audit(models.Model):
     timestamp = models.DateTimeField(auto_now=True, auto_now_add=True)
