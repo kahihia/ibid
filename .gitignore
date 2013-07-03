@@ -7,8 +7,11 @@ settings.py
 facebook_settings.py
 settings_local.py
 .idea
+.swp
 lib
 src
+
+venv
 
 deploy.sh
 nohup.out
