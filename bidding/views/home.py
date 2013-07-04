@@ -197,3 +197,40 @@ from django.template import RequestContext
 def render_response(req, *args, **kwargs):
     kwargs['context_instance'] = RequestContext(req)
     return render_to_response(*args, **kwargs)
+
+
+
+def winner_email_example(request):
+    #if redirect cookie
+    #return HttpResponse("request.user.is_authenticated()" + str(request.user.is_authenticated()))
+
+    redirectTo = request.session.get('redirect_to', False)
+    if redirectTo:
+        del request.session['redirect_to']
+        return HttpResponseRedirect(str(redirectTo))
+
+    #return HttpResponse('request.user.is_authenticated(): '+str(request.user.is_authenticated()))
+
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('bidding_anonym_home'))
+
+    #TODO try catch to avoid ugly error when admin is logged
+
+    finished = Auction.objects.filter(is_active=True, status__in=(
+        'waiting_payment', 'paid')
+    ).order_by('-won_date')
+
+    auction = finished[0]
+    user = request.user
+
+    if user and  auction.bid_type == 'bid':
+        print "sending email"
+
+        response = render_response(request, 'bidding/mail_winner.html',
+                                   {'user' : user,
+                                    'auction' : auction,
+                                    'site': settings.SITE_NAME,
+                                    'images_site':settings.IMAGES_SITE})
+
+
+    return response

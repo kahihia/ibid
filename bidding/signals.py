@@ -61,7 +61,7 @@ def send_win_email(sender, **kwargs):
             msg.send()
 
     except Exception:
-        logging.info('blah', exc_info=True)
+        logging.info('signal.send_win_email', exc_info=True)
         raise
 
 @receiver(auction_finished_signal)
@@ -113,15 +113,14 @@ def send_start_email(sender, **kwargs):
 
 @receiver(auction_finished_signal)
 def post_win_wall(sender, **kwargs):
-    print "---------------------------------<<<<<<<<<<<<<<<<>>>>>>>>>>>>>"
     client.send_stomp_message(json.dumps({'method':'log','params':'SERVER: auction_finished_signal'}), '/topic/main/')
 
     auction = kwargs['auction']
     logger.debug("Auction: %s" % auction)
     print auction.winner
     if auction.winner:
-        print " --- posting --- "
-    
+        print "--------------------------------- wall posting <<<<<<<<<<<<<<<<>>>>>>>>>>>>>"
+
         member = auction.winner.get_profile()
         
         args = {'name' : u'Auction won!',
