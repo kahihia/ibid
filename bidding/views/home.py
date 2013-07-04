@@ -223,14 +223,11 @@ def winner_email_example(request):
     auction = finished[0]
     user = request.user
 
-    if user and  auction.bid_type == 'bid':
-        print "sending email"
-
-        response = render_response(request, 'bidding/mail_winner.html',
-                                   {'user' : user,
-                                    'auction' : auction,
-                                    'site': settings.SITE_NAME,
-                                    'images_site':settings.IMAGES_SITE})
+    response = render_response(request, 'bidding/mail_winner.html',
+                               {'user' : user,
+                                'auction' : auction,
+                                'site': settings.SITE_NAME,
+                                'images_site':settings.IMAGES_SITE})
 
 
     return response
