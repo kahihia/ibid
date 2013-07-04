@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import json
+
 from django.db import models
 from django.conf import settings
+
+from libs import formatter
 
 
 class AuditedModel(models.Model):
@@ -24,7 +27,8 @@ class AuditedModel(models.Model):
             fields = [ str(x.name) for x in self._meta.fields ]
             for field_name in fields:
                 field = self._meta.get_field_by_name(field_name)[0]
-                data[field_name] = self.to_python(field.value_from_object(self))
+                data[field_name] = field.to_python(field.value_from_object(self))
+            data = formatter.flatten(data)
 
             l = Log()
             l.action = action
@@ -45,5 +49,5 @@ class Log(models.Model):
 
     def __unicode__(self):
         return '%s.%s [%d] - %s @ %s' % (self.object_app, self.object_model,
-                                         self.object_id, self.action,
+                                         self.object_pk, self.action,
                                          self.timestamp)
