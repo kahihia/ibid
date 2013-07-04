@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import json
-
 from django.db import models
 from django.conf import settings
-
-from libs import formatter
+from django.core import serializers
 
 
 class AuditedModel(models.Model):
@@ -21,30 +18,26 @@ class AuditedModel(models.Model):
         super(AuditedModel, self).delete(*args, **kwargs)
 
     def _audit(self, action):
-        if settings.AUDIT_ENABLED:
-            # Make a dict from the models fields
-            data = {}
-            fields = [ str(x.name) for x in self._meta.fields ]
-            for field_name in fields:
-                field = self._meta.get_field_by_name(field_name)[0]
-                data[field_name] = field.to_python(field.value_from_object(self))
-            data = formatter.flatten(data)
-
-            l = Log()
-            l.action = action
-            l.object_app = self._meta.app_label
-            l.object_model = self._meta.object_name
-            l.object_pk = self.pk
-            l.data = json.dumps(data)
-            l.save()
+        try:
+            if settings.AUDIT_ENABLED:
+                l = Log()
+                l.action = action
+                l.object_app = self._meta.app_label
+                l.object_model = self._meta.object_name
+                l.object_pk = self.pk
+                l.data = serializers.serialize('json', (self,))
+                l.save()
+        except AttributeError:
+            # AUDIT_ENABLED option not defined in any settings
+            pass
 
 
 class Log(models.Model):
     timestamp = models.DateTimeField(auto_now=True, auto_now_add=True)
+    action = models.CharField(max_length=10)
     object_app = models.CharField(max_length=100)
     object_model = models.CharField(max_length=100)
     object_pk = models.IntegerField(null=True)
-    action = models.CharField(max_length=10)
     data = models.CharField(max_length=200)
 
     def __unicode__(self):
