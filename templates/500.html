@@ -1,10 +1,18 @@
 {% load staticfiles %}
 {% block content %}
-<div class="logo">
-	<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
-</br>
-</br>
-<img src="{% static "images/404.png" %}" width="807" height="247">
+<style  type="text/css">
+	body {
+		margin: 0;
+		background-image: url(http://dev.facebook.ibidgames.com/static/images/bkg-body2.jpg);
+	}
+
+</style>
+
+<div style="padding-top: 25px; text-align: center;">
+	<a href="https://apps.facebook.com/ibidgames/canvashome/"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+	</br>
+	</br>
+	<img src="{% static "images/404.png" %}" width="807" height="247">
 </div>
 
 {% endblock %}
