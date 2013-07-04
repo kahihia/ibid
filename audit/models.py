@@ -19,18 +19,23 @@ class AuditedModel(models.Model):
 
     def _audit(self, action):
         if settings.AUDIT_ENABLED:
-# TODO: cambiar por la busqueda de campos
-            data = self.to_dict()
-            a = Audit()
-            a.action = action
-            a.object_app = self._meta.app_label
-            a.object_model = self._meta.object_name
-            a.object_pk = self.pk
-            a.data = json.dumps(data)
-            a.save()
+            # Make a dict from the models fields
+            data = {}
+            fields = [ str(x.name) for x in self._meta.fields ]
+            for field_name in fields:
+                field = self._meta.get_field_by_name(field_name)[0]
+                data[field_name] = self.to_python(field.value_from_object(self))
+
+            l = Log()
+            l.action = action
+            l.object_app = self._meta.app_label
+            l.object_model = self._meta.object_name
+            l.object_pk = self.pk
+            l.data = json.dumps(data)
+            l.save()
 
 
-class Audit(models.Model):
+class Log(models.Model):
     timestamp = models.DateTimeField(auto_now=True, auto_now_add=True)
     object_app = models.CharField(max_length=100)
     object_model = models.CharField(max_length=100)
