@@ -1,6 +1,7 @@
 from django.conf import settings
-from django.utils import simplejson as json
+import json
 import urllib
+import threading
 
 #    'precap': 0,
 #    'waiting': 1,
@@ -122,4 +123,10 @@ class TestMatrix(object):
                 del self.data[0]
 
     def _send(self, message):
-        urllib.urlopen("http://pubsub.pubnub.com/publish/" + settings.PUBNUB_PUB + "/" + settings.PUBNUB_SUB + "/0/%2Ftopic%2Fmain%2F/0/" + json.dumps(message))
+        urllib.urlopen()
+
+        args = ["http://pubsub.pubnub.com/publish/" + settings.PUBNUB_PUB + "/" + settings.PUBNUB_SUB + "/0/%2Ftopic%2Fmain%2F/0/" + json.dumps(message)]
+
+        th = threading.Thread(target=urllib.urlopen, args=args)
+        th.start()
+
