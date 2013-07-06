@@ -213,6 +213,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         $rootScope.$emit('reloadUserDataEvent');
                     }else{
                         //TODO: add loading state.
+                        auction.bids = (auction.bids+5);
                         auction.interface.bidEnabled = true;
                     }
                 });
