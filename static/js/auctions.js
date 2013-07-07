@@ -286,7 +286,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         //restore    : false,
 
         callback: function (message) {
-            console.log("pubnub message:", message);
+            console.log("pubnub message ("+getCurrentDateTime()+"):", message);
             gameState.pubnubMessages.push([getCurrentDateTime(), message]);
 
             $scope.$apply(function () {

@@ -38,7 +38,7 @@ class Client(object):
 
         auctionFinished = False
         while not auctionFinished:
-            sleepTime = float(str(randint(0,10000)).zfill(3))/100
+            sleepTime = float(str(randint(0,20000)).zfill(3))/100
             sleep(sleepTime)
             print "new loop", TestAuction(auctionId).auction.status, sleepTime
 
@@ -105,7 +105,7 @@ def test(auctionId, clientIds):
 
 
 
-auctionId = 50
+auctionId = 52
 clientsIds = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55,
               56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75]
 
