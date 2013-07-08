@@ -213,6 +213,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         $rootScope.$emit('reloadUserDataEvent');
                     }else{
                         //TODO: add loading state.
+                        auction.bids = (auction.bids+5);
                         auction.interface.bidEnabled = true;
                     }
                 });
@@ -285,7 +286,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         //restore    : false,
 
         callback: function (message) {
-            console.log("pubnub message:", message);
+            console.log("pubnub message ("+getCurrentDateTime()+"):", message);
             gameState.pubnubMessages.push([getCurrentDateTime(), message]);
 
             $scope.$apply(function () {

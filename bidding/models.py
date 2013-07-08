@@ -273,12 +273,11 @@ class Item(AuditedModel):
 
     name.alphabetic_filter = True
 
-    def get_thumbnail(self, size='70x70'):
+    def get_thumbnail(self, size='107x72'):
         return IMAGES_SITE + get_thumbnail(self.itemimage_set.all()[0].image.name, size).url
 
     def __unicode__(self):
         return self.name
-
 
 class ItemImage(AuditedModel):
     item = models.ForeignKey(Item)
@@ -291,7 +290,6 @@ class AbstractAuction(AuditedModel):
 
     class Meta:
         abstract = True
-
 
 class Auction(AbstractAuction):
     bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')

@@ -11,7 +11,10 @@ urlpatterns = patterns('bidding.views.home',
             url(r'^history/$', CurrencyHistory.as_view(), name='history'),
             url(r'^promoted_redirected/(?P<auction_id>\d+)/$', 'promoted', name='promoted'), #show the auction
             url(r'^faq2/$', 'faq', name='faq'),
-            url(r'^winner_email_example/$', 'winner_email_example', name='winner_email_example'),
+            url(r'^winner_email_example/$', 'winner_email_example'),
+            url(r'^examples/winner_email/$', 'winner_email_example'),
+            url(r'^examples/404/$', 'example_404', name='example_404'),
+            url(r'^examples/500/$', 'example_500', name='example_500'),
 )
 
 urlpatterns += patterns('',

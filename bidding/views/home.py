@@ -201,20 +201,8 @@ def render_response(req, *args, **kwargs):
 
 
 def winner_email_example(request):
-    #if redirect cookie
-    #return HttpResponse("request.user.is_authenticated()" + str(request.user.is_authenticated()))
-
-    redirectTo = request.session.get('redirect_to', False)
-    if redirectTo:
-        del request.session['redirect_to']
-        return HttpResponseRedirect(str(redirectTo))
-
-    #return HttpResponse('request.user.is_authenticated(): '+str(request.user.is_authenticated()))
-
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('bidding_anonym_home'))
-
-    #TODO try catch to avoid ugly error when admin is logged
 
     finished = Auction.objects.filter(is_active=True, status__in=(
         'waiting_payment', 'paid')
@@ -229,5 +217,13 @@ def winner_email_example(request):
                                 'site': settings.SITE_NAME,
                                 'images_site':settings.IMAGES_SITE})
 
-
     return response
+
+def example_404(request):
+    response = render_response(request, '404.html')
+    return response
+
+def example_500(request):
+    response = render_response(request, '500.html')
+    return response
+
