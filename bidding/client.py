@@ -12,7 +12,8 @@ def send_multiple_messages(pairs):
 
 def send_stomp_message(message, destination):
 
-    message['timestamp'] = str(datetime.now())
+    if type(message) is dict:
+        message['timestamp'] = str(datetime.now())
 
     ## threaded
     th = threading.Thread(target=pubnub.publish, args=[{
