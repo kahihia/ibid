@@ -130,3 +130,8 @@ class TestMatrix(object):
         th = threading.Thread(target=urllib.urlopen, args=args)
         th.start()
 
+
+if __name__ == '__main__':
+    auctionId = 0 #put the auction id you have in your window
+    data = {} #put the data from the report
+    a = TestMatrix(auctionId, data) #

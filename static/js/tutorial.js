@@ -21,22 +21,26 @@ function initWelcome(){
             hideOverlay();
             initTutorial();
             });
-
 }
 
 tutorialImages = {
-    slide1: '/static/images/tutorial/1.png',
-    slide2: '/static/images/tutorial/2.png',
-    slide3: '/static/images/tutorial/3.png',
-    slide4: '/static/images/tutorial/4.png',
-    slide5: '/static/images/tutorial/5.png',
-    slide6: '/static/images/tutorial/6.png',
-    slide7: '/static/images/tutorial/7.png',
-    slide8: '/static/images/tutorial/8.png',
-    slide9: '/static/images/tutorial/9.png',
-    slide10: '/static/images/tutorial/10.png',
-    slide11: '/static/images/tutorial/11.png',
-    slide12: '/static/images/tutorial/12.png'
+    slide1: '/static/images/tutorial/intro.png',
+    slide2: '/static/images/tutorial/1.png',
+    slide3: '/static/images/tutorial/2.png',
+    slide4: '/static/images/tutorial/3.png',
+    slide5: '/static/images/tutorial/4.png',
+    slide6: '/static/images/tutorial/5.png',
+    slide7: '/static/images/tutorial/6.png',
+    slide8: '/static/images/tutorial/7.png',
+    slide9: '/static/images/tutorial/8.png',
+    slide10: '/static/images/tutorial/9.png',
+    slide11: '/static/images/tutorial/10.png',
+    slide12: '/static/images/tutorial/11.png',
+    slide13: '/static/images/tutorial/12-b.png',
+    slide14: '/static/images/tutorial/12.png',
+    slide15: '/static/images/tutorial/13.png',
+    slide16: '/static/images/tutorial/14.png',
+    slide17: '/static/images/tutorial/12old.png'
     }
 
 preloadImage(tutorialImages.slide1);
@@ -51,7 +55,11 @@ preloadImage(tutorialImages.slide9);
 preloadImage(tutorialImages.slide10);
 preloadImage(tutorialImages.slide11);
 preloadImage(tutorialImages.slide12);
-
+preloadImage(tutorialImages.slide13);
+preloadImage(tutorialImages.slide14);
+preloadImage(tutorialImages.slide15);
+preloadImage(tutorialImages.slide16);
+preloadImage(tutorialImages.slide17);
 
 var tutorialActive = false;
 function initTutorial(){
@@ -69,8 +77,13 @@ function initTutorial(){
     jQuery('#tutorial-dialog').bind('tutorialEvent7', function(e){displayTutorial(    {img:tutorialImages.slide8,  prevEvent:'tutorialEvent6',  nextEvent:'tutorialEvent8'});});
     jQuery('#tutorial-dialog').bind('tutorialEvent8', function(e){displayTutorial(    {img:tutorialImages.slide9,  prevEvent:'tutorialEvent7',  nextEvent:'tutorialEvent9'});});
     jQuery('#tutorial-dialog').bind('tutorialEvent9', function(e){displayTutorial(    {img:tutorialImages.slide10,  prevEvent:'tutorialEvent8',  nextEvent:'tutorialEvent10'});});
-    jQuery('#tutorial-dialog').bind('tutorialEvent10', function(e){displayTutorial(    {img:tutorialImages.slide11,  prevEvent:'tutorialEvent9',  nextEvent:'tutorialEvent11'});});
-    jQuery('#tutorial-dialog').bind('tutorialEvent11', function(e){displayTutorial(    {img:tutorialImages.slide12,  prevEvent:'tutorialEvent10',  nextEvent:'tutorialEventFinish'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent10', function(e){displayTutorial(   {img:tutorialImages.slide11,  prevEvent:'tutorialEvent9',  nextEvent:'tutorialEvent11'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent11', function(e){displayTutorial(   {img:tutorialImages.slide12,  prevEvent:'tutorialEvent10',  nextEvent:'tutorialEvent12'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent12', function(e){displayTutorial(   {img:tutorialImages.slide13,  prevEvent:'tutorialEvent11',  nextEvent:'tutorialEvent13'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent13', function(e){displayTutorial(   {img:tutorialImages.slide14,  prevEvent:'tutorialEvent12',  nextEvent:'tutorialEvent14'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent14', function(e){displayTutorial(   {img:tutorialImages.slide15,  prevEvent:'tutorialEvent13',  nextEvent:'tutorialEvent15'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent15', function(e){displayTutorial(   {img:tutorialImages.slide16,  prevEvent:'tutorialEvent14',  nextEvent:'tutorialEvent16'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent16', function(e){displayTutorial(   {img:tutorialImages.slide17,  prevEvent:'tutorialEvent15',  nextEvent:'tutorialEventFinish'});});
     jQuery('#tutorial-dialog').bind('tutorialEventFinish', hideTutorial);
 
     jQuery('#tutorial-dialog').trigger('tutorialEventStart');
