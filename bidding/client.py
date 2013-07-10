@@ -17,7 +17,7 @@ def send_stomp_message(message, destination):
 
     ## threaded
     th = threading.Thread(target=pubnub.publish, args=[{
-           'channel' : '/topic/main/',
+           'channel' : destination,
            'message' : message
        }])
     th.start()
@@ -61,7 +61,7 @@ def updatePrecap(auction):
         tmp['id'] = auction.id
         
     nresult = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(nresult, '/topic/main/')
+    send_stomp_message(nresult, '/topic/main/%s' % auction.id)
 
 def auctionAwait(auction):
     tmp = {}
@@ -69,7 +69,7 @@ def auctionAwait(auction):
     tmp['status'] = auction.status
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def auctionActive(auction):
 
@@ -80,7 +80,7 @@ def auctionActive(auction):
     tmp['lastClaimer'] = 'Nobody'
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 
 def auctionFinish(auction):
@@ -92,7 +92,7 @@ def auctionFinish(auction):
                      'facebookId': auction.winner.get_profile().facebook_id}
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def auctionPause(auction):
     tmp={}
@@ -100,7 +100,7 @@ def auctionPause(auction):
     tmp['status'] = auction.status
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def auctionResume(auction):
     tmp={}
@@ -109,7 +109,7 @@ def auctionResume(auction):
     tmp['timeleft'] = auction.get_time_left()
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def someoneClaimed(auction):
     tmp = {}
@@ -124,7 +124,7 @@ def someoneClaimed(auction):
     tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
 
     result = {'method': 'someoneClaimed', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 
 def do_send_auctioneer_message(auction,message):
@@ -139,7 +139,7 @@ def do_send_auctioneer_message(auction,message):
     tmp['id'] = auction.id
 
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def do_send_chat_message(auction, message):
     text = message.format_message()
@@ -153,7 +153,7 @@ def do_send_chat_message(auction, message):
 
     result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
 
-    send_stomp_message(result, '')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def log(text):
     result = {'method': 'log', 'params': 'SERVER: '+repr(text)}
