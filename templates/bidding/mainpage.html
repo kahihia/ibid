@@ -1,7 +1,6 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-{% templatetag openvariable %} current_user_db.fb_name {% templatetag closevariable %}
-<html ng-app style="overflow: hidden">
+<html ng-app>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>iBidGames</title>
@@ -38,16 +37,21 @@ preloadImage("{% static "images/help-img.png" %}");
 
 		<div id="fb-root"></div>
 		<script>
-			( function(d, s, id) {
-					var js, fjs = d.getElementsByTagName(s)[0];
-					if (d.getElementById(id))
-						return;
-					js = d.createElement(s);
-					js.id = id;
-					js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=148728218610989";
-					fjs.parentNode.insertBefore(js, fjs);
-				}(document, 'script', 'facebook-jssdk'));
+			window.fbAsyncInit = function() {
+				FB.init({
+					appId : '{{ fb_app_id }}'
+				});
+				FB.Canvas.setAutoGrow();
+			};
+      (function(d, s, id){
+	      var js, fjs = d.getElementsByTagName(s)[0];
+		    if (d.getElementById(id)) {return;}
+		    js = d.createElement(s); js.id = id;
+		    js.src = "//connect.facebook.net/en_US/all.js";
+		    fjs.parentNode.insertBefore(js, fjs);
+		  }(document, 'script', 'facebook-jssdk'));
 		</script>
+
 		<div id="main-wrapper">
 
 			<!--tutorial widget-->
@@ -547,22 +551,6 @@ preloadImage("{% static "images/help-img.png" %}");
                 <div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/></div>
             </div>
         </div>
-
-		<script language="javascript">
-			window.fbAsyncInit = function() {
-				FB.init({
-					appId : '{{ fb_app_id }}'
-				});
-				FB.Canvas.setAutoGrow();
-			};
-            ( function() {
-					var e = document.createElement('script');
-					e.async = true;
-					e.src = document.location.protocol + '//connect.facebook.net/en_US/all.js';
-					document.getElementById('fb-root').appendChild(e);
-				}()
-             );
-		</script>
 
 		<!--popup section-->
 		<!--welcome widget-->
