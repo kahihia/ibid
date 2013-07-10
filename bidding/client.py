@@ -61,7 +61,7 @@ def updatePrecap(auction):
         tmp['id'] = auction.id
         
     nresult = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(nresult, '/topic/main/%s' % auction.id)
+    send_stomp_message(nresult, '/topic/main/')
 
 def auctionAwait(auction):
     tmp = {}
@@ -69,7 +69,7 @@ def auctionAwait(auction):
     tmp['status'] = auction.status
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/%s' % auction.id)
+    send_stomp_message(result, '/topic/main/')
 
 def auctionActive(auction):
 
@@ -80,7 +80,7 @@ def auctionActive(auction):
     tmp['lastClaimer'] = 'Nobody'
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/%s' % auction.id)
+    send_stomp_message(result, '/topic/main/')
 
 
 def auctionFinish(auction):
@@ -92,7 +92,7 @@ def auctionFinish(auction):
                      'facebookId': auction.winner.get_profile().facebook_id}
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/%s' % auction.id)
+    send_stomp_message(result, '/topic/main/')
 
 def auctionPause(auction):
     tmp={}
@@ -100,7 +100,7 @@ def auctionPause(auction):
     tmp['status'] = auction.status
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/%s' % auction.id)
+    send_stomp_message(result, '/topic/main/')
 
 def auctionResume(auction):
     tmp={}
@@ -109,7 +109,7 @@ def auctionResume(auction):
     tmp['timeleft'] = auction.get_time_left()
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/%s' % auction.id)
+    send_stomp_message(result, '/topic/main/')
 
 def someoneClaimed(auction):
     tmp = {}
