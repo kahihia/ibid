@@ -295,10 +295,8 @@ def stopBidding(request):
 
     auction.leave_auction(member)
     auctioneer.member_left_message(auction, member)
-    #send_member_left(auction, member)
 
-    #update_user_data(member, auction)
-    ##update_auction(auction)
+    client.updatePrecap(auction)
 
     return HttpResponse('')
 
