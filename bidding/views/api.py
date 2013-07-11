@@ -131,11 +131,13 @@ def getAuctionsInitialization(request):
         tmp = {}
 
         tmp['id'] = auct.id
-        tmp['completion'] = auct.completion()
+        if hasattr(auct, 'completion'):
+            tmp['completion'] = auct.completion()
+        else:
+            tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
-        tmp['completion'] = auct.completion()
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -168,11 +170,13 @@ def getAuctionsInitialization(request):
     for auct in bids_auctions['my_auctions']:
         tmp = {}
         tmp['id'] = auct.id
-        tmp['completion'] = auct.completion()
+        if hasattr(auct, 'completion'):
+            tmp['completion'] = auct.completion()
+        else:
+            tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
-        tmp['completion'] = auct.completion()
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
