@@ -43,7 +43,7 @@ def getUserDetails(request):
         u'tokens':member.tokens_left
         }
 
-    return HttpResponse(json.dumps(data))
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 def getAuctionsInitialization(request):
     """init info for the wiseDOM """
@@ -214,7 +214,7 @@ def getAuctionsInitialization(request):
     data['ITEMS']['finished'] = auctions_bid_finished
     data['ITEMS']['mine'] = auctions_bid_my
 
-    return HttpResponse(json.dumps(data))
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 def startBidding(request):
     """ The users commits bids before the auction starts. """
@@ -229,10 +229,10 @@ def startBidding(request):
     try:
         amount = 5 #int(request.GET.get('amount', int(request.POST.get('amount', 0))))
     except ValueError:
-        return HttpResponse('{"result":"not int"}')
+        return HttpResponse('{"result":"not int"}', content_type="application/json")
 
     if amount < auction.minimum_precap:
-        return HttpResponse('{"result":"not minimun", "minimun": %s}' % auction.minimum_precap)
+        return HttpResponse('{"result":"not minimun", "minimun": %s}' % auction.minimum_precap, content_type="application/json")
 
     if auction.can_precap(member, amount):
         joining = auction.place_precap_bid(member, amount)
@@ -243,7 +243,7 @@ def startBidding(request):
 
         auctioneer.member_joined_message(auction, member) #auctioneer message
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 
 
@@ -268,7 +268,7 @@ def addBids(request):
         success = False
 
     res = {'success':success}
-    return HttpResponse(json.dumps(res))
+    return HttpResponse(json.dumps(res), content_type="application/json")
 
 
 def remBids(request):
@@ -288,7 +288,7 @@ def remBids(request):
 
         client.updatePrecap(auction)
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 def stopBidding(request):
     requPOST = json.loads(request.body)
@@ -302,7 +302,7 @@ def stopBidding(request):
 
     client.updatePrecap(auction)
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 
 
@@ -340,7 +340,7 @@ def claim(request):
     else:
         tmp["result"] = False
 
-    return HttpResponse(json.dumps(tmp))
+    return HttpResponse(json.dumps(tmp), content_type="application/json")
 
 def reportAnError(request):
     """
@@ -358,7 +358,7 @@ def reportAnError(request):
     send_mail(subject, emailMessage, settings.DEFAULT_FROM_EMAIL, [settings.DEFAULT_FROM_EMAIL])
 
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 
 def convert_tokens(request):
@@ -382,9 +382,9 @@ def sendMessage(request):
             #do_send_message(db_msg)
             client.do_send_chat_message(auction,db_msg)
 
-            return HttpResponse('{"result":true}')
+            return HttpResponse('{"result":true}', content_type="application/json")
 
-    return HttpResponse('{"result":false}')
+    return HttpResponse('{"result":false}', content_type="application/json")
 
 
 def get_chat_user(request):
@@ -460,7 +460,7 @@ def __member_status(member):
                     'bids': member.get_bids('bid'),
                     'maximun_bidsto': member.maximun_bids_from_tokens(),
                     'convert_combo': member.gen_available_tokens_to_bids(),
-                    }), mimetype="text/javascript")
+                    }), content_type="application/json")
 
 
 
