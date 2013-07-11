@@ -50,7 +50,7 @@ def getAuctionsInitialization(request):
 
     member = request.user.get_profile()
 
-    my_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).order_by('-status').filter(bidders=member)
+    my_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid')).order_by('-status').filter(bidders=member)
     other_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).order_by('-status').exclude(bidders=member)
     finished_auctions = Auction.objects.filter(is_active=True, status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).filter(winner__isnull=False).order_by('-won_date')
 
