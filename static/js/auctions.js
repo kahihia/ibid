@@ -228,13 +228,13 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             $timeout.cancel(auction.auctionTimeouts);
         }
         auction.onTimeout = function(){
-            if( typeof auction.timeleft == 'number'){
-                if( auction.timeleft > 0){
+            if (typeof auction.timeleft === 'number') {
+                if (auction.timeleft > 1) {
                     auction.timeleft = auction.timeleft - 1;
                     auction.auctionTimeouts = $timeout(auction.onTimeout, 1000);
                 }
             }
-        }
+        };
 
         auction.auctionTimeouts = $timeout(auction.onTimeout, 1000);
     };
