@@ -2,18 +2,14 @@
 from bidding.views.home import render_response
 
 from django.conf import settings
-from django.db.models import Count
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 import json
 
-from bidding.models import Auction, Item, AuctionFixture, Member, ConvertHistory, PrePromotedAuction, PromotedAuction, Invitation
+from bidding.models import Auction, ConvertHistory, PrePromotedAuction, PromotedAuction
 from chat.models import Message, ChatUser
-from bidding.utils import send_member_left
 from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator
 from django.template.loader import render_to_string
-from chat.auctioneer import member_joined_message, member_left_message
 
 from bidding import client
 
@@ -89,6 +85,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
+        tmp['auctioneerMessages'] = []
+        tmp['chatMessages'] = []
 
         auctions_token_available.append(tmp)
 
@@ -101,6 +99,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
+        tmp['auctioneerMessages'] = []
+        tmp['chatMessages'] = []
 
         auctions_bid_available.append(tmp)
 
@@ -112,6 +112,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name, 'displayName': auct.winner.get_profile().display_name(), 'facebookId':auct.winner.get_profile().facebook_id}
+        tmp['auctioneerMessages'] = []
+        tmp['chatMessages'] = []
 
         auctions_token_finished.append(tmp)
 
@@ -123,6 +125,7 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name, 'displayName': auct.winner.get_profile().display_name(), 'facebookId':auct.winner.get_profile().facebook_id}
+        tmp['auctioneerMessages'] = []
 
         #tmp['won_price'] = str(auct.won_price)
         auctions_bid_finished.append(tmp)
@@ -139,6 +142,7 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
+        tmp['bidNumber'] = auct.used_bids()/settings.TODO_BID_PRICE if auct.status == 'processing' else None
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -180,6 +184,7 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
+        tmp['bidNumber'] = auct.used_bids()/settings.TODO_BID_PRICE if auct.status == 'processing' else None
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
