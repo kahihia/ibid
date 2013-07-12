@@ -1,0 +1,256 @@
+# -*- coding: utf-8 -*-
+
+import os.path
+from settings_secret import *
+
+
+DEBUG = False
+TEMPLATE_DEBUG = DEBUG
+THUMBNAIL_DEBUG = DEBUG
+
+PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
+	
+DATABASES = {
+    'default': {
+        'ENGINE':  'django.db.backends.mysql',
+        'NAME':     DEFAULT_DB_NAME,
+        'USER':     DEFAULT_DB_USER
+        'PASSWORD': DEFAULT_DB_PASS,
+        'HOST':     DEFAULT_DB_HOST,
+        'PORT':     DEFAULT_DB_PORT,
+    }
+}
+
+DEFAULT_FROM_EMAIL = 'info@ibidgames.com'
+SERVER_EMAIL = 'info@ibidgames.com'
+
+ADMINS = (
+    ('Daniel', 'dnuske@gmail.com'),
+)
+MANAGERS = ADMINS
+
+ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
+
+AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
+                           'django_facebook.auth_backends.FacebookBackend',)
+
+AUTH_PROFILE_MODULE = 'bidding.member'
+ABSOLUTE_URL_OVERRIDES = {
+    'auth.user': lambda o: '/bids/user/%s/' % o.username
+}
+
+# Local time zone for this installation. Choices can be found here:
+# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
+# although not all choices may be available on all operating systems.
+# If running in a Windows environment this must be set to the same as your
+# system time zone.
+TIME_ZONE = 'UTC'
+
+# Language code for this installation. All choices can be found here:
+# http://www.i18nguy.com/unicode/language-identifiers.html
+LANGUAGE_CODE = 'en-us'
+
+# If you set this to False, Django will make some optimizations so as not
+# to load the internationalization machinery.
+USE_I18N = False
+
+SITE_ID = 1
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
+
+# Static files
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_PATH, 'static'),
+)
+
+# Admin Static Files
+ADMIN_MEDIA_PREFIX = '/static/admin/'
+
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+)
+
+MIDDLEWARE_CLASSES = (
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'bidding.middleware.SSLRedirect',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
+    'bidding.middleware.P3PHeaderMiddleware',
+)
+
+MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
+
+TEMPLATE_CONTEXT_PROCESSORS = (
+    "django.contrib.auth.context_processors.auth",
+    "django.core.context_processors.debug",
+    "django.core.context_processors.request",
+    "django.core.context_processors.media",
+    "django.contrib.messages.context_processors.messages",
+    "bidding.context_processors.settings_context",
+    'django_facebook.context_processors.facebook',
+    "bidding.context_processors.packages_context",
+)
+
+ROOT_URLCONF = 'urls'
+
+TEMPLATE_DIRS = (
+    os.path.join(PROJECT_PATH, 'templates'),
+)
+
+INSTALLED_APPS = (
+    'admin_tools.theming',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
+
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.sites',
+    'django.contrib.admin',
+    'django.contrib.flatpages',
+    'django.contrib.messages',
+
+    'audit',
+    'bidding',
+    'chat',
+    'countdown',
+
+    'paypal.standard.ipn',
+    'sorl.thumbnail',
+    'south',
+    'django_extensions',
+    'django.contrib.staticfiles',
+    'cumulus',
+
+    # Needed by django facebook
+    'registration',
+    'django_facebook',
+
+    # for django 1.4
+    'django.contrib.staticfiles',
+)
+
+
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s [%(asctime)s] %(module)s %(message)s'
+        },
+        'simple': {
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+    'filters': {
+        'require_debug_false': {
+                 '()': 'django.utils.log.RequireDebugFalse',
+        }
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': '/var/www/facebook.ibidgames.com/logs/ibiddjango.log',
+            'maxBytes': 1024000,
+            'backupCount': 3,
+        },
+        'sql': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': '/var/www/facebook.ibidgames.com/logs/sql.log',
+            'maxBytes': 102400,
+            'backupCount': 3,
+        },
+        'commands': {
+            'class': 'logging.handlers.RotatingFileHandler',
+            'formatter': 'verbose',
+            'filename': '/var/www/facebook.ibidgames.com/logs/commands.log',
+            'maxBytes': 10240,
+            'backupCount': 3,
+        },
+        'mail_admins': {
+             'level': 'ERROR',
+             'filters': ['require_debug_false'],
+             'class': 'django.utils.log.AdminEmailHandler'
+        },
+        'open_facebook.api': {
+             'level': 'INFO',
+             'class': 'django.utils.log.AdminEmailHandler'
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console', 'mail_admins'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+        'django.db.backends': {
+            'handlers': ['sql', 'console'],
+            'propagate': False,
+            'level': 'WARNING',
+        },
+        'scheduling': {
+            'handlers': ['commands', 'console'],
+            'propagate': True,
+            'level': 'DEBUG',
+        },
+    }
+}
+
+
+LOGIN_REDIRECT_URL = "/"
+EMAIL_CONFIRMATION_DAYS = 5
+PERSISTENT_SESSION_KEY = 'sessionpersistent'
+
+
+# SSL Configuration
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+
+
+ADMIN_TOOLS_MENU = 'menu.CustomMenu'
+ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
+
+
+# Urls
+WEB_APP = "https://apps.facebook.ibidgames.com/"
+NOT_AUTHORIZED_PAGE = WEB_APP
+APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
+FB_APP = "https://apps.facebook.com/ibidgames/"
+FBAPP = WEB_APP + "fb/"
+FBAPP_HOME = FB_APP + "home/"
+CANVAS_HOME = FB_APP + "canvashome/"
+#see how to better handle this
+IMAGES_SITE = 'https://apps.facebook.ibidgames.com'
+SITE_NAME = 'https://apps.facebook.ibidgames.com/'
+BID_SERVICE = 'http://apps.facebook.ibidgames.com/bid_service/api/'
+COUNTDOWN_SERVICE = 'http://apps.facebook.ibidgames.com/countdown/api/'
+
+
+# Facebook settings (more on settings_secret)
+FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
+FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
+FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream,user_birthday,user_location'
+AUTH_REDIRECT_URI = '{protocol}://apps.facebook.com/ibidgames/fb/login/'
+
+
+# App Settings
+AUDIT_ENABLED = False
+ERROR_REPORT_TITLE = "IBG ERROR REPORT PROD COCONUT-MASTER"
+PAGINATED_BY = 20
+TODO_BID_PRICE = 5
+TOKENS_TO_BIDS_RATE = 0.0001
