@@ -32,13 +32,16 @@ def send_pubnub_message(message, destination):
 def sendPackedMessages(clientMessages):
     #group messages of the same channel
     tmp = {}
+    print "sendPackedMessages"
+    print clientMessages
     for message, channel in clientMessages:
         if channel not in tmp.keys():
             tmp[channel] = []
         tmp[channel].append(message)
 
+    print tmp
     for key in tmp.keys():
-        if len(tmp) == 1:
+        if len(tmp[key]) == 1:
             tmp[key] = tmp[key][0]
         send_pubnub_message(tmp[key], key)
 
@@ -153,6 +156,20 @@ def someoneClaimed(auction):
     result = {'method': 'someoneClaimed', 'data': tmp}
     send_pubnub_message(result, '/topic/main/%s' % auction.id)
 
+def someoneClaimedMessage(auction):
+    tmp = {}
+    tmp['id'] = auction.id
+    tmp['price'] = str(auction.price())
+    tmp['timeleft'] = auction.get_time_left()
+    tmp['lastClaimer'] = auction.get_last_bidder().display_name()
+    tmp['facebook_id'] = auction.get_last_bidder().facebook_id
+    tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
+                     'displayName': auction.get_last_bidder().display_name(),
+                     'facebookId': auction.get_last_bidder().facebook_id}
+    tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
+
+    result = {'method': 'someoneClaimed', 'data': tmp}
+    return (result, '/topic/main/%s' % auction.id)
 
 def do_send_auctioneer_message(auction,message):
     print "do_send_auctioneer_message",auction,message

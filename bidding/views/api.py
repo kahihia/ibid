@@ -308,7 +308,6 @@ def stopBidding(request):
     clientMessages.append(auctioneer.member_left_message(auction, member))
     client.sendPackedMessages(clientMessages)
 
-
     return HttpResponse('', content_type="application/json")
 
 def claim(request):
@@ -330,7 +329,13 @@ def claim(request):
 
         if auction.used_bids()/settings.TODO_BID_PRICE == bidNumber:
             auction.bid(member)
-            auctioneer.member_claim_message(auction, member)
+
+            clientMessages = []
+            clientMessages.append(client.someoneClaimedMessage(auction))
+            clientMessages.append(auctioneer.member_claim_message(auction, member))
+            print "<<<< claim ----"
+            print clientMessages
+            client.sendPackedMessages(clientMessages)
 
             bid = auction.bid_set.get(bidder=member)
             tmp['id'] = auction_id
