@@ -351,7 +351,8 @@ def reportAnError(request):
     subject = settings.ERROR_REPORT_TITLE + ' - ' + member.facebook_name
 
     emailMessage = "message"+'\n'+message+'\n'+"gameState"+'\n'+gameState
-    send_mail(subject, emailMessage, settings.DEFAULT_FROM_EMAIL, [settings.DEFAULT_FROM_EMAIL])
+    
+    send_mail(subject, emailMessage, settings.DEFAULT_FROM_EMAIL, [tmp[1] for tmp in settings.ADMINS])
 
 
     return HttpResponse('')
