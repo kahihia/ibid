@@ -67,26 +67,41 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             $scope.initializeAuction(auctions[idx]);
         }
     }
+
     $scope.initializeAuction = function (auction) {
-        //add values to controll the user interface aspect
-        auction.interface = {'bidEnabled': true,
-            'addBidEnabled': $scope.isAddBidsEnabled(),
-            'remBidEnabled': true
+        // Add values to control the user interface aspect.
+        auction.interface = {
+            bidEnabled: true,
+            addBidEnabled: $scope.isAddBidsEnabled(),
+            remBidEnabled: true
         };
-
-        auction.chatMessage = '';
-        //initialize default variable values
-        auction.bidNumber = 0;
-
-        if(typeof auction.chatMessages == 'undefined'){
+        // Initialize default values.
+        if (_.isUndefined(auction.bidNumber)) {
+            auction.bidNumber = 0;
+        }
+        if (_.isUndefined(auction.chatMessage)) {
+            auction.chatMessage = '';
+        }
+        if (_.isUndefined(auction.chatMessages)) {
             auction.chatMessages = [];
         }
-        //initialize default variable values
-        if(typeof auction.auctioneerMessages == 'undefined'){
+        if (_.isUndefined(auction.auctioneerMessages)) {
             auction.auctioneerMessages = [];
         }
+        if ($scope.isAuctionMine(auction)) {
+            $scope.subscribeToAuctionChannel(auction);
+        }
+        // If auction has a timeleft, it already begun, so counter
+        // must be started.
+        if (!_.isUndefined(auction.timeleft)) {
+            $scope.startCounter(auction.id);
+        }
+    };
 
-    }
+    $scope.isAuctionMine = function (auction) {
+        return _.contains($scope.auctionList['TOKENS']['mine'], auction) || _.contains($scope.auctionList['ITEMS']['mine'], auction);
+    };
+
     $scope.isAddBidsEnabled = function () {
         return $rootScope.user.tokens > 0;
     }
@@ -100,7 +115,56 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.playFor = 'ITEMS';
     }
 
+    $scope.subscribeToAuctionChannel = function (auction) {
+        return PUBNUB.subscribe({
+            channel: $scope.channel + auction.id,
+            callback: function (message) {
+                console.log("PubNub channel %s message ("+getCurrentDateTime()+")", $scope.channel + auction.id, message);
+                gameState.pubnubMessages.push([getCurrentDateTime(), message]);
+                $scope.$apply(function () {
+                    // Try to get auction data once without errors.
+                    try {
+                        var auction = $scope.getLocalAuctionById(message.data.id);
+                    }
+                    catch (e) {}
+                    switch (message.method) {
+                        case 'receiveChatMessage':
+                            auction.chatMessages.push(message.data);
+                            var scrollHeight = jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0])[0].scrollHeight;
+                            setTimeout(function(){ jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0]).scrollTop(scrollHeight)} ,200);
+                            break;
+                        case 'receiveAuctioneerMessage':
+                            auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);
+                            break;
+                        case 'someoneClaimed':
+                            if (message.data.lastClaimer != $rootScope.user.displayName) {
+                                auction.interface.bidEnabled = true;
+                            }
+                            auction.timeleft = message.data.timeleft;
+                            auction.bidNumber = message.data.bidNumber;
+                            $scope.startCounter(auction.id);
+                            break;
 
+                    }
+                });
+            },
+            disconnect: function () {
+                console.log('PubNub channel %s disconnected', $scope.channel + auction.id);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Disconnected';
+                });
+            },
+            reconnect: function () {
+                console.log('PubNub channel %s reconnected', $scope.channel + auction.id);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Connected';
+                });
+            },
+            connect: function () {
+                console.log('PubNub channel %s connected', $scope.channel + auction.id);
+            }
+        });
+    }
 
 
     $scope.addAuctionAvailable = function () {
@@ -121,63 +185,16 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         if(tutorialActive == true && tutorialAuctionId == auction.id){
             $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent2');}, 2500);
         }
-        $http.post('/api/startBidding/', {'id': auction.id}).
-            success(function (rdata, status) {
+        $http
+            .post('/api/startBidding/', {'id': auction.id})
+            .success(function (rdata, status) {
                 $rootScope.$emit('reloadUserDataEvent');
                 //remove auction from available and load it into mine
                 delete auction; //auctionList.tokens.available.splice(index);
                 $scope.$emit('reloadAuctionsData');
             });
-        // Subscribe to auction's message channel
-        PUBNUB.subscribe({
-        channel: $scope.channel + auction.id,
-        callback: function (message) {
-            console.log("PubNub channel %s message ("+getCurrentDateTime()+")", $scope.channel + auction.id, message);
-            gameState.pubnubMessages.push([getCurrentDateTime(), message]);
-            $scope.$apply(function () {
-                // Try to get auction data once without errors.
-                try {
-                    var auction = $scope.getLocalAuctionById(message.data.id);
-                }
-                catch (e) {}
-                switch (message.method) {
-                    case 'receiveChatMessage':
-                        auction.chatMessages.push(message.data);
-                        var scrollHeight = jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0])[0].scrollHeight;
-                        setTimeout(function(){ jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0]).scrollTop(scrollHeight)} ,200);
-                        break;
-                    case 'receiveAuctioneerMessage':
-                        auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);
-                        break;
-                    case 'someoneClaimed':
-                        if (message.data.lastClaimer != $rootScope.user.displayName) {
-                            auction.interface.bidEnabled = true;
-                        }
-                        auction.timeleft = message.data.timeleft;
-                        auction.bidNumber = message.data.bidNumber;
-                        $scope.startCounter(auction.id);
-                        break;
-
-                }
-            });
-        },
-        disconnect: function () {
-            console.log('PubNub channel %s disconnected', $scope.channel + auction.id);
-            $scope.$apply(function () {
-                $scope.realtimeStatus = 'Disconnected';
-            });
-        },
-        reconnect: function () {
-            console.log('PubNub channel %s reconnected', $scope.channel + auction.id);
-            $scope.$apply(function () {
-                $scope.realtimeStatus = 'Connected';
-            });
-        },
-        connect: function () {
-            console.log('PubNub channel %s connected', $scope.channel + auction.id);
-            hideOverlay();
-        }
-    });
+        // Subscribe to auction's message channel.
+        $scope.subscribeToAuctionChannel(auction);
     };
 
     //status: precap

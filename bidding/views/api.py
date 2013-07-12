@@ -2,25 +2,17 @@
 from bidding.views.home import render_response
 
 from django.conf import settings
-from django.db.models import Count
-from django.http import Http404, HttpResponse, HttpResponseRedirect
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404
 import json
 
-from bidding.models import Auction, Item, AuctionFixture, Member, ConvertHistory, PrePromotedAuction, PromotedAuction, Invitation
+from bidding.models import Auction, ConvertHistory, PrePromotedAuction, PromotedAuction, Invitation
 from chat.models import Message, ChatUser
-from bidding.utils import send_member_left
 from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator
 from django.template.loader import render_to_string
-from chat.auctioneer import member_joined_message, member_left_message
-
 from bidding import client
-
 from chat import auctioneer
-
 from django.core.mail import send_mail
-
 
 def api(request, method ):
     """init info for the wiseDOM """
@@ -43,14 +35,14 @@ def getUserDetails(request):
         u'tokens':member.tokens_left
         }
 
-    return HttpResponse(json.dumps(data))
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 def getAuctionsInitialization(request):
     """init info for the wiseDOM """
 
     member = request.user.get_profile()
 
-    my_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).order_by('-status').filter(bidders=member)
+    my_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid')).order_by('-status').filter(bidders=member)
     other_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).order_by('-status').exclude(bidders=member)
     finished_auctions = Auction.objects.filter(is_active=True, status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).filter(winner__isnull=False).order_by('-won_date')
 
@@ -78,8 +70,6 @@ def getAuctionsInitialization(request):
     auctions_bid_finished = []
     auctions_bid_my = []
 
-    #data = {'id':bids_auctions['other_auctions'][0].id}
-
     for auct in tokens_auctions['other_auctions']:
         tmp = {}
         tmp['id'] = auct.id
@@ -89,6 +79,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
+        tmp['auctioneerMessages'] = []
+        tmp['chatMessages'] = []
 
         auctions_token_available.append(tmp)
 
@@ -101,6 +93,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
+        tmp['auctioneerMessages'] = []
+        tmp['chatMessages'] = []
 
         auctions_bid_available.append(tmp)
 
@@ -112,6 +106,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name, 'displayName': auct.winner.get_profile().display_name(), 'facebookId':auct.winner.get_profile().facebook_id}
+        tmp['auctioneerMessages'] = []
+        tmp['chatMessages'] = []
 
         auctions_token_finished.append(tmp)
 
@@ -123,6 +119,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name, 'displayName': auct.winner.get_profile().display_name(), 'facebookId':auct.winner.get_profile().facebook_id}
+        tmp['auctioneerMessages'] = []
+        tmp['chatMessages'] = []
 
         #tmp['won_price'] = str(auct.won_price)
         auctions_bid_finished.append(tmp)
@@ -131,13 +129,17 @@ def getAuctionsInitialization(request):
         tmp = {}
 
         tmp['id'] = auct.id
-        tmp['completion'] = auct.completion()
+        if hasattr(auct, 'completion'):
+            tmp['completion'] = auct.completion()
+        else:
+            tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
-        tmp['completion'] = auct.completion()
+        tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['bids'] = member.auction_bids_left(auct)
+        tmp['bidNumber'] = auct.used_bids()/settings.TODO_BID_PRICE if auct.status == 'processing' else None
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
 
@@ -168,13 +170,17 @@ def getAuctionsInitialization(request):
     for auct in bids_auctions['my_auctions']:
         tmp = {}
         tmp['id'] = auct.id
-        tmp['completion'] = auct.completion()
+        if hasattr(auct, 'completion'):
+            tmp['completion'] = auct.completion()
+        else:
+            tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
-        tmp['completion'] = auct.completion()
         tmp['placed'] = member.auction_bids_left(auct)
+        tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
         tmp['bids'] = member.auction_bids_left(auct)
+        tmp['bidNumber'] = auct.used_bids()/settings.TODO_BID_PRICE if auct.status == 'processing' else None
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
 
@@ -210,7 +216,7 @@ def getAuctionsInitialization(request):
     data['ITEMS']['finished'] = auctions_bid_finished
     data['ITEMS']['mine'] = auctions_bid_my
 
-    return HttpResponse(json.dumps(data))
+    return HttpResponse(json.dumps(data), content_type="application/json")
 
 def startBidding(request):
     """ The users commits bids before the auction starts. """
@@ -225,10 +231,10 @@ def startBidding(request):
     try:
         amount = 5 #int(request.GET.get('amount', int(request.POST.get('amount', 0))))
     except ValueError:
-        return HttpResponse('{"result":"not int"}')
+        return HttpResponse('{"result":"not int"}', content_type="application/json")
 
     if amount < auction.minimum_precap:
-        return HttpResponse('{"result":"not minimun", "minimun": %s}' % auction.minimum_precap)
+        return HttpResponse('{"result":"not minimun", "minimun": %s}' % auction.minimum_precap, content_type="application/json")
 
     if auction.can_precap(member, amount):
         joining = auction.place_precap_bid(member, amount)
@@ -239,7 +245,7 @@ def startBidding(request):
 
         auctioneer.member_joined_message(auction, member) #auctioneer message
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 
 
@@ -264,7 +270,7 @@ def addBids(request):
         success = False
 
     res = {'success':success}
-    return HttpResponse(json.dumps(res))
+    return HttpResponse(json.dumps(res), content_type="application/json")
 
 
 def remBids(request):
@@ -284,7 +290,7 @@ def remBids(request):
 
         client.updatePrecap(auction)
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 def stopBidding(request):
     requPOST = json.loads(request.body)
@@ -298,7 +304,7 @@ def stopBidding(request):
 
     client.updatePrecap(auction)
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 
 
@@ -336,7 +342,7 @@ def claim(request):
     else:
         tmp["result"] = False
 
-    return HttpResponse(json.dumps(tmp))
+    return HttpResponse(json.dumps(tmp), content_type="application/json")
 
 def reportAnError(request):
     """
@@ -355,7 +361,7 @@ def reportAnError(request):
     send_mail(subject, emailMessage, settings.DEFAULT_FROM_EMAIL, [tmp[1] for tmp in settings.ADMINS])
 
 
-    return HttpResponse('')
+    return HttpResponse('', content_type="application/json")
 
 
 def convert_tokens(request):
@@ -379,9 +385,9 @@ def sendMessage(request):
             #do_send_message(db_msg)
             client.do_send_chat_message(auction,db_msg)
 
-            return HttpResponse('{"result":true}')
+            return HttpResponse('{"result":true}', content_type="application/json")
 
-    return HttpResponse('{"result":false}')
+    return HttpResponse('{"result":false}', content_type="application/json")
 
 
 def get_chat_user(request):
@@ -457,7 +463,7 @@ def __member_status(member):
                     'bids': member.get_bids('bid'),
                     'maximun_bidsto': member.maximun_bids_from_tokens(),
                     'convert_combo': member.gen_available_tokens_to_bids(),
-                    }), mimetype="text/javascript")
+                    }), content_type="application/json")
 
 
 
