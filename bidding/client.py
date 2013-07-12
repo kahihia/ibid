@@ -17,7 +17,7 @@ def send_stomp_message(message, destination):
 
     ## threaded
     th = threading.Thread(target=pubnub.publish, args=[{
-           'channel' : '/topic/main/',
+           'channel' : destination,
            'message' : message
        }])
     th.start()
@@ -124,7 +124,7 @@ def someoneClaimed(auction):
     tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
 
     result = {'method': 'someoneClaimed', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 
 def do_send_auctioneer_message(auction,message):
@@ -139,7 +139,7 @@ def do_send_auctioneer_message(auction,message):
     tmp['id'] = auction.id
 
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def do_send_chat_message(auction, message):
     text = message.format_message()
@@ -153,7 +153,7 @@ def do_send_chat_message(auction, message):
 
     result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
 
-    send_stomp_message(result, '')
+    send_stomp_message(result, '/topic/main/%s' % auction.id)
 
 def log(text):
     result = {'method': 'log', 'params': 'SERVER: '+repr(text)}
