@@ -12,17 +12,23 @@ PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
 	
 DATABASES = {
     'default': {
-        'ENGINE':  'django.db.backends.mysql',
-        'NAME':     DEFAULT_DB_NAME,
-        'USER':     DEFAULT_DB_USER
-        'PASSWORD': DEFAULT_DB_PASS,
-        'HOST':     DEFAULT_DB_HOST,
-        'PORT':     DEFAULT_DB_PORT,
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ibidgames-local',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
 DEFAULT_FROM_EMAIL = 'info@ibidgames.com'
 SERVER_EMAIL = 'info@ibidgames.com'
+
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'info@ibidgames.com'
+EMAIL_HOST_PASSWORD = 'Argentina168'
+EMAIL_USE_TLS = True
 
 ADMINS = (
     ('Daniel', 'dnuske@gmail.com'),
@@ -69,6 +75,9 @@ STATICFILES_DIRS = (
 
 # Admin Static Files
 ADMIN_MEDIA_PREFIX = '/static/admin/'
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = 'q0zs)p0r6h2u1^b5ak55z)nuu^mvi*rd4jx6$!=++_xqv6s(aa'
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
@@ -241,16 +250,26 @@ BID_SERVICE = 'http://apps.facebook.ibidgames.com/bid_service/api/'
 COUNTDOWN_SERVICE = 'http://apps.facebook.ibidgames.com/countdown/api/'
 
 
-# Facebook settings (more on settings_secret)
+# Facebook settings
+FACEBOOK_API_KEY = ''
+FACEBOOK_APP_ID = ''
+FACEBOOK_APP_SECRET = ''
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
 FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
 FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream,user_birthday,user_location'
 AUTH_REDIRECT_URI = '{protocol}://apps.facebook.com/ibidgames/fb/login/'
 
 
+# PubNub settings
+PUBNUB_PUB = 'pub-c-50278d15-1317-4bcb-92e2-d2981d99dcb8'
+PUBNUB_SUB = 'sub-c-43c0f9be-df39-11e2-ab32-02ee2ddab7fe'
+PUBNUB_SECRET = ''
+
+
 # App Settings
 AUDIT_ENABLED = False
-ERROR_REPORT_TITLE = "IBG ERROR REPORT PROD COCONUT-MASTER"
+ERROR_REPORT_TITLE = "IBG ERROR REPORT"
 PAGINATED_BY = 20
 TODO_BID_PRICE = 5
 TOKENS_TO_BIDS_RATE = 0.0001
+PAYPAL_RECEIVER_EMAIL = 'payment@ibidgames.com'

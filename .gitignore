@@ -3,8 +3,7 @@
 .swp
 lib
 src
-settings_custom.py
-settings_secret.py
+settings.py
 
 venv
 
