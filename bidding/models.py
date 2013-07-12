@@ -9,7 +9,6 @@ from decimal import Decimal
 import re
 import open_facebook
 from sorl.thumbnail import get_thumbnail
-from settings import IMAGES_SITE
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -274,7 +273,7 @@ class Item(AuditedModel):
     name.alphabetic_filter = True
 
     def get_thumbnail(self, size='107x72'):
-        return IMAGES_SITE + get_thumbnail(self.itemimage_set.all()[0].image.name, size).url
+        return settings.IMAGES_SITE + get_thumbnail(self.itemimage_set.all()[0].image.name, size).url
 
     def __unicode__(self):
         return self.name
