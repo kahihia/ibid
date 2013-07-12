@@ -33,6 +33,13 @@ body {
 	-webkit-font-smoothing: antialiased;
 	background-image: url("../images/bkg-body2.jpg");
 	padding-bottom: 30px;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	cursor: default;
 }
 
 #main-wrapper {
@@ -256,6 +263,7 @@ body {
 	-webkit-transition: .2s;
 	transition: .2s;
 	z-index: 10;
+	cursor: pointer;
 }
 #menu-wrapper #menu .btn-tokens:hover {
 	background-position: 0 0px;
@@ -277,6 +285,7 @@ body {
 	-moz-transition: .2s;
 	-webkit-transition: .2s;
 	transition: .2s;
+	cursor: pointer;
 }
 
 #menu-wrapper #menu .btn-items:hover {
@@ -1025,7 +1034,7 @@ body {
 #content-wrapper .frame .winners .winners-list .user {
 	border-right: 1px solid #e4e4e4;
 	background-color: #f9f9f9;
-	font-size: 18px;
+	font-size: 14px;
 	font-weight: 400;
 	width: 243px;
 	height: 100%;
@@ -1060,7 +1069,7 @@ body {
 }
 #content-wrapper .frame .winners .winners-list .txt p {
 	font-size: 12px;
-	color: #F36500;
+	color: #313131;
 	line-height: 44px;
 	margin-top: 17px;
 	font-weight: 600;
@@ -1076,7 +1085,7 @@ body {
 	width: 100px;
 	float: left;
 	height: 100%;
-	text-align:center;
+	text-align: center;
 }
 #content-wrapper .frame .winners .winners-list .pic img {
 	margin: 4px 0 0 2px;
