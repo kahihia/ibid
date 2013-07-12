@@ -260,8 +260,6 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         bid.unixtime = Decimal("%f" % bid_time)
         bid.save()
 
-        client.someoneClaimed(self.auction)
-
         if self._check_thresholds():
             self.auction.pause()
             bid_client.delayResume(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)

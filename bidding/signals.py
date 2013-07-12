@@ -30,7 +30,7 @@ task_auction_pause = Signal(providing_args=["auction"])
 def send_win_email(sender, **kwargs):
 
     try:
-        client.send_stomp_message(json.dumps({'method':'log','params':'SERVER: auction_finished_signal'}), '/topic/main/')
+        client.send_pubnub_message(json.dumps({'method':'log','params':'SERVER: auction_finished_signal'}), '/topic/main/')
         logger.debug("Sending mail")
         auction = kwargs['auction']
         user = auction.winner
@@ -67,7 +67,7 @@ def send_win_email(sender, **kwargs):
 @receiver(auction_finished_signal)
 def make_auction_invoice(sender, **kwargs):
     auction = kwargs['auction']
-    client.send_stomp_message(json.dumps({'method':'log','params':'SERVER: auction_finished_signal'}), '/topic/main/')
+    client.send_pubnub_message(json.dumps({'method':'log','params':'SERVER: auction_finished_signal'}), '/topic/main/')
 
     if auction.winner:
 
@@ -92,7 +92,7 @@ def make_auction_invoice(sender, **kwargs):
 
 #@receiver(precap_finished_signal)
 def send_start_email(sender, **kwargs):
-    client.send_stomp_message(json.dumps({'method':'log','params':'SERVER: precap_finished_signal'}), '/topic/main/')
+    client.send_pubnub_message(json.dumps({'method':'log','params':'SERVER: precap_finished_signal'}), '/topic/main/')
     auction = kwargs['auction']
     
     user_mails = auction.bidder_mails()
@@ -113,7 +113,7 @@ def send_start_email(sender, **kwargs):
 
 @receiver(auction_finished_signal)
 def post_win_wall(sender, **kwargs):
-    client.send_stomp_message(json.dumps({'method':'log','params':'SERVER: auction_finished_signal'}), '/topic/main/')
+    client.send_pubnub_message(json.dumps({'method':'log','params':'SERVER: auction_finished_signal'}), '/topic/main/')
 
     auction = kwargs['auction']
     logger.debug("Auction: %s" % auction)
