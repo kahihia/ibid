@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import urllib, urllib2
-#from django.config import settings
-import settings
+from django.conf import settings
+
 
 def delayStart(auctionId, bidNumber, time):
     #self.send({'auctionId':auctionId, 'method':'start', 'params':params})
