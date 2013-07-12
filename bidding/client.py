@@ -197,7 +197,7 @@ def do_send_chat_message(auction, message):
 
     result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
 
-    send_pubnub_message(result, '/topic/main/%s' % auction.id)
+    send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
 def log(text):
     result = {'method': 'log', 'params': 'SERVER: '+repr(text)}
