@@ -168,8 +168,6 @@ def getAuctionsInitialization(request):
                 }
             tmp['chatMessages'].insert(0,w)
 
-
-
         auctions_token_my.append(tmp)
 
     for auct in bids_auctions['my_auctions']:
@@ -246,13 +244,12 @@ def startBidding(request):
         if joining:
             pass
 
-        client.updatePrecap(auction)
-
-        auctioneer.member_joined_message(auction, member) #auctioneer message
+        clientMessages = []
+        clientMessages.append(client.updatePrecapMessage(auction))
+        clientMessages.append(auctioneer.member_joined_message(auction, member))
+        client.sendPackedMessages(clientMessages)
 
     return HttpResponse('', content_type="application/json")
-
-
 
 def addBids(request):
     """ The users commits bids before the auction starts. """
@@ -305,18 +302,18 @@ def stopBidding(request):
     member = request.user.get_profile()
 
     auction.leave_auction(member)
-    auctioneer.member_left_message(auction, member)
 
-    client.updatePrecap(auction)
+    clientMessages = []
+    clientMessages.append(client.updatePrecapMessage(auction))
+    clientMessages.append(auctioneer.member_left_message(auction, member))
+    client.sendPackedMessages(clientMessages)
+
 
     return HttpResponse('', content_type="application/json")
 
-
-
-
 def claim(request):
     """
-    The user uses the bids that commited before to try to win the auction in
+    The user uses the bids that has commit before to try to win the auction in
     process.
     """
     requPOST = json.loads(request.body)
@@ -358,15 +355,12 @@ def reportAnError(request):
     message = request.POST.get('message', '')
     gameState = request.POST.get('gameState', '{}')
 
-
     subject = settings.ERROR_REPORT_TITLE + ' - ' + member.facebook_name
 
     emailMessage = "message"+'\n'+message+'\n'+"gameState"+'\n'+gameState
     send_mail(subject, emailMessage, settings.DEFAULT_FROM_EMAIL, [settings.DEFAULT_FROM_EMAIL])
 
-
     return HttpResponse('', content_type="application/json")
-
 
 def convert_tokens(request):
     if request.method == "POST":
@@ -393,14 +387,12 @@ def sendMessage(request):
 
     return HttpResponse('{"result":false}', content_type="application/json")
 
-
 def get_chat_user(request):
     if not request.user.is_authenticated():
         raise Http404
 
     chat_user, _ = ChatUser.objects.get_or_create(user=request.user)
     return chat_user
-
 
 def update_participants_page(request):
     #FIXME get_auction_or_404
@@ -444,8 +436,6 @@ def auction_detail(request, slug, id):
         {'auction': auction, 'page' : page,
          'suggested' : suggested_auction(request.user, auction)})
 
-
-
 @csrf_exempt
 def auction_won_list(request):
     #FIXME ugly
@@ -469,10 +459,6 @@ def __member_status(member):
                     'convert_combo': member.gen_available_tokens_to_bids(),
                     }), content_type="application/json")
 
-
-
-
-
 import datetime
 
 def set_cookie(response, key, value, days_expire = 7):
@@ -482,10 +468,6 @@ def set_cookie(response, key, value, days_expire = 7):
     max_age = days_expire * 24 * 60 * 60
   expires = datetime.datetime.strftime(datetime.datetime.utcnow() + datetime.timedelta(seconds=max_age), "%a, %d-%b-%Y %H:%M:%S GMT")
   response.set_cookie(key, value, max_age=max_age, expires=expires, domain=settings.SESSION_COOKIE_DOMAIN, secure=settings.SESSION_COOKIE_SECURE or None)
-
-
-
-
 
 API = {
     'getUserDetails': getUserDetails,
