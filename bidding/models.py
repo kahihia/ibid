@@ -559,8 +559,13 @@ class ConvertHistory(AuditedModel):
     def convert(member, num_bids):
         tokens_amount = (num_bids / settings.TOKENS_TO_BIDS_RATE)
 
+        print "convert"
+        print tokens_amount, member.tokens_left, tokens_amount
+
         if member.tokens_left >= tokens_amount:
-            member.bidsto_left += num_bids
+            #TODO: add bidsto
+            #member.bidsto_left += num_bids
+            member.bids_left += num_bids
             member.tokens_left -= tokens_amount
             member.save()
 

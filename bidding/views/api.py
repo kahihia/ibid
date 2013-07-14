@@ -368,8 +368,11 @@ def reportAnError(request):
 
 def convert_tokens(request):
     if request.method == "POST":
+        requPOST = json.loads(request.body)
+        amount = int(requPOST['amount'])
+
         member = request.user.get_profile()
-        ConvertHistory.convert(member, int(request.POST['amount']))
+        ConvertHistory.convert(member, int(amount))
         return HttpResponse(
             json.dumps({'tokens': member.get_bids("token"),
                         'bids': member.get_bids('bid'),

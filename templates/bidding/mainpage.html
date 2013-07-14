@@ -55,155 +55,157 @@ preloadImage("{% static "images/help-img.png" %}");
 
 		<div id="main-wrapper">
 
-			<!--tutorial widget-->
-			<div id="tooltip-help" style="position:absolute;top:200px;left:300px;z-index:1002; float:left;display:none;">
-				<div class="img">
-					<img src="{% static "images/help-img-small.png" %}" width="72" height="91">
-				</div>
-				<div class="box">
+            <div id="base_header" ng-controller="userDetailsCtrl">
+                <!--tutorial widget-->
+                <div id="tooltip-help" style="position:absolute;top:200px;left:300px;z-index:1002; float:left;display:none;">
+                    <div class="img">
+                        <img src="{% static "images/help-img-small.png" %}" width="72" height="91">
+                    </div>
+                    <div class="box">
 
-					<div class="close">
-						x
-					</div>
-					<div class="text">
-						<p>
-							TITULOS TIUTLOS TITULOS
-						</p>
-						Mensajemensaje mensaje mensajem
-					</div>
-					<div id="btn-tutorial" style=" text-align:right;text-align:center;"><img src="{% static "images/btn-next.png" %}" />
-					</div>
-					<div style="width:100%;">
-						<!--	<div id="arrow-position" style="width: 100%;float: left;">
-						&nbsp;
-						</div>-->
-						<div style="float: left;"></div>
-					</div>
-					<div><img src="/static/images/pico.png" style="float: right; margin: 0px 30px -30px 0px;">
-					</div>
-				</div>
+                        <div class="close">
+                            x
+                        </div>
+                        <div class="text">
+                            <p>
+                                TITULOS TIUTLOS TITULOS
+                            </p>
+                            Mensajemensaje mensaje mensajem
+                        </div>
+                        <div id="btn-tutorial" style=" text-align:right;text-align:center;"><img src="{% static "images/btn-next.png" %}" />
+                        </div>
+                        <div style="width:100%;">
+                            <!--	<div id="arrow-position" style="width: 100%;float: left;">
+                            &nbsp;
+                            </div>-->
+                            <div style="float: left;"></div>
+                        </div>
+                        <div><img src="/static/images/pico.png" style="float: right; margin: 0px 30px -30px 0px;">
+                        </div>
+                    </div>
 
-			</div>
-			<!--buy credits popup-->
-			<div class="buy-bids-popup" style="z-index:1001;display:none;">
-				<div class="popup">
-					<div class="title">
-						<span class="close">×</span>
-						<img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
-						src="{% static "images/credits-big.png" %}">
-						<h1 style="margin-left: 35px;">Buy Credits</h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">You need Credits to play for Items</span></br>Buy your credits and get more chance to win auctions!
-					</div>
-					{% for package in packages %}
-					<section>
+                </div>
+                <!--buy credits popup-->
+                <div class="buy-bids-popup" style="z-index:1001;display:none;">
+                    <div class="popup">
+                        <div class="title">
+                            <span class="close">×</span>
+                            <img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
+                            src="{% static "images/credits-big.png" %}">
+                            <h1 style="margin-left: 35px;">Buy Credits</h1>
+                        </div>
+                        <div class="info">
+                            <span style="color:#f36500; font-weight: 700; font-size: 16px;">You need Credits to play for Items</span></br>Buy your credits and get more chance to win auctions!
+                        </div>
+                        {% for package in packages %}
+                        <section>
 
-						<div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }})">
-							{{ package.description }}
-						</div>
-					</section>
-					<!--<section>
-					{% if package.description %}<span class="save">{{ package.description }}</span>{% endif %}
-					<div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }})">
-					{{ package.title }}
-					</div>
-					</section>-->
-					{% endfor %}
+                            <div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }})">
+                                {{ package.description }}
+                            </div>
+                        </section>
+                        <!--<section>
+                        {% if package.description %}<span class="save">{{ package.description }}</span>{% endif %}
+                        <div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }})">
+                        {{ package.title }}
+                        </div>
+                        </section>-->
+                        {% endfor %}
 
-					<hr>
+                        <hr>
 
-					<h1>You can convert Tokens to Credits:</h1>
-					<p class="comment">
-					You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
-					Tokens and you can convert it up to
-					<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.<br>
-					Please select the required amount of Credits.
-					</p>
-					<div class="warning"></div>
-					<section>
-					<select id="tokens_to_convert">
-					{%  for conv in user.get_profile.gen_available_tokens_to_bids %}
-					<option value={{ conv }}>{{ conv }}</option>
-					{% endfor %}
-					</select>
-					Credits
-					<div class="btn" onclick="convertChips()">Convert Now</div>
-					</section>
-				</div>
-			</div>
-			<!--like popup-->
-			<div class="like-popup" >
-				<div class="popup">
-					<div class="title">
-						<span class="close">×</span>
-						<h1>Like us!</h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Click the Like button below to like us!</span></br>Also remember to invite your friends, you will earn 1000 tokens for free.
-					</div>
-					<div style="margin: 30px 10px 10px 130px;">
+                        <h1>You can convert Tokens to Credits:</h1>
+                        <p class="comment">
+                        You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
+                        Tokens and you can convert it up to
+                        <b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.<br>
+                        Please select the required amount of Credits.
+                        </p>
+                        <div class="warning"></div>
+                        <section>
+                        <select id="tokens_to_convert">
+                        {%  for conv in user.get_profile.gen_available_tokens_to_bids %}
+                        <option value={{ conv }}>{{ conv }}</option>
+                        {% endfor %}
+                        </select>
+                        Credits
+                        <div class="btn" ng-click="convertChips()">Convert Now</div>
+                        </section>
+                    </div>
+                </div>
+                <!--like popup-->
+                <div class="like-popup" >
+                    <div class="popup">
+                        <div class="title">
+                            <span class="close">×</span>
+                            <h1>Like us!</h1>
+                        </div>
+                        <div class="info">
+                            <span style="color:#f36500; font-weight: 700; font-size: 16px;">Click the Like button below to like us!</span></br>Also remember to invite your friends, you will earn 1000 tokens for free.
+                        </div>
+                        <div style="margin: 30px 10px 10px 130px;">
 
-						<div class="fb-like" data-href="https://apps.facebook.com/ibidgames/canvashome/" data-send="false"  data-width="300" data-show-faces="false"></div>
-					</div>
-				</div>
-			</div>
-			<!--friends invited popup-->
-			<div class="friends-invited-popup">
-				<div class="popup">
-					<div class="title">
-						<span class="close">×</span>
-						<h1>Friends invited!</h1> &nbsp;
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">The invitations have been sent! Thank you!</span>
-					</div>
-				</div>
-			</div>
+                            <div class="fb-like" data-href="https://apps.facebook.com/ibidgames/canvashome/" data-send="false"  data-width="300" data-show-faces="false"></div>
+                        </div>
+                    </div>
+                </div>
+                <!--friends invited popup-->
+                <div class="friends-invited-popup">
+                    <div class="popup">
+                        <div class="title">
+                            <span class="close">×</span>
+                            <h1>Friends invited!</h1> &nbsp;
+                        </div>
+                        <div class="info">
+                            <span style="color:#f36500; font-weight: 700; font-size: 16px;">The invitations have been sent! Thank you!</span>
+                        </div>
+                    </div>
+                </div>
 
-			<div id="top-wrapper">
-				<div id="top">
+                <div id="top-wrapper">
+                    <div id="top">
 
-					<div class="buttons">
-						<a href=""> <div class="invite"></div> </a>
-						<a> <div class="like"></div> </a>
-						<a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"> <div class="share"></div> </a>
+                        <div class="buttons">
+                            <a href=""> <div class="invite"></div> </a>
+                            <a> <div class="like"></div> </a>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"> <div class="share"></div> </a>
 
-					</div>
-					<div class="logo">
-						<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
-					</div>
-				</div>
+                        </div>
+                        <div class="logo">
+                            <a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+                        </div>
+                    </div>
 
-				<div id="user-info" ng-controller="userDetailsCtrl">
-					<div class="avatar"><img
-						ng-src="{% templatetag openvariable %}user.profileFotoLink{% templatetag closevariable %}" width="50"
-						height="50">
-					</div>
-					<div class="name">
-						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}
-					</div>
-					<div class="menu">
-						<ul>
-							<li>
-								<a href="/won_list/">Won Items</a>
-							</li>
-							<li>
-								<a href="#" style="display: none;">Auctions</a>
-							</li>
-							<li>
-								<a href="#" style="display: none;">Currency history</a>
-							</li>
-						</ul>
-					</div>
-					<div class="tokens">
-						TOKENS: {% templatetag openvariable %}user.tokens{% templatetag closevariable %}
-					</div>
-					<div class="credits">
-						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
-					</div>
-					<div class="btn-credits" style=""></div>
-				</div>
+                    <div id="user-info" ng-controller="userDetailsCtrl">
+                        <div class="avatar"><img
+                            ng-src="{% templatetag openvariable %}user.profileFotoLink{% templatetag closevariable %}" width="50"
+                            height="50">
+                        </div>
+                        <div class="name">
+                            {% templatetag openvariable %}user.displayName{% templatetag closevariable %}
+                        </div>
+                        <div class="menu">
+                            <ul>
+                                <li>
+                                    <a href="/won_list/">Won Items</a>
+                                </li>
+                                <li>
+                                    <a href="#" style="display: none;">Auctions</a>
+                                </li>
+                                <li>
+                                    <a href="#" style="display: none;">Currency history</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="tokens">
+                            TOKENS: {% templatetag openvariable %}user.tokens{% templatetag closevariable %}
+                        </div>
+                        <div class="credits">
+                            CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
+                        </div>
+                        <div class="btn-credits" style=""></div>
+                    </div>
+                </div>
 			</div>
 
 			<div id="content-wrapper" ng-controller="AuctionsPanelController">
