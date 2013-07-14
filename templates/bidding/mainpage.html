@@ -120,7 +120,7 @@ preloadImage("{% static "images/help-img.png" %}");
 						Tokens and you can convert it up to
 						<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.
 						<br>
-						</br>
+						
 						Please select the required amount of Credits.</br>
 						<div class="warning"></div>
 						<section>
@@ -129,7 +129,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<option value={{ conv }}>{{ conv }}</option>
 								{% endfor %}
 							</select>
-							Credits
+							Credits</br></br>
 							<div class="btn" onclick="convertChips()">
 								Convert Now
 							</div>
