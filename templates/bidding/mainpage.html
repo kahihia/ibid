@@ -95,7 +95,7 @@ preloadImage("{% static "images/help-img.png" %}");
 						<h1 style="margin-left: 35px;">Buy Credits</h1>
 					</div>
 					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Buy Credits</span></br>Buy your credits and get more chance to win auctions!
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><img src="{% static "images/icon-dollars.png" %}">Buy Credits</span></br>Buy your credits and get more chance to win auctions!
 					</div>
 					{% for package in packages %}
 					<section>
@@ -115,7 +115,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<hr>
 
 					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Convert Tokens to Credits</span>
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><img src="{% static "images/icon-tokens.png" %}">Convert Tokens to Credits</span>
 						</br>You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
 						Tokens and you can convert it up to
 						<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.
