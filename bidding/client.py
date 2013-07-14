@@ -8,16 +8,16 @@ pubnub = Pubnub( settings.PUBNUB_PUB, settings.PUBNUB_SUB, settings.PUBNUB_SECRE
 
 def send_multiple_messages(pairs):
     for message, destination in pairs:
-        send_stomp_message(message, destination)
+        send_pubnub_message(message, destination)
 
-def send_stomp_message(message, destination):
+def send_pubnub_message(message, destination):
 
     if type(message) is dict:
         message['timestamp'] = str(datetime.now())
 
     ## threaded
     th = threading.Thread(target=pubnub.publish, args=[{
-           'channel' : '/topic/main/',
+           'channel' : destination,
            'message' : message
        }])
     th.start()
@@ -28,6 +28,22 @@ def send_stomp_message(message, destination):
     #        'message' : message
     #    })
     # print(info)
+
+def sendPackedMessages(clientMessages):
+    #group messages of the same channel
+    tmp = {}
+    print "sendPackedMessages"
+    print clientMessages
+    for message, channel in clientMessages:
+        if channel not in tmp.keys():
+            tmp[channel] = []
+        tmp[channel].append(message)
+
+    print tmp
+    for key in tmp.keys():
+        if len(tmp[key]) == 1:
+            tmp[key] = tmp[key][0]
+        send_pubnub_message(tmp[key], key)
 
 def auction_created(auction):
     tmp = {}
@@ -47,7 +63,7 @@ def auction_created(auction):
     tmp['bidders'] = auction.bidders.count()
 
     result = {'method': 'appendAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/')
 
 def updatePrecap(auction):
     tmp = {}
@@ -61,7 +77,21 @@ def updatePrecap(auction):
         tmp['id'] = auction.id
         
     nresult = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(nresult, '/topic/main/')
+    send_pubnub_message(nresult, '/topic/main/')
+
+def updatePrecapMessage(auction):
+    tmp = {}
+    if auction.status == 'precap':
+        tmp['id'] = auction.id
+        tmp['completion'] = auction.completion()
+        tmp['bidders'] = auction.bidders.count()
+    else:
+        tmp['completion'] = 100
+        tmp['bidders'] = auction.bidders.count()
+        tmp['id'] = auction.id
+
+    nresult = {'method': 'updateAuction', 'data': tmp}
+    return (nresult, '/topic/main/')
 
 def auctionAwait(auction):
     tmp = {}
@@ -69,7 +99,7 @@ def auctionAwait(auction):
     tmp['status'] = auction.status
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/')
 
 def auctionActive(auction):
 
@@ -80,19 +110,19 @@ def auctionActive(auction):
     tmp['lastClaimer'] = 'Nobody'
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/')
 
 
 def auctionFinish(auction):
     tmp={}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
-    tmp['winner'] = {'firstName': auction.winner.get_profile().user.first_name,
-                     'displayName': auction.winner.get_profile().display_name(),
-                     'facebookId': auction.winner.get_profile().facebook_id}
+    tmp['winner'] = {'firstName': auction.winner.get_profile().user.first_name if auction.winner else 'nobody have did bid!',
+                     'displayName': auction.winner.get_profile().display_name() if auction.winner else 'nobody',
+                     'facebookId': auction.winner.get_profile().facebook_id if auction.winner else ''}
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/')
 
 def auctionPause(auction):
     tmp={}
@@ -100,7 +130,7 @@ def auctionPause(auction):
     tmp['status'] = auction.status
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/')
 
 def auctionResume(auction):
     tmp={}
@@ -109,7 +139,7 @@ def auctionResume(auction):
     tmp['timeleft'] = auction.get_time_left()
 
     result = {'method': 'updateAuction', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/')
 
 def someoneClaimed(auction):
     tmp = {}
@@ -124,8 +154,22 @@ def someoneClaimed(auction):
     tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
 
     result = {'method': 'someoneClaimed', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/%s' % auction.id)
 
+def someoneClaimedMessage(auction):
+    tmp = {}
+    tmp['id'] = auction.id
+    tmp['price'] = str(auction.price())
+    tmp['timeleft'] = auction.get_time_left()
+    tmp['lastClaimer'] = auction.get_last_bidder().display_name()
+    tmp['facebook_id'] = auction.get_last_bidder().facebook_id
+    tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
+                     'displayName': auction.get_last_bidder().display_name(),
+                     'facebookId': auction.get_last_bidder().facebook_id}
+    tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
+
+    result = {'method': 'someoneClaimed', 'data': tmp}
+    return (result, '/topic/main/%s' % auction.id)
 
 def do_send_auctioneer_message(auction,message):
     print "do_send_auctioneer_message",auction,message
@@ -139,7 +183,7 @@ def do_send_auctioneer_message(auction,message):
     tmp['id'] = auction.id
 
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
-    send_stomp_message(result, '/topic/main/')
+    send_pubnub_message(result, '/topic/main/%s' % auction.id)
 
 def do_send_chat_message(auction, message):
     text = message.format_message()
@@ -153,14 +197,14 @@ def do_send_chat_message(auction, message):
 
     result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
 
-    send_stomp_message(result, '')
+    send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
 def log(text):
     result = {'method': 'log', 'params': 'SERVER: '+repr(text)}
-    send_stomp_message(result, '/topic/main/' )
+    send_pubnub_message(result, '/topic/main/' )
 
 def callReverse(userIdentifier, function):
     result = {'method': 'callReverse', 'params': {'userIdentifier':userIdentifier, 'function': function}}
-    send_stomp_message(result, '/topic/main/' )
+    send_pubnub_message(result, '/topic/main/' )
 
     

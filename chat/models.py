@@ -3,9 +3,9 @@
 from datetime import datetime
 import uuid
 import re
-from settings import STATIC_URL
 
 from django.db import models
+from django.conf import settings
 from django.contrib import auth
 
 from bidding.models import Auction, Member
@@ -58,7 +58,7 @@ class ChatUser(AuditedModel):
 
 class AuctioneerProxy(object):
     def picture(self):
-        return STATIC_URL + 'images/auctioneer_small.jpg'
+        return settings.STATIC_URL + 'images/auctioneer_small.jpg'
         
     def display_name(self):
         return "Auctioneer"

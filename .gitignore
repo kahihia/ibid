@@ -1,15 +1,9 @@
 *.pyc
-media/bid_packages
-media/cache
-media/items
-media/profile_images
-settings.py
-facebook_settings.py
-settings_local.py
 .idea
 .swp
 lib
 src
+settings.py
 
 venv
 

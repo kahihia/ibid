@@ -1,0 +1,65 @@
+from settings_default import *
+
+
+# Settings you should probably redefine here
+
+
+# Debugging options usefull whien coding  
+## DEBUG = True
+## TEMPLATE_DEBUG = DEBUG
+## THUMBNAIL_DEBUG = DEBUG
+
+
+# Log files location
+## LOGGING['handlers']['file']['filename]' = '/tmp/ibiddjango.log'
+## LOGGING['handlers']['sql']['filename'] = '/tmp/sql.log'
+## LOGGING['handlers']['commands']['filename'] = '/tmp/commands.log'
+
+
+# Databases, full definitions or just credentials/hosts
+## DATABASES = {
+##     'default': {
+##         'ENGINE': 'django.db.backends.mysql',
+##         'NAME': 'ibidgames-local',
+##         'USER': 'root',
+##         'PASSWORD': '',
+##         'HOST': 'localhost',
+##         'PORT': '',
+##     }
+## }
+
+
+# Email settings
+## EMAIL_HOST = 'smtp.gmail.com'
+## EMAIL_PORT = 587
+## EMAIL_HOST_USER = ''
+## EMAIL_HOST_PASSWORD = '
+## EMAIL_USE_TLS = True
+
+
+# Facebook app settings
+## FACEBOOK_API_KEY = ''
+## FACEBOOK_APP_ID = ''
+## FACEBOOK_APP_SECRET = ''
+## AUTH_REDIRECT_URI = '{protocol}://apps.facebook.com/interactivebids/fb/login/'
+
+
+# Pubnub settings
+## PUBNUB_PUB = 'pub-c-...'
+## PUBNUB_SUB = 'sub-c-...'
+## PUBNUB_SECRET = ''
+
+
+# Application Urls
+## WEB_APP = "http://localhost:8000/"
+## NOT_AUTHORIZED_PAGE = WEB_APP
+## APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
+## FB_APP = "http://apps.facebook.com/interactivebids/"
+## FBAPP = WEB_APP + "fb/"
+## FBAPP_HOME = FB_APP + "home/"
+## CANVAS_HOME = FB_APP + "canvashome/"
+## #see how to better handle this
+## IMAGES_SITE = '' #'http://apps.facebook.com/interactivebids'
+## SITE_NAME = 'http://localhost:8000'
+## BID_SERVICE = 'http://localhost:8000/bid_service/api/'
+## COUNTDOWN_SERVICE = 'http://localhost:8000/countdown/api/'

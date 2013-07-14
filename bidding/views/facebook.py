@@ -1,26 +1,21 @@
-from django.shortcuts import get_object_or_404, redirect
-from open_facebook.exceptions import OAuthException
-from open_facebook.exceptions import OAuthException
-import facebook_settings
-import datetime
-
-from django_facebook.connect import connect_user
-from django.http import HttpResponseRedirect, HttpResponse
-from django.core.urlresolvers import reverse
-from django.utils import simplejson as json
-
-from open_facebook.api import FacebookAuthorization
-from bidding import models
-
-from sslutils import get_protocol
-from django.utils.http import urlencode
 from django.conf import settings
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, HttpResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import simplejson as json
+from django.utils.http import urlencode
+from django.views.decorators.csrf import csrf_exempt
+from django_facebook.connect import connect_user
+from open_facebook.api import FacebookAuthorization
+from open_facebook.exceptions import OAuthException
+import datetime
+import logging
+
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
 from bidding.views.auctions import get_auction_or_404
 from bidding.views.home import render_response
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
-from django.views.decorators.csrf import csrf_exempt
-from settings import IMAGES_SITE, MEDIA_URL, NOT_AUTHORIZED_PAGE
-import logging
+from sslutils import get_protocol
+
 
 logger = logging.getLogger('django')
 
@@ -30,7 +25,7 @@ def fb_redirect(request):
 <!--
 window.location = "%s"
 //-->
-</script>""" % (NOT_AUTHORIZED_PAGE.format(protocol=get_protocol(request))))
+</script>""" % (settings.NOT_AUTHORIZED_PAGE.format(protocol=get_protocol(request))))
     set_cookie(response, 'FBAPP_VISITED', 1, days_expire=7)
     return response
     #return HttpResponseRedirect('http://google.com')
@@ -46,7 +41,7 @@ def get_redirect_uri(request):
     if 'request_ids' in request.GET:
         request_ids = '?' + urlencode({'request_ids': request.GET['request_ids']})
 
-    return facebook_settings.AUTH_REDIRECT_URI.format(
+    return settings.AUTH_REDIRECT_URI.format(
         protocol=get_protocol(request)) + request_ids
 
 
@@ -61,11 +56,11 @@ def fb_auth(request):
     #Fix so admin user don't break on the root url
         try:
             request.user.get_profile()
-        except models.Member.DoesNotExist:
+        except Member.DoesNotExist:
             return HttpResponseRedirect(reverse('bidding_home'))
 
-    url = facebook_settings.FACEBOOK_AUTH_URL.format(
-        app=facebook_settings.FACEBOOK_APP_ID,
+    url = settings.FACEBOOK_AUTH_URL.format(
+        app=settings.FACEBOOK_APP_ID,
         url=get_redirect_uri(request))
 
     return render_response(request, 'fb_redirect.html', {'authorization_url': url})
@@ -128,7 +123,7 @@ def fb_login(request):
     code = request.GET.get('code')
     if not code:
         #authorization denied
-        return HttpResponseRedirect(NOT_AUTHORIZED_PAGE)
+        return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
 
     #try:
     token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
@@ -180,13 +175,10 @@ def callback_get_items(request):
     package = order.package
 
     logger.debug("Entering callback_get_items")
-    #    package = models.BidPackage.objects.all()[0]
-
     logger.debug("Package: %s" % package)
 
-    image_url = IMAGES_SITE + MEDIA_URL + package.image.name
+    image_url = settings.IMAGES_SITE + settings.MEDIA_URL + package.image.name
 
-    #image_url = IMAGES_SITE + STATIC_URL + 'images/confirmed_email.png'
     response = {'method': 'payments_get_items',
                 'content': [{'title': package.title,
                              'price': package.price,
@@ -220,9 +212,8 @@ def callback_status_update(request):
         package = order.package
         logger.debug("Pacakge: %s" % package)
         #package_id = int(details['items'][0]['item_id'])
-        #package = models.BidPackage.objects.get(id=package_id)
 
-        member = models.Member.objects.get(facebook_id=details['buyer'])
+        member = Member.objects.get(facebook_id=details['buyer'])
         member.bids_left += package.bids
         member.save()
         logger.debug("Member: %s" % member)

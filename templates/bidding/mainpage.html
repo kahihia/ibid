@@ -23,6 +23,7 @@ preloadImage("{% static "images/help-img.png" %}");
 
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
+		<script src="{% static "js/lodash.min.js" %}"></script>
 		<script src="{% static "js/lib/jquery.json-2.2.min.js" %}"></script>
 		<script src="{% static "js/lib/jquery.center.js" %}"></script>
 		<script src="{% static "js/lib/TweenMax.min.js" %}"></script>
@@ -56,6 +57,7 @@ preloadImage("{% static "images/help-img.png" %}");
 
 		<div id="main-wrapper">
 
+            <div id="base_header" ng-controller="userDetailsCtrl">
 			<!--tutorial widget-->
 			<div id="tooltip-help" style="position:absolute;top:200px;left:300px;z-index:1002; float:left;display:none;">
 				<div class="img">
@@ -120,7 +122,7 @@ preloadImage("{% static "images/help-img.png" %}");
 						Tokens and you can convert it up to
 						<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.
 						<br>
-						
+
 						Please select the required amount of Credits.</br>
 						<div class="warning"></div>
 						<section>
@@ -209,6 +211,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					</div>
 					<div class="btn-credits" style=""></div>
 				</div>
+			</div>
 			</div>
 
 			<div id="content-wrapper" ng-controller="AuctionsPanelController">
