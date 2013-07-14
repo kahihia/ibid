@@ -42,14 +42,16 @@ preloadImage("{% static "images/help-img.png" %}");
 					appId : '{{ fb_app_id }}'
 				});
 				FB.Canvas.setAutoGrow();
-			};
-      (function(d, s, id){
-	      var js, fjs = d.getElementsByTagName(s)[0];
-		    if (d.getElementById(id)) {return;}
-		    js = d.createElement(s); js.id = id;
-		    js.src = "//connect.facebook.net/en_US/all.js";
-		    fjs.parentNode.insertBefore(js, fjs);
-		  }(document, 'script', 'facebook-jssdk'));
+			}; ( function(d, s, id) {
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id)) {
+						return;
+					}
+					js = d.createElement(s);
+					js.id = id;
+					js.src = "//connect.facebook.net/en_US/all.js";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));
 		</script>
 
 		<div id="main-wrapper">
@@ -93,7 +95,7 @@ preloadImage("{% static "images/help-img.png" %}");
 						<h1 style="margin-left: 35px;">Buy Credits</h1>
 					</div>
 					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">You need Credits to play for Items</span></br>Buy your credits and get more chance to win auctions!
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Buy Credits</span></br>Buy your credits and get more chance to win auctions!
 					</div>
 					{% for package in packages %}
 					<section>
@@ -112,23 +114,27 @@ preloadImage("{% static "images/help-img.png" %}");
 
 					<hr>
 
-					<h1>You can convert Tokens to Credits:</h1>
-					<p class="comment">
-					You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
-					Tokens and you can convert it up to
-					<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.<br>
-					Please select the required amount of Credits.
-					</p>
-					<div class="warning"></div>
-					<section>
-					<select id="tokens_to_convert">
-					{%  for conv in user.get_profile.gen_available_tokens_to_bids %}
-					<option value={{ conv }}>{{ conv }}</option>
-					{% endfor %}
-					</select>
-					Credits
-					<div class="btn" onclick="convertChips()">Convert Now</div>
-					</section>
+					<div class="info">
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Convert Tokens to Credits</span>
+						</br>You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
+						Tokens and you can convert it up to
+						<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.
+						<br>
+						</br>
+						Please select the required amount of Credits.</br>
+						<div class="warning"></div>
+						<section>
+							<select id="tokens_to_convert">
+								{%  for conv in user.get_profile.gen_available_tokens_to_bids %}
+								<option value={{ conv }}>{{ conv }}</option>
+								{% endfor %}
+							</select>
+							Credits
+							<div class="btn" onclick="convertChips()">
+								Convert Now
+							</div>
+						</section>
+					</div>
 				</div>
 			</div>
 			<!--like popup-->
@@ -378,7 +384,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										<p>
 											WINNER
 										</p>
-                                        <a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
+										<a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
 									</div>
 								</div>
 
@@ -409,24 +415,24 @@ preloadImage("{% static "images/help-img.png" %}");
 										Live chat
 									</div>
 									<div class="chat-container">
-                                        <div class="chat-list">
+										<div class="chat-list">
 
-                                            <div class="line" ng-repeat="chatMessage in auction.chatMessages">
-                                                <div class="avatar">
-                                                    <img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
-                                                    width="30" height="30">
-                                                </div>
-                                                <div class="txt">
-                                                    <p>
-                                                        {% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
-                                                    </p>
-                                                    {% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
-                                                </div>
+											<div class="line" ng-repeat="chatMessage in auction.chatMessages">
+												<div class="avatar">
+													<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
+													width="30" height="30">
+												</div>
+												<div class="txt">
+													<p>
+														{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
+													</p>
+													{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
+												</div>
 
-                                            </div>
+											</div>
 
-                                        </div>
-                                    </div>
+										</div>
+									</div>
 									<div class="user">
 
 										<div style="margin: 0 auto; width: 685px;">
@@ -508,7 +514,7 @@ preloadImage("{% static "images/help-img.png" %}");
 								<p>
 									WINNER
 								</p>
-                                <a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
+								<a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
 							</div>
 
 						</div>
@@ -523,7 +529,8 @@ preloadImage("{% static "images/help-img.png" %}");
 		<div id="reportAnError" style="display:none; text-align: center;">
 			<form id="reportAnErrorForm">
 				<textarea style="width: 450px;" id="reportAnErrorMessage"></textarea>
-				<input type="hidden" name="gameStateData"/> </br>
+				<input type="hidden" name="gameStateData"/>
+				</br>
 				<input type="button" id="reportAnErrorBtn" value="SEND" />
 			</form>
 		</div>
@@ -541,16 +548,21 @@ preloadImage("{% static "images/help-img.png" %}");
 		z-index:1000;"></div>
 		<div id="overlay-tutorial">
 			<div class="logo">
-						<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
-					</div>
-          <div class="title"><span class="close">×</span> <h1>TUTORIAL</h1>  </div>
-            <div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
+				<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+			</div>
+			<div class="title">
+				<span class="close">×</span><h1>TUTORIAL</h1>
+			</div>
+			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
-                <div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/></div>
-                <div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" /></div>
-                <div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/></div>
-            </div>
-        </div>
+				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>
+				</div>
+				<div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" />
+				</div>
+				<div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/>
+				</div>
+			</div>
+		</div>
 
 		<!--popup section-->
 		<!--welcome widget-->
@@ -565,13 +577,13 @@ preloadImage("{% static "images/help-img.png" %}");
 				<br/>
 				<br/>
 				<span>Welcome to iBidGames!  I will be leading all auctions and giving you tips on how to
-play and win Facebook’s first interactive auction ™ game.
-                    <br/>Are you ready?
-</span>
+					play and win Facebook’s first interactive auction ™ game.
+					<br/>
+					Are you ready? </span>
 			</div>
-				<br/>
-				<br/>
-				<br/>
+			<br/>
+			<br/>
+			<br/>
 			<a href="#">
 			<div class="btn-welcome">
 				Let's get started with the Tutorial
