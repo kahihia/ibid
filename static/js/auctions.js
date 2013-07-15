@@ -79,7 +79,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             auction.chatMessage = '';
         }
         else {
-            alert('initializeAuction() -- auction.chatmessage is defined!');
+            console.log('------------>>>>> initializeAuction() -- auction.chatmessage is defined!');
         }
         if ($scope.isAuctionMine(auction)) {
             $scope.subscribeToAuctionChannel(auction);
