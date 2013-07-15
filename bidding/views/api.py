@@ -134,10 +134,9 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
-        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else None
+        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else 0
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['bids'] = member.auction_bids_left(auct)
-        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else None
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
 
@@ -175,9 +174,8 @@ def getAuctionsInitialization(request):
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
-        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else None
+        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else 0
         tmp['bids'] = member.auction_bids_left(auct)
-        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else None
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
 
