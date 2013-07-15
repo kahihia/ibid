@@ -18,6 +18,25 @@ def send_pubnub_message(message, destination):
     ## threaded
     th = threading.Thread(target=pubnub.publish, args=[{
            'channel' : destination,
+           'message' : [message]
+       }])
+    th.start()
+
+    ## non threaded
+    # info = pubnub.publish({
+    #        'channel' : '/topic/main/',
+    #        'message' : message
+    #    })
+    # print(info)
+
+def _send_pubnub_message(message, destination):
+
+    if type(message) is dict:
+        message['timestamp'] = str(datetime.now())
+
+    ## threaded
+    th = threading.Thread(target=pubnub.publish, args=[{
+           'channel' : destination,
            'message' : message
        }])
     th.start()
@@ -41,9 +60,7 @@ def sendPackedMessages(clientMessages):
 
     print tmp
     for key in tmp.keys():
-        if len(tmp[key]) == 1:
-            tmp[key] = tmp[key][0]
-        send_pubnub_message(tmp[key], key)
+        _send_pubnub_message(tmp[key], key)
 
 def auction_created(auction):
     tmp = {}
