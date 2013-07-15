@@ -502,7 +502,7 @@ class BidPackage(models.Model):
         return self.title
 
 
-class AuctionInvoice(AuditedModeAuditedModell):
+class AuctionInvoice(AuditedModel):
     auction = models.ForeignKey(Auction)
     member = models.ForeignKey(Member)
     status = models.CharField(max_length=55, default='created', choices=INVOICE_CHOICES)
@@ -531,13 +531,13 @@ def addbids(sender, **kwargs):
 payment_was_successful.connect(addbids)
 
 
-class Invitation(AuditedModel):
+class Invitation(models.Model):
     inviter = models.ForeignKey(Member)
     invited_facebook_id = models.CharField(max_length=100)
     deleted = models.BooleanField(default=False) #facebook forced you to remove the invitation once used but not anymore
 
 
-class AuctionInvitation(AuditedModel):
+class AuctionInvitation(models.Model):
     inviter = models.ForeignKey(Member)
     request_id = models.BigIntegerField()
     auction = models.ForeignKey(Auction)
