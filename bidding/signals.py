@@ -119,23 +119,35 @@ def post_win_wall(sender, **kwargs):
     logger.debug("Auction: %s" % auction)
     print auction.winner
     if auction.winner:
-        print "--------------------------------- wall posting <<<<<<<<<<<<<<<<>>>>>>>>>>>>>"
-
         member = auction.winner.get_profile()
-        
-        args = {'name' : u'Auction won!',
-                'caption' : u'{name} has won the {item} for ${price} at ibidgames!'
-                                                    .format(
-                                                    name=member.user.first_name, 
-                                                    item=auction.item.name,
-                                                    price=auction.won_price), 
-                'picture' : auction.item.get_thumbnail(),
-                'link' : settings.FB_APP,
-                }
-        #try:
-        member.post_to_wall(**args)
-        #except:
-        #    pass
+        if auction.bid_type == 'tokens':
+            args = {'name' : u'Auction won - {item}'.format(item=auction.item.name),
+                    'caption': u'{name} has won this virtual item playing for tokens. If he had played for items would purchase it for {price} dollars!'
+                                                        .format(
+                                                        name=member.user.first_name,
+                                                        item=auction.item.name,
+                                                        price=auction.won_price),
+                    'picture' : auction.item.get_thumbnail(),
+                    'link' : settings.FB_APP,
+                    }
+            try:
+                member.post_to_wall(**args)
+            except:
+                raise
+        else:
+            args = {'name' : u'Auction won - {item}'.format(item=auction.item.name),
+                    'caption': u'{name} can purchase {item} for {price} dollars'
+                                                        .format(
+                                                        name=member.user.first_name,
+                                                        item=auction.item.name,
+                                                        price=auction.won_price),
+                    'picture' : auction.item.get_thumbnail(),
+                    'link' : settings.FB_APP,
+                    }
+            try:
+                member.post_to_wall(**args)
+            except:
+                raise
 
 
 
