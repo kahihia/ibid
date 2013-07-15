@@ -278,9 +278,11 @@ class Item(AuditedModel):
     def __unicode__(self):
         return self.name
 
-class ItemImage(AuditedModel):
+
+class ItemImage(models.Model):
     item = models.ForeignKey(Item)
     image = models.ImageField(upload_to='items/')
+
 
 class AbstractAuction(AuditedModel):
     item = models.ForeignKey(Item)
@@ -289,6 +291,7 @@ class AbstractAuction(AuditedModel):
 
     class Meta:
         abstract = True
+
 
 class Auction(AbstractAuction):
     bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
@@ -441,7 +444,7 @@ class PromotedAuction(Auction):
     promoter = models.ForeignKey(Member, blank=False, null=False, related_name="promoter_user")
 
 
-class AuctionFixture(AuditedModel):
+class AuctionFixture(models.Model):
     bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
     automatic = models.BooleanField(help_text='If selected, will be automatically run when the threshold is reached',
                                     default=True)
@@ -488,7 +491,7 @@ class Bid(AuditedModel):
         unique_together = ('auction', 'bidder')
 
 
-class BidPackage(AuditedModel):
+class BidPackage(models.Model):
     title = models.CharField(max_length=55)
     description = models.TextField()
     price = models.IntegerField()
@@ -499,7 +502,7 @@ class BidPackage(AuditedModel):
         return self.title
 
 
-class AuctionInvoice(AuditedModel):
+class AuctionInvoice(models.Model):
     auction = models.ForeignKey(Auction)
     member = models.ForeignKey(Member)
     status = models.CharField(max_length=55, default='created', choices=INVOICE_CHOICES)
@@ -528,13 +531,13 @@ def addbids(sender, **kwargs):
 payment_was_successful.connect(addbids)
 
 
-class Invitation(AuditedModel):
+class Invitation(models.Model):
     inviter = models.ForeignKey(Member)
     invited_facebook_id = models.CharField(max_length=100)
     deleted = models.BooleanField(default=False) #facebook forced you to remove the invitation once used but not anymore
 
 
-class AuctionInvitation(AuditedModel):
+class AuctionInvitation(models.Model):
     inviter = models.ForeignKey(Member)
     request_id = models.BigIntegerField()
     auction = models.ForeignKey(Auction)
@@ -546,7 +549,7 @@ class AuctionInvitation(AuditedModel):
                                                   user_id=member.facebook_id))
 
 
-class ConvertHistory(AuditedModel):
+class ConvertHistory(models.Model):
     member = models.ForeignKey(Member)
     tokens_amount = models.IntegerField(null=True, default=0)
     bids_amount = models.IntegerField(null=True, default=0)
@@ -578,7 +581,7 @@ FB_STATUS_CHOICES = (('placed', 'placed'),
 )
 
 
-class FBOrderInfo(AuditedModel):
+class FBOrderInfo(models.Model):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
