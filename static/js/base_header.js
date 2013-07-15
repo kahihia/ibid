@@ -51,7 +51,6 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     });
 
     $scope.convertChips = function() {
-        console.log('convertChips', jQuery('#tokens_to_convert').val());
         $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
             function (data, status) {
                 $rootScope.$emit('reloadUserDataEvent');
