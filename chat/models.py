@@ -9,7 +9,6 @@ from django.conf import settings
 from django.contrib import auth
 
 from bidding.models import Auction, Member
-from audit.models import AuditedModel
 
 
 CHATROOM_STATUS_CHOICES = (
@@ -26,7 +25,8 @@ def get_uuid():
     """
     return str(uuid.uuid4())
 
-class ChatUser(AuditedModel):
+
+class ChatUser(models.Model):
     """
     Separate Chat user object, made to decouple 
     chat and chat messages from Django auth system, 
@@ -56,6 +56,7 @@ class ChatUser(AuditedModel):
         
         return not member.remove_from_chat and auction.has_joined(member)
 
+
 class AuctioneerProxy(object):
     def picture(self):
         return settings.STATIC_URL + 'images/auctioneer_small.jpg'
@@ -70,7 +71,7 @@ class AuctioneerProxy(object):
         return u'Auctioneer'
 
 
-class Message(AuditedModel):
+class Message(models.Model):
     _user = models.ForeignKey(ChatUser, verbose_name='user', blank=True, null=True)
     text = models.TextField()
     created = models.DateTimeField(default=datetime.now)
@@ -100,7 +101,8 @@ class Message(AuditedModel):
     class Meta:
         verbose_name = 'chat message'
 
-class AuctioneerPhrase(AuditedModel):
+
+class AuctioneerPhrase(models.Model):
     key = models.CharField(max_length=20)
     text = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
