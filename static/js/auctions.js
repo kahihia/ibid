@@ -283,28 +283,30 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     };
 
 
-    //status processing
+    /**
+     * Bid on auction.
+     *
+     * @param {object} auction
+     */
     $scope.claim = function (auction) {
-        if (auction.status != "processing") {
-            console.log('ERROR: claim - not processing');
+        if (auction.status !== 'processing') {
+            console.error('Bid on non-processing auction');
         }
-
-        if (auction.interface.bidEnabled == true && auction.bids > 0) {
-            console.log("claim on auction " + auction.id)
-
-            //auction.placed -= 5;
-            auction.bids = (auction.bids-5);
+        if (auction.interface.bidEnabled === true && auction.bids > 0) {
+            console.log("Bid on auction %s", auction.id);
             auction.interface.bidEnabled = false;
-
-            $http.post('/api/claim/', {'id': auction.id, 'bidNumber': auction.bidNumber}).
-                success(function (rdata, status) {
-                    console.log('-- rdata --');
-                    console.log(rdata);
-                    if (rdata['result']){
+            $http
+                .post('/api/claim/', {'id': auction.id, 'bidNumber': auction.bidNumber})
+                .success(function (response) {
+                    if (response.result === true) {
+                        console.log('Bid on auction %s succeeded', auction.id);
+                        auction.bids -= 5;
                         $rootScope.$emit('reloadUserDataEvent');
-                    }else{
-                        //TODO: add loading state.
-                        auction.bids = (auction.bids+5);
+                    }
+                    else {
+                        console.log('Bid on auction %s failed', auction.id);
+                        // Bid failed. Reset bids and bid button.
+                        auction.bids += 5;
                         auction.interface.bidEnabled = true;
                     }
                 });
