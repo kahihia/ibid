@@ -82,8 +82,7 @@ function initTutorial(){
     jQuery('#tutorial-dialog').bind('tutorialEvent12', function(e){displayTutorial(   {img:tutorialImages.slide13,  prevEvent:'tutorialEvent11',  nextEvent:'tutorialEvent13'});});
     jQuery('#tutorial-dialog').bind('tutorialEvent13', function(e){displayTutorial(   {img:tutorialImages.slide14,  prevEvent:'tutorialEvent12',  nextEvent:'tutorialEvent14'});});
     jQuery('#tutorial-dialog').bind('tutorialEvent14', function(e){displayTutorial(   {img:tutorialImages.slide15,  prevEvent:'tutorialEvent13',  nextEvent:'tutorialEvent15'});});
-    jQuery('#tutorial-dialog').bind('tutorialEvent15', function(e){displayTutorial(   {img:tutorialImages.slide16,  prevEvent:'tutorialEvent14',  nextEvent:'tutorialEvent16'});});
-    jQuery('#tutorial-dialog').bind('tutorialEvent16', function(e){displayTutorial(   {img:tutorialImages.slide17,  prevEvent:'tutorialEvent15',  nextEvent:'tutorialEventFinish'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent15', function(e){displayTutorial(   {img:tutorialImages.slide16,  prevEvent:'tutorialEvent14',  nextEvent:'tutorialEventFinish'});});
     jQuery('#tutorial-dialog').bind('tutorialEventFinish', hideTutorial);
 
     jQuery('#tutorial-dialog').trigger('tutorialEventStart');
