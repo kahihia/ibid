@@ -79,15 +79,24 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             auction.chatMessage = '';
         }
         else {
+            // This should never happen.
             console.log('------------>>>>> initializeAuction() -- auction.chatmessage is defined!');
         }
+        // If user is participating in auction, subscribe to channel.
         if ($scope.isAuctionMine(auction)) {
             $scope.subscribeToAuctionChannel(auction);
         }
         // If auction has a timeleft, it already begun, so counter
-        // must be started.
+        // must be started and last bidder should be checked in case
+        // it's current user to disable bid button (maybe the user
+        // reloaded the page?).
         if (!_.isUndefined(auction.timeleft)) {
             $scope.startCounter(auction.id);
+        }
+        // If auction's last bidder is current user, disable bid
+        // button.
+        if (auction.lastBidder && auction.lastBidder.facebookId === $rootScope.user.facebookId) {
+            auction.interface.bidEnabled = false;
         }
     };
 
@@ -274,28 +283,30 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     };
 
 
-    //status processing
+    /**
+     * Bid on auction.
+     *
+     * @param {object} auction
+     */
     $scope.claim = function (auction) {
-        if (auction.status != "processing") {
-            console.log('ERROR: claim - not processing');
+        if (auction.status !== 'processing') {
+            console.error('Bid on non-processing auction');
         }
-
-        if (auction.interface.bidEnabled == true && auction.bids > 0) {
-            console.log("claim on auction " + auction.id)
-
-            //auction.placed -= 5;
-            auction.bids = (auction.bids-5);
+        if (auction.interface.bidEnabled === true && auction.bids > 0) {
+            console.log("Bid on auction %s", auction.id);
             auction.interface.bidEnabled = false;
-
-            $http.post('/api/claim/', {'id': auction.id, 'bidNumber': auction.bidNumber}).
-                success(function (rdata, status) {
-                    console.log('-- rdata --');
-                    console.log(rdata);
-                    if (rdata['result']){
+            $http
+                .post('/api/claim/', {'id': auction.id, 'bidNumber': auction.bidNumber})
+                .success(function (response) {
+                    if (response.result === true) {
+                        console.log('Bid on auction %s succeeded', auction.id);
+                        auction.bids -= 5;
                         $rootScope.$emit('reloadUserDataEvent');
-                    }else{
-                        //TODO: add loading state.
-                        auction.bids = (auction.bids+5);
+                    }
+                    else {
+                        console.log('Bid on auction %s failed', auction.id);
+                        // Bid failed. Reset bids and bid button.
+                        auction.bids += 5;
                         auction.interface.bidEnabled = true;
                     }
                 });
