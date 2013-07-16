@@ -29,24 +29,18 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $rootScope.user.credits = 0;
 
     //API request get user details
-    $http.post('/api/getUserDetails/').
-        success(function (rdata, status) {
-            console.log('userDetailsCtrl')
-            console.log(rdata)
-            $rootScope.user = {};
-            $rootScope.user.displayName = rdata.displayName;
-            $rootScope.user.profileFotoLink = rdata.profileFotoLink;
-            $rootScope.user.profileLink = rdata.profileLink;
-            $rootScope.user.tokens = rdata.tokens;
-            $rootScope.user.credits = rdata.credits;
+    $http
+        .post('/api/getUserDetails/')
+        .success(function (user) {
+            $rootScope.user = user;
         });
 
     $rootScope.$on('reloadUserDataEvent', function () {
-
-        $http.post('/api/getUserDetails/').
-            success(function (rdata, status) {
-                $scope.user.tokens = rdata.tokens;
-                $scope.user.credits = rdata.credits;
+        $http
+            .post('/api/getUserDetails/')
+            .success(function (user) {
+                $scope.user.tokens = user.tokens;
+                $scope.user.credits = user.credits;
             });
     });
 

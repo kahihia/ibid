@@ -21,7 +21,7 @@ def getUserDetails(request):
 
     data = {
         u'displayName': member.display_name(),
-        u'facebook_id': member.facebook_id,
+        u'facebookId': member.facebook_id,
         u'profileFotoLink': member.display_picture(),
         u'profileLink': member.facebook_profile_url,
         u'credits': member.bids_left,
