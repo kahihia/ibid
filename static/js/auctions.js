@@ -79,15 +79,24 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             auction.chatMessage = '';
         }
         else {
+            // This should never happen.
             console.log('------------>>>>> initializeAuction() -- auction.chatmessage is defined!');
         }
+        // If user is participating in auction, subscribe to channel.
         if ($scope.isAuctionMine(auction)) {
             $scope.subscribeToAuctionChannel(auction);
         }
         // If auction has a timeleft, it already begun, so counter
-        // must be started.
+        // must be started and last bidder should be checked in case
+        // it's current user to disable bid button (maybe the user
+        // reloaded the page?).
         if (!_.isUndefined(auction.timeleft)) {
             $scope.startCounter(auction.id);
+        }
+        // If auction's last bidder is current user, disable bid
+        // button.
+        if (auction.lastBidder && auction.lastBidder.facebookId === $rootScope.user.facebookId) {
+            auction.interface.bidEnabled = false;
         }
     };
 

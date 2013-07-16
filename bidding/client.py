@@ -134,8 +134,8 @@ def auctionFinish(auction):
     tmp={}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
-    tmp['winner'] = {'firstName': auction.winner.get_profile().user.first_name if auction.winner else 'nobody have did bid!',
-                     'displayName': auction.winner.get_profile().display_name() if auction.winner else 'nobody',
+    tmp['winner'] = {'firstName': auction.winner.get_profile().user.first_name if auction.winner else 'Nobody has bid!',
+                     'displayName': auction.winner.get_profile().display_name() if auction.winner else 'Nobody',
                      'facebookId': auction.winner.get_profile().facebook_id if auction.winner else ''}
 
     result = {'method': 'updateAuction', 'data': tmp}
