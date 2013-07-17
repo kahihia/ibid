@@ -41,8 +41,6 @@ def finish(request):
             if len(aifx):
                 rt = aifx[0].make_auctions()
                 print "rt = aifx[0].make_auctions()", rt
-                for auct in rt:
-                    client.auction_created(auct)
 
         if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
             #run first bids fixture
@@ -50,8 +48,6 @@ def finish(request):
             if len(aifx):
                 rt = aifx[0].make_auctions()
                 print "rt = aifx[0].make_auctions()", rt
-                for auct in rt:
-                    client.auction_created(auct)
 
     return HttpResponse(json.dumps({'everyThingIsFine':True}))
 
