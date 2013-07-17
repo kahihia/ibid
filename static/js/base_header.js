@@ -29,26 +29,38 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $rootScope.user.credits = 0;
 
     //API request get user details
-    $http.post('/api/getUserDetails/').
-        success(function (rdata, status) {
-            console.log('userDetailsCtrl')
-            console.log(rdata)
-            $rootScope.user = {};
-            $rootScope.user.displayName = rdata.displayName;
-            $rootScope.user.profileFotoLink = rdata.profileFotoLink;
-            $rootScope.user.profileLink = rdata.profileLink;
-            $rootScope.user.tokens = rdata.tokens;
-            $rootScope.user.credits = rdata.credits;
+    $http
+        .post('/api/getUserDetails/')
+        .success(function (user) {
+            $rootScope.user = user;
         });
 
     $rootScope.$on('reloadUserDataEvent', function () {
-
-        $http.post('/api/getUserDetails/').
-            success(function (rdata, status) {
-                $scope.user.tokens = rdata.tokens;
-                $scope.user.credits = rdata.credits;
+        $http
+            .post('/api/getUserDetails/')
+            .success(function (user) {
+                $scope.user.tokens = user.tokens;
+                $scope.user.credits = user.credits;
             });
     });
+
+    $scope.convertChips = function() {
+        $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
+            function (data, status) {
+                $rootScope.$emit('reloadUserDataEvent');
+
+                jQuery('#user_bids').text(data.bids);
+                jQuery('#user_tokens').text(data.tokens);
+                jQuery('#convertible_tokens').text(data.tokens);
+                jQuery('#maximun_bidsto').text(data.maximun_bidsto);
+                var options = '';
+                for (var i = 0; i < data.convert_combo.length; i++) {
+                    options += '<option value="' + data.convert_combo[i] + '">' + data.convert_combo[i] + '</option>';
+                }
+                jQuery('select#tokens_to_convert').html(options);
+            });
+    };
+
 };
 
 
@@ -110,7 +122,7 @@ function closePopupLike() {
 function buy_bids(url, package_id) {
     var order_info = -1;
 
-    $.post(url, {'package_id': package_id},
+    jQuery.post(url, {'package_id': package_id},
         function (data) {
             if (data.order_info != undefined) {
                 if (data.order_info >= 0) {
@@ -142,21 +154,6 @@ var buyBids_callback = function (data) {
     }
 };
 
-function convertChips() {
-
-    $.post('/api/convert_tokens/', {'amount': $('#tokens_to_convert').val()},
-        function (data) {
-            $('#user_bids').text(data.bids);
-            $('#user_tokens').text(data.tokens);
-            $('#convertible_tokens').text(data.tokens);
-            $('#maximun_bidsto').text(data.maximun_bidsto);
-            var options = '';
-            for (var i = 0; i < data.convert_combo.length; i++) {
-                options += '<option value="' + data.convert_combo[i] + '">' + data.convert_combo[i] + '</option>';
-            }
-            $('select#tokens_to_convert').html(options);
-        }, 'json');
-};
 
 
 function sendRequestViaMultiFriendSelector() {

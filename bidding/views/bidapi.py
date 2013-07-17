@@ -11,7 +11,6 @@ import bid_client
 def api(request, method ):
     return API[method](request)
 
-
 def finish(request):
     auctionId = int(request.GET.get('auctionId'))
     bidNumber = int(request.GET.get('bidNumber'))
@@ -79,7 +78,7 @@ def start(request):
         auction.start()
         # --- delay the LiveAuction stop call to be called if no one bid ---
         ##self.delayMethod(self.callStop, time=timeLeft, auctionId=self.id)
-        #TODO: check if is needed to add stop countdown here
+        bid_client.delayStop(auctionId, 0, auction.auction.bidding_time)
 
     elif auction.status == 'pause':
         ##########
@@ -94,9 +93,7 @@ def start(request):
         ##self.delayMethod(self.callStop, time=self.auction.auction.bidding_time, auctionId=self.id)
         bid_client.delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
         
-
     return HttpResponse(json.dumps({'everyThingIsFine':True}))
-
 
 API = {
     'finish': finish,
