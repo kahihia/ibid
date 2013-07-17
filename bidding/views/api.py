@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.core.mail import send_mail
 
 from bidding import client
-from bidding.models import Auction, ConvertHistory
+from bidding.models import Auction, ConvertHistory, Member, Invitation
 from chat import auctioneer
 from chat.models import Message, ChatUser
 
@@ -398,6 +398,31 @@ def sendMessage(request):
 
     return HttpResponse('{"result":false}', content_type="application/json")
 
+def inviteRequest(request):
+    print "===============inviteRequest==============="
+    member = request.user.get_profile()
+
+    requPOST = json.loads(request.body)
+    invited = request.GET.get('invited', requPOST['invited'])
+    print invited
+
+    client.log(str(invited))
+
+    for fb_id in invited:
+        #if already users or already invited: pass
+        fb_id = int(fb_id)
+        print fb_id, len(Member.objects.filter(facebook_id=fb_id)), len(Invitation.objects.filter(invited_facebook_id=fb_id))
+
+        if len(Member.objects.filter(facebook_id=fb_id)) or len(Invitation.objects.filter(invited_facebook_id=fb_id)):
+            pass
+        #else: add to invited
+        else:
+            inv = Invitation()
+            inv.inviter_id = member.id
+            inv.invited_facebook_id = fb_id
+            inv.save()
+
+    return HttpResponse(json.dumps([True]))
 
 API = {
     'getUserDetails': getUserDetails,
@@ -409,6 +434,7 @@ API = {
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
-    'sendMessage': sendMessage
+    'sendMessage': sendMessage,
+    'inviteRequest': inviteRequest
 }
 
