@@ -80,21 +80,14 @@ function userDetailsCtrl($scope, $rootScope, $http) {
 
 
 jQuery(function () {
-    //jQuery('.buy-bids-popup').center();
     jQuery('.buy-bids-popup').hide();
     jQuery('.btn-credits').click(openPopupBuyBids);
     jQuery('.close', '.buy-bids-popup').click(closePopupBuyBids);
-    //jQuery('.invite').click(sendRequestViaMultiFriendSelector);
-   // jQuery('.like-popup').center();
     jQuery('.like-popup').hide();
     jQuery('.like').click(openPopupLike);
     jQuery('.close', '.like-popup').click(closePopupLike);
-
-    //jQuery('.friends-invited-popup').center();
     jQuery('.friends-invited-popup').hide();
     jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
-
-    //jQuery('').click()
 })
 
 var underlay = '.underlay';
@@ -169,21 +162,6 @@ var buyBids_callback = function (data) {
     }
 };
 
-
-
-function sendRequestViaMultiFriendSelector() {
-  FB.ui({method: 'apprequests',
-    message: 'Come join me to play and win amazing deals at iBidGames!'
-  }, sendRequestViaMultiFriendSelectorCallback);
-}
-function sendRequestViaMultiFriendSelectorCallback(data){
-    console.log(data);
-    if(data != null){
-        openPopupFrendsInvited();
-        //store invitations
-        jQuery.post('/api/inviteRequest/', {invited:data.to})
-    }
-}
 
 function openPopupLike() {
     showOverlay();
