@@ -85,11 +85,13 @@ body {
 	-moz-transition: .2s;
 	-webkit-transition: .2s;
 	transition: .2s;
+	cursor: pointer;
 }
 
 #top .buttons .like:hover {
 	background-position: 0 0;
 	opacity: 1;
+	cursor: pointer;
 }
 
 #top .buttons .share {
@@ -105,11 +107,13 @@ body {
 	-moz-transition: .2s;
 	-webkit-transition: .2s;
 	transition: .2s;
+	cursor: pointer;
 }
 
 #top .buttons .share:hover {
 	background-position: 0 0;
 	opacity: 1;
+	cursor: pointer;
 }
 #top .buttons .invite {
 	width: 126px;
@@ -125,11 +129,13 @@ body {
 	-moz-transition: .2s;
 	-webkit-transition: .2s;
 	transition: .2s;
+	cursor: pointer;
 }
 
 #top .buttons .invite:hover {
 	background-position: 0 0;
 	opacity: 1;
+	cursor: pointer;
 }
 
 #user-info {
@@ -268,6 +274,7 @@ body {
 #menu-wrapper #menu .btn-tokens:hover {
 	background-position: 0 0px;
 	opacity: 1;
+	cursor: pointer;
 }
 
 #menu-wrapper #menu .btn-items {
@@ -291,6 +298,7 @@ body {
 #menu-wrapper #menu .btn-items:hover {
 	background-position: 0 0px;
 	opacity: 1;
+	cursor: pointer;
 }
 #menu-wrapper #menu .links {
 	float: right;
@@ -597,6 +605,7 @@ body {
 	width: 108px;
 	height: 29px;
 	margin: 10px auto;
+	cursor: pointer;
 }
 
 #auction-btns {

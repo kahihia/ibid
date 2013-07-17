@@ -172,13 +172,13 @@ preloadImage("{% static "images/help-img.png" %}");
 				<div id="top">
 
 					<div class="buttons">
-						<a href=""> <div class="invite" ng-click="sendRequestViaMultiFriendSelector()"></div> </a>
-						<a> <div class="like"></div> </a>
-						<a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"> <div class="share"></div> </a>
+						<div class="invite" ng-click="sendRequestViaMultiFriendSelector()"></div> 
+						 <div class="like"></div>
+						<div class="share"><a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"></a> </div> 
 
 					</div>
 					<div class="logo">
-						<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+						<img src="{% static "images/logo.png" %}" width="293" height="105">
 					</div>
 				</div>
 
@@ -551,7 +551,7 @@ preloadImage("{% static "images/help-img.png" %}");
 		z-index:1000;"></div>
 		<div id="overlay-tutorial">
 			<div class="logo">
-				<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+				<img src="{% static "images/logo.png" %}" width="293" height="105">
 			</div>
 			<div class="title">
 				<span class="close">×</span><h1>TUTORIAL</h1>
