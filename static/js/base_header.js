@@ -61,6 +61,21 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             });
     };
 
+    $scope.sendRequestViaMultiFriendSelector = function() {
+        FB.ui({method: 'apprequests',
+            message: 'Come join me to play and win amazing deals at iBidGames!'
+        }, $scope.sendRequestViaMultiFriendSelectorCallback);
+    };
+
+    $scope.sendRequestViaMultiFriendSelectorCallback = function(data) {
+        console.log(data);
+        if (data != null) {
+            openPopupFrendsInvited();
+            //store invitations
+            $http.post('/api/inviteRequest/', {'invited': data.to})
+        }
+    };
+
 };
 
 
@@ -69,7 +84,7 @@ jQuery(function () {
     jQuery('.buy-bids-popup').hide();
     jQuery('.btn-credits').click(openPopupBuyBids);
     jQuery('.close', '.buy-bids-popup').click(closePopupBuyBids);
-    jQuery('.invite').click(sendRequestViaMultiFriendSelector);
+    //jQuery('.invite').click(sendRequestViaMultiFriendSelector);
    // jQuery('.like-popup').center();
     jQuery('.like-popup').hide();
     jQuery('.like').click(openPopupLike);
@@ -165,6 +180,8 @@ function sendRequestViaMultiFriendSelectorCallback(data){
     console.log(data);
     if(data != null){
         openPopupFrendsInvited();
+        //store invitations
+        jQuery.post('/api/inviteRequest/', {invited:data.to})
     }
 }
 
