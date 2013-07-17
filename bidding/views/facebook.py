@@ -1,24 +1,22 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import get_object_or_404, redirect
-from django.utils import simplejson as json
+from django.shortcuts import get_object_or_404
 from django.utils.http import urlencode
 from django.views.decorators.csrf import csrf_exempt
 from django_facebook.connect import connect_user
 from open_facebook.api import FacebookAuthorization
-from open_facebook.exceptions import OAuthException
+import json
 import datetime
 import logging
 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, Invitation
 from bidding.views.auctions import get_auction_or_404
 from bidding.views.home import render_response
 from sslutils import get_protocol
 
 
 logger = logging.getLogger('django')
-
 
 def fb_redirect(request):
     response = HttpResponse("""<script type="text/javascript">
@@ -32,7 +30,7 @@ window.location = "%s"
 
 
 def get_redirect_uri(request):
-    """ 
+    """
     Returns the redirect uri to pass to facebook, using the correct protocol
     (http or https).
     """
@@ -127,19 +125,18 @@ def fb_login(request):
 
     #try:
     token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
-    print "-----------------------------connect_user--------------"
-    print token
-    connect_user(request, token)
-    #except OAuthException:
-    #    return redirect("fb_auth")
+    action, user = connect_user(request, token)
 
-    #try:
-    #    token = FacebookAuthorization.convert_code(code,
-    #                                    get_redirect_uri(request))['access_token']
-    #    connect_user(request, token)
-    #except OAuthException:
-    #    return redirect("fb_auth")
+    #if invited
+    members = Member.objects.filter(user_id=user.id)
+    if members:
+        invitations = Invitation.objects.filter(invited_facebook_id=members[0].facebook_id)
+        for invitation in invitations:
+            #TODO: add inviter prize in dinamic configurations
+            invitation.inviter.tokens_left += 1000
+            invitation.inviter.save()
 
+            invitation.delete()
 
 
     #FIXME for test purposes
@@ -148,14 +145,7 @@ def fb_login(request):
     if 'request_ids' in request.GET:
         return handle_invitations(request)
 
-    #from django.http import HttpResponse
-    #return HttpResponse(reverse('bidding_home'))
-    #return HttpResponse("request.user.is_authenticated()" + str(request.user.is_authenticated()))
-
-    #return HttpResponseRedirect(reverse('bidding_home'))
-    #return HttpResponseRedirect('www.google.com')
     return HttpResponseRedirect('/home/?aaa=2')
-    #return HttpResponse('["yaaa"]', mimetype='text/javascript')
 
 
 def store_invitation(request):
