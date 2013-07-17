@@ -1,16 +1,14 @@
 '''
 Home page views.
 '''
-from django.views.generic.list import ListView
-from django.http import HttpResponseRedirect, Http404, HttpResponse
-from bidding.models import Auction, ConvertHistory, PrePromotedAuction, PromotedAuction
-from django.core.urlresolvers import reverse
+
 from django.conf import settings
-from bidding.models import BidPackage
-
 from django.contrib.flatpages.models import FlatPage
+from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.views.generic.list import ListView
 
-from settings import CANVAS_HOME
+from bidding.models import Auction, BidPackage, ConvertHistory, PrePromotedAuction, PromotedAuction
 
 
 def split_member_auctions(member, auction_list):
@@ -40,7 +38,7 @@ def split_bid_type(queryset, bids_auctions, tokens_auctions, key, limit=None):
 
 def mainpage(request):
     return HttpResponse("""<script type='text/javascript'>
-    top.location.href = '""" + CANVAS_HOME + """';
+    top.location.href = '""" + settings.CANVAS_HOME + """';
  </script>""")
 
 
@@ -166,10 +164,6 @@ def promoted(request, auction_id):
 def web_home(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect(settings.FBAPP)
-        #return HttpResponse("""<script type='text/javascript'>
-        #top.location.href = '""" + CANVAS_HOME + """';
-        #</script>""")
-
     else:
         if request.COOKIES.get('FBAPP_VISITED'):
             return HttpResponseRedirect(settings.FBAPP)
