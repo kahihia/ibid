@@ -305,8 +305,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     }
                     else {
                         console.log('Bid on auction %s failed', auction.id);
-                        // Bid failed. Reset bids and bid button.
-                        auction.bids += 5;
+                        // Bid failed, reset bid button.
                         auction.interface.bidEnabled = true;
                     }
                 });
