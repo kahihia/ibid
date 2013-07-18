@@ -285,6 +285,10 @@ def set_cookie(response, key, value, days_expire=7):
                         secure=settings.SESSION_COOKIE_SECURE or None)
 
 
+###############################
+#### facebook monkey patch ####
+###############################
+
 from django_facebook.utils import get_registration_backend, get_form_class, \
     get_profile_model, to_bool, get_user_model, get_instance_for,\
     get_user_attribute, try_get_profile, get_model_for_attribute,\
@@ -318,7 +322,6 @@ def connect_user(request, access_token=None, facebook_graph=None, connect_facebo
 
     if 'email' not in facebook_data or not facebook_data['email']:
         facebook_data['email'] = '%s@facebook.com' % facebook_data['email']
-    print facebook_data
 
     force_registration = request.REQUEST.get('force_registration') or\
         request.REQUEST.get('force_registration_hard')
@@ -404,7 +407,6 @@ def _register_user(request, facebook, profile_callback=None,
 
     if 'email' not in facebook_data or not facebook_data['email']:
         facebook_data['email'] = '%s@facebook.com' % facebook_data['email']
-    print facebook_data
 
     data = request.POST.copy()
     for k, v in facebook_data.items():
