@@ -14,6 +14,7 @@ def send_pubnub_message(message, destination):
 
     if type(message) is dict:
         message['timestamp'] = str(datetime.now())
+    print "PUBNUB ================ ", destination, message
 
     ## threaded
     th = threading.Thread(target=pubnub.publish, args=[{
@@ -34,9 +35,10 @@ def _send_pubnub_message(message, destination):
     if type(message) is dict:
         message['timestamp'] = str(datetime.now())
 
+    print "PUBNUB ================ ", destination, message
     ## threaded
     th = threading.Thread(target=pubnub.publish, args=[{
-           'channel' : destination,
+          'channel' : destination,
            'message' : message
        }])
     th.start()
@@ -168,7 +170,7 @@ def someoneClaimed(auction):
     tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
                      'displayName': auction.get_last_bidder().display_name(),
                      'facebookId': auction.get_last_bidder().facebook_id}
-    tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
+    tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
 
     result = {'method': 'someoneClaimed', 'data': tmp}
     send_pubnub_message(result, '/topic/main/%s' % auction.id)
@@ -183,7 +185,7 @@ def someoneClaimedMessage(auction):
     tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
                      'displayName': auction.get_last_bidder().display_name(),
                      'facebookId': auction.get_last_bidder().facebook_id}
-    tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
+    tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
 
     result = {'method': 'someoneClaimed', 'data': tmp}
     return (result, '/topic/main/%s' % auction.id)

@@ -213,8 +213,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         //if user has tokens/credits
         if ($scope.isAddBidsEnabled()) {
 
-            auction.placed += 5;
-            auction.bids += 5;
+            auction.placed += auction.bidPrice;
+            auction.bids += auction.bidPrice;
 
             console.log("addBids on auction " + auction.id);
             $http.post('/api/addBids/', {'id': auction.id}).
@@ -223,8 +223,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         $rootScope.$emit('reloadUserDataEvent');
                     }else{
                         console.log("no more credits/tokens");
-                        auction.placed -= 5;
-                        auction.bids -= 5;
+                        auction.placed -= auction.bidPrice;
+                        auction.bids -= auction.bidPrice;
                     }
 
                 });
@@ -242,8 +242,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
         //if user has bids on auction
         if(auction.placed>0){
-            auction.placed -= 5;
-            auction.bids -= 5;
+            auction.placed -= auction.bidPrice;
+            auction.bids -= auction.bidPrice;
 
             console.log("remBids on auction " + auction.id);
 
@@ -300,7 +300,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 .success(function (response) {
                     if (response.result === true) {
                         console.log('Bid on auction %s succeeded', auction.id);
-                        auction.bids -= 5;
+                        auction.bids -= auction.bidPrice;
                         $rootScope.$emit('reloadUserDataEvent');
                     }
                     else {

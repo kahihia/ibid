@@ -287,7 +287,7 @@ class ItemImage(models.Model):
 class AbstractAuction(AuditedModel):
     item = models.ForeignKey(Item)
     precap_bids = models.IntegerField(help_text='Minimum amount of bids to start the auction')
-    minimum_precap = models.IntegerField(help_text='Minimum amount of bids to join', default=5)
+    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=5)
 
     class Meta:
         abstract = True
@@ -366,7 +366,7 @@ class Auction(AbstractAuction):
         return self.bidders.values_list('user__email', flat=True)
 
     def getBidNumber(self):
-        return self.used_bids()/settings.TODO_BID_PRICE
+        return self.used_bids()/self.minimum_precap
 
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())

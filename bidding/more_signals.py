@@ -54,7 +54,6 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
 
 signals.facebook_user_registered.connect(fb_user_registered_handler, sender=User)
 
-
 #def auction_created(sender, instance, signal, *args, **kwargs):
 #    client.log('auction created !!!!')
 #    if 'created' in kwargs:
