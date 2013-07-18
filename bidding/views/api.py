@@ -45,8 +45,8 @@ def getAuctionsInitialization(request):
     bids_auctions = {}
     tokens_auctions = {}
 
-    other_auctions_limit = 5
-    finished_limit = 5
+    other_auctions_limit = 10
+    finished_limit = 10
 
     bids_auctions['my_auctions'] = my_auctions.filter(bid_type='bid')
     bids_auctions['other_auctions'] = other_auctions.filter(bid_type='bid')[:other_auctions_limit]
