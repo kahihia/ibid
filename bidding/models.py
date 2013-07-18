@@ -604,3 +604,9 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bids=instance.member.bids_left,
                                       total_bidsto=instance.member.bidsto_left,
         )
+
+class ConfigKey(models.Model):
+    key = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+    def __unicode__(self):
+        return self.key

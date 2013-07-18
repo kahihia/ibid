@@ -27,7 +27,8 @@ class CustomIndexDashboard(Dashboard):
                 'bidding.models.AuctionFixture',
                 'bidding.models.BidPackage',
                 'bidding.models.ConvertHistory',
-                'bidding.models.FBOrderInfo'
+                'bidding.models.FBOrderInfo',
+                'bidding.models.ConfigKey',
             ]
         ))
 
