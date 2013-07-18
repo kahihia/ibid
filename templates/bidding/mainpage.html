@@ -482,9 +482,9 @@ preloadImage("{% static "images/help-img.png" %}");
 								{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 							</div>
 							<div id="auction-bids">
-								<div id="btn-start-bid" class="btn-red" ng-click="startBiding(auctionList[playFor].available[$index])">
-									JOIN AUCTION
-								</div>
+								<div ng-switch on="auction.status">
+									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBiding(auctionList[playFor].available[$index])">JOIN AUCTION</div>
+									<div id="btn-start-bid" class="btn btn-red btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 							</div>
 							<div id="auction-btns">
 								<div id="btn-invite-auction"><img src="{% static "images/btn-invite-auction.png" %}" width="36"
