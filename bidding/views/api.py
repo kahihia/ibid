@@ -273,7 +273,7 @@ def addBids(request):
     else:
         success = False
 
-    res = {'success': success}
+    res = {'success': success, 'data': {'placed': member.auction_bids_left(auction)}}
     return HttpResponse(json.dumps(res), content_type="application/json")
 
 
@@ -295,7 +295,8 @@ def remBids(request):
 
         client.updatePrecap(auction)
 
-    return HttpResponse('', content_type="application/json")
+    res = {'success': True, 'data': {'placed': member.auction_bids_left(auction)}}
+    return HttpResponse(json.dumps(res), content_type="application/json")
 
 
 def stopBidding(request):

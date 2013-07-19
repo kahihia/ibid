@@ -213,22 +213,18 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         //if user has tokens/credits
         if ($scope.isAddBidsEnabled()) {
 
-            auction.placed += auction.bidPrice;
-            auction.bids += auction.bidPrice;
-
             console.log("addBids on auction " + auction.id);
             $http.post('/api/addBids/', {'id': auction.id}).
                 success(function (rdata, status) {
                     if(rdata.success == true){
+                        auction.placed = rdata.data.placed;
+                        auction.bids = rdata.data.placed;
                         $rootScope.$emit('reloadUserDataEvent');
                     }else{
                         console.log("no more credits/tokens");
-                        auction.placed -= auction.bidPrice;
-                        auction.bids -= auction.bidPrice;
                     }
 
                 });
-
         }
 
     };
@@ -242,18 +238,20 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
         //if user has bids on auction
         if(auction.placed>0){
-            auction.placed -= auction.bidPrice;
-            auction.bids -= auction.bidPrice;
-
             console.log("remBids on auction " + auction.id);
-
             //if does not have more bids on auction leave
             if (auction.bids == 0) {
                 $scope.stopBiding(auction);
             } else {
                 $http.post('/api/remBids/', {'id': auction.id}).
                     success(function (rdata, status) {
-                        $rootScope.$emit('reloadUserDataEvent');
+                        if(rdata.success == true){
+                            auction.placed = rdata.data.placed;
+                            auction.bids = rdata.data.placed;
+                            $rootScope.$emit('reloadUserDataEvent');
+                        }else{
+                            console.log("no more credits/tokens");
+                        }
                     });
             }
         }
