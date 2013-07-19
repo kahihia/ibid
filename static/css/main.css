@@ -1303,6 +1303,7 @@ body {
 #overlay-tutorial .title .close {
 	float: right;
 	cursor: pointer;
+	margin-right:50px;
 }
 #overlay-tutorial .title h1 {
 	color: #484848;
