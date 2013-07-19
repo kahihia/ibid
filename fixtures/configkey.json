@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "bidding.configkey", "fields": {"value": "1001", "key": "INVITE_FRIENDS_TOKEN_PRIZE"}}]

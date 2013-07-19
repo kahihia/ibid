@@ -129,18 +129,6 @@ def fb_login(request):
     token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
     action, user = django_facebook.connect.connect_user(request, token)
 
-    #if invited
-    members = Member.objects.filter(user_id=user.id)
-    if members:
-        invitations = Invitation.objects.filter(invited_facebook_id=members[0].facebook_id)
-        for invitation in invitations:
-            #TODO: add inviter prize in dinamic configurations
-            invitation.inviter.tokens_left += 1000
-            invitation.inviter.save()
-
-            invitation.delete()
-
-
     #FIXME for test purposes
     #give_bids(request)
 
