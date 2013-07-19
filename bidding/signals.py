@@ -80,9 +80,7 @@ def make_auction_invoice(sender, **kwargs):
         invoice.save()
 
         #winnner for fun earns retail price in tokens!
-        client.log('--------------' + str(auction.bid_type))
         if auction.bid_type == 'token':
-            client.log('--------------YES')
             mem = auction.winner.get_profile()
             mem.tokens_left += int(auction.item.retail_price)
             mem.save()
@@ -114,17 +112,14 @@ def send_start_email(sender, **kwargs):
 
 @receiver(auction_finished_signal)
 def post_win_wall(sender, **kwargs):
-    client.send_pubnub_message(json.dumps({'method': 'log', 'params': 'SERVER: auction_finished_signal'}),
-                               '/topic/main/')
-
     auction = kwargs['auction']
     logger.debug("Auction: %s" % auction)
     print auction.winner
     if auction.winner:
         member = auction.winner.get_profile()
         if auction.bid_type == 'tokens':
-            args = {'name': u'Auction won - {item}'.format(item=auction.item.name),
-                    'caption': u'{name} has won this virtual item playing for tokens. If he had played for items would purchase it for {price} dollars!'
+            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
+                    'message': u'{name} has won this virtual item playing for tokens. If he had played for items he/she could have purchased it for {price} dollars!'
                     .format(
                         name=member.user.first_name,
                         item=auction.item.name,
@@ -139,8 +134,8 @@ def post_win_wall(sender, **kwargs):
             except:
                 raise
         else:
-            args = {'name': u'Auction won - {item}'.format(item=auction.item.name),
-                    'caption': u'{name} can purchase {item} for {price} dollars'
+            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
+                    'message': u'{name} can purchase {item} for {price} dollars!'
                     .format(
                         name=member.user.first_name,
                         item=auction.item.name,

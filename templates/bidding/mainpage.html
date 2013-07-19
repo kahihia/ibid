@@ -292,7 +292,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										</p>
 
 										<div id="auction-precap-bid">
-											<span>{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}</span> Bids
+											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
 										</div>
 										<div id="btn-bid-less" class="btn-red" ng-click="remBids(auctionList[playFor].mine[$index])">
 											-
@@ -357,7 +357,7 @@ preloadImage("{% static "images/help-img.png" %}");
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}
+											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
 										</div>
 									</div>
 								</div>
@@ -387,7 +387,7 @@ preloadImage("{% static "images/help-img.png" %}");
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}
+											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
 										</div>
 									</div>
 								</div>

@@ -21,8 +21,8 @@ def finish(request):
     print "====stop====",auction
 
     #if status == processing #and bidNumber is the last
-    print auction.status, bidNumber, auction.used_bids()/settings.TODO_BID_PRICE
-    if auction.status == 'processing' and bidNumber == auction.used_bids()/settings.TODO_BID_PRICE:
+    print auction.status, bidNumber, auction.used_bids()/auction.minimum_precap
+    if auction.status == 'processing' and bidNumber == auction.used_bids()/auction.minimum_precap:
 
         #########
         # finish #

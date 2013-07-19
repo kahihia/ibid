@@ -68,6 +68,7 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
+        tmp['bidPrice'] = auct.minimum_precap
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -82,6 +83,7 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
+        tmp['bidPrice'] = auct.minimum_precap
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -95,6 +97,7 @@ def getAuctionsInitialization(request):
         tmp = {}
         tmp['id'] = auct.id
         tmp['status'] = auct.status
+        tmp['bidPrice'] = auct.minimum_precap
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -110,6 +113,7 @@ def getAuctionsInitialization(request):
         tmp = {}
         tmp['id'] = auct.id
         tmp['status'] = auct.status
+        tmp['bidPrice'] = auct.minimum_precap
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -131,17 +135,18 @@ def getAuctionsInitialization(request):
         else:
             tmp['completion'] = 0
         tmp['status'] = auct.status
+        tmp['bidPrice'] = auct.minimum_precap
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
-        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else 0
+        tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap if auct.status == 'processing' else 0
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
 
         tmp['auctioneerMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:5]:
+        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
                 'text': mm.format_message(),
                 'date': mm.get_time(),
@@ -150,7 +155,7 @@ def getAuctionsInitialization(request):
             tmp['auctioneerMessages'].append(w)
 
         tmp['chatMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:5]:
+        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
                  'user': {'displayName': mm.get_user().display_name(),
@@ -170,17 +175,18 @@ def getAuctionsInitialization(request):
         else:
             tmp['completion'] = 0
         tmp['status'] = auct.status
+        tmp['bidPrice'] = auct.minimum_precap
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
-        tmp['bidNumber'] = auct.used_bids() / settings.TODO_BID_PRICE if auct.status == 'processing' else 0
+        tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap if auct.status == 'processing' else 0
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
 
         tmp['auctioneerMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:5]:
+        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
                 'text': mm.format_message(),
                 'date': mm.get_time(),
@@ -189,7 +195,7 @@ def getAuctionsInitialization(request):
             tmp['auctioneerMessages'].append(w)
 
         tmp['chatMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:5]:
+        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
                  'user': {'displayName': mm.get_user().display_name(),
@@ -225,7 +231,7 @@ def startBidding(request):
 
     member = request.user.get_profile()
     try:
-        amount = settings.TODO_BID_PRICE
+        amount = auction.minimum_precap
     except ValueError:
         return HttpResponse('{"result":"not int"}', content_type="application/json")
 
@@ -253,7 +259,9 @@ def addBids(request):
     auction = Auction.objects.get(id=auction_id)
 
     member = request.user.get_profile()
-    amount = 5 #int(request.GET.get('amount', int(request.POST.get('amount', 0))))
+
+    #minimum_precap means bid_price
+    amount = auction.minimum_precap
 
     amount += member.auction_bids_left(auction)
 
@@ -277,7 +285,8 @@ def remBids(request):
     auction = Auction.objects.get(id=auction_id)
 
     member = request.user.get_profile()
-    amount = 5 #int(request.GET.get('amount', int(request.POST.get('amount', 0))))
+    #minimum_precap means bid_price
+    amount = auction.minimum_precap
 
     amount = member.auction_bids_left(auction) - amount
 
@@ -323,7 +332,7 @@ def claim(request):
 
     if auction.status == 'processing' and auction.can_bid(member):
 
-        if auction.used_bids() / settings.TODO_BID_PRICE == bidNumber:
+        if auction.used_bids() / auction.minimum_precap == bidNumber:
             auction.bid(member)
 
             clientMessages = []
