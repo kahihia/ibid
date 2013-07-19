@@ -141,7 +141,10 @@
 	margin-top: 19px;
 	margin-bottom: 8px;
 }
+.friends-invited-popup {
+	position:absolute;
 
+}
 .popup {
 	opacity: 1;
 	position: relative;
