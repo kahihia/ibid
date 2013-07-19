@@ -287,7 +287,7 @@ class ItemImage(models.Model):
 class AbstractAuction(AuditedModel):
     item = models.ForeignKey(Item)
     precap_bids = models.IntegerField(help_text='Minimum amount of bids to start the auction')
-    minimum_precap = models.IntegerField(help_text='Minimum amount of bids to join', default=5)
+    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=5)
 
     class Meta:
         abstract = True
@@ -352,8 +352,7 @@ class Auction(AbstractAuction):
 
     def price(self):
         """ Returns the current price of the auction. """
-
-        dollars = float(self.used_bids()) / 100
+        dollars = float(self.used_bids()/self.minimum_precap) / 100
         return Decimal('%.2f' % dollars)
 
     def has_joined(self, member):
@@ -366,7 +365,7 @@ class Auction(AbstractAuction):
         return self.bidders.values_list('user__email', flat=True)
 
     def getBidNumber(self):
-        return self.used_bids()/settings.TODO_BID_PRICE
+        return self.used_bids()/self.minimum_precap
 
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
@@ -604,3 +603,9 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bids=instance.member.bids_left,
                                       total_bidsto=instance.member.bidsto_left,
         )
+
+class ConfigKey(models.Model):
+    key = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+    def __unicode__(self):
+        return self.key

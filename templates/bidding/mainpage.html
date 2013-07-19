@@ -163,10 +163,30 @@ preloadImage("{% static "images/help-img.png" %}");
 						<h1>Friends invited!</h1> &nbsp;
 					</div>
 					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">The invitations have been sent! Thank you!</span>
+						<span style="text-align:center ; font-size: 16px;">The invitations have been sent! Thank you!</span>
 					</div>
 				</div>
 			</div>
+			<!--friends invited NAMES popup-->
+			<div class="friend-join" style="display:none">
+						<div class="popup">
+							<div class="title">
+								<span class="close">×</span>
+								<h1>New friend joined!</h1>
+							</div>
+							<div class="info">
+								<span style="color:#f36500; font-weight: 700; font-size: 16px;">Your friends accepted the invitation:</span>
+								</br>Friend one
+								</br>Friend two
+								</br>Friend three
+								<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
+									<span style="color:#484848; font-weight: 700; font-size: 16px;">You won XXX tokens!</span>
+								</div>
+								<div class="btn-blue">INVITE MORE FRIENDS!</div>
+							</div>
+
+						</div>
+					</div>
 
 			<div id="top-wrapper">
 				<div id="top">
@@ -272,7 +292,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										</p>
 
 										<div id="auction-precap-bid">
-											<span>{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}</span> Bids
+											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
 										</div>
 										<div id="btn-bid-less" class="btn-red" ng-click="remBids(auctionList[playFor].mine[$index])">
 											-
@@ -337,7 +357,7 @@ preloadImage("{% static "images/help-img.png" %}");
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}
+											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
 										</div>
 									</div>
 								</div>
@@ -367,7 +387,7 @@ preloadImage("{% static "images/help-img.png" %}");
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}
+											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
 										</div>
 									</div>
 								</div>
@@ -482,8 +502,9 @@ preloadImage("{% static "images/help-img.png" %}");
 								{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 							</div>
 							<div id="auction-bids">
-								<div id="btn-start-bid" class="btn-red" ng-click="startBiding(auctionList[playFor].available[$index])">
-									JOIN AUCTION
+								<div ng-switch on="auction.status">
+									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBiding(auctionList[playFor].available[$index])">JOIN AUCTION</div>
+									<div id="btn-start-bid" class="btn btn-red btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 								</div>
 							</div>
 							<div id="auction-btns">

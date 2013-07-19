@@ -398,4 +398,3 @@ class Pubnub():
             return json.loads( response )
         except:
             return None
-

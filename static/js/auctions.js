@@ -193,15 +193,15 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent2');}, 2500);
         }
         $http
-            .post('/api/startBidding/', {'id': auction.id})
-            .success(function (rdata, status) {
-                $rootScope.$emit('reloadUserDataEvent');
-                //remove auction from available and load it into mine
-                delete auction; //auctionList.tokens.available.splice(index);
-                $scope.$emit('reloadAuctionsData');
+            .post('/api/startBidding/', {id: auction.id})
+            .success(function (data) {
+                if (data.result === true) {
+                    // Reload user data to refresh tokens/credits.
+                    $rootScope.$emit('reloadUserDataEvent');
+                    // Fire event to reload auctions data.
+                    $scope.$emit('reloadAuctionsData');
+                }
             });
-        // Subscribe to auction's message channel.
-        $scope.subscribeToAuctionChannel(auction);
     };
 
     //status: precap
@@ -213,8 +213,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         //if user has tokens/credits
         if ($scope.isAddBidsEnabled()) {
 
-            auction.placed += 5;
-            auction.bids += 5;
+            auction.placed += auction.bidPrice;
+            auction.bids += auction.bidPrice;
 
             console.log("addBids on auction " + auction.id);
             $http.post('/api/addBids/', {'id': auction.id}).
@@ -223,8 +223,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         $rootScope.$emit('reloadUserDataEvent');
                     }else{
                         console.log("no more credits/tokens");
-                        auction.placed -= 5;
-                        auction.bids -= 5;
+                        auction.placed -= auction.bidPrice;
+                        auction.bids -= auction.bidPrice;
                     }
 
                 });
@@ -242,8 +242,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
         //if user has bids on auction
         if(auction.placed>0){
-            auction.placed -= 5;
-            auction.bids -= 5;
+            auction.placed -= auction.bidPrice;
+            auction.bids -= auction.bidPrice;
 
             console.log("remBids on auction " + auction.id);
 
@@ -271,13 +271,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
         $http
             .post('/api/stopBidding/', {'id': auction.id})
-            .success(function (rdata, status) {
+            .success(function () {
                 // Unsubscribe from auction channel.
                 $scope.unsubscribeFromChannel($scope.channel + auction.id);
-
+                // Reload user data to update tokens/credits.
                 $rootScope.$emit('reloadUserDataEvent');
-                //remove auction from available and load it into mine
-                delete auction;
+                // Fire event to reload auctions data.
                 $scope.$emit('reloadAuctionsData');
             });
     };
@@ -300,7 +299,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 .success(function (response) {
                     if (response.result === true) {
                         console.log('Bid on auction %s succeeded', auction.id);
-                        auction.bids -= 5;
+                        auction.bids -= auction.bidPrice;
                         $rootScope.$emit('reloadUserDataEvent');
                     }
                     else {

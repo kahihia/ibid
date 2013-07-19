@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from bidding.models import Auction, PromotedAuction, PrePromotedAuction, Item, ItemImage, AuctionFixture, \
-    TemplateAuction, BidPackage, ConvertHistory, FBOrderInfo, Member
+    TemplateAuction, BidPackage, ConvertHistory, FBOrderInfo, Member, ConfigKey
 from django.db.models import Count
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -285,3 +285,5 @@ admin.site.register(BidPackage)
 admin.site.register(Member)
 admin.site.register(ConvertHistory)
 admin.site.register(FBOrderInfo)
+admin.site.register(ConfigKey)
+

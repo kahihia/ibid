@@ -16,18 +16,18 @@ def send_pubnub_message(message, destination):
         message['timestamp'] = str(datetime.now())
 
     ## threaded
-    th = threading.Thread(target=pubnub.publish, args=[{
-           'channel' : destination,
-           'message' : [message]
-       }])
-    th.start()
+    #th = threading.Thread(target=pubnub.publish, args=[{
+    #       'channel' : destination,
+    #       'message' : [message]
+    #   }])
+    #th.start()
 
     ## non threaded
-    # info = pubnub.publish({
-    #        'channel' : '/topic/main/',
-    #        'message' : message
-    #    })
-    # print(info)
+    info = pubnub.publish({
+           'channel' : destination,
+           'message' : [message]
+       })
+    print(info)
 
 def _send_pubnub_message(message, destination):
 
@@ -35,30 +35,28 @@ def _send_pubnub_message(message, destination):
         message['timestamp'] = str(datetime.now())
 
     ## threaded
-    th = threading.Thread(target=pubnub.publish, args=[{
-           'channel' : destination,
-           'message' : message
-       }])
-    th.start()
+    #th = threading.Thread(target=pubnub.publish, args=[{
+    #      'channel' : destination,
+    #       'message' : message
+    #   }])
+    #th.start()
 
     ## non threaded
-    # info = pubnub.publish({
-    #        'channel' : '/topic/main/',
-    #        'message' : message
-    #    })
-    # print(info)
+    info = pubnub.publish({
+           'channel' : destination,
+           'message' : message
+       })
+    #print(info)
 
 def sendPackedMessages(clientMessages):
     #group messages of the same channel
     tmp = {}
-    print "sendPackedMessages"
-    print clientMessages
+
     for message, channel in clientMessages:
         if channel not in tmp.keys():
             tmp[channel] = []
         tmp[channel].append(message)
 
-    print tmp
     for key in tmp.keys():
         _send_pubnub_message(tmp[key], key)
 
@@ -71,11 +69,10 @@ def auction_created(auction):
     tmp['playFor'] = {'bid':'ITEMS' ,'token':'TOKENS'}[auction.bid_type]
     tmp['completion'] = auction.completion()
     tmp['status'] = auction.status
+    tmp['bidPrice'] = auction.minimum_precap
     tmp['itemName'] = auction.item.name
     tmp['retailPrice'] = str(auction.item.retail_price)
     tmp['completion'] = auction.completion()
-    #tmp['placed'] = 9999
-    #tmp['bids'] = 9999
     tmp['itemImage'] = auction.item.get_thumbnail()
     tmp['bidders'] = auction.bidders.count()
 
@@ -168,7 +165,7 @@ def someoneClaimed(auction):
     tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
                      'displayName': auction.get_last_bidder().display_name(),
                      'facebookId': auction.get_last_bidder().facebook_id}
-    tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
+    tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
 
     result = {'method': 'someoneClaimed', 'data': tmp}
     send_pubnub_message(result, '/topic/main/%s' % auction.id)
@@ -183,13 +180,12 @@ def someoneClaimedMessage(auction):
     tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
                      'displayName': auction.get_last_bidder().display_name(),
                      'facebookId': auction.get_last_bidder().facebook_id}
-    tmp['bidNumber'] = auction.used_bids()/settings.TODO_BID_PRICE
+    tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
 
     result = {'method': 'someoneClaimed', 'data': tmp}
     return (result, '/topic/main/%s' % auction.id)
 
 def do_send_auctioneer_message(auction,message):
-    print "do_send_auctioneer_message",auction,message
     text = message.format_message()
 
     tmp = {}
