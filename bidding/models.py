@@ -352,8 +352,7 @@ class Auction(AbstractAuction):
 
     def price(self):
         """ Returns the current price of the auction. """
-
-        dollars = float(self.used_bids()) / 100
+        dollars = float(self.used_bids()/self.minimum_precap) / 100
         return Decimal('%.2f' % dollars)
 
     def has_joined(self, member):
