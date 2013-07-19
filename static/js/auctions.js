@@ -128,7 +128,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     $scope.$apply(function () {
                         var auction;
                         // Try to get auction data once without errors.
-                        // In the near future, messages will be
+                        // TODO: In the near future, messages will be
                         // standarized so hopefully we don't need this.
                         try {
                             auction = $scope.getLocalAuctionById(message.data.id);
@@ -161,6 +161,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     $scope.$apply(function () {
                         var auction;
                         // Try to get auction data once without errors.
+                        // TODO: In the near future, messages will be
+                        // standarized so hopefully we don't need this.
                         try {
                             auction = $scope.getLocalAuctionById(message.data.id);
                         }
@@ -229,54 +231,51 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     };
 
-    //status: precap
+    /**
+     * Removes bids from an auction.
+     *
+     * @param {object} auction Auction to remove bids from.
+     */
     $scope.remBids = function (auction) {
-        // If status is not precapitalization, can't remove bids.
-        if (auction.status !== "precap") {
+        // If status is not precapitalization, or i didn't placed any
+        // bid, i can't remove bids.
+        if (auction.status !== 'precap' || !auction.placed) {
             return;
         }
-
-        //if user has bids on auction
-        if(auction.placed>0){
-            console.log("remBids on auction " + auction.id);
-            //if does not have more bids on auction leave
-            if (auction.bids == 0) {
-                $scope.stopBiding(auction);
-            } else {
-                $http.post('/api/remBids/', {'id': auction.id}).
-                    success(function (rdata, status) {
-                        if(rdata.success == true){
-                            auction.placed = rdata.data.placed;
-                            auction.bids = rdata.data.placed;
-                            $rootScope.$emit('reloadUserDataEvent');
-                        }else{
-                            console.log("no more credits/tokens");
-                        }
-                    });
-            }
-        }
+        // Post to server the intention to remove bids from auction.
+        $http
+            .post('/api/remBids/', {id: auction.id})
+            .success(function (response) {
+                if (!response.success) {
+                    return;
+                }
+                // If server tells that it was my last bid, i have to
+                // quit bidding on this auction.
+                if (response.data && response.data['do'] === 'close') {
+                    $scope.stopBidding(auction);
+                    return;
+                }
+                // Update auction with placed bids.
+                // TODO: Unify `auction.placed` with `auction.bids`.
+                auction.placed = response.data.placed;
+                auction.bids = response.data.placed;
+                // Emit event to reload user data.
+                $rootScope.$emit('reloadUserDataEvent');
+            });
     };
 
-    $scope.stopBiding = function (auction) {
-        //if($scope.auctionsAvailable[index].status <> "precap"){console.log('ERROR: startBiding - not precap')};
-
-        // If status is not precapitalization, can't stop bidding.
-        if (auction.status !== 'precap') {
-            return;
-        }
-
-        console.log("Stopped bidding on auction", auction);
-
-        $http
-            .post('/api/stopBidding/', {'id': auction.id})
-            .success(function () {
-                // Unsubscribe from auction channel.
-                $scope.unsubscribeFromChannel($scope.channel + auction.id);
-                // Reload user data to update tokens/credits.
-                $rootScope.$emit('reloadUserDataEvent');
-                // Fire event to reload auctions data.
-                $scope.$emit('reloadAuctionsData');
-            });
+    /**
+     * Stops bidding on an auction.
+     *
+     * @param {object} auction Auction to stop bidding on.
+     */
+    $scope.stopBidding = function (auction) {
+        // Unsubscribe from auction channel.
+        $scope.unsubscribeFromChannel($scope.channel + auction.id);
+        // Reload user data to update tokens/credits.
+        $rootScope.$emit('reloadUserDataEvent');
+        // Fire event to reload auctions data.
+        $scope.$emit('reloadAuctionsData');
     };
 
 
@@ -420,6 +419,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 $scope.$apply(function () {
                     var auction;
                     // Try to get auction data once without errors.
+                    // TODO: In the near future, messages will be
+                    // standarized so hopefully we don't need this.
                     try {
                         auction = $scope.getLocalAuctionById(message.data.id);
                     }
