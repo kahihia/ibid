@@ -273,7 +273,7 @@ def addBids(request):
     else:
         success = False
 
-    res = {'success': success}
+    res = {'success': success, 'data': {'placed': member.auction_bids_left(auction)}}
     return HttpResponse(json.dumps(res), content_type="application/json")
 
 
@@ -295,7 +295,11 @@ def remBids(request):
 
         client.updatePrecap(auction)
 
-    return HttpResponse('', content_type="application/json")
+    if member.auction_bids_left(auction) > 0:
+        res = {'success': True, 'data': {'placed': member.auction_bids_left(auction)}}
+        return HttpResponse(json.dumps(res), content_type="application/json")
+    else:
+        return stopBidding(request)
 
 
 def stopBidding(request):
@@ -312,7 +316,8 @@ def stopBidding(request):
     clientMessages.append(auctioneer.member_left_message(auction, member))
     client.sendPackedMessages(clientMessages)
 
-    return HttpResponse('', content_type="application/json")
+    ret = {'success':True, 'data':{'do':'close'}}
+    return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
 def claim(request):
