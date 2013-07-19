@@ -243,7 +243,7 @@ def startBidding(request):
         clientMessages.append(auctioneer.member_joined_message(auction, member))
         client.sendPackedMessages(clientMessages)
 
-    return HttpResponse('{result: true}', content_type="application/json")
+    return HttpResponse('{"result":true}', content_type="application/json")
 
 def addBids(request):
     """ The users commits bids before the auction starts. """
