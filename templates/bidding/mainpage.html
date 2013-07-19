@@ -287,9 +287,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 									</div>
 									<div id="auction-bids">
-										<p>
-											PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} TOKENS
-										</p>
+										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}{'TOKENS':'TOKENS','ITEMS':'CREDITS'}[playFor]{% templatetag closevariable %}</p>
 
 										<div id="auction-precap-bid">
 											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
