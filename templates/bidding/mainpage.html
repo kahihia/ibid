@@ -40,7 +40,11 @@ preloadImage("{% static "images/help-img.png" %}");
 		<script>
 			window.fbAsyncInit = function() {
 				FB.init({
-					appId : '{{ fb_app_id }}'
+					appId : '{{ fb_app_id }}',
+                    channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+                    status     : true, // check login status
+                    cookie     : true, // enable cookies to allow the server to access the session
+                    xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
 			}; ( function(d, s, id) {
@@ -53,7 +57,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					js.src = "//connect.facebook.net/en_US/all.js";
 					fjs.parentNode.insertBefore(js, fjs);
 				}(document, 'script', 'facebook-jssdk'));
-		</script>
+        </script>
 
 		<div id="main-wrapper">
 
@@ -194,7 +198,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div class="buttons">
 						<div class="invite" ng-click="sendRequestViaMultiFriendSelector()"></div> 
 						 <div class="like"></div>
-						<div class="share"><a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"></a> </div> 
+						 <a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"><div class="share"></div></a>
 
 					</div>
 					<div class="logo">
