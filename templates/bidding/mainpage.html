@@ -198,7 +198,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div class="buttons">
 						<div class="invite" ng-click="sendRequestViaMultiFriendSelector()"></div> 
 						 <div class="like"></div>
-						 <a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"><div class="share"></div></a>
+						 <a style="width: 91px; display: block; height: 22px;" href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"><div class="share"></div></a>
 
 					</div>
 					<div class="logo">
@@ -576,9 +576,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="logo">
 				<img src="{% static "images/logo.png" %}" width="293" height="105">
 			</div>
-			<div class="title">
-				<span class="close">×</span><h1>TUTORIAL</h1>
-			</div>
+			
 			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
 				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>
@@ -586,6 +584,8 @@ preloadImage("{% static "images/help-img.png" %}");
 				<div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" />
 				</div>
 				<div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/>
+				</div>
+				<div style="position:relative;float:right;margin-top: -45px;z-index: 1003;"><img src="{% static "images/tutorial/close.png" %}" class="close" style="cursor:pointer; width: 75px"/>
 				</div>
 			</div>
 		</div>
