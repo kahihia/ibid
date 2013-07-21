@@ -44,6 +44,22 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             });
     });
 
+    $rootScope.$on('openGetCreditsPopover', function () {
+        showOverlay();
+        setTimeout(function () {
+            jQuery('.buy-bids-popup').show();
+            TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
+        }, 300);
+    });
+
+    $rootScope.$on('closeGetCreditsPopover', function () {
+        hideOverlay();
+        TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
+            jQuery('.buy-bids-popup').hide();
+        }})
+    });
+
+
     $scope.convertChips = function() {
         $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
             function (data, status) {
@@ -76,13 +92,19 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         }
     };
 
+    $scope.openGetCredits = function() {
+        $rootScope.$emit('openGetCreditsPopover');
+    };
+
+    $scope.closeGetCredits = function() {
+        $rootScope.$emit('closeGetCreditsPopover');
+    };
+
 };
 
 
 jQuery(function () {
     jQuery('.buy-bids-popup').hide();
-    jQuery('.btn-credits').click(openPopupBuyBids);
-    jQuery('.close', '.buy-bids-popup').click(closePopupBuyBids);
     jQuery('.like-popup').hide();
     jQuery('.like').click(openPopupLike);
     jQuery('.close', '.like-popup').click(closePopupLike);
@@ -95,30 +117,6 @@ var popupClass = '.popup';
 var popupOuter = '.popup-outer';
 
 
-function openPopupBuyBids() {
-    console.log('openPopupBuyBids');
-    showOverlay();
-    setTimeout(function () {
-        jQuery('.buy-bids-popup').show();
-        TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
-    }, 300);
-}
-
-function closePopupBuyBids() {
-    console.log('closePopupBuyBids');
-    hideOverlay();
-    TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
-        jQuery('.buy-bids-popup').hide()
-    }})
-}
-
-function openPopupLike() {
-    showOverlay();
-    setTimeout(function () {
-        jQuery('.like-popup').show();
-        TweenLite.fromTo('.like-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
-    }, 300);
-}
 
 function closePopupLike() {
     hideOverlay();
@@ -146,13 +144,13 @@ function buy_bids(url, package_id) {
                     };
                     console.log(obj);
 
-                    FB.ui(obj, buyBids_callback);
+                    FB.ui(obj, getCredits_callback);
                 }
             }
         }, 'json');
 }
 
-var buyBids_callback = function (data) {
+var getCredits_callback = function (data) {
     if (data['order_id']) {
         refresh_user_bids();
         return true;

@@ -95,7 +95,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="buy-bids-popup" style="z-index:1001;display:none;">
 				<div class="popup">
 					<div class="title">
-						<span class="close">×</span>
+						<span class="close" ng-click="closeGetCredits()">×</span>
 						<img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
 						src="{% static "images/credits-big.png" %}">
 						<h1 style="margin-left: 35px;">Buy Credits</h1>
@@ -233,7 +233,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div class="credits">
 						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
 					</div>
-					<div class="btn-credits" style=""></div>
+					<div class="btn-credits" ng-click="openGetCredits()"></div>
 				</div>
 			</div>
 			</div>
