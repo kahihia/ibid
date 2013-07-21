@@ -265,7 +265,7 @@ def addBids(request):
 
     amount += member.auction_bids_left(auction)
 
-    if auction.can_precap(member, amount):
+    if auction.status == 'precap' and auction.can_precap(member, amount):
         auction.place_precap_bid(member, amount)
 
         client.updatePrecap(auction)
