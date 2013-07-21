@@ -40,7 +40,11 @@ preloadImage("{% static "images/help-img.png" %}");
 		<script>
 			window.fbAsyncInit = function() {
 				FB.init({
-					appId : '{{ fb_app_id }}'
+					appId : '{{ fb_app_id }}',
+                    channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+                    status     : true, // check login status
+                    cookie     : true, // enable cookies to allow the server to access the session
+                    xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
 			}; ( function(d, s, id) {
@@ -53,7 +57,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					js.src = "//connect.facebook.net/en_US/all.js";
 					fjs.parentNode.insertBefore(js, fjs);
 				}(document, 'script', 'facebook-jssdk'));
-		</script>
+        </script>
 
 		<div id="main-wrapper">
 
@@ -91,7 +95,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="buy-bids-popup" style="z-index:1001;display:none;">
 				<div class="popup">
 					<div class="title">
-						<span class="close">×</span>
+						<span class="close" ng-click="closeGetCredits()">×</span>
 						<img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
 						src="{% static "images/credits-big.png" %}">
 						<h1 style="margin-left: 35px;">Buy Credits</h1>
@@ -194,7 +198,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div class="buttons">
 						<div class="invite" ng-click="sendRequestViaMultiFriendSelector()"></div> 
 						 <div class="like"></div>
-						<div class="share"><a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"></a> </div> 
+						 <a style="width: 91px; display: block; height: 22px;" href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"><div class="share"></div></a>
 
 					</div>
 					<div class="logo">
@@ -229,7 +233,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div class="credits">
 						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
 					</div>
-					<div class="btn-credits" style=""></div>
+					<div class="btn-credits" ng-click="openGetCredits()"></div>
 				</div>
 			</div>
 			</div>
@@ -287,9 +291,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 									</div>
 									<div id="auction-bids">
-										<p>
-											PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} TOKENS
-										</p>
+										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}{'TOKENS':'TOKENS','ITEMS':'CREDITS'}[playFor]{% templatetag closevariable %}</p>
 
 										<div id="auction-precap-bid">
 											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
@@ -574,9 +576,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="logo">
 				<img src="{% static "images/logo.png" %}" width="293" height="105">
 			</div>
-			<div class="title">
-				<span class="close">×</span><h1>TUTORIAL</h1>
-			</div>
+			
 			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
 				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>
@@ -584,6 +584,8 @@ preloadImage("{% static "images/help-img.png" %}");
 				<div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" />
 				</div>
 				<div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/>
+				</div>
+				<div style="position:relative;float:right;margin-top: -45px;z-index: 1003;"><img src="{% static "images/tutorial/close.png" %}" class="close" style="cursor:pointer; width: 75px"/>
 				</div>
 			</div>
 		</div>

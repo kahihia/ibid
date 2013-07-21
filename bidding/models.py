@@ -167,14 +167,16 @@ class Member(AuditedModel):
 
     def leave_auction(self, auction):
         """ Retires the member bids from the given auction. """
-
-        # TODO: This should be removed as is not going to be used
-        bids = Bid.objects.get(auction=auction, bidder=self)
-        #self.bids_left += bids.placed_amount
-        self.set_bids(auction.bid_type, self.get_bids(auction.bid_type) +
-                                        bids.placed_amount)
-        bids.delete()
-        self.save()
+        try:
+            # TODO: This should be removed as is not going to be used
+            bids = Bid.objects.get(auction=auction, bidder=self)
+            #self.bids_left += bids.placed_amount
+            self.set_bids(auction.bid_type, self.get_bids(auction.bid_type) +
+                                            bids.placed_amount)
+            bids.delete()
+            self.save()
+        except:
+            logger.exception('leave_auction exception')
 
     def bids_history(self):
         return self.bid_set.all().order_by().values('auction__item__name', 'placed_amount', 'used_amount',

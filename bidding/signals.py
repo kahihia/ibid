@@ -117,9 +117,9 @@ def post_win_wall(sender, **kwargs):
     print auction.winner
     if auction.winner:
         member = auction.winner.get_profile()
-        if auction.bid_type == 'tokens':
+        if auction.bid_type == 'token':
             args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                    'message': u'{name} has won this virtual item playing for tokens. If he had played for items he/she could have purchased it for {price} dollars!'
+                    'message': u'{name} has won this virtual item playing for tokens. If {name} had played for items he/she could have purchased it for {price} dollars!'
                     .format(
                         name=member.user.first_name,
                         item=auction.item.name,

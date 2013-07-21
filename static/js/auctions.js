@@ -202,7 +202,16 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     $rootScope.$emit('reloadUserDataEvent');
                     // Fire event to reload auctions data.
                     $scope.$emit('reloadAuctionsData');
+                } else if (data.result === false) {
+                    if (data.motive == 'NO_ENOUGH_CREDITS'){
+                        //opens the "get credits" popup
+                        $rootScope.$emit('openGetCreditsPopover');
+                    }
+                    else if (data.motive == 'NO_ENOUGH_TOKENS'){
+                        console.log('not enough tokens')
+                    }
                 }
+
             });
     };
 
@@ -222,8 +231,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         auction.placed = rdata.data.placed;
                         auction.bids = rdata.data.placed;
                         $rootScope.$emit('reloadUserDataEvent');
-                    }else{
-                        console.log("no more credits/tokens");
+                    } else if (rdata.success === false) {
+                        if (rdata.motive == 'NO_ENOUGH_CREDITS'){
+                            //opens the "get credits" popup
+                            $rootScope.$emit('openGetCreditsPopover');
+                        }
+                        else if (rdata.motive == 'NO_ENOUGH_TOKENS'){
+                            console.log('not enough tokens')
+                        }
                     }
 
                 });
@@ -462,6 +477,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             });
         }
     });
+
+    //to close a popup, this may be in base_header.js but the html has to follow
+    $scope.closeGetCredits = function() {
+        $rootScope.$emit('closeGetCreditsPopover');
+    };
 
     //firt load all auctions, when all functions are declared;
     $scope.$emit('reloadAuctionsData');
