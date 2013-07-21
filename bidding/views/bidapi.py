@@ -1,15 +1,16 @@
-from django.http import HttpResponse
-from django.conf import settings
 import json
 
-from bidding import client
+from django.http import HttpResponse
+from django.conf import settings
+
 from bidding.delegate import GlobalAuctionDelegate
+from bidding.delegate import oldclient_delayStop
 from bidding.models import Auction, AuctionFixture
 
-import bid_client
 
 def api(request, method ):
     return API[method](request)
+
 
 def finish(request):
     auctionId = int(request.GET.get('auctionId'))
@@ -51,6 +52,7 @@ def finish(request):
 
     return HttpResponse(json.dumps({'everyThingIsFine':True}))
 
+
 def start(request):
     auctionId = int(request.GET.get('auctionId'))
     bidNumber = int(request.GET.get('bidNumber'))
@@ -74,7 +76,7 @@ def start(request):
         auction.start()
         # --- delay the LiveAuction stop call to be called if no one bid ---
         ##self.delayMethod(self.callStop, time=timeLeft, auctionId=self.id)
-        bid_client.delayStop(auctionId, 0, auction.auction.bidding_time)
+        oldclient_delayStop(auctionId, 0, auction.auction.bidding_time)
 
     elif auction.status == 'pause':
         ##########
@@ -87,9 +89,10 @@ def start(request):
         auction.resume()
 
         ##self.delayMethod(self.callStop, time=self.auction.auction.bidding_time, auctionId=self.id)
-        bid_client.delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
+        oldclient_delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
         
     return HttpResponse(json.dumps({'everyThingIsFine':True}))
+
 
 API = {
     'finish': finish,

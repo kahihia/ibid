@@ -1,14 +1,84 @@
+# -*- coding: utf-8 -*-
+
 from datetime import datetime, timedelta
 from decimal import Decimal
 import logging
 import time
+import urllib, urllib2
 
 logger = logging.getLogger('django')
+
+from django.conf import settings
 
 from bidding import client
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
-import bid_client
+
+
+# oldclient_* functions are what originally were at bid_client.py file
+def oldclient_delayStart(auctionId, bidNumber, time):
+    print "client delayStart", auctionId, bidNumber, time
+    kwargs = {
+        'auctionId': auctionId,
+        'bidNumber': bidNumber,
+        'time': time
+    }
+    print settings.COUNTDOWN_SERVICE + 'startCountDown/' + "?" + urllib.urlencode(kwargs)
+    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'startCountDown/?%s' % urllib.urlencode(kwargs))
+
+
+def oldclient_bid(auctionId, bidNumber, time):
+    print "client bid", auctionId, bidNumber, time
+    kwargs = {
+        'auctionId': auctionId,
+        'bidNumber': bidNumber,
+        'time': time
+    }
+    print settings.COUNTDOWN_SERVICE + 'stopCountDown/' + "?" + urllib.urlencode(kwargs)
+    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'stopCountDown/?%s' % urllib.urlencode(kwargs))
+
+
+def oldclient_delayResume(auctionId, bidNumber, time):
+    print "client delayResume", auctionId, bidNumber, time
+    kwargs = {
+        'auctionId': auctionId,
+        'bidNumber': bidNumber,
+        'time': time
+    }
+    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'startCountDown/?%s' % urllib.urlencode(kwargs))
+
+
+def oldclient_delayStop(auctionId, bidNumber, time):
+    print "client delayStop", auctionId, bidNumber, time
+    kwargs = {
+        'auctionId': auctionId,
+        'bidNumber': bidNumber,
+        'time': time
+    }
+    print settings.COUNTDOWN_SERVICE + 'stopCountDown/' + "?" + urllib.urlencode(kwargs)
+    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'stopCountDown/?%s' % urllib.urlencode(kwargs))
+
+
+def oldclient_resume(auctionId, bidNumber, time):
+    print "client resume", auctionId, bidNumber, time
+    kwargs = {
+        'auctionId': auctionId,
+        'bidNumber': bidNumber,
+        'time': time
+    }
+    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'stopCountDown/?%s' % urllib.urlencode(kwargs))
+
+
+def oldclient_finish(auctionId, bidNumber, time):
+    print "client finish", auctionId, bidNumber, time
+    kwargs = {
+        'auctionId': auctionId,
+        'bidNumber': bidNumber,
+        'time': time
+    }
+    urllib2.urlopen(settings.BID_SERVICE + 'finish/?%s' % urllib.urlencode(kwargs))
+
+
 
 
 class AuctionDelegate(object):
@@ -120,7 +190,7 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
 
         client.auctionAwait(self.auction)
 
-        bid_client.delayStart(self.auction.id, 0, 5.0)
+        oldclient_delayStart(self.auction.id, 0, 5.0)
 
         send_in_thread(precap_finished_signal, sender=self, auction=self.auction)
 
@@ -246,9 +316,9 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         bid.save()
         if self._check_thresholds():
             self.auction.pause()
-            bid_client.delayResume(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            oldclient_delayResume(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
         else:
-            bid_client.bid(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            oldclient_bid(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
 
     def get_time_left(self):
         bid = self.auction.get_latest_bid()
@@ -269,7 +339,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         self.auction.status = 'pause'
         self.auction.save()
         client.auctionPause(self.auction)
-        bid_client.delayResume(self.auction.id, self.auction.getBidNumber(), 10)
+        oldclient_delayResume(self.auction.id, self.auction.getBidNumber(), 10)
         send_in_thread(task_auction_pause, sender=self, auction=self.auction)
 
 
@@ -319,3 +389,7 @@ class GlobalAuctionDelegate(object):
         if hasattr(self.auction, name):
             return getattr(self.auction, name)
         raise AttributeError
+
+
+
+
