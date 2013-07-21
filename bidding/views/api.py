@@ -1,14 +1,22 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-from django.http import HttpResponse
-from django.core.mail import send_mail
-
-from bidding import client
-from bidding.models import Auction, ConvertHistory, Member, Invitation
-from chat import auctioneer
-from chat.models import Message, ChatUser
 
 import json
+
+from bidding import client
+from bidding.delegate import GlobalAuctionDelegate
+from bidding.delegate import oldclient_delayStop
+from bidding.models import Auction
+from bidding.models import AuctionFixture
+from bidding.models import ConvertHistory
+from bidding.models import Invitation
+from bidding.models import Member
+from chat import auctioneer
+from chat.models import ChatUser
+from chat.models import Message
+
+from django.conf import settings
+from django.core.mail import send_mail
+from django.http import HttpResponse
 
 
 def api(request, method):
@@ -260,6 +268,7 @@ def startBidding(request):
     ret = {"result":True}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
+
 def addBids(request):
     """ The users commits bids before the auction starts. """
 
@@ -427,6 +436,7 @@ def sendMessage(request):
 
     return HttpResponse('{"result":false}', content_type="application/json")
 
+
 def inviteRequest(request):
     print "===============inviteRequest==============="
     member = request.user.get_profile()
@@ -453,17 +463,75 @@ def inviteRequest(request):
 
     return HttpResponse(json.dumps([True]))
 
+
+def oldapi_finish(request):
+    auctionId = int(request.GET.get('auctionId'))
+    bidNumber = int(request.GET.get('bidNumber'))
+    time = float(request.GET.get('time', 0))
+
+    auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
+
+    print "====stop====",auction
+
+    print auction.status, bidNumber, auction.used_bids()/auction.minimum_precap
+    if auction.status == 'processing' and bidNumber == auction.used_bids()/auction.minimum_precap:
+        # finish
+        auction.finish()
+
+        # run auction fixtures #
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='token')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
+                print "rt = aifx[0].make_auctions()", rt
+
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='bid')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
+                print "rt = aifx[0].make_auctions()", rt
+
+    return HttpResponse(json.dumps({'everyThingIsFine':True}))
+
+
+def oldapi_start(request):
+    auctionId = int(request.GET.get('auctionId'))
+    bidNumber = int(request.GET.get('bidNumber'))
+    time = float(request.GET.get('time', 0))
+    kwargs = {'auctionId': auctionId,
+              'bidNumber': bidNumber,
+              'time': time}
+
+    auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
+    print "====start====",auction
+
+    print auction.status
+    if auction.status == 'waiting':
+        # start
+        print "<<< auction start"
+        auction.start()
+        oldclient_delayStop(auctionId, 0, auction.auction.bidding_time)
+    elif auction.status == 'pause':
+        # resume
+        print "<<< auction resume"
+        auction.resume()
+        oldclient_delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
+        
+    return HttpResponse(json.dumps({'everyThingIsFine':True}))
+
+
 API = {
     'getUserDetails': getUserDetails,
     'getAuctionsInitialization': getAuctionsInitialization,
-    'startBidding': startBidding,
     'addBids': addBids,
     'remBids': remBids,
     'claim': claim,
+    'startBidding': startBidding,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
     'sendMessage': sendMessage,
     'inviteRequest': inviteRequest
+    'start': oldapi_start,
+    'finish': oldapi_finish,
 }
-

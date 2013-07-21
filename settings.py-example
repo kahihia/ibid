@@ -61,5 +61,5 @@ from settings_default import *
 ## #see how to better handle this
 ## IMAGES_SITE = '' #'http://apps.facebook.com/interactivebids'
 ## SITE_NAME = 'http://localhost:8000'
-## BID_SERVICE = 'http://localhost:8000/bid_service/api/'
+## BID_SERVICE = 'http://localhost:8000/api/'
 ## COUNTDOWN_SERVICE = 'http://localhost:8000/countdown/api/'

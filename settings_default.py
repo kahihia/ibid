@@ -245,7 +245,7 @@ CANVAS_HOME = FB_APP + "canvashome/"
 #see how to better handle this
 IMAGES_SITE = 'https://apps.facebook.ibidgames.com'
 SITE_NAME = 'https://apps.facebook.ibidgames.com/'
-BID_SERVICE = 'http://apps.facebook.ibidgames.com/bid_service/api/'
+BID_SERVICE = 'http://apps.facebook.ibidgames.com/api/'
 COUNTDOWN_SERVICE = 'http://apps.facebook.ibidgames.com/countdown/api/'
 
 
