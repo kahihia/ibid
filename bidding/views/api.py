@@ -230,6 +230,7 @@ def startBidding(request):
     auction = Auction.objects.get(id=auction_id)
 
     member = request.user.get_profile()
+
     try:
         amount = auction.minimum_precap
     except ValueError:
@@ -248,8 +249,16 @@ def startBidding(request):
         clientMessages.append(client.updatePrecapMessage(auction))
         clientMessages.append(auctioneer.member_joined_message(auction, member))
         client.sendPackedMessages(clientMessages)
+    else:
+        if auction.bid_type == 'bid':
+            ret = {"result":False, 'motive': 'NO_ENOUGH_CREDITS'}
+            return HttpResponse(json.dumps(ret), content_type="application/json")
+        else:
+            ret = {"result":False, 'motive': 'NO_ENOUGH_TOKENS'}
+            return HttpResponse(json.dumps(ret), content_type="application/json")
 
-    return HttpResponse('{"result":true}', content_type="application/json")
+    ret = {"result":True}
+    return HttpResponse(json.dumps(ret), content_type="application/json")
 
 def addBids(request):
     """ The users commits bids before the auction starts. """
@@ -270,11 +279,17 @@ def addBids(request):
 
         client.updatePrecap(auction)
         success = True
-    else:
-        success = False
 
-    res = {'success': success, 'data': {'placed': member.auction_bids_left(auction)}}
-    return HttpResponse(json.dumps(res), content_type="application/json")
+        res = {'success': success, 'data': {'placed': member.auction_bids_left(auction)}}
+        return HttpResponse(json.dumps(res), content_type="application/json")
+    else:
+        if auction.bid_type == 'bid':
+            ret = {"success":False, 'motive': 'NO_ENOUGH_CREDITS', 'data': {'placed': member.auction_bids_left(auction)}}
+            return HttpResponse(json.dumps(ret), content_type="application/json")
+        else:
+            ret = {"success":False, 'motive': 'NO_ENOUGH_TOKENS', 'data': {'placed': member.auction_bids_left(auction)}}
+            return HttpResponse(json.dumps(ret), content_type="application/json")
+
 
 
 def remBids(request):

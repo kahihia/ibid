@@ -52,7 +52,6 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
         Returns True if the member can place the specified amount of precap
         bids in this auction.
         """
-
         return member.get_bids(self.auction.bid_type) + member.get_placed_amount(self.auction) >= amount
 
     def completion(self):
