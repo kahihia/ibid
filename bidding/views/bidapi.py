@@ -21,30 +21,19 @@ def finish(request):
 
     print "====stop====",auction
 
-    #if status == processing #and bidNumber is the last
     print auction.status, bidNumber, auction.used_bids()/auction.minimum_precap
     if auction.status == 'processing' and bidNumber == auction.used_bids()/auction.minimum_precap:
-
-        #########
-        # finish #
-        #########
-
-        #logger.info(' - - %s finish', self.id)
+        # finish
         auction.finish()
 
-        ########################
         # run auction fixtures #
-        ########################
-
         if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
-            #run first token fixture
             aifx = AuctionFixture.objects.filter(bid_type='token')
             if len(aifx):
                 rt = aifx[0].make_auctions()
                 print "rt = aifx[0].make_auctions()", rt
 
         if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
-            #run first bids fixture
             aifx = AuctionFixture.objects.filter(bid_type='bid')
             if len(aifx):
                 rt = aifx[0].make_auctions()
@@ -66,29 +55,14 @@ def start(request):
 
     print auction.status
     if auction.status == 'waiting':
-
-        #########
-        # start #
-        #########
-
-        #logger.info(' - - %s liveAuction start, timeleft:%s', str(self.id), str(timeLeft))
+        # start
         print "<<< auction start"
         auction.start()
-        # --- delay the LiveAuction stop call to be called if no one bid ---
-        ##self.delayMethod(self.callStop, time=timeLeft, auctionId=self.id)
         oldclient_delayStop(auctionId, 0, auction.auction.bidding_time)
-
     elif auction.status == 'pause':
-        ##########
-        # resume #
-        ##########
-
-        #logger.info(' - - %s resume', self.id)
-        #logger.info(' - - %s auction current status %s', self.id, str(self.auction.auction.status))
+        # resume
         print "<<< auction resume"
         auction.resume()
-
-        ##self.delayMethod(self.callStop, time=self.auction.auction.bidding_time, auctionId=self.id)
         oldclient_delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
         
     return HttpResponse(json.dumps({'everyThingIsFine':True}))
