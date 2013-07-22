@@ -531,7 +531,7 @@ API = {
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
     'sendMessage': sendMessage,
-    'inviteRequest': inviteRequest
+    'inviteRequest': inviteRequest,
     'start': oldapi_start,
     'finish': oldapi_finish,
 }
