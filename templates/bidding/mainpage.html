@@ -40,7 +40,11 @@ preloadImage("{% static "images/help-img.png" %}");
 		<script>
 			window.fbAsyncInit = function() {
 				FB.init({
-					appId : '{{ fb_app_id }}'
+					appId : '{{ fb_app_id }}',
+                    channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+                    status     : true, // check login status
+                    cookie     : true, // enable cookies to allow the server to access the session
+                    xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
 			}; ( function(d, s, id) {
@@ -53,7 +57,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					js.src = "//connect.facebook.net/en_US/all.js";
 					fjs.parentNode.insertBefore(js, fjs);
 				}(document, 'script', 'facebook-jssdk'));
-		</script>
+        </script>
 
 		<div id="main-wrapper">
 
@@ -91,7 +95,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="buy-bids-popup" style="z-index:1001;display:none;">
 				<div class="popup">
 					<div class="title">
-						<span class="close">×</span>
+						<span class="close" ng-click="closeGetCredits()">×</span>
 						<img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
 						src="{% static "images/credits-big.png" %}">
 						<h1 style="margin-left: 35px;">Buy Credits</h1>
@@ -163,22 +167,42 @@ preloadImage("{% static "images/help-img.png" %}");
 						<h1>Friends invited!</h1> &nbsp;
 					</div>
 					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">The invitations have been sent! Thank you!</span>
+						<span style="text-align:center ; font-size: 16px;">The invitations have been sent! Thank you!</span>
 					</div>
 				</div>
 			</div>
+			<!--friends invited NAMES popup-->
+			<div class="friend-join" style="display:none">
+						<div class="popup">
+							<div class="title">
+								<span class="close">×</span>
+								<h1>New friend joined!</h1>
+							</div>
+							<div class="info">
+								<span style="color:#f36500; font-weight: 700; font-size: 16px;">Your friends accepted the invitation:</span>
+								</br>Friend one
+								</br>Friend two
+								</br>Friend three
+								<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
+									<span style="color:#484848; font-weight: 700; font-size: 16px;">You won XXX tokens!</span>
+								</div>
+								<div class="btn-blue">INVITE MORE FRIENDS!</div>
+							</div>
+
+						</div>
+					</div>
 
 			<div id="top-wrapper">
 				<div id="top">
 
 					<div class="buttons">
-						<a href=""> <div class="invite"></div> </a>
-						<a> <div class="like"></div> </a>
-						<a href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"> <div class="share"></div> </a>
+						<div class="invite" ng-click="sendRequestViaMultiFriendSelector()"></div> 
+						 <div class="like"></div>
+						 <a style="width: 91px; display: block; height: 22px;" href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"><div class="share"></div></a>
 
 					</div>
 					<div class="logo">
-						<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+						<img src="{% static "images/logo.png" %}" width="293" height="105">
 					</div>
 				</div>
 
@@ -209,7 +233,7 @@ preloadImage("{% static "images/help-img.png" %}");
 					<div class="credits">
 						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
 					</div>
-					<div class="btn-credits" style=""></div>
+					<div class="btn-credits" ng-click="openGetCredits()"></div>
 				</div>
 			</div>
 			</div>
@@ -267,12 +291,10 @@ preloadImage("{% static "images/help-img.png" %}");
 										{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 									</div>
 									<div id="auction-bids">
-										<p>
-											PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} TOKENS
-										</p>
+										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}{'TOKENS':'TOKENS','ITEMS':'CREDITS'}[playFor]{% templatetag closevariable %}</p>
 
 										<div id="auction-precap-bid">
-											<span>{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}</span> Bids
+											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
 										</div>
 										<div id="btn-bid-less" class="btn-red" ng-click="remBids(auctionList[playFor].mine[$index])">
 											-
@@ -337,7 +359,7 @@ preloadImage("{% static "images/help-img.png" %}");
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}
+											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
 										</div>
 									</div>
 								</div>
@@ -367,7 +389,7 @@ preloadImage("{% static "images/help-img.png" %}");
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/5{% templatetag closevariable %}
+											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
 										</div>
 									</div>
 								</div>
@@ -482,8 +504,9 @@ preloadImage("{% static "images/help-img.png" %}");
 								{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 							</div>
 							<div id="auction-bids">
-								<div id="btn-start-bid" class="btn-red" ng-click="startBiding(auctionList[playFor].available[$index])">
-									JOIN AUCTION
+								<div ng-switch on="auction.status">
+									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBiding(auctionList[playFor].available[$index])">JOIN AUCTION</div>
+									<div id="btn-start-bid" class="btn btn-red btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 								</div>
 							</div>
 							<div id="auction-btns">
@@ -551,11 +574,9 @@ preloadImage("{% static "images/help-img.png" %}");
 		z-index:1000;"></div>
 		<div id="overlay-tutorial">
 			<div class="logo">
-				<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+				<img src="{% static "images/logo.png" %}" width="293" height="105">
 			</div>
-			<div class="title">
-				<span class="close">×</span><h1>TUTORIAL</h1>
-			</div>
+			
 			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
 				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>
@@ -563,6 +584,8 @@ preloadImage("{% static "images/help-img.png" %}");
 				<div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" />
 				</div>
 				<div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/>
+				</div>
+				<div style="position:relative;float:right;margin-top: -45px;z-index: 1003;"><img src="{% static "images/tutorial/close.png" %}" class="close" style="cursor:pointer; width: 75px"/>
 				</div>
 			</div>
 		</div>

@@ -44,6 +44,22 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             });
     });
 
+    $rootScope.$on('openGetCreditsPopover', function () {
+        showOverlay();
+        setTimeout(function () {
+            jQuery('.buy-bids-popup').show();
+            TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
+        }, 300);
+    });
+
+    $rootScope.$on('closeGetCreditsPopover', function () {
+        hideOverlay();
+        TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
+            jQuery('.buy-bids-popup').hide();
+        }})
+    });
+
+
     $scope.convertChips = function() {
         $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
             function (data, status) {
@@ -61,25 +77,39 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             });
     };
 
+    $scope.sendRequestViaMultiFriendSelector = function() {
+        FB.ui({method: 'apprequests',
+            message: 'Come join me to play and win amazing deals at iBidGames!'
+        }, $scope.sendRequestViaMultiFriendSelectorCallback);
+    };
+
+    $scope.sendRequestViaMultiFriendSelectorCallback = function(data) {
+        console.log(data);
+        if (data != null) {
+            openPopupFrendsInvited();
+            //store invitations
+            $http.post('/api/inviteRequest/', {'invited': data.to})
+        }
+    };
+
+    $scope.openGetCredits = function() {
+        $rootScope.$emit('openGetCreditsPopover');
+    };
+
+    $scope.closeGetCredits = function() {
+        $rootScope.$emit('closeGetCreditsPopover');
+    };
+
 };
 
 
 jQuery(function () {
-    //jQuery('.buy-bids-popup').center();
     jQuery('.buy-bids-popup').hide();
-    jQuery('.btn-credits').click(openPopupBuyBids);
-    jQuery('.close', '.buy-bids-popup').click(closePopupBuyBids);
-    jQuery('.invite').click(sendRequestViaMultiFriendSelector);
-   // jQuery('.like-popup').center();
     jQuery('.like-popup').hide();
     jQuery('.like').click(openPopupLike);
     jQuery('.close', '.like-popup').click(closePopupLike);
-
-    //jQuery('.friends-invited-popup').center();
     jQuery('.friends-invited-popup').hide();
     jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
-
-    //jQuery('').click()
 })
 
 var underlay = '.underlay';
@@ -87,30 +117,6 @@ var popupClass = '.popup';
 var popupOuter = '.popup-outer';
 
 
-function openPopupBuyBids() {
-    console.log('openPopupBuyBids');
-    showOverlay();
-    setTimeout(function () {
-        jQuery('.buy-bids-popup').show();
-        TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
-    }, 300);
-}
-
-function closePopupBuyBids() {
-    console.log('closePopupBuyBids');
-    hideOverlay();
-    TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
-        jQuery('.buy-bids-popup').hide()
-    }})
-}
-
-function openPopupLike() {
-    showOverlay();
-    setTimeout(function () {
-        jQuery('.like-popup').show();
-        TweenLite.fromTo('.like-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
-    }, 300);
-}
 
 function closePopupLike() {
     hideOverlay();
@@ -138,13 +144,13 @@ function buy_bids(url, package_id) {
                     };
                     console.log(obj);
 
-                    FB.ui(obj, buyBids_callback);
+                    FB.ui(obj, getCredits_callback);
                 }
             }
         }, 'json');
 }
 
-var buyBids_callback = function (data) {
+var getCredits_callback = function (data) {
     if (data['order_id']) {
         refresh_user_bids();
         return true;
@@ -154,19 +160,6 @@ var buyBids_callback = function (data) {
     }
 };
 
-
-
-function sendRequestViaMultiFriendSelector() {
-  FB.ui({method: 'apprequests',
-    message: 'Come join me to play and win amazing deals at iBidGames!'
-  }, sendRequestViaMultiFriendSelectorCallback);
-}
-function sendRequestViaMultiFriendSelectorCallback(data){
-    console.log(data);
-    if(data != null){
-        openPopupFrendsInvited();
-    }
-}
 
 function openPopupLike() {
     showOverlay();

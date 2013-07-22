@@ -167,14 +167,16 @@ class Member(AuditedModel):
 
     def leave_auction(self, auction):
         """ Retires the member bids from the given auction. """
-
-        # TODO: This should be removed as is not going to be used
-        bids = Bid.objects.get(auction=auction, bidder=self)
-        #self.bids_left += bids.placed_amount
-        self.set_bids(auction.bid_type, self.get_bids(auction.bid_type) +
-                                        bids.placed_amount)
-        bids.delete()
-        self.save()
+        try:
+            # TODO: This should be removed as is not going to be used
+            bids = Bid.objects.get(auction=auction, bidder=self)
+            #self.bids_left += bids.placed_amount
+            self.set_bids(auction.bid_type, self.get_bids(auction.bid_type) +
+                                            bids.placed_amount)
+            bids.delete()
+            self.save()
+        except:
+            logger.exception('leave_auction exception')
 
     def bids_history(self):
         return self.bid_set.all().order_by().values('auction__item__name', 'placed_amount', 'used_amount',
@@ -287,7 +289,7 @@ class ItemImage(models.Model):
 class AbstractAuction(AuditedModel):
     item = models.ForeignKey(Item)
     precap_bids = models.IntegerField(help_text='Minimum amount of bids to start the auction')
-    minimum_precap = models.IntegerField(help_text='Minimum amount of bids to join', default=5)
+    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=5)
 
     class Meta:
         abstract = True
@@ -352,8 +354,7 @@ class Auction(AbstractAuction):
 
     def price(self):
         """ Returns the current price of the auction. """
-
-        dollars = float(self.used_bids()) / 100
+        dollars = float(self.used_bids()/self.minimum_precap) / 100
         return Decimal('%.2f' % dollars)
 
     def has_joined(self, member):
@@ -366,7 +367,7 @@ class Auction(AbstractAuction):
         return self.bidders.values_list('user__email', flat=True)
 
     def getBidNumber(self):
-        return self.used_bids()/settings.TODO_BID_PRICE
+        return self.used_bids()/self.minimum_precap
 
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
@@ -502,7 +503,7 @@ class BidPackage(models.Model):
         return self.title
 
 
-class AuctionInvoice(models.Model):
+class AuctionInvoice(AuditedModel):
     auction = models.ForeignKey(Auction)
     member = models.ForeignKey(Member)
     status = models.CharField(max_length=55, default='created', choices=INVOICE_CHOICES)
@@ -531,13 +532,14 @@ def addbids(sender, **kwargs):
 payment_was_successful.connect(addbids)
 
 
-class Invitation(models.Model):
+class Invitation(AuditedModel):
     inviter = models.ForeignKey(Member)
     invited_facebook_id = models.CharField(max_length=100)
     deleted = models.BooleanField(default=False) #facebook forced you to remove the invitation once used but not anymore
 
 
 class AuctionInvitation(models.Model):
+    """DEPRECATED"""
     inviter = models.ForeignKey(Member)
     request_id = models.BigIntegerField()
     auction = models.ForeignKey(Auction)
@@ -603,3 +605,9 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bids=instance.member.bids_left,
                                       total_bidsto=instance.member.bidsto_left,
         )
+
+class ConfigKey(models.Model):
+    key = models.CharField(max_length=100)
+    value = models.CharField(max_length=100)
+    def __unicode__(self):
+        return self.key

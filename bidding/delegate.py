@@ -9,8 +9,6 @@ from bidding import client
 
 logger = logging.getLogger('django')
 
-from threading import Timer
-#from bid_client import bidServerClient
 import bid_client
 
 
@@ -54,7 +52,6 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
         Returns True if the member can place the specified amount of precap
         bids in this auction.
         """
-
         return member.get_bids(self.auction.bid_type) + member.get_placed_amount(self.auction) >= amount
 
     def completion(self):
@@ -77,6 +74,7 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
 
         member.precap_bids(self.auction, amount)
 
+        #TODO two users can enter here because status is not yet changed
         if not self.auction._precap_bids_needed():
             self.auction.finish_precap()
 
@@ -119,13 +117,13 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
         Changes the status to Waiting, sets the auction start date and saves
         it.
         """
-        from chat import auctioneer
-
-        auctioneer.precap_finished_message(self.auction)
-
         self.auction.status = 'waiting'
         self.auction.start_date = datetime.now() + timedelta(seconds=5)
         self.auction.save()
+
+        from chat import auctioneer
+
+        auctioneer.precap_finished_message(self.auction)
 
         client.auctionAwait(self.auction)
 
@@ -225,8 +223,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         current_bids = self.auction.used_bids()
         limt_bids = int(self.auction.placed_bids() * 0.25)
 
-        #TODO: enable bid price
-        while limt_bids % 5 <> 0:
+        while limt_bids % self.auction.minimum_precap <> 0:
             limt_bids -= 1
 
         from chat.auctioneer import threshold_message
@@ -254,7 +251,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         """
 
         bid = self.auction.bid_set.get(bidder=member)
-        bid.used_amount += 5
+        bid.used_amount += self.auction.minimum_precap
 
         bid_time = time.time()
         bid.unixtime = Decimal("%f" % bid_time)

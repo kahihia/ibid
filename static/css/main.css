@@ -85,11 +85,13 @@ body {
 	-moz-transition: .2s;
 	-webkit-transition: .2s;
 	transition: .2s;
+	cursor: pointer;
 }
 
 #top .buttons .like:hover {
 	background-position: 0 0;
 	opacity: 1;
+	cursor: pointer;
 }
 
 #top .buttons .share {
@@ -105,11 +107,13 @@ body {
 	-moz-transition: .2s;
 	-webkit-transition: .2s;
 	transition: .2s;
+	cursor: pointer;
 }
 
 #top .buttons .share:hover {
 	background-position: 0 0;
 	opacity: 1;
+	cursor: pointer;
 }
 #top .buttons .invite {
 	width: 126px;
@@ -125,11 +129,13 @@ body {
 	-moz-transition: .2s;
 	-webkit-transition: .2s;
 	transition: .2s;
+	cursor: pointer;
 }
 
 #top .buttons .invite:hover {
 	background-position: 0 0;
 	opacity: 1;
+	cursor: pointer;
 }
 
 #user-info {
@@ -268,6 +274,7 @@ body {
 #menu-wrapper #menu .btn-tokens:hover {
 	background-position: 0 0px;
 	opacity: 1;
+	cursor: pointer;
 }
 
 #menu-wrapper #menu .btn-items {
@@ -291,6 +298,7 @@ body {
 #menu-wrapper #menu .btn-items:hover {
 	background-position: 0 0px;
 	opacity: 1;
+	cursor: pointer;
 }
 #menu-wrapper #menu .links {
 	float: right;
@@ -580,7 +588,7 @@ body {
 	-webkit-transition: .2s;
 	transition: .2s;
 }
-.btn-red:hover {
+.btn-red:hover:not([disabled]) {
 	background-image: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#cf4444), to(#fc4040));
 	background-image: -webkit-linear-gradient(top, #fc4040, #cf4444);
 	background-image: -moz-linear-gradient(top, #fc4040, #cf4444);
@@ -593,10 +601,50 @@ body {
 	transition: .2s;
 }
 
+.btn-blue {
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	background-color: #1a82f7;
+	background-image: url(http://tomato-dev/~tuna/static/images/bkg-btn-blue.jpg);
+	font-size: 12px;
+	font-weight: bold;
+	box-shadow: 0px 1px 2px #bca4a4;
+	color: #fff;
+	line-height: 29px;
+	display: block;
+	cursor: pointer;
+	opacity: 1;
+	margin-top: 10px;
+	-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+	width: 230px;
+	margin:0 auto;
+}
+.btn-blue:hover {
+	opacity:0.7;
+	-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+
+.btn-red.btn-longtext {
+	font-size: 11px;
+}
+.btn[disabled] {
+	cursor: default !important;
+	opacity: 0.5;
+}
+
 #btn-start-bid {
 	width: 108px;
 	height: 29px;
 	margin: 10px auto;
+	cursor: pointer;
 }
 
 #auction-btns {
@@ -1255,6 +1303,7 @@ body {
 #overlay-tutorial .title .close {
 	float: right;
 	cursor: pointer;
+	margin-right:50px;
 }
 #overlay-tutorial .title h1 {
 	color: #484848;
