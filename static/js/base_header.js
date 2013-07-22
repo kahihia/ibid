@@ -77,6 +77,13 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             });
     };
 
+    $scope.shareOnTimeline = function () {
+        FB.ui({
+            method: 'feed',
+            link: 'https://apps.facebook.com/ibidgames/'
+        });
+    };
+
     $scope.sendRequestViaMultiFriendSelector = function() {
         FB.ui({method: 'apprequests',
             message: 'Come join me to play and win amazing deals at iBidGames!'
