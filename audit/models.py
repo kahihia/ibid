@@ -38,7 +38,7 @@ class Log(models.Model):
     object_app = models.CharField(max_length=100)
     object_model = models.CharField(max_length=100)
     object_pk = models.IntegerField(null=True)
-    data = models.CharField(max_length=200)
+    data = models.CharField(max_length=4096)
 
     def __unicode__(self):
         return '%s.%s [%d] - %s @ %s' % (self.object_app, self.object_model,
