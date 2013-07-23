@@ -214,14 +214,14 @@ def getAuctionsInitialization(request):
         auctions_bid_my.append(tmp)
 
     data = {}
-    data['TOKENS'] = {}
-    data['TOKENS']['available'] = auctions_token_available
-    data['TOKENS']['finished'] = auctions_token_finished
-    data['TOKENS']['mine'] = auctions_token_my
-    data['ITEMS'] = {}
-    data['ITEMS']['available'] = auctions_bid_available
-    data['ITEMS']['finished'] = auctions_bid_finished
-    data['ITEMS']['mine'] = auctions_bid_my
+    data['token'] = {}
+    data['token']['available'] = auctions_token_available
+    data['token']['finished'] = auctions_token_finished
+    data['token']['mine'] = auctions_token_my
+    data['credit'] = {}
+    data['credit']['available'] = auctions_bid_available
+    data['credit']['finished'] = auctions_bid_finished
+    data['credit']['mine'] = auctions_bid_my
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 
