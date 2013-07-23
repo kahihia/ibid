@@ -11,18 +11,13 @@ import json
 logger = logging.getLogger('django')
 
 from django.conf import settings
-from django.http import HttpResponse
 
 from bidding import client
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
 
 
-
-def _oldcountdown_startCountDown(auctionId, bidNumber, time=0):
-    """
-    process countdown to start the auction
-    """
+def _oldclient_delayStart(auctionId, bidNumber, time):
     kwargs = {'auctionId': auctionId,
               'bidNumber': bidNumber,
               'time': time}
@@ -33,13 +28,9 @@ def _oldcountdown_startCountDown(auctionId, bidNumber, time=0):
 
     t = Timer(time, start, kwargs=kwargs)
     t.start()
-    return HttpResponse(json.dumps({'everyThingIsFine':True}))
 
 
-def _oldcountdown_stopCountDown(auctionId, bidNumber, time=0):
-    """
-    process countdown to stop the auction
-    """
+def oldclient_delayStop(auctionId, bidNumber, time):
     kwargs = {'auctionId': auctionId,
               'bidNumber': bidNumber,
               'time': time}
@@ -50,24 +41,6 @@ def _oldcountdown_stopCountDown(auctionId, bidNumber, time=0):
 
     t = Timer(time, stop, kwargs=kwargs)
     t.start()
-    return HttpResponse(json.dumps({'everyThingIsFine':True}))
-
-
-# oldclient_* functions are what originally were at bid_client.py file
-def _oldclient_delayStart(auctionId, bidNumber, time):
-    _oldcountdown_startCountDown(auctionId, bidNumber, time)
-
-
-def _oldclient_bid(auctionId, bidNumber, time):
-    _oldcountdown_stopCountDown(auctionId, bidNumber, time)
-
-
-def _oldclient_delayResume(auctionId, bidNumber, time):
-    _oldcountdown_startCountDown(auctionId, bidNumber, time)
-
-
-def oldclient_delayStop(auctionId, bidNumber, time):
-    _oldcountdown_stopCountDown(auctionId, bidNumber, time)
 
 
 
@@ -307,9 +280,9 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         bid.save()
         if self._check_thresholds():
             self.auction.pause()
-            _oldclient_delayResume(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            _oldclient_delayStart(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
         else:
-            _oldclient_bid(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            oldclient_delayStop(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
 
     def get_time_left(self):
         bid = self.auction.get_latest_bid()
@@ -330,7 +303,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         self.auction.status = 'pause'
         self.auction.save()
         client.auctionPause(self.auction)
-        _oldclient_delayResume(self.auction.id, self.auction.getBidNumber(), 10)
+        _oldclient_delayStart(self.auction.id, self.auction.getBidNumber(), 10)
         send_in_thread(task_auction_pause, sender=self, auction=self.auction)
 
 
@@ -384,3 +357,46 @@ class GlobalAuctionDelegate(object):
 
 
 
+
+def _oldapi_start(request):
+    auctionId = int(request.GET.get('auctionId'))
+    bidNumber = int(request.GET.get('bidNumber'))
+    time = float(request.GET.get('time', 0))
+    kwargs = {'auctionId': auctionId,
+              'bidNumber': bidNumber,
+              'time': time}
+
+    auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
+
+    if auction.status == 'waiting':
+        # start
+        auction.start()
+        oldclient_delayStop(auctionId, 0, auction.auction.bidding_time)
+    elif auction.status == 'pause':
+        # resume
+        auction.resume()
+        oldclient_delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
+        
+
+def _oldapi_finish(request):
+    auctionId = int(request.GET.get('auctionId'))
+    bidNumber = int(request.GET.get('bidNumber'))
+    time = float(request.GET.get('time', 0))
+
+    auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
+
+
+    if auction.status == 'processing' and bidNumber == auction.used_bids()/auction.minimum_precap:
+        # finish
+        auction.finish()
+
+        # run auction fixtures #
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='token')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
+
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='bid')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
