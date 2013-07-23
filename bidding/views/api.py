@@ -7,7 +7,6 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 
 from bidding import client
-from bidding import tasks
 from bidding.delegate import GlobalAuctionDelegate
 from bidding.models import Auction
 from bidding.models import AuctionFixture

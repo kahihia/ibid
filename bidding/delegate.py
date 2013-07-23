@@ -13,10 +13,36 @@ logger = logging.getLogger('django')
 from django.conf import settings
 
 from bidding import client
-from bidding import tasks
-#from bidding.models import Auction
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
+
+
+def start_auction(auction):
+    bid_number = 0
+    if auction.status == 'waiting':
+        auction.start()
+    elif auction.status == 'pause':
+        auction.resume()
+        bid_number = auction.getBidNumber()
+    finish_auction_delayed(auction, bid_number, auction.auction.bidding_time)
+
+
+def finish_auction(auction, bid_number):
+    if auction.status == 'processing' and bid_number == auction.used_bids()/auction.minimum_precap:
+        auction.finish()
+        auction.create_from_fixtures()
+
+
+def start_auction_delayed(auction, delay):
+    kwargs = {'auction': auction}
+    t = Timer(delay, start_auction, kwargs=kwargs)
+    t.start()
+
+
+def finish_auction_delayed(auction, bid_number, delay):
+    kwargs = {'auction': auction, 'bid_number': bid_number}
+    t = Timer(delay, finish_auction, kwargs=kwargs)
+    t.start()
         
 
 class AuctionDelegate(object):
@@ -126,7 +152,7 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
 
         auctioneer.precap_finished_message(self.auction)
         client.auctionAwait(self.auction)
-        tasks.start_auction(self.auction, 5.0)
+        start_auction_delayed(self.auction, 5.0)
         send_in_thread(precap_finished_signal, sender=self, auction=self.auction)
 
 
@@ -251,9 +277,9 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         bid.save()
         if self._check_thresholds():
             self.auction.pause()
-            tasks.start_auction(self.auction, self.auction.bidding_time)
+            start_auction_delayed(self.auction, self.auction.bidding_time)
         else:
-            tasks.finish_auction(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
+            finish_auction_delayed(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
 
     def get_time_left(self):
         bid = self.auction.get_latest_bid()
@@ -274,7 +300,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         self.auction.status = 'pause'
         self.auction.save()
         client.auctionPause(self.auction)
-        tasks.start_auction(self.auction, 10.0)
+        start_auction_delayed(self.auction, 10.0)
         send_in_thread(task_auction_pause, sender=self, auction=self.auction)
 
 
