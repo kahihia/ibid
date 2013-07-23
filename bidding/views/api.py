@@ -69,6 +69,7 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -84,6 +85,7 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -98,6 +100,7 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -114,6 +117,7 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -136,6 +140,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
@@ -176,6 +181,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)
@@ -208,14 +214,14 @@ def getAuctionsInitialization(request):
         auctions_bid_my.append(tmp)
 
     data = {}
-    data['TOKENS'] = {}
-    data['TOKENS']['available'] = auctions_token_available
-    data['TOKENS']['finished'] = auctions_token_finished
-    data['TOKENS']['mine'] = auctions_token_my
-    data['ITEMS'] = {}
-    data['ITEMS']['available'] = auctions_bid_available
-    data['ITEMS']['finished'] = auctions_bid_finished
-    data['ITEMS']['mine'] = auctions_bid_my
+    data['token'] = {}
+    data['token']['available'] = auctions_token_available
+    data['token']['finished'] = auctions_token_finished
+    data['token']['mine'] = auctions_token_my
+    data['credit'] = {}
+    data['credit']['available'] = auctions_bid_available
+    data['credit']['finished'] = auctions_bid_finished
+    data['credit']['mine'] = auctions_bid_my
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 

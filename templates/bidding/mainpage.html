@@ -260,9 +260,9 @@ preloadImage("{% static "images/help-img.png" %}");
 					</div>
 				</div>
 
-				<div ng-class="{'TOKENS':'color-frame-tokens','ITEMS':'color-frame-items'}[playFor]"></div>
+				<div ng-class="{'color-frame-tokens': playFor == AUCTION_TYPE_TOKENS, 'color-frame-items': playFor == AUCTION_TYPE_CREDITS}"></div>
 				<div id="user-auctions">
-					<div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+					<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}'s Upcoming Auctions
 					</div>
 
@@ -278,7 +278,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 										<!--img src="{% static "images/auction-img.jpg" %}" width="107" height="72"-->
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -291,7 +291,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 									</div>
 									<div id="auction-bids">
-										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}{'TOKENS':'TOKENS','ITEMS':'CREDITS'}[playFor]{% templatetag closevariable %}</p>
+										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}playFor | uppercase{% templatetag closevariable %}</p>
 
 										<div id="auction-precap-bid">
 											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
@@ -319,7 +319,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -339,7 +339,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':'title-token', 'ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -369,7 +369,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -399,7 +399,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -479,7 +479,7 @@ preloadImage("{% static "images/help-img.png" %}");
 				</div>
 
 				<div id="upcoming-auctions">
-					<div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+					<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 						Other Upcoming Auctions
 					</div>
 
@@ -491,7 +491,7 @@ preloadImage("{% static "images/help-img.png" %}");
 							<div class="img">
 								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 							</div>
-							<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
 							<div id="auction-retail-price">
@@ -522,7 +522,7 @@ preloadImage("{% static "images/help-img.png" %}");
 
 				</div>
 				<div id="finished-auctions">
-					<div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+					<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 						Recently Finished Auctions
 					</div>
 					<div id="auction" ng-repeat="auction in auctionList[playFor].finished">
@@ -530,7 +530,7 @@ preloadImage("{% static "images/help-img.png" %}");
 							<div class="img">
 								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 							</div>
-							<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
 							<div id="auction-retail-price">
@@ -576,7 +576,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="logo">
 				<img src="{% static "images/logo.png" %}" width="293" height="105">
 			</div>
-			
+
 			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
 				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>

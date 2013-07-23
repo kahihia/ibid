@@ -42,30 +42,27 @@ var gameState = {pubnubMessages:[]};
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
+    $scope.AUCTION_TYPE_CREDITS = 'credit';
+    $scope.AUCTION_TYPE_TOKENS  = 'token';
+
     //$scope.messages = [];
     //$scope.message = {'method': '', data: {}};
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
 
-    $rootScope.playFor = 'TOKENS';
+    $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
 
-    $scope.$on('reloadAuctionsData', function () {
-        $http.post('/api/getAuctionsInitialization/').
-            success(function (data, status) {
-                console.log('Got auctions', data);
-                $scope.auctionList = data;
-                $scope.initializeAuctions();
-                $scope.profileFotoLink = $rootScope.user.profileFotoLink;
-            });
-    })
 
     $scope.initializeAuctions = function () {
-        var auctions = $scope.getLocalAuctionAll();
-        for (idx in auctions) {
-            $scope.initializeAuction(auctions[idx]);
-        }
-    }
+        $http
+            .get('/api/getAuctionsInitialization/')
+            .success(function (auctions) {
+                console.log('Got auctions', auctions);
+                $scope.auctionList = auctions;
+                _.forEach(auctions, $scope.initializeAuction);
+            });
+    };
 
     $scope.initializeAuction = function (auction) {
         // Add values to control the user interface aspect.
@@ -101,7 +98,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     };
 
     $scope.isAuctionMine = function (auction) {
-        return _.contains($scope.auctionList['TOKENS']['mine'], auction) || _.contains($scope.auctionList['ITEMS']['mine'], auction);
+        return _.contains($scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'], auction) || _.contains($scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'], auction);
     };
 
     $scope.isAddBidsEnabled = function () {
@@ -110,11 +107,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     //switch between TOKENS and ITEMS
     $scope.playForTokens = function () {
-        $rootScope.playFor = 'TOKENS';
+        $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
     }
 
     $scope.playForItems = function () {
-        $rootScope.playFor = 'ITEMS';
+        $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
     }
 
     $scope.subscribeToAuctionChannel = function (auction) {
@@ -200,8 +197,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 if (data.result === true) {
                     // Reload user data to refresh tokens/credits.
                     $rootScope.$emit('reloadUserDataEvent');
-                    // Fire event to reload auctions data.
-                    $scope.$emit('reloadAuctionsData');
+                    // Move auction to mine.
+                    $scope.moveAuction(auction, 'available', 'mine');
                 } else if (data.result === false) {
                     if (data.motive == 'NO_ENOUGH_CREDITS'){
                         //opens the "get credits" popup
@@ -289,8 +286,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $scope.unsubscribeFromChannel($scope.channel + auction.id);
         // Reload user data to update tokens/credits.
         $rootScope.$emit('reloadUserDataEvent');
-        // Fire event to reload auctions data.
-        $scope.$emit('reloadAuctionsData');
+        // Move auction to available auctions.
+        $scope.moveAuction(auction, 'mine', 'available');
     };
 
 
@@ -363,8 +360,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     //getLocalAuctionsAll
     $scope.getLocalAuctionAll = function () {
         var auctions = [];
-        auctions = [].concat(auctions, $scope.auctionList['TOKENS']['mine'], $scope.auctionList['TOKENS']['available'], $scope.auctionList['TOKENS']['finished']);
-        auctions = [].concat(auctions, $scope.auctionList['ITEMS']['mine'], $scope.auctionList['ITEMS']['available'], $scope.auctionList['ITEMS']['finished']);
+        auctions = [].concat(auctions, $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'], $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['available'], $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['finished']);
+        auctions = [].concat(auctions, $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'], $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['available'], $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['finished']);
         return auctions;
     }
 
@@ -381,6 +378,20 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.getLocalAuctionByIndex = function (toksorcreds, mineoravailableorfinished, index) {
         return $scope.auctionList[toksorcreds][mineoravailableorfinished][index];
     }
+
+    /**
+     * Move auction from one place to another inside of the auctionList
+     * array (ie, from "mine" to "available").
+     *
+     * @param {object} auction The auction to move.
+     * @param {string} from    The source location (ie, "mine").
+     * @param {string} to      The destination location (ie, "available").
+     */
+    $scope.moveAuction = function (auction, from, to) {
+        var sourceAuctions = $scope.auctionList[auction.type][from];
+        sourceAuctions.splice(_.indexOf(sourceAuctions, auction), 1);
+        $scope.auctionList[auction.type][to].push(auction);
+    };
 
     $scope.subscribeToChannel = function (options) {
         _.defaults(options, {
@@ -442,12 +453,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     catch (e) {}
                     switch (message.method) {
                     case 'appendAuction':
-                        if (message.data.playFor == 'TOKENS') {
-                            $scope.auctionList['TOKENS']['available'].push(message.data);
-                        }
-                        else if (message.data.playFor == 'ITEMS') {
-                            $scope.auctionList['ITEMS']['available'].push(message.data);
-                        }
+                        $scope.auctionList[message.data.type]['available'].push(message.data);
                         $scope.initializeAuction(message.data);
                         break;
                     case 'updateAuction':
@@ -483,9 +489,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-    //firt load all auctions, when all functions are declared;
-    $scope.$emit('reloadAuctionsData');
 
+    $scope.initializeAuctions();
 };
 
 
