@@ -2,54 +2,72 @@
 
 from datetime import datetime, timedelta
 from decimal import Decimal
+from threading import Timer
 import logging
 import time
 import urllib, urllib2
+import json
 
 logger = logging.getLogger('django')
 
 from django.conf import settings
+from django.http import HttpResponse
 
 from bidding import client
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
 
 
+
+def _oldcountdown_startCountDown(auctionId, bidNumber, time=0):
+    """
+    process countdown to start the auction
+    """
+    kwargs = {'auctionId': auctionId,
+              'bidNumber': bidNumber,
+              'time': time}
+
+    #function to be called on timeout
+    def start(**kwargs):
+        urllib2.urlopen(settings.BID_SERVICE + 'start/?%s' % urllib.urlencode(kwargs))
+
+    t = Timer(time, start, kwargs=kwargs)
+    t.start()
+    return HttpResponse(json.dumps({'everyThingIsFine':True}))
+
+
+def _oldcountdown_stopCountDown(auctionId, bidNumber, time=0):
+    """
+    process countdown to stop the auction
+    """
+    kwargs = {'auctionId': auctionId,
+              'bidNumber': bidNumber,
+              'time': time}
+
+    #function to be called on timeout
+    def stop(**kwargs):
+        urllib2.urlopen(settings.BID_SERVICE + 'finish/?%s' % urllib.urlencode(kwargs))
+
+    t = Timer(time, stop, kwargs=kwargs)
+    t.start()
+    return HttpResponse(json.dumps({'everyThingIsFine':True}))
+
+
 # oldclient_* functions are what originally were at bid_client.py file
 def _oldclient_delayStart(auctionId, bidNumber, time):
-    kwargs = {
-        'auctionId': auctionId,
-        'bidNumber': bidNumber,
-        'time': time
-    }
-    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'startCountDown/?%s' % urllib.urlencode(kwargs))
+    _oldcountdown_startCountDown(auctionId, bidNumber, time)
 
 
 def _oldclient_bid(auctionId, bidNumber, time):
-    kwargs = {
-        'auctionId': auctionId,
-        'bidNumber': bidNumber,
-        'time': time
-    }
-    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'stopCountDown/?%s' % urllib.urlencode(kwargs))
+    _oldcountdown_stopCountDown(auctionId, bidNumber, time)
 
 
 def _oldclient_delayResume(auctionId, bidNumber, time):
-    kwargs = {
-        'auctionId': auctionId,
-        'bidNumber': bidNumber,
-        'time': time
-    }
-    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'startCountDown/?%s' % urllib.urlencode(kwargs))
+    _oldcountdown_startCountDown(auctionId, bidNumber, time)
 
 
 def oldclient_delayStop(auctionId, bidNumber, time):
-    kwargs = {
-        'auctionId': auctionId,
-        'bidNumber': bidNumber,
-        'time': time
-    }
-    urllib2.urlopen(settings.COUNTDOWN_SERVICE + 'stopCountDown/?%s' % urllib.urlencode(kwargs))
+    _oldcountdown_stopCountDown(auctionId, bidNumber, time)
 
 
 

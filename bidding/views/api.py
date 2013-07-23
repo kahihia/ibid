@@ -389,16 +389,11 @@ def reportAnError(request):
     sends an email to us
     """
     member = request.user.get_profile()
-
     message = request.POST.get('message', '')
     gameState = request.POST.get('gameState', '{}')
-
     subject = settings.ERROR_REPORT_TITLE + ' - ' + member.facebook_name
-
     emailMessage = "message" + '\n' + message + '\n' + "gameState" + '\n' + gameState
-
     send_mail(subject, emailMessage, settings.DEFAULT_FROM_EMAIL, [tmp[1] for tmp in settings.ADMINS])
-
     return HttpResponse('', content_type="application/json")
 
 
