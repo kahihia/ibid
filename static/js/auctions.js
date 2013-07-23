@@ -453,12 +453,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     catch (e) {}
                     switch (message.method) {
                     case 'appendAuction':
-                        if (message.data.playFor == $scope.AUCTION_TYPE_TOKENS) {
-                            $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['available'].push(message.data);
-                        }
-                        else if (message.data.playFor == $scope.AUCTION_TYPE_CREDITS) {
-                            $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['available'].push(message.data);
-                        }
+                        $scope.auctionList[message.data.type]['available'].push(message.data);
                         $scope.initializeAuction(message.data);
                         break;
                     case 'updateAuction':
