@@ -372,6 +372,17 @@ class Auction(AbstractAuction):
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
 
+    def create_from_fixtures(self):
+        """ FIXME: Ugly hack to avoid circular references. Only used from delegate.finish_auction. """
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='token')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='bid')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
+
 
 class PrePromotedAuction(AbstractAuction):
     bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
