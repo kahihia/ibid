@@ -377,7 +377,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     }
 
     $scope.moveAuction = function (auction, from, to) {
-        auction.type = 'TOKENS';
         var sourceAuctions = $scope.auctionList[auction.type][from];
         sourceAuctions.splice(_.indexOf(sourceAuctions, auction), 1);
         $scope.auctionList[auction.type][to].push(auction);
