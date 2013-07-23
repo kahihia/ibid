@@ -66,7 +66,7 @@ def auction_created(auction):
     tmp['bidType'] = auction.bid_type
 
     tmp['id'] = auction.id
-    tmp['playFor'] = {'bid':'ITEMS' ,'token':'TOKENS'}[auction.bid_type]
+    tmp['playFor'] = {'bid':'credit' ,'token':'token'}[auction.bid_type]
     tmp['completion'] = auction.completion()
     tmp['status'] = auction.status
     tmp['bidPrice'] = auction.minimum_precap
