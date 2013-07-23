@@ -20,7 +20,6 @@ sitemaps = {
 urlpatterns = patterns('',
     (r'', include('bidding.urls')),
     (r'^chat/', include('chat.urls')),
-    (r'^countdown/', include('countdown.urls')),
     (r'^paypal/ipn/', include('paypal.standard.ipn.urls')),
     (r'^admin/', include(admin.site.urls)),
     (r'^facebook/', include('django_facebook.urls')),

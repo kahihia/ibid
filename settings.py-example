@@ -51,7 +51,6 @@ THUMBNAIL_DEBUG = DEBUG
 ## WEB_APP = 'http://localhost:8000/'
 ## APP_FIRST_REDIRECT =  WEB_APP + 'fb_redirect/'
 ## BID_SERVICE =         WEB_APP + 'api/'
-## COUNTDOWN_SERVICE =   WEB_APP + 'countdown/api/'
 ## FBAPP =               WEB_APP + 'fb/'
 ## IMAGES_SITE =         WEB_APP
 ## NOT_AUTHORIZED_PAGE = WEB_APP
