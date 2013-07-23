@@ -42,13 +42,16 @@ var gameState = {pubnubMessages:[]};
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
+    $scope.AUCTION_TYPE_CREDITS = 'credit';
+    $scope.AUCTION_TYPE_TOKENS  = 'token';
+
     //$scope.messages = [];
     //$scope.message = {'method': '', data: {}};
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
 
-    $rootScope.playFor = 'TOKENS';
+    $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
 
 
     $scope.initializeAuctions = function () {
@@ -95,7 +98,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     };
 
     $scope.isAuctionMine = function (auction) {
-        return _.contains($scope.auctionList['TOKENS']['mine'], auction) || _.contains($scope.auctionList['ITEMS']['mine'], auction);
+        return _.contains($scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'], auction) || _.contains($scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'], auction);
     };
 
     $scope.isAddBidsEnabled = function () {
@@ -104,11 +107,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     //switch between TOKENS and ITEMS
     $scope.playForTokens = function () {
-        $rootScope.playFor = 'TOKENS';
+        $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
     }
 
     $scope.playForItems = function () {
-        $rootScope.playFor = 'ITEMS';
+        $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
     }
 
     $scope.subscribeToAuctionChannel = function (auction) {
@@ -357,8 +360,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     //getLocalAuctionsAll
     $scope.getLocalAuctionAll = function () {
         var auctions = [];
-        auctions = [].concat(auctions, $scope.auctionList['TOKENS']['mine'], $scope.auctionList['TOKENS']['available'], $scope.auctionList['TOKENS']['finished']);
-        auctions = [].concat(auctions, $scope.auctionList['ITEMS']['mine'], $scope.auctionList['ITEMS']['available'], $scope.auctionList['ITEMS']['finished']);
+        auctions = [].concat(auctions, $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'], $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['available'], $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['finished']);
+        auctions = [].concat(auctions, $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'], $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['available'], $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['finished']);
         return auctions;
     }
 
@@ -450,11 +453,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     catch (e) {}
                     switch (message.method) {
                     case 'appendAuction':
-                        if (message.data.playFor == 'TOKENS') {
-                            $scope.auctionList['TOKENS']['available'].push(message.data);
+                        if (message.data.playFor == $scope.AUCTION_TYPE_TOKENS) {
+                            $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['available'].push(message.data);
                         }
-                        else if (message.data.playFor == 'ITEMS') {
-                            $scope.auctionList['ITEMS']['available'].push(message.data);
+                        else if (message.data.playFor == $scope.AUCTION_TYPE_CREDITS) {
+                            $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['available'].push(message.data);
                         }
                         $scope.initializeAuction(message.data);
                         break;
