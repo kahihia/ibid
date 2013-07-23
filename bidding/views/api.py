@@ -69,6 +69,7 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = auct.bid_type
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -84,6 +85,7 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = auct.bid_type
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -98,6 +100,7 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = auct.bid_type
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -114,6 +117,7 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = auct.bid_type
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -136,6 +140,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = auct.bid_type
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
@@ -176,6 +181,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['type'] = auct.bid_type
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)
