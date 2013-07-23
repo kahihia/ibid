@@ -7,8 +7,8 @@ from django.core.mail import send_mail
 from django.http import HttpResponse
 
 from bidding import client
+from bidding import tasks
 from bidding.delegate import GlobalAuctionDelegate
-from bidding.delegate import oldclient_delayStop
 from bidding.models import Auction
 from bidding.models import AuctionFixture
 from bidding.models import ConvertHistory
@@ -456,54 +456,6 @@ def inviteRequest(request):
     return HttpResponse(json.dumps([True]))
 
 
-def oldapi_finish(request):
-    auctionId = int(request.GET.get('auctionId'))
-    bidNumber = int(request.GET.get('bidNumber'))
-    time = float(request.GET.get('time', 0))
-
-    auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
-
-
-    if auction.status == 'processing' and bidNumber == auction.used_bids()/auction.minimum_precap:
-        # finish
-        auction.finish()
-
-        # run auction fixtures #
-        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
-            aifx = AuctionFixture.objects.filter(bid_type='token')
-            if len(aifx):
-                rt = aifx[0].make_auctions()
-
-        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
-            aifx = AuctionFixture.objects.filter(bid_type='bid')
-            if len(aifx):
-                rt = aifx[0].make_auctions()
-
-    return HttpResponse(json.dumps({'everyThingIsFine':True}))
-
-
-def oldapi_start(request):
-    auctionId = int(request.GET.get('auctionId'))
-    bidNumber = int(request.GET.get('bidNumber'))
-    time = float(request.GET.get('time', 0))
-    kwargs = {'auctionId': auctionId,
-              'bidNumber': bidNumber,
-              'time': time}
-
-    auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
-
-    if auction.status == 'waiting':
-        # start
-        auction.start()
-        oldclient_delayStop(auctionId, 0, auction.auction.bidding_time)
-    elif auction.status == 'pause':
-        # resume
-        auction.resume()
-        oldclient_delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
-        
-    return HttpResponse(json.dumps({'everyThingIsFine':True}))
-
-
 API = {
     'startBidding': startBidding,
     'getAuctionsInitialization': getAuctionsInitialization,
@@ -516,6 +468,4 @@ API = {
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
     'inviteRequest': inviteRequest,
-    'start': oldapi_start,
-    'finish': oldapi_finish,
 }

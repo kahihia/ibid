@@ -13,59 +13,11 @@ logger = logging.getLogger('django')
 from django.conf import settings
 
 from bidding import client
+from bidding import tasks
 #from bidding.models import Auction
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
         
-
-def add_timer(fn, kwargs, time):
-    t = Timer(time, fn, kwargs=kwargs)
-    t.start()
-
-
-def _oldapi_start(auction):
-    #auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
-    if auction.status == 'waiting':
-        # start
-        auction.start()
-        oldclient_delayStop(auction.id, 0, auction.auction.bidding_time)
-    elif auction.status == 'pause':
-        # resume
-        auction.resume()
-        oldclient_delayStop(auction.id, auction.getBidNumber(), auction.auction.bidding_time)
-
-
-def _oldapi_finish(auction, bidNumber):
-    if auction.status == 'processing' and bidNumber == auction.used_bids()/auction.minimum_precap:
-        # finish
-        auction.finish()
-
-        # run auction fixtures #
-        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
-            aifx = AuctionFixture.objects.filter(bid_type='token')
-            if len(aifx):
-                rt = aifx[0].make_auctions()
-
-        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
-            aifx = AuctionFixture.objects.filter(bid_type='bid')
-            if len(aifx):
-                rt = aifx[0].make_auctions()
-
-
-def oldclient_delayStop(auctionId, bidNumber, time):
-    kwargs = {'auctionId': auctionId,
-              'bidNumber': bidNumber,
-              'time': time}
-
-    #function to be called on timeout
-    def stop(**kwargs):
-        urllib2.urlopen(settings.BID_SERVICE + 'finish/?%s' % urllib.urlencode(kwargs))
-
-    t = Timer(time, stop, kwargs=kwargs)
-    t.start()
-
-
-
 
 class AuctionDelegate(object):
     def __init__(self, auction):
@@ -173,11 +125,8 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
         from chat import auctioneer
 
         auctioneer.precap_finished_message(self.auction)
-
         client.auctionAwait(self.auction)
-
-        add_timer(_oldapi_start, {'auction': self.auction}, 5.0)
-
+        tasks.start_auction(self.auction, 5.0)
         send_in_thread(precap_finished_signal, sender=self, auction=self.auction)
 
 
@@ -302,9 +251,9 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         bid.save()
         if self._check_thresholds():
             self.auction.pause()
-            add_timer(_oldapi_start, {'auction': self.auction}, self.auction.bidding_time)
+            tasks.start_auction(self.auction, self.auction.bidding_time)
         else:
-            oldclient_delayStop(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            tasks.finish_auction(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
 
     def get_time_left(self):
         bid = self.auction.get_latest_bid()
@@ -325,7 +274,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         self.auction.status = 'pause'
         self.auction.save()
         client.auctionPause(self.auction)
-        add_timer(_oldapi_start, {'auction': self.auction}, 10.0)
+        tasks.start_auction(self.auction, 10.0)
         send_in_thread(task_auction_pause, sender=self, auction=self.auction)
 
 
