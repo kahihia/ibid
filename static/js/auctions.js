@@ -50,22 +50,16 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     $rootScope.playFor = 'TOKENS';
 
-    $scope.$on('reloadAuctionsData', function () {
-        $http.post('/api/getAuctionsInitialization/').
-            success(function (data, status) {
-                console.log('Got auctions', data);
-                $scope.auctionList = data;
-                $scope.initializeAuctions();
-                $scope.profileFotoLink = $rootScope.user.profileFotoLink;
-            });
-    })
 
     $scope.initializeAuctions = function () {
-        var auctions = $scope.getLocalAuctionAll();
-        for (idx in auctions) {
-            $scope.initializeAuction(auctions[idx]);
-        }
-    }
+        $http
+            .get('/api/getAuctionsInitialization/')
+            .success(function (auctions) {
+                console.log('Got auctions', auctions);
+                $scope.auctionList = auctions;
+                _.forEach(auctions, $scope.initializeAuction);
+            });
+    };
 
     $scope.initializeAuction = function (auction) {
         // Add values to control the user interface aspect.
@@ -200,8 +194,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 if (data.result === true) {
                     // Reload user data to refresh tokens/credits.
                     $rootScope.$emit('reloadUserDataEvent');
-                    // Fire event to reload auctions data.
-                    $scope.$emit('reloadAuctionsData');
+                    // Move auction to mine.
+                    $scope.moveAuction(auction, 'available', 'mine');
                 } else if (data.result === false) {
                     if (data.motive == 'NO_ENOUGH_CREDITS'){
                         //opens the "get credits" popup
@@ -289,8 +283,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $scope.unsubscribeFromChannel($scope.channel + auction.id);
         // Reload user data to update tokens/credits.
         $rootScope.$emit('reloadUserDataEvent');
-        // Fire event to reload auctions data.
-        $scope.$emit('reloadAuctionsData');
+        // Move auction to available auctions.
+        $scope.moveAuction(auction, 'mine', 'available');
     };
 
 
@@ -381,6 +375,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.getLocalAuctionByIndex = function (toksorcreds, mineoravailableorfinished, index) {
         return $scope.auctionList[toksorcreds][mineoravailableorfinished][index];
     }
+
+    $scope.moveAuction = function (auction, from, to) {
+        var sourceAuctions = $scope.auctionList[auction.type][from];
+        sourceAuctions.splice(_.indexOf(sourceAuctions, auction), 1);
+        $scope.auctionList[auction.type][to].push(auction);
+    };
 
     $scope.subscribeToChannel = function (options) {
         _.defaults(options, {
@@ -483,9 +483,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-    //firt load all auctions, when all functions are declared;
-    $scope.$emit('reloadAuctionsData');
 
+    $scope.initializeAuctions();
 };
 
 
