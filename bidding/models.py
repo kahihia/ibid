@@ -289,7 +289,7 @@ class ItemImage(models.Model):
 class AbstractAuction(AuditedModel):
     item = models.ForeignKey(Item)
     precap_bids = models.IntegerField(help_text='Minimum amount of bids to start the auction')
-    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=5)
+    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=10)
 
     class Meta:
         abstract = True
