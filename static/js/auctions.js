@@ -376,6 +376,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         return $scope.auctionList[toksorcreds][mineoravailableorfinished][index];
     }
 
+    /**
+     * Move auction from one place to another inside of the auctionList
+     * array (ie, from "mine" to "available").
+     *
+     * @param {object} auction The auction to move.
+     * @param {string} from    The source location (ie, "mine").
+     * @param {string} to      The destination location (ie, "available").
+     */
     $scope.moveAuction = function (auction, from, to) {
         var sourceAuctions = $scope.auctionList[auction.type][from];
         sourceAuctions.splice(_.indexOf(sourceAuctions, auction), 1);
