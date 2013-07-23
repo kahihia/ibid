@@ -2,6 +2,10 @@
 
 import json
 
+from django.conf import settings
+from django.core.mail import send_mail
+from django.http import HttpResponse
+
 from bidding import client
 from bidding.delegate import GlobalAuctionDelegate
 from bidding.delegate import oldclient_delayStop
@@ -13,10 +17,6 @@ from bidding.models import Member
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
-
-from django.conf import settings
-from django.core.mail import send_mail
-from django.http import HttpResponse
 
 
 def api(request, method):
@@ -438,19 +438,16 @@ def sendMessage(request):
 
 
 def inviteRequest(request):
-    print "===============inviteRequest==============="
     member = request.user.get_profile()
 
     requPOST = json.loads(request.body)
     invited = request.GET.get('invited', requPOST['invited'])
-    print invited
 
     client.log(str(invited))
 
     for fb_id in invited:
         #if already users or already invited: pass
         fb_id = int(fb_id)
-        print fb_id, len(Member.objects.filter(facebook_id=fb_id)), len(Invitation.objects.filter(invited_facebook_id=fb_id))
 
         if len(Member.objects.filter(facebook_id=fb_id)) or len(Invitation.objects.filter(invited_facebook_id=fb_id)):
             pass
@@ -471,9 +468,7 @@ def oldapi_finish(request):
 
     auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
 
-    print "====stop====",auction
 
-    print auction.status, bidNumber, auction.used_bids()/auction.minimum_precap
     if auction.status == 'processing' and bidNumber == auction.used_bids()/auction.minimum_precap:
         # finish
         auction.finish()
@@ -483,13 +478,11 @@ def oldapi_finish(request):
             aifx = AuctionFixture.objects.filter(bid_type='token')
             if len(aifx):
                 rt = aifx[0].make_auctions()
-                print "rt = aifx[0].make_auctions()", rt
 
         if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
             aifx = AuctionFixture.objects.filter(bid_type='bid')
             if len(aifx):
                 rt = aifx[0].make_auctions()
-                print "rt = aifx[0].make_auctions()", rt
 
     return HttpResponse(json.dumps({'everyThingIsFine':True}))
 
@@ -503,17 +496,13 @@ def oldapi_start(request):
               'time': time}
 
     auction = GlobalAuctionDelegate(Auction.objects.get(id=auctionId))
-    print "====start====",auction
 
-    print auction.status
     if auction.status == 'waiting':
         # start
-        print "<<< auction start"
         auction.start()
         oldclient_delayStop(auctionId, 0, auction.auction.bidding_time)
     elif auction.status == 'pause':
         # resume
-        print "<<< auction resume"
         auction.resume()
         oldclient_delayStop(auctionId, auction.getBidNumber(), auction.auction.bidding_time)
         
@@ -521,16 +510,16 @@ def oldapi_start(request):
 
 
 API = {
-    'getUserDetails': getUserDetails,
+    'startBidding': startBidding,
     'getAuctionsInitialization': getAuctionsInitialization,
     'addBids': addBids,
     'remBids': remBids,
     'claim': claim,
-    'startBidding': startBidding,
+    'sendMessage': sendMessage,
+    'getUserDetails': getUserDetails,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
-    'sendMessage': sendMessage,
     'inviteRequest': inviteRequest,
     'start': oldapi_start,
     'finish': oldapi_finish,
