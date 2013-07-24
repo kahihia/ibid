@@ -128,7 +128,6 @@ INSTALLED_APPS = (
     'audit',
     'bidding',
     'chat',
-    'countdown',
 
     'paypal.standard.ipn',
     'sorl.thumbnail',
@@ -245,8 +244,6 @@ CANVAS_HOME = FB_APP + "canvashome/"
 #see how to better handle this
 IMAGES_SITE = 'https://apps.facebook.ibidgames.com'
 SITE_NAME = 'https://apps.facebook.ibidgames.com/'
-BID_SERVICE = 'http://apps.facebook.ibidgames.com/bid_service/api/'
-COUNTDOWN_SERVICE = 'http://apps.facebook.ibidgames.com/countdown/api/'
 
 
 # Facebook settings

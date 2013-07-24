@@ -6,28 +6,19 @@ from datetime import datetime
 from Pubnub import Pubnub
 pubnub = Pubnub( settings.PUBNUB_PUB, settings.PUBNUB_SUB, settings.PUBNUB_SECRET, False)
 
+
 def send_multiple_messages(pairs):
     for message, destination in pairs:
         send_pubnub_message(message, destination)
 
-def send_pubnub_message(message, destination):
 
+def send_pubnub_message(message, destination):
     if type(message) is dict:
         message['timestamp'] = str(datetime.now())
-
-    ## threaded
-    #th = threading.Thread(target=pubnub.publish, args=[{
-    #       'channel' : destination,
-    #       'message' : [message]
-    #   }])
-    #th.start()
-
-    ## non threaded
     info = pubnub.publish({
            'channel' : destination,
            'message' : [message]
        })
-    print(info)
 
 def _send_pubnub_message(message, destination):
 

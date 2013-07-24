@@ -1,16 +1,49 @@
-from datetime import datetime, timedelta
-import time
-from decimal import Decimal
-from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
-from bidding.signals import task_auction_start, task_auction_pause
-import logging
+# -*- coding: utf-8 -*-
 
-from bidding import client
+from datetime import datetime, timedelta
+from decimal import Decimal
+from threading import Timer
+import logging
+import time
+import urllib, urllib2
+import json
 
 logger = logging.getLogger('django')
 
-import bid_client
+from django.conf import settings
 
+from bidding import client
+from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
+from bidding.signals import task_auction_start, task_auction_pause
+
+
+def start_auction(auction):
+    bid_number = 0
+    if auction.status == 'waiting':
+        auction.start()
+    elif auction.status == 'pause':
+        auction.resume()
+        bid_number = auction.getBidNumber()
+    finish_auction_delayed(auction, bid_number, auction.auction.bidding_time)
+
+
+def finish_auction(auction, bid_number):
+    if auction.status == 'processing' and bid_number == auction.used_bids()/auction.minimum_precap:
+        auction.finish()
+        auction.create_from_fixtures()
+
+
+def start_auction_delayed(auction, delay):
+    kwargs = {'auction': auction}
+    t = Timer(delay, start_auction, kwargs=kwargs)
+    t.start()
+
+
+def finish_auction_delayed(auction, bid_number, delay):
+    kwargs = {'auction': auction, 'bid_number': bid_number}
+    t = Timer(delay, finish_auction, kwargs=kwargs)
+    t.start()
+        
 
 class AuctionDelegate(object):
     def __init__(self, auction):
@@ -18,12 +51,6 @@ class AuctionDelegate(object):
 
 
 class StateAuctionDelegate(AuctionDelegate):
-    #def _stop_command(self):
-    #    """ Schedules a task to stop the auction. """
-    #
-    #    from bidding.tasks import FinishAuctionTask
-    #    FinishAuctionTask.create_or_reset(self.auction)
-
     def get_last_bidder(self):
         """ 
         Returns the last member that placed a bid on this auction or None. 
@@ -124,11 +151,8 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
         from chat import auctioneer
 
         auctioneer.precap_finished_message(self.auction)
-
         client.auctionAwait(self.auction)
-
-        bid_client.delayStart(self.auction.id, 0, 5.0)
-
+        start_auction_delayed(self.auction, 5.0)
         send_in_thread(precap_finished_signal, sender=self, auction=self.auction)
 
 
@@ -232,39 +256,32 @@ class RunningAuctionDelegate(StateAuctionDelegate):
             self.auction.bidding_time = self.auction.threshold1
             threshold_message(auction=self.auction, number=1)
             return True
-
         if self.auction.threshold2 and current_bids == 2 * limt_bids:
             self.auction.bidding_time = self.auction.threshold2
             threshold_message(auction=self.auction, number=2)
             return True
-
         if self.auction.threshold3 and current_bids == 3 * limt_bids:
             self.auction.bidding_time = self.auction.threshold3
             threshold_message(auction=self.auction, number=3)
             return True
-
         return False
 
     def bid(self, member):
         """ 
         Uses one of the member's commited bids in the auction.
         """
-
         bid = self.auction.bid_set.get(bidder=member)
         bid.used_amount += self.auction.minimum_precap
-
         bid_time = time.time()
         bid.unixtime = Decimal("%f" % bid_time)
         bid.save()
-
         if self._check_thresholds():
             self.auction.pause()
-            bid_client.delayResume(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            start_auction_delayed(self.auction, self.auction.bidding_time)
         else:
-            bid_client.bid(self.auction.id, self.auction.getBidNumber(), self.auction.bidding_time)
+            finish_auction_delayed(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
 
     def get_time_left(self):
-
         bid = self.auction.get_latest_bid()
         if bid:
             if bid.used_amount == 0:
@@ -273,23 +290,17 @@ class RunningAuctionDelegate(StateAuctionDelegate):
                     self.auction.start_date.timetuple()))
             else:
                 start_time = bid.unixtime
-
             time_left = (float(self.auction.bidding_time)
                          - time.time() + float(start_time))
             return round(time_left) if time_left > 0 else 0
         return None
 
-
     def pause(self):
         """ pauses the auction. """
-
         self.auction.status = 'pause'
         self.auction.save()
-
         client.auctionPause(self.auction)
-
-        bid_client.delayResume(self.auction.id, self.auction.getBidNumber(), 10)
-
+        start_auction_delayed(self.auction, 10.0)
         send_in_thread(task_auction_pause, sender=self, auction=self.auction)
 
 
@@ -309,15 +320,22 @@ class PausedAuctinoDelegate(StateAuctionDelegate):
 
         client.auctionResume(self.auction)
 
-        #self._stop_command()
 
+state_delegates = {
+    u'precap': PrecapAuctionDelegate,
+    u'waiting': WaitingAuctionDelegate,
+    u'processing': RunningAuctionDelegate,
+    u'pause': PausedAuctinoDelegate,
+    u'waiting_payment': StateAuctionDelegate,
+    u'paid': StateAuctionDelegate,
+}
 
-state_delegates = {u'precap': PrecapAuctionDelegate,
-                   u'waiting': WaitingAuctionDelegate,
-                   u'processing': RunningAuctionDelegate,
-                   u'pause': PausedAuctinoDelegate,
-                   u'waiting_payment': StateAuctionDelegate,
-                   u'paid': StateAuctionDelegate}
+all_delegates = [
+    PrecapAuctionDelegate,
+    WaitingAuctionDelegate,
+    RunningAuctionDelegate,
+    PausedAuctinoDelegate,
+]
 
 
 class GlobalAuctionDelegate(object):
@@ -334,5 +352,6 @@ class GlobalAuctionDelegate(object):
         raise AttributeError
 
 
-all_delegates = [PrecapAuctionDelegate, WaitingAuctionDelegate, RunningAuctionDelegate, PausedAuctinoDelegate]
+
+
 
