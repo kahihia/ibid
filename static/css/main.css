@@ -67,75 +67,54 @@ body {
 
 #top .buttons {
 	position: absolute;
-	margin-top: 58px;
 	width: 860px;
+	margin-top: 58px;
+	overflow: hidden;
+}
+
+#top .buttons .button {
+	display: block;
+	height: 24px;
+	margin-bottom: 3px;
+	position: relative;
+	left: -10px;
+	background-repeat: no-repeat;
+	opacity: 0.8;
+	cursor: pointer;
+	-o-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+	text-indent: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+}
+#top .buttons .button:hover {
+	left: auto;
+	right: auto;
+	opacity: 1;
 }
 
 #top .buttons .like {
 	width: 87px;
-	height: 24px;
-	margin-bottom: 3px;
 	background-image: url("../images/btn-test.png");
-	display: block;
-	background-repeat: no-repeat;
-	background-position: -10px 0;
-	opacity: 0.8;
-	-o-transition: .2s;
-	-ms-transition: .2s;
-	-moz-transition: .2s;
-	-webkit-transition: .2s;
-	transition: .2s;
-	cursor: pointer;
-}
-
-#top .buttons .like:hover {
-	background-position: 0 0;
-	opacity: 1;
-	cursor: pointer;
 }
 
 #top .buttons .share {
 	width: 95px;
-	height: 24px;
 	background-image: url("../images/btn-share.png");
-	display: block;
-	background-repeat: no-repeat;
-	background-position: -10px 0;
-	opacity: 0.8;
-	-o-transition: .2s;
-	-ms-transition: .2s;
-	-moz-transition: .2s;
-	-webkit-transition: .2s;
-	transition: .2s;
-	cursor: pointer;
 }
 
-#top .buttons .share:hover {
-	background-position: 0 0;
-	opacity: 1;
-	cursor: pointer;
-}
 #top .buttons .invite {
 	width: 126px;
 	height: 38px;
-	float: right;
 	background-image: url("../images/btn-invite.png");
-	display: block;
-	background-repeat: no-repeat;
-	background-position: 10px 0;
-	opacity: 0.8;
-	-o-transition: .2s;
-	-ms-transition: .2s;
-	-moz-transition: .2s;
-	-webkit-transition: .2s;
-	transition: .2s;
-	cursor: pointer;
+	position: absolute;
+	left: auto;
+	right: -10px;
 }
-
 #top .buttons .invite:hover {
-	background-position: 0 0;
-	opacity: 1;
-	cursor: pointer;
+    right: 0;
 }
 
 #user-info {

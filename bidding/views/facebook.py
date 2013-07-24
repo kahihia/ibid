@@ -283,7 +283,7 @@ from django_facebook.utils import get_registration_backend, get_form_class, \
     get_instance_for_attribute, update_user_attributes
 from django_facebook.api import get_facebook_graph
 from django_facebook.connect import CONNECT_ACTIONS, _login_user, _update_likes_and_friends, \
-    _update_access_token, _remove_old_connections, _update_user
+    _update_access_token, _remove_old_connections, _update_user, _connect_user
 from django.contrib.auth import authenticate, login
 from django.db.utils import IntegrityError
 from random import randint
@@ -308,8 +308,8 @@ def connect_user(request, access_token=None, facebook_graph=None, connect_facebo
     assert converter.is_authenticated()
     facebook_data = converter.facebook_profile_data()
 
-    if 'email' not in facebook_data or not facebook_data['email']:
-        facebook_data['email'] = '%s@facebook.com' % facebook_data['email']
+    if 'email' not in facebook_data or not facebook_data['email'] and facebook_data['username']:
+        facebook_data['email'] = '%s@facebook.com' % facebook_data['username']
 
     force_registration = request.REQUEST.get('force_registration') or\
         request.REQUEST.get('force_registration_hard')

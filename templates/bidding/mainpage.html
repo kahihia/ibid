@@ -41,7 +41,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-                    channelUrl : '//WWW.YOUR_DOMAIN.COM/channel.html', // Channel File
+                    channelUrl : '//{{SITE_NAME}}{% static "channel.html" %}', // Channel File
                     status     : true, // check login status
                     cookie     : true, // enable cookies to allow the server to access the session
                     xfbml      : true  // parse XFBML
@@ -196,9 +196,9 @@ preloadImage("{% static "images/help-img.png" %}");
 				<div id="top">
 
 					<div class="buttons">
-						<div class="invite" ng-click="sendRequestViaMultiFriendSelector()"></div> 
-						 <div class="like"></div>
-						 <a style="width: 91px; display: block; height: 22px;" href="https://www.facebook.com/sharer/sharer.php?u=https://apps.facebook.com/ibidgames/" target="_blank"><div class="share"></div></a>
+						<div class="button invite" ng-click="sendRequestViaMultiFriendSelector()"></div>
+						<div class="button like"></div>
+						<div class="button share" ng-click="shareOnTimeline()"></div>
 
 					</div>
 					<div class="logo">
