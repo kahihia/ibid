@@ -70,6 +70,14 @@ def auction_created(auction):
     tmp['itemImage'] = auction.item.get_thumbnail()
     tmp['bidders'] = auction.bidders.count()
 
+    tmp['placed'] = 0
+    tmp['timeleft'] = None
+    tmp['bidNumber'] = 0
+    tmp['bids'] = 0
+    tmp['auctioneerMessages'] = []
+    tmp['chatMessages'] = []
+
+
     result = {'method': 'appendAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
