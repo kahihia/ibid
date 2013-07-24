@@ -308,7 +308,7 @@ def connect_user(request, access_token=None, facebook_graph=None, connect_facebo
     assert converter.is_authenticated()
     facebook_data = converter.facebook_profile_data()
 
-    if 'email' not in facebook_data or not facebook_data['email']:
+    if 'email' not in facebook_data or not facebook_data['email'] and facebook_data['username']:
         facebook_data['email'] = '%s@facebook.com' % facebook_data['username']
 
     force_registration = request.REQUEST.get('force_registration') or\

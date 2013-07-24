@@ -209,7 +209,7 @@ class Member(AuditedModel):
         Since this mixin can be used both for profile and user models
         '''
         if hasattr(self, 'user'):
-           user = self.user
+            user = self.user
         else:
             user = self
         return user
@@ -221,7 +221,7 @@ class Member(AuditedModel):
         if hasattr(self, 'user_id'):
             user_id = self.user_id
         else:
-           user_id = self.id
+            user_id = self.id
         return user_id
 
     @property
@@ -399,6 +399,7 @@ class Member(AuditedModel):
         self.access_token = new_value
         self.new_token_required = False
 
+
 class Item(AuditedModel):
     name = models.CharField(max_length=255)
     category = models.CharField(max_length=5, choices=ITEM_CATEGORY_CHOICES, blank=True, null=True)
@@ -425,7 +426,7 @@ class ItemImage(models.Model):
 class AbstractAuction(AuditedModel):
     item = models.ForeignKey(Item)
     precap_bids = models.IntegerField(help_text='Minimum amount of bids to start the auction')
-    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=5)
+    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=10)
 
     class Meta:
         abstract = True
