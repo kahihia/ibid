@@ -78,6 +78,7 @@ def getAuctionsInitialization(request):
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidNumber'] = 0
         tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['type'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
@@ -96,6 +97,7 @@ def getAuctionsInitialization(request):
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidNumber'] = 0
         tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['type'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
@@ -115,6 +117,7 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['bidNumber'] = 0
         tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
@@ -134,6 +137,7 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['bidNumber'] = 0
         tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
