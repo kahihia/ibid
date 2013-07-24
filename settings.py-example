@@ -1,13 +1,10 @@
 from settings_default import *
 
 
-# Settings you should probably redefine here
-
-
 # Debugging options usefull whien coding  
-## DEBUG = True
-## TEMPLATE_DEBUG = DEBUG
-## THUMBNAIL_DEBUG = DEBUG
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+THUMBNAIL_DEBUG = DEBUG
 
 
 # Log files location
@@ -51,15 +48,20 @@ from settings_default import *
 
 
 # Application Urls
-## WEB_APP = "http://localhost:8000/"
+## WEB_APP = 'http://localhost:8000/'
+## APP_FIRST_REDIRECT =  WEB_APP + 'fb_redirect/'
+## FBAPP =               WEB_APP + 'fb/'
+## IMAGES_SITE =         WEB_APP
 ## NOT_AUTHORIZED_PAGE = WEB_APP
-## APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
-## FB_APP = "http://apps.facebook.com/interactivebids/"
-## FBAPP = WEB_APP + "fb/"
-## FBAPP_HOME = FB_APP + "home/"
-## CANVAS_HOME = FB_APP + "canvashome/"
-## #see how to better handle this
-## IMAGES_SITE = '' #'http://apps.facebook.com/interactivebids'
-## SITE_NAME = 'http://localhost:8000'
-## BID_SERVICE = 'http://localhost:8000/bid_service/api/'
-## COUNTDOWN_SERVICE = 'http://localhost:8000/countdown/api/'
+## SITE_NAME =           WEB_APP
+
+## FB_APP = 'http://apps.facebook.com/interactivebids/'
+## FBAPP_HOME =  FB_APP + 'home/'
+## CANVAS_HOME = FB_APP + 'canvashome/'
+
+# Put your domain here
+## SESSION_COOKIE_DOMAIN = 'ibidtest.istari.com.ar'
+
+# Set to True if using SSL
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
