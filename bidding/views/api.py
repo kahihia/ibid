@@ -1,14 +1,21 @@
 # -*- coding: utf-8 -*-
-from django.conf import settings
-from django.http import HttpResponse
-from django.core.mail import send_mail
-
-from bidding import client
-from bidding.models import Auction, ConvertHistory, Member, Invitation
-from chat import auctioneer
-from chat.models import Message, ChatUser
 
 import json
+
+from django.conf import settings
+from django.core.mail import send_mail
+from django.http import HttpResponse
+
+from bidding import client
+from bidding.delegate import GlobalAuctionDelegate
+from bidding.models import Auction
+from bidding.models import AuctionFixture
+from bidding.models import ConvertHistory
+from bidding.models import Invitation
+from bidding.models import Member
+from chat import auctioneer
+from chat.models import ChatUser
+from chat.models import Message
 
 
 def api(request, method):
@@ -260,6 +267,7 @@ def startBidding(request):
     ret = {"result":True}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
+
 def addBids(request):
     """ The users commits bids before the auction starts. """
 
@@ -380,16 +388,11 @@ def reportAnError(request):
     sends an email to us
     """
     member = request.user.get_profile()
-
     message = request.POST.get('message', '')
     gameState = request.POST.get('gameState', '{}')
-
     subject = settings.ERROR_REPORT_TITLE + ' - ' + member.facebook_name
-
     emailMessage = "message" + '\n' + message + '\n' + "gameState" + '\n' + gameState
-
     send_mail(subject, emailMessage, settings.DEFAULT_FROM_EMAIL, [tmp[1] for tmp in settings.ADMINS])
-
     return HttpResponse('', content_type="application/json")
 
 
@@ -427,20 +430,18 @@ def sendMessage(request):
 
     return HttpResponse('{"result":false}', content_type="application/json")
 
+
 def inviteRequest(request):
-    print "===============inviteRequest==============="
     member = request.user.get_profile()
 
     requPOST = json.loads(request.body)
     invited = request.GET.get('invited', requPOST['invited'])
-    print invited
 
     client.log(str(invited))
 
     for fb_id in invited:
         #if already users or already invited: pass
         fb_id = int(fb_id)
-        print fb_id, len(Member.objects.filter(facebook_id=fb_id)), len(Invitation.objects.filter(invited_facebook_id=fb_id))
 
         if len(Member.objects.filter(facebook_id=fb_id)) or len(Invitation.objects.filter(invited_facebook_id=fb_id)):
             pass
@@ -453,17 +454,17 @@ def inviteRequest(request):
 
     return HttpResponse(json.dumps([True]))
 
+
 API = {
-    'getUserDetails': getUserDetails,
-    'getAuctionsInitialization': getAuctionsInitialization,
     'startBidding': startBidding,
+    'getAuctionsInitialization': getAuctionsInitialization,
     'addBids': addBids,
     'remBids': remBids,
     'claim': claim,
+    'sendMessage': sendMessage,
+    'getUserDetails': getUserDetails,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
-    'sendMessage': sendMessage,
-    'inviteRequest': inviteRequest
+    'inviteRequest': inviteRequest,
 }
-
