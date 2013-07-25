@@ -212,7 +212,7 @@ class Member(AuditedModel):
         Since this mixin can be used both for profile and user models
         '''
         if hasattr(self, 'user'):
-           user = self.user
+            user = self.user
         else:
             user = self
         return user
@@ -224,7 +224,7 @@ class Member(AuditedModel):
         if hasattr(self, 'user_id'):
             user_id = self.user_id
         else:
-           user_id = self.id
+            user_id = self.id
         return user_id
 
     @property
@@ -494,7 +494,7 @@ class ItemImage(models.Model):
 class AbstractAuction(AuditedModel):
     item = models.ForeignKey(Item)
     precap_bids = models.IntegerField(help_text='Minimum amount of bids to start the auction')
-    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=5)
+    minimum_precap = models.IntegerField(help_text='This is the bidPrice', default=10)
 
     class Meta:
         abstract = True
@@ -576,6 +576,17 @@ class Auction(AbstractAuction):
 
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
+
+    def create_from_fixtures(self):
+        """ FIXME: Ugly hack to avoid circular references. Only used from delegate.finish_auction. """
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='token')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
+        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
+            aifx = AuctionFixture.objects.filter(bid_type='bid')
+            if len(aifx):
+                rt = aifx[0].make_auctions()
 
 
 class PrePromotedAuction(AbstractAuction):

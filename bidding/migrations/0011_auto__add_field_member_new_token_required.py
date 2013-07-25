@@ -57,7 +57,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
+            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
             'precap_bids': ('django.db.models.fields.IntegerField', [], {}),
             'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
@@ -186,7 +186,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
+            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
             'precap_bids': ('django.db.models.fields.IntegerField', [], {}),
             'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'precap'", 'max_length': '15'}),
@@ -204,7 +204,7 @@ class Migration(SchemaMigration):
             'fixture': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.AuctionFixture']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
+            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
             'precap_bids': ('django.db.models.fields.IntegerField', [], {})
         },
         u'contenttypes.contenttype': {

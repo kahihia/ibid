@@ -2,7 +2,7 @@ Interactive Bid Games Inc. http://ibidgames.com
 
 System requirements:
 
-    * livevent-dev
+    * libevent-dev
     * supervisor==3.0b1
     * libjpeg-dev
     * libpng-dev
