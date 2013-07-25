@@ -15,7 +15,7 @@ from django.conf import settings
 from bidding import client
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
-
+from django.db import connection
 
 def start_auction(auction):
     bid_number = 0
@@ -270,16 +270,29 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         """ 
         Uses one of the member's commited bids in the auction.
         """
+
         bid = self.auction.bid_set.get(bidder=member)
-        bid.used_amount += self.auction.minimum_precap
-        bid_time = time.time()
-        bid.unixtime = Decimal("%f" % bid_time)
-        bid.save()
-        if self._check_thresholds():
-            self.auction.pause()
-            start_auction_delayed(self.auction, self.auction.bidding_time)
+        used_amount = bid.used_amount + self.auction.minimum_precap
+
+        cursor = connection.cursor()
+
+        ret = cursor.execute("""UPDATE bidding_bid
+            set unixtime = %s,
+            used_amount = %s
+            where auction_id = %s
+            and bidder_id = %s
+            and used_amount < %s
+            limit 1;""", [float("%2f" % time.time()), used_amount, self.auction.id, member.id, used_amount])
+
+        if ret:
+            if self._check_thresholds():
+                self.auction.pause()
+                start_auction_delayed(self.auction, self.auction.bidding_time)
+            else:
+                finish_auction_delayed(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
+            return True
         else:
-            finish_auction_delayed(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
+            return False
 
     def get_time_left(self):
         bid = self.auction.get_latest_bid()

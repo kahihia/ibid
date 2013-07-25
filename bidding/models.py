@@ -9,6 +9,7 @@ from decimal import Decimal
 import re
 import open_facebook
 from sorl.thumbnail import get_thumbnail
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -18,6 +19,8 @@ from django.db.models.aggregates import Sum
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
+from django_facebook import model_managers, settings as facebook_settings
+from django_facebook.utils import get_user_model
 
 from bidding.delegate import state_delegates
 from audit.models import AuditedModel
@@ -195,7 +198,6 @@ class Member(AuditedModel):
     date_of_birth = models.DateField(blank=True, null=True)
     raw_data = models.TextField(blank=True)
 
-    # set to true if we require a new access token
     new_token_required = models.BooleanField(default=False,
                                              help_text='Set to true if the access token is outdated or lacks permissions')
 
@@ -399,6 +401,71 @@ class Member(AuditedModel):
         '''
         self.access_token = new_value
         self.new_token_required = False
+
+
+class FacebookUser(models.Model):
+    '''
+    Model for storing a users friends
+    '''
+    # in order to be able to easily move these to an another db,
+    # use a user_id and no foreign key
+    user_id = models.IntegerField()
+    facebook_id = models.BigIntegerField()
+    name = models.TextField(blank=True, null=True)
+    gender = models.CharField(choices=(
+        ('F', 'female'), ('M', 'male')), blank=True, null=True, max_length=1)
+
+    objects = model_managers.FacebookUserManager()
+
+    class Meta:
+        unique_together = ['user_id', 'facebook_id']
+
+    def __unicode__(self):
+        return u'Facebook user %s' % self.name
+
+
+class FacebookLike(models.Model):
+
+    '''
+    Model for storing all of a users fb likes
+    '''
+    # in order to be able to easily move these to an another db,
+    # use a user_id and no foreign key
+    user_id = models.IntegerField()
+    facebook_id = models.BigIntegerField()
+    name = models.TextField(blank=True, null=True)
+    category = models.TextField(blank=True, null=True)
+    created_time = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+
+        unique_together = ['user_id', 'facebook_id']
+
+class FACEBOOK_OG_STATE:
+
+    class NOT_CONNECTED:
+
+        '''
+        The user has not connected their profile with Facebook
+        '''
+        pass
+
+    class CONNECTED:
+
+        '''
+        The user has connected their profile with Facebook, but isn't
+        setup for Facebook sharing
+        - sharing is either disabled
+        - or we have no valid access token
+        '''
+        pass
+
+    class SHARING(CONNECTED):
+
+        '''
+        The user is connected to Facebook and sharing is enabled
+        '''
+        pass
 
 
 class Item(AuditedModel):

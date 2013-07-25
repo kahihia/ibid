@@ -8,15 +8,46 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Member.new_token_required'
-        db.add_column(u'bidding_member', 'new_token_required',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
-                      keep_default=False)
+        # Adding model 'FacebookUser'
+        db.create_table(u'bidding_facebookuser', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('facebook_id', self.gf('django.db.models.fields.BigIntegerField')()),
+            ('name', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('gender', self.gf('django.db.models.fields.CharField')(max_length=1, null=True, blank=True)),
+        ))
+        db.send_create_signal(u'bidding', ['FacebookUser'])
+
+        # Adding unique constraint on 'FacebookUser', fields ['user_id', 'facebook_id']
+        db.create_unique(u'bidding_facebookuser', ['user_id', 'facebook_id'])
+
+        # Adding model 'FacebookLike'
+        db.create_table(u'bidding_facebooklike', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('user_id', self.gf('django.db.models.fields.IntegerField')()),
+            ('facebook_id', self.gf('django.db.models.fields.BigIntegerField')()),
+            ('name', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('category', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('created_time', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+        ))
+        db.send_create_signal(u'bidding', ['FacebookLike'])
+
+        # Adding unique constraint on 'FacebookLike', fields ['user_id', 'facebook_id']
+        db.create_unique(u'bidding_facebooklike', ['user_id', 'facebook_id'])
 
 
     def backwards(self, orm):
-        # Deleting field 'Member.new_token_required'
-        db.delete_column(u'bidding_member', 'new_token_required')
+        # Removing unique constraint on 'FacebookLike', fields ['user_id', 'facebook_id']
+        db.delete_unique(u'bidding_facebooklike', ['user_id', 'facebook_id'])
+
+        # Removing unique constraint on 'FacebookUser', fields ['user_id', 'facebook_id']
+        db.delete_unique(u'bidding_facebookuser', ['user_id', 'facebook_id'])
+
+        # Deleting model 'FacebookUser'
+        db.delete_table(u'bidding_facebookuser')
+
+        # Deleting model 'FacebookLike'
+        db.delete_table(u'bidding_facebooklike')
 
 
     models = {
@@ -57,7 +88,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
+            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
             'precap_bids': ('django.db.models.fields.IntegerField', [], {}),
             'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
@@ -128,6 +159,23 @@ class Migration(SchemaMigration):
             'total_bidsto': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'total_tokens': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
+        u'bidding.facebooklike': {
+            'Meta': {'unique_together': "(['user_id', 'facebook_id'],)", 'object_name': 'FacebookLike'},
+            'category': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'created_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'facebook_id': ('django.db.models.fields.BigIntegerField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'user_id': ('django.db.models.fields.IntegerField', [], {})
+        },
+        u'bidding.facebookuser': {
+            'Meta': {'unique_together': "(['user_id', 'facebook_id'],)", 'object_name': 'FacebookUser'},
+            'facebook_id': ('django.db.models.fields.BigIntegerField', [], {}),
+            'gender': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'user_id': ('django.db.models.fields.IntegerField', [], {})
+        },
         u'bidding.fborderinfo': {
             'Meta': {'object_name': 'FBOrderInfo'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -186,7 +234,7 @@ class Migration(SchemaMigration):
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
+            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
             'precap_bids': ('django.db.models.fields.IntegerField', [], {}),
             'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'precap'", 'max_length': '15'}),
@@ -204,7 +252,7 @@ class Migration(SchemaMigration):
             'fixture': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.AuctionFixture']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
+            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '5'}),
             'precap_bids': ('django.db.models.fields.IntegerField', [], {})
         },
         u'contenttypes.contenttype': {

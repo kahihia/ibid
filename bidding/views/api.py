@@ -367,19 +367,22 @@ def claim(request):
     if auction.status == 'processing' and auction.can_bid(member):
 
         if auction.used_bids() / auction.minimum_precap == bidNumber:
-            auction.bid(member)
+            if auction.bid(member):
 
-            clientMessages = []
-            clientMessages.append(client.someoneClaimedMessage(auction))
-            clientMessages.append(auctioneer.member_claim_message(auction, member))
-            client.sendPackedMessages(clientMessages)
+                clientMessages = []
+                clientMessages.append(client.someoneClaimedMessage(auction))
+                clientMessages.append(auctioneer.member_claim_message(auction, member))
+                client.sendPackedMessages(clientMessages)
 
-            bid = auction.bid_set.get(bidder=member)
-            tmp['id'] = auction_id
-            tmp["placed_amount"] = bid.placed_amount
-            tmp["used_amount"] = bid.used_amount
+                bid = auction.bid_set.get(bidder=member)
+                tmp['id'] = auction_id
+                tmp["placed_amount"] = bid.placed_amount
+                tmp["used_amount"] = bid.used_amount
 
-            tmp["result"] = True
+                tmp["result"] = True
+            else:
+                #else ignore! because the claim is old, based on a previous timer.
+                tmp["result"] = False
         else:
             #else ignore! because the claim is old, based on a previous timer.
             tmp["result"] = False
