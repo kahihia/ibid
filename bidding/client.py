@@ -54,18 +54,29 @@ def sendPackedMessages(clientMessages):
 def auction_created(auction):
     tmp = {}
 
-    tmp['bidType'] = auction.bid_type
-
     tmp['id'] = auction.id
     tmp['playFor'] = {'bid':'credit' ,'token':'token'}[auction.bid_type]
     tmp['completion'] = auction.completion()
     tmp['status'] = auction.status
+    if auction.bid_type == 'bid':
+        tmp['bidType'] = 'credit'
+    elif auction.bid_type == 'token':
+        tmp['bidType'] = 'token'
+
     tmp['bidPrice'] = auction.minimum_precap
     tmp['itemName'] = auction.item.name
     tmp['retailPrice'] = str(auction.item.retail_price)
     tmp['completion'] = auction.completion()
     tmp['itemImage'] = auction.item.get_thumbnail()
     tmp['bidders'] = auction.bidders.count()
+
+    tmp['placed'] = 0
+    tmp['timeleft'] = None
+    tmp['bidNumber'] = 0
+    tmp['bids'] = 0
+    tmp['auctioneerMessages'] = []
+    tmp['chatMessages'] = []
+
 
     result = {'method': 'appendAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')

@@ -76,7 +76,10 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
-        tmp['type'] = 'token'
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
+        tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -92,7 +95,10 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
-        tmp['type'] = 'credit'
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
+        tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -107,8 +113,11 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
-        tmp['type'] = 'token'
+        tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
@@ -124,8 +133,11 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
-        tmp['type'] = 'credit'
+        tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
@@ -147,7 +159,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
-        tmp['type'] = 'token'
+        tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
@@ -188,7 +200,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
-        tmp['type'] = 'credit'
+        tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)

@@ -57,10 +57,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.initializeAuctions = function () {
         $http
             .get('/api/getAuctionsInitialization/')
-            .success(function (auctions) {
-                console.log('Got auctions', auctions);
-                $scope.auctionList = auctions;
-                _.forEach(auctions, $scope.initializeAuction);
+            .success(function (auctionsCollection) {
+                console.log('Got auctions', auctionsCollection);
+                $scope.auctionList = auctionsCollection;
+                _.forEach(auctionsCollection, function (auctionsSub) {
+                    _.forEach(auctionsSub, function (auctionsSub2) {
+                        _.forEach(auctionsSub2, $scope.initializeAuction);
+                    });
+                });
             });
     };
 
@@ -74,10 +78,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         // Initialize default values.
         if (_.isUndefined(auction.chatMessage)) {
             auction.chatMessage = '';
-        }
-        else {
-            // This should never happen.
-            console.log('------------>>>>> initializeAuction() -- auction.chatmessage is defined!');
         }
         // If user is participating in auction, subscribe to channel.
         if ($scope.isAuctionMine(auction)) {
@@ -123,14 +123,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     console.log('PubNub channel %s message (%s)', $scope.channel + auction.id, getCurrentDateTime(), message);
                     gameState.pubnubMessages.push([getCurrentDateTime(), message]);
                     $scope.$apply(function () {
-                        var auction;
-                        // Try to get auction data once without errors.
-                        // TODO: In the near future, messages will be
-                        // standarized so hopefully we don't need this.
-                        try {
-                            auction = $scope.getLocalAuctionById(message.data.id);
-                        }
-                        catch (e) {}
                         switch (message.method) {
                         case 'receiveAuctioneerMessage':
                             auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);
@@ -195,10 +187,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             .post('/api/startBidding/', {id: auction.id})
             .success(function (data) {
                 if (data.result === true) {
-                    // Reload user data to refresh tokens/credits.
-                    $rootScope.$emit('reloadUserDataEvent');
+                    // Set initial placed tokens/credits and 1 bid.
+                    auction.bids = auction.placed = auction.bidPrice;
                     // Move auction to mine.
                     $scope.moveAuction(auction, 'available', 'mine');
+                    // Reload user data to refresh tokens/credits.
+                    $rootScope.$emit('reloadUserDataEvent');
                 } else if (data.result === false) {
                     if (data.motive == 'NO_ENOUGH_CREDITS'){
                         //opens the "get credits" popup
@@ -388,9 +382,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
      * @param {string} to      The destination location (ie, "available").
      */
     $scope.moveAuction = function (auction, from, to) {
-        var sourceAuctions = $scope.auctionList[auction.type][from];
+        var sourceAuctions = $scope.auctionList[auction.bidType][from];
         sourceAuctions.splice(_.indexOf(sourceAuctions, auction), 1);
-        $scope.auctionList[auction.type][to].push(auction);
+        $scope.auctionList[auction.bidType][to].push(auction);
+        // Call initializeAuction() again to reset auction data.
+        $scope.initializeAuction(auction);
     };
 
     $scope.subscribeToChannel = function (options) {
@@ -443,17 +439,9 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 console.log('PubNub channel %s message (%s)', $scope.channel, getCurrentDateTime(), message);
                 gameState.pubnubMessages.push([getCurrentDateTime(), message]);
                 $scope.$apply(function () {
-                    var auction;
-                    // Try to get auction data once without errors.
-                    // TODO: In the near future, messages will be
-                    // standarized so hopefully we don't need this.
-                    try {
-                        auction = $scope.getLocalAuctionById(message.data.id);
-                    }
-                    catch (e) {}
                     switch (message.method) {
                     case 'appendAuction':
-                        $scope.auctionList[message.data.type]['available'].push(message.data);
+                        $scope.auctionList[message.data.bidType]['available'].push(message.data);
                         $scope.initializeAuction(message.data);
                         break;
                     case 'updateAuction':
