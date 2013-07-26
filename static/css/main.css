@@ -1304,7 +1304,14 @@ body {
 	height: 683px;
 	z-index: 10000;
 }
-
+#welcome .btn-close {
+	position: absolute;
+	right: 90px;
+	top: 151px;
+}
+#welcome .btn-close:hover {
+opacity:0.8;
+}
 #welcome .btn-welcome {
 	width: 320px;
 	height: 51px;
@@ -1317,6 +1324,9 @@ body {
 	position: absolute;
 	text-align: center;
 	line-height: 50px;
+}
+#welcome .btn-welcome:hover {
+opacity:0.8;
 }
 #welcome .text {
 	color: #fff;
