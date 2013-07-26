@@ -476,6 +476,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         $scope.initializeAuction(message.data);
                         break;
                     case 'updateAuction':
+                        var auction = $scope.getLocalAuctionById(message.data.id);
                         //check if the comming status is equal or higher than the actual
                         if (typeof message.data.status == 'undefined' || statuses[message.data.status] >= statuses[auction.status]) {
                             //overwrite the auction values with the new ones
