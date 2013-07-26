@@ -150,7 +150,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             channel: '/topic/chat/' + auction.id,
             message: function (messages) {
                 _.forEach(messages, function (message) {
-                    console.log('PubNub channel %s message (%s)', '/topic/chat' + auction.id, getCurrentDateTime(), message);
+                    console.log('PubNub channel %s message (%s)', '/topic/chat/' + auction.id, getCurrentDateTime(), message);
                     gameState.pubnubMessages.push([getCurrentDateTime(), message]);
                     $scope.$apply(function () {
                         var auction;
