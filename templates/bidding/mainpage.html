@@ -3,25 +3,23 @@
 <html ng-app>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
 		<title>iBidGames</title>
+
 		<link rel="stylesheet" href="{% static "css/main.css" %}">
 		<link rel="stylesheet" href="{% static "css/popup.css" %}">
-		<script language="javascript">
-function preloadImage(url) {
-var img = new Image();
-img.src = url;
-}
-preloadImage("{% static "images/btn-bid-play-disabled.png" %}");
-preloadImage("{% static "images/welcome.png" %}");
-preloadImage("{% static "images/help-img.png" %}");
-
-		</script>
-
-		<!---->
-		<link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
-		rel='stylesheet' type='text/css'>
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
+		<script language="javascript">
+			function preloadImage(url) {
+				var img = new Image();
+				img.src = url;
+			}
+			preloadImage("{% static "images/btn-bid-play-disabled.png" %}");
+			preloadImage("{% static "images/welcome.png" %}");
+			preloadImage("{% static "images/help-img.png" %}");
+		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
 		<script src="{% static "js/lodash.min.js" %}"></script>
@@ -32,7 +30,6 @@ preloadImage("{% static "images/help-img.png" %}");
 		<script src="{% static "js/auctions.js"%}" ></script>
 		<script src="{% static "js/errorReport.js" %}"></script>
 		<script src="{% static "js/tutorial.js" %}" ></script>
-
 	</head>
 
 	<body style="overflow: hidden">
@@ -577,7 +574,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="logo">
 				<img src="{% static "images/logo.png" %}" width="293" height="105">
 			</div>
-			
+
 			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
 				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>
