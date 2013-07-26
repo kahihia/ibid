@@ -72,7 +72,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         // Add values to control the user interface aspect.
         auction.interface = {
             bidEnabled: true,
-            addBidEnabled: $scope.isAddBidsEnabled(),
+            addBidEnabled: $scope.isUserAbleToAddBidToAuction(auction),
             remBidEnabled: true
         };
         // Initialize default values.
@@ -101,9 +101,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         return _.contains($scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'], auction) || _.contains($scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'], auction);
     };
 
-    $scope.isAddBidsEnabled = function () {
-        return $rootScope.user.tokens > 0;
-    }
+    $scope.isUserAbleToAddBidToAuction = function (auction) {
+        switch (auction.bidType) {
+        case $scope.AUCTION_TYPE_TOKENS:
+            return $rootScope.user.tokens >= auction.bidPrice;
+        case $scope.AUCTION_TYPE_CREDITS:
+            return $rootScope.user.credits >= auction.bidPrice;
+        }
+    };
 
     //switch between TOKENS and ITEMS
     $scope.playForTokens = function () {
@@ -206,35 +211,51 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             });
     };
 
-    //status: precap
+    /**
+     * Adds bids to an auction.
+     *
+     * @param {object} auction Auction to add bids to.
+     */
     $scope.addBids = function (auction) {
-        if (auction.status != "precap") {
-            console.log('ERROR: addBids - not precap');
+        // If auction status is not precapitalization, do nothing.
+        if (auction.status !== 'precap') {
+            return;
         }
-
-        //if user has tokens/credits
-        if ($scope.isAddBidsEnabled()) {
-
-            console.log("addBids on auction " + auction.id);
-            $http.post('/api/addBids/', {'id': auction.id}).
-                success(function (rdata, status) {
-                    if(rdata.success == true){
-                        auction.placed = rdata.data.placed;
-                        auction.bids = rdata.data.placed;
-                        $rootScope.$emit('reloadUserDataEvent');
-                    } else if (rdata.success === false) {
-                        if (rdata.motive == 'NO_ENOUGH_CREDITS'){
-                            //opens the "get credits" popup
-                            $rootScope.$emit('openGetCreditsPopover');
-                        }
-                        else if (rdata.motive == 'NO_ENOUGH_TOKENS'){
-                            console.log('not enough tokens')
-                        }
+        // If add bid button is not enabled, do nothing.
+        if (! auction.interface.addBidEnabled) {
+            return;
+        }
+        // If user is not able to add bids, do nothing.
+        if (! $scope.isUserAbleToAddBidToAuction(auction)) {
+            return;
+        }
+        // Disable add/rem bid buttons.
+        auction.interface.addBidEnabled = false;
+        auction.interface.remBidEnabled = false;
+        // Post to the API the intention to add bids to auction.
+        $http
+            .post('/api/addBids/', {id: auction.id})
+            .success(function (rdata, status) {
+                console.log('addBids()', rdata);
+                // If the bid can't be added, do corresponding action.
+                if (rdata.success === false) {
+                    if (rdata.motive === 'NO_ENOUGH_CREDITS'){
+                        // Show the "get credits" modal.
+                        $rootScope.$emit('openGetCreditsPopover');
                     }
-
-                });
-        }
-
+                    else if (rdata.motive === 'NO_ENOUGH_TOKENS'){
+                        console.log('Not enough tokens');
+                    }
+                    return;
+                }
+                // Re-enable add/rem bid buttons.
+                auction.interface.addBidEnabled = true;
+                auction.interface.remBidEnabled = true;
+                // Bid could be added, so changes are reflected in UI.
+                auction.bids = auction.placed = rdata.data.placed;
+                // Emit event to reload user data.
+                $rootScope.$emit('reloadUserDataEvent');
+            });
     };
 
     /**
@@ -243,18 +264,28 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
      * @param {object} auction Auction to remove bids from.
      */
     $scope.remBids = function (auction) {
-        // If status is not precapitalization, or i didn't placed any
-        // bid, i can't remove bids.
-        if (auction.status !== 'precap' || !auction.placed) {
+        // If auction status is not precapitalization, or i didn't
+        // placed any bid, do nothing.
+        if (auction.status !== 'precap' || ! auction.placed) {
             return;
         }
-        // Post to server the intention to remove bids from auction.
+        // If remove bid button is not enabled, do nothing.
+        if (! auction.interface.remBidEnabled) {
+            return;
+        }
+        // Disable add/rem bid buttons.
+        auction.interface.addBidEnabled = false;
+        auction.interface.remBidEnabled = false;
+        // Post to the API the intention to remove bids from auction.
         $http
             .post('/api/remBids/', {id: auction.id})
             .success(function (response) {
                 if (!response.success) {
                     return;
                 }
+                // Re-enable add/rem bid buttons.
+                auction.interface.addBidEnabled = true;
+                auction.interface.remBidEnabled = true;
                 // If server tells that it was my last bid, i have to
                 // quit bidding on this auction.
                 if (response.data && response.data['do'] === 'close') {
