@@ -42,45 +42,42 @@ var gameState = {pubnubMessages:[]};
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
+    $scope.AUCTION_TYPE_CREDITS = 'credit';
+    $scope.AUCTION_TYPE_TOKENS  = 'token';
+
     //$scope.messages = [];
     //$scope.message = {'method': '', data: {}};
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
 
-    $rootScope.playFor = 'TOKENS';
+    $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
 
-    $scope.$on('reloadAuctionsData', function () {
-        $http.post('/api/getAuctionsInitialization/').
-            success(function (data, status) {
-                console.log('Got auctions', data);
-                $scope.auctionList = data;
-                $scope.initializeAuctions();
-                $scope.profileFotoLink = $rootScope.user.profileFotoLink;
-            });
-    })
 
     $scope.initializeAuctions = function () {
-        var auctions = $scope.getLocalAuctionAll();
-        for (idx in auctions) {
-            $scope.initializeAuction(auctions[idx]);
-        }
-    }
+        $http
+            .get('/api/getAuctionsInitialization/')
+            .success(function (auctionsCollection) {
+                console.log('Got auctions', auctionsCollection);
+                $scope.auctionList = auctionsCollection;
+                _.forEach(auctionsCollection, function (auctionsSub) {
+                    _.forEach(auctionsSub, function (auctionsSub2) {
+                        _.forEach(auctionsSub2, $scope.initializeAuction);
+                    });
+                });
+            });
+    };
 
     $scope.initializeAuction = function (auction) {
         // Add values to control the user interface aspect.
         auction.interface = {
             bidEnabled: true,
-            addBidEnabled: $scope.isAddBidsEnabled(),
+            addBidEnabled: $scope.isUserAbleToAddBidToAuction(auction),
             remBidEnabled: true
         };
         // Initialize default values.
         if (_.isUndefined(auction.chatMessage)) {
             auction.chatMessage = '';
-        }
-        else {
-            // This should never happen.
-            console.log('------------>>>>> initializeAuction() -- auction.chatmessage is defined!');
         }
         // If user is participating in auction, subscribe to channel.
         if ($scope.isAuctionMine(auction)) {
@@ -101,20 +98,25 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     };
 
     $scope.isAuctionMine = function (auction) {
-        return _.contains($scope.auctionList['TOKENS']['mine'], auction) || _.contains($scope.auctionList['ITEMS']['mine'], auction);
+        return _.contains($scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'], auction) || _.contains($scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'], auction);
     };
 
-    $scope.isAddBidsEnabled = function () {
-        return $rootScope.user.tokens > 0;
-    }
+    $scope.isUserAbleToAddBidToAuction = function (auction) {
+        switch (auction.bidType) {
+        case $scope.AUCTION_TYPE_TOKENS:
+            return $rootScope.user.tokens >= auction.bidPrice;
+        case $scope.AUCTION_TYPE_CREDITS:
+            return $rootScope.user.credits >= auction.bidPrice;
+        }
+    };
 
     //switch between TOKENS and ITEMS
     $scope.playForTokens = function () {
-        $rootScope.playFor = 'TOKENS';
+        $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
     }
 
     $scope.playForItems = function () {
-        $rootScope.playFor = 'ITEMS';
+        $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
     }
 
     $scope.subscribeToAuctionChannel = function (auction) {
@@ -126,14 +128,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     console.log('PubNub channel %s message (%s)', $scope.channel + auction.id, getCurrentDateTime(), message);
                     gameState.pubnubMessages.push([getCurrentDateTime(), message]);
                     $scope.$apply(function () {
-                        var auction;
-                        // Try to get auction data once without errors.
-                        // TODO: In the near future, messages will be
-                        // standarized so hopefully we don't need this.
-                        try {
-                            auction = $scope.getLocalAuctionById(message.data.id);
-                        }
-                        catch (e) {}
                         switch (message.method) {
                         case 'receiveAuctioneerMessage':
                             auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);
@@ -156,7 +150,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             channel: '/topic/chat/' + auction.id,
             message: function (messages) {
                 _.forEach(messages, function (message) {
-                    console.log('PubNub channel %s message (%s)', '/topic/chat' + auction.id, getCurrentDateTime(), message);
+                    console.log('PubNub channel %s message (%s)', '/topic/chat/' + auction.id, getCurrentDateTime(), message);
                     gameState.pubnubMessages.push([getCurrentDateTime(), message]);
                     $scope.$apply(function () {
                         var auction;
@@ -198,10 +192,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             .post('/api/startBidding/', {id: auction.id})
             .success(function (data) {
                 if (data.result === true) {
+                    // Set initial placed tokens/credits and 1 bid.
+                    auction.bids = auction.placed = auction.bidPrice;
+                    // Move auction to mine.
+                    $scope.moveAuction(auction, 'available', 'mine');
                     // Reload user data to refresh tokens/credits.
                     $rootScope.$emit('reloadUserDataEvent');
-                    // Fire event to reload auctions data.
-                    $scope.$emit('reloadAuctionsData');
                 } else if (data.result === false) {
                     if (data.motive == 'NO_ENOUGH_CREDITS'){
                         //opens the "get credits" popup
@@ -215,35 +211,51 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             });
     };
 
-    //status: precap
+    /**
+     * Adds bids to an auction.
+     *
+     * @param {object} auction Auction to add bids to.
+     */
     $scope.addBids = function (auction) {
-        if (auction.status != "precap") {
-            console.log('ERROR: addBids - not precap');
+        // If auction status is not precapitalization, do nothing.
+        if (auction.status !== 'precap') {
+            return;
         }
-
-        //if user has tokens/credits
-        if ($scope.isAddBidsEnabled()) {
-
-            console.log("addBids on auction " + auction.id);
-            $http.post('/api/addBids/', {'id': auction.id}).
-                success(function (rdata, status) {
-                    if(rdata.success == true){
-                        auction.placed = rdata.data.placed;
-                        auction.bids = rdata.data.placed;
-                        $rootScope.$emit('reloadUserDataEvent');
-                    } else if (rdata.success === false) {
-                        if (rdata.motive == 'NO_ENOUGH_CREDITS'){
-                            //opens the "get credits" popup
-                            $rootScope.$emit('openGetCreditsPopover');
-                        }
-                        else if (rdata.motive == 'NO_ENOUGH_TOKENS'){
-                            console.log('not enough tokens')
-                        }
+        // If add bid button is not enabled, do nothing.
+        if (! auction.interface.addBidEnabled) {
+            return;
+        }
+        // If user is not able to add bids, do nothing.
+        if (! $scope.isUserAbleToAddBidToAuction(auction)) {
+            return;
+        }
+        // Disable add/rem bid buttons.
+        auction.interface.addBidEnabled = false;
+        auction.interface.remBidEnabled = false;
+        // Post to the API the intention to add bids to auction.
+        $http
+            .post('/api/addBids/', {id: auction.id})
+            .success(function (rdata, status) {
+                console.log('addBids()', rdata);
+                // If the bid can't be added, do corresponding action.
+                if (rdata.success === false) {
+                    if (rdata.motive === 'NO_ENOUGH_CREDITS'){
+                        // Show the "get credits" modal.
+                        $rootScope.$emit('openGetCreditsPopover');
                     }
-
-                });
-        }
-
+                    else if (rdata.motive === 'NO_ENOUGH_TOKENS'){
+                        console.log('Not enough tokens');
+                    }
+                    return;
+                }
+                // Re-enable add/rem bid buttons.
+                auction.interface.addBidEnabled = true;
+                auction.interface.remBidEnabled = true;
+                // Bid could be added, so changes are reflected in UI.
+                auction.bids = auction.placed = rdata.data.placed;
+                // Emit event to reload user data.
+                $rootScope.$emit('reloadUserDataEvent');
+            });
     };
 
     /**
@@ -252,18 +264,28 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
      * @param {object} auction Auction to remove bids from.
      */
     $scope.remBids = function (auction) {
-        // If status is not precapitalization, or i didn't placed any
-        // bid, i can't remove bids.
-        if (auction.status !== 'precap' || !auction.placed) {
+        // If auction status is not precapitalization, or i didn't
+        // placed any bid, do nothing.
+        if (auction.status !== 'precap' || ! auction.placed) {
             return;
         }
-        // Post to server the intention to remove bids from auction.
+        // If remove bid button is not enabled, do nothing.
+        if (! auction.interface.remBidEnabled) {
+            return;
+        }
+        // Disable add/rem bid buttons.
+        auction.interface.addBidEnabled = false;
+        auction.interface.remBidEnabled = false;
+        // Post to the API the intention to remove bids from auction.
         $http
             .post('/api/remBids/', {id: auction.id})
             .success(function (response) {
                 if (!response.success) {
                     return;
                 }
+                // Re-enable add/rem bid buttons.
+                auction.interface.addBidEnabled = true;
+                auction.interface.remBidEnabled = true;
                 // If server tells that it was my last bid, i have to
                 // quit bidding on this auction.
                 if (response.data && response.data['do'] === 'close') {
@@ -289,8 +311,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $scope.unsubscribeFromChannel($scope.channel + auction.id);
         // Reload user data to update tokens/credits.
         $rootScope.$emit('reloadUserDataEvent');
-        // Fire event to reload auctions data.
-        $scope.$emit('reloadAuctionsData');
+        // Move auction to available auctions.
+        $scope.moveAuction(auction, 'mine', 'available');
     };
 
 
@@ -363,8 +385,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     //getLocalAuctionsAll
     $scope.getLocalAuctionAll = function () {
         var auctions = [];
-        auctions = [].concat(auctions, $scope.auctionList['TOKENS']['mine'], $scope.auctionList['TOKENS']['available'], $scope.auctionList['TOKENS']['finished']);
-        auctions = [].concat(auctions, $scope.auctionList['ITEMS']['mine'], $scope.auctionList['ITEMS']['available'], $scope.auctionList['ITEMS']['finished']);
+        auctions = [].concat(auctions, $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'], $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['available'], $scope.auctionList[$scope.AUCTION_TYPE_TOKENS]['finished']);
+        auctions = [].concat(auctions, $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'], $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['available'], $scope.auctionList[$scope.AUCTION_TYPE_CREDITS]['finished']);
         return auctions;
     }
 
@@ -381,6 +403,22 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.getLocalAuctionByIndex = function (toksorcreds, mineoravailableorfinished, index) {
         return $scope.auctionList[toksorcreds][mineoravailableorfinished][index];
     }
+
+    /**
+     * Move auction from one place to another inside of the auctionList
+     * array (ie, from "mine" to "available").
+     *
+     * @param {object} auction The auction to move.
+     * @param {string} from    The source location (ie, "mine").
+     * @param {string} to      The destination location (ie, "available").
+     */
+    $scope.moveAuction = function (auction, from, to) {
+        var sourceAuctions = $scope.auctionList[auction.bidType][from];
+        sourceAuctions.splice(_.indexOf(sourceAuctions, auction), 1);
+        $scope.auctionList[auction.bidType][to].push(auction);
+        // Call initializeAuction() again to reset auction data.
+        $scope.initializeAuction(auction);
+    };
 
     $scope.subscribeToChannel = function (options) {
         _.defaults(options, {
@@ -432,25 +470,13 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 console.log('PubNub channel %s message (%s)', $scope.channel, getCurrentDateTime(), message);
                 gameState.pubnubMessages.push([getCurrentDateTime(), message]);
                 $scope.$apply(function () {
-                    var auction;
-                    // Try to get auction data once without errors.
-                    // TODO: In the near future, messages will be
-                    // standarized so hopefully we don't need this.
-                    try {
-                        auction = $scope.getLocalAuctionById(message.data.id);
-                    }
-                    catch (e) {}
                     switch (message.method) {
                     case 'appendAuction':
-                        if (message.data.playFor == 'TOKENS') {
-                            $scope.auctionList['TOKENS']['available'].push(message.data);
-                        }
-                        else if (message.data.playFor == 'ITEMS') {
-                            $scope.auctionList['ITEMS']['available'].push(message.data);
-                        }
+                        $scope.auctionList[message.data.bidType]['available'].push(message.data);
                         $scope.initializeAuction(message.data);
                         break;
                     case 'updateAuction':
+                        var auction = $scope.getLocalAuctionById(message.data.id);
                         //check if the comming status is equal or higher than the actual
                         if (typeof message.data.status == 'undefined' || statuses[message.data.status] >= statuses[auction.status]) {
                             //overwrite the auction values with the new ones
@@ -483,9 +509,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-    //firt load all auctions, when all functions are declared;
-    $scope.$emit('reloadAuctionsData');
 
+    $scope.initializeAuctions();
 };
 
 

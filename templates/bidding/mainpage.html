@@ -125,7 +125,7 @@ preloadImage("{% static "images/help-img.png" %}");
 						</br>You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
 						Tokens and you can convert it up to
 						<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.
-						<br>
+						<br><strong>10,000 Tokens = 1 Credit</strong></br>
 
 						Please select the required amount of Credits.</br>
 						<div class="warning"></div>
@@ -249,9 +249,10 @@ preloadImage("{% static "images/help-img.png" %}");
 									<a href="" id="interactiveTutotialBtn">Tutorial</a>
 								</li>
 								&nbsp; &nbsp;|&nbsp; &nbsp;
-								<li style="display: none;">
+								<li>
 									<a href="/faq/">FAQS</a>
 								</li>
+								&nbsp; &nbsp;|&nbsp; &nbsp;
 								<li>
 									<a href="/winners/">Winners</a>
 								</li>
@@ -260,9 +261,9 @@ preloadImage("{% static "images/help-img.png" %}");
 					</div>
 				</div>
 
-				<div ng-class="{'TOKENS':'color-frame-tokens','ITEMS':'color-frame-items'}[playFor]"></div>
+				<div ng-class="{'color-frame-tokens': playFor == AUCTION_TYPE_TOKENS, 'color-frame-items': playFor == AUCTION_TYPE_CREDITS}"></div>
 				<div id="user-auctions">
-					<div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+					<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}'s Upcoming Auctions
 					</div>
 
@@ -278,7 +279,7 @@ preloadImage("{% static "images/help-img.png" %}");
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 										<!--img src="{% static "images/auction-img.jpg" %}" width="107" height="72"-->
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -291,19 +292,13 @@ preloadImage("{% static "images/help-img.png" %}");
 										{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 									</div>
 									<div id="auction-bids">
-										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}{'TOKENS':'TOKENS','ITEMS':'CREDITS'}[playFor]{% templatetag closevariable %}</p>
+										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}playFor | uppercase{% templatetag closevariable %}S</p>
 
 										<div id="auction-precap-bid">
 											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
 										</div>
-										<div id="btn-bid-less" class="btn-red" ng-click="remBids(auctionList[playFor].mine[$index])">
-											-
-										</div>
-										<div id="btn-bid-plus" ng-click="addBids(auctionList[playFor].mine[$index])"
-										ng-class="{true:'btnRedEnabled', false:'btnRedDisabled'}[user.tokens>0]">
-											+
-										</div>
-
+										<div id="btn-bid-less" class="btn-red btn-rem-bid" ng-click="remBids(auctionList[playFor].mine[$index])" ng-disabled="!auction.interface.remBidEnabled">-</div>
+										<div id="btn-bid-plus" class="btn-red btn-add-bid" ng-click="addBids(auctionList[playFor].mine[$index])" ng-disabled="!auction.interface.addBidEnabled">+</div>
 									</div>
 									<div id="auction-btns">
 										<div id="btn-invite-auction" class="disabled"><img src="{% static "images/btn-invite-auction-disabled.png" %}" width="36" height="42">
@@ -319,7 +314,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -339,7 +334,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':'title-token', 'ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -369,7 +364,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -399,7 +394,7 @@ preloadImage("{% static "images/help-img.png" %}");
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 									</div>
-									<div id="auction-item-title" ng-class="{'TOKENS':title-token,'ITEMS':'title-items'}[playFor]">
+									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
@@ -479,7 +474,7 @@ preloadImage("{% static "images/help-img.png" %}");
 				</div>
 
 				<div id="upcoming-auctions">
-					<div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+					<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 						Other Upcoming Auctions
 					</div>
 
@@ -491,7 +486,7 @@ preloadImage("{% static "images/help-img.png" %}");
 							<div class="img">
 								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 							</div>
-							<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
 							<div id="auction-retail-price">
@@ -522,7 +517,7 @@ preloadImage("{% static "images/help-img.png" %}");
 
 				</div>
 				<div id="finished-auctions">
-					<div ng-class="{'TOKENS':'title','ITEMS':'title-items-sec'}[playFor]">
+					<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 						Recently Finished Auctions
 					</div>
 					<div id="auction" ng-repeat="auction in auctionList[playFor].finished">
@@ -530,7 +525,7 @@ preloadImage("{% static "images/help-img.png" %}");
 							<div class="img">
 								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
 							</div>
-							<div id="auction-item-title" ng-class="{'TOKENS':'title-token','ITEMS':'title-items'}[playFor]">
+							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
 							<div id="auction-retail-price">
@@ -576,7 +571,7 @@ preloadImage("{% static "images/help-img.png" %}");
 			<div class="logo">
 				<img src="{% static "images/logo.png" %}" width="293" height="105">
 			</div>
-			
+
 			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
 				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>
@@ -593,28 +588,32 @@ preloadImage("{% static "images/help-img.png" %}");
 		<!--popup section-->
 		<!--welcome widget-->
 		<div id="welcome" style="display:none;">
+			<div class="btn-close">
+				<a href="#"><img src="{% static "images/btn-close.png" %}" width="39" height="39" /></a>
+			</div>
+
 			<div class="text">
 				<p>
 					Hi {{ member.user.first_name }}.</br> I'm Kenny, your interactive auctioneer.
 				</p></br>
 				<!--span>I think you are here because you want to buy items at <strong>90%</strong> off the retail cost.</br> I'll be leading all auctions and giving you tips on how to </br> play the interactive auction ™ game and win.
 				<br/>
-				</br></br> Are you ready?</br><strong> Let's get started with the Interactive Tutorial.</strong></span-->
-				<br/>
-				<br/>
-				<span>Welcome to iBidGames!  I will be leading all auctions and giving you tips on how to
-					play and win Facebook’s first interactive auction ™ game.
-					<br/>
-					Are you ready? </span>
+			</br></br> Are you ready?</br><strong> Let's get started with the Interactive Tutorial.</strong></span-->
+			<br/>
+			<br/>
+			<span><strong>Welcome to iBidGames!</strong></br>I will be leading all auctions and giving you tips on how to
+				play</br>and win Facebook’s first interactive auction ™ game.
+				<br/><br/>
+				Are you ready? </span>
 			</div>
 			<br/>
 			<br/>
 			<br/>
 			<a href="#">
-			<div class="btn-welcome">
-				Let's get started with the Tutorial
-			</div> </a>
-		</div>
+				<div class="btn-welcome">
+					Let's get started with the Tutorial
+				</div> </a>
+			</div>
 		<!--welcome popup-->
 		{% if display_popup %}
 		<script type="text/javascript">

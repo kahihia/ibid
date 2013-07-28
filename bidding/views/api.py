@@ -76,6 +76,10 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
+        tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -91,6 +95,10 @@ def getAuctionsInitialization(request):
         tmp['completion'] = auct.completion()
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
+        tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -105,7 +113,11 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
@@ -121,7 +133,11 @@ def getAuctionsInitialization(request):
         tmp['id'] = auct.id
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
+        tmp['bidNumber'] = 0
+        tmp['bids'] = 0
+        tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
@@ -143,6 +159,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
@@ -183,6 +200,7 @@ def getAuctionsInitialization(request):
             tmp['completion'] = 0
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
+        tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)
@@ -215,14 +233,14 @@ def getAuctionsInitialization(request):
         auctions_bid_my.append(tmp)
 
     data = {}
-    data['TOKENS'] = {}
-    data['TOKENS']['available'] = auctions_token_available
-    data['TOKENS']['finished'] = auctions_token_finished
-    data['TOKENS']['mine'] = auctions_token_my
-    data['ITEMS'] = {}
-    data['ITEMS']['available'] = auctions_bid_available
-    data['ITEMS']['finished'] = auctions_bid_finished
-    data['ITEMS']['mine'] = auctions_bid_my
+    data['token'] = {}
+    data['token']['available'] = auctions_token_available
+    data['token']['finished'] = auctions_token_finished
+    data['token']['mine'] = auctions_token_my
+    data['credit'] = {}
+    data['credit']['available'] = auctions_bid_available
+    data['credit']['finished'] = auctions_bid_finished
+    data['credit']['mine'] = auctions_bid_my
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 
@@ -361,7 +379,7 @@ def claim(request):
     if auction.status == 'processing' and auction.can_bid(member):
 
         if auction.used_bids() / auction.minimum_precap == bidNumber:
-            if auction.bid(member):
+            if auction.bid(member, bidNumber):
 
                 clientMessages = []
                 clientMessages.append(client.someoneClaimedMessage(auction))

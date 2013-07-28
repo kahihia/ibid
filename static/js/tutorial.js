@@ -15,7 +15,7 @@ function initWelcome(){
 
     setTimeout(function(){jQuery('#welcome').show(); TweenLite.from('#welcome', 1, {left:'-800px',ease:Back.easeOut});}, 1000);
 
-    jQuery('.btn-welcome','#welcome').bind('click', function(e){
+    jQuery('.btn-welcome,.btn-close','#welcome').bind('click', function(e){
             TweenLite.to('#welcome', 0.4, {left:'-800px'});
             setTimeout(function(){jQuery('#welcome').hide();},500)
             hideOverlay();
