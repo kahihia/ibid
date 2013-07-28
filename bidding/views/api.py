@@ -379,7 +379,7 @@ def claim(request):
     if auction.status == 'processing' and auction.can_bid(member):
 
         if auction.used_bids() / auction.minimum_precap == bidNumber:
-            if auction.bid(member):
+            if auction.bid(member, bidNumber):
 
                 clientMessages = []
                 clientMessages.append(client.someoneClaimedMessage(auction))

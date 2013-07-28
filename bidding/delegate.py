@@ -15,7 +15,7 @@ from django.conf import settings
 from bidding import client
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
-from django.db import connection
+from django.db import connection, transaction
 
 def start_auction(auction):
     bid_number = 0
@@ -266,7 +266,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
             return True
         return False
 
-    def bid(self, member):
+    def bid(self, member, bidNumber):
         """ 
         Uses one of the member's commited bids in the auction.
         """
@@ -276,13 +276,21 @@ class RunningAuctionDelegate(StateAuctionDelegate):
 
         cursor = connection.cursor()
 
+        cursor.execute("""SELECT (sum(used_amount) DIV %s)+1
+            from bidding_bid
+            where auction_id = %s;""", (self.auction.minimum_precap, self.auction.id))
+        currentBidNumber = int(cursor.fetchone()[0])
+
+        # Data modifying operation - commit required
         ret = cursor.execute("""UPDATE bidding_bid
             set unixtime = %s,
             used_amount = %s
             where auction_id = %s
             and bidder_id = %s
-            and used_amount < %s
-            limit 1;""", [float("%2f" % time.time()), used_amount, self.auction.id, member.id, used_amount])
+            and %s = %s + 1
+            limit 1;""", (float("%2f" % time.time()), used_amount, self.auction.id, member.id, int(currentBidNumber), bidNumber))
+
+        transaction.commit_unless_managed()
 
         if ret:
             if self._check_thresholds():
