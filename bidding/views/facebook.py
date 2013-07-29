@@ -13,7 +13,6 @@ import logging
 from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, Invitation
 from bidding.views.auctions import get_auction_or_404
 from bidding.views.home import render_response
-from sslutils import get_protocol
 
 
 logger = logging.getLogger('django')
@@ -25,10 +24,9 @@ def fb_redirect(request):
 <!--
 window.location = "%s"
 //-->
-</script>""" % (settings.NOT_AUTHORIZED_PAGE.format(protocol=get_protocol(request))))
+</script>""" % (settings.NOT_AUTHORIZED_PAGE))
     set_cookie(response, 'FBAPP_VISITED', 1, days_expire=7)
     return response
-    #return HttpResponseRedirect('http://google.com')
 
 
 def get_redirect_uri(request):
@@ -41,8 +39,7 @@ def get_redirect_uri(request):
     if 'request_ids' in request.GET:
         request_ids = '?' + urlencode({'request_ids': request.GET['request_ids']})
 
-    return settings.AUTH_REDIRECT_URI.format(
-        protocol=get_protocol(request)) + request_ids
+    return settings.AUTH_REDIRECT_URI + request_ids
 
 
 def fb_auth(request):
