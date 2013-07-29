@@ -804,7 +804,7 @@ FB_STATUS_CHOICES = (('placed', 'placed'),
 )
 
 
-class FBOrderInfo(models.Model):
+class FBOrderInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
