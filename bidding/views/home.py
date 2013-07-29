@@ -94,12 +94,20 @@ def canvashome(request):
     packages = BidPackage.objects.all().order_by('bids')
 
     response = render_response(request, 'bidding/mainpage.html',
-                               {'fb_app_id': settings.FACEBOOK_APP_ID, 'PUBNUB_PUB': settings.PUBNUB_PUB,
-                                'PUBNUB_SUB': settings.PUBNUB_SUB, 'bids_auctions': bids_auctions,
+                               {'fb_app_id': settings.FACEBOOK_APP_ID, 
+                                'PUBNUB_PUB': settings.PUBNUB_PUB,
+                                'PUBNUB_SUB': settings.PUBNUB_SUB, 
+                                'bids_auctions': bids_auctions,
                                 'tokens_auctions': tokens_auctions,
-                                'has_played': has_played, 'display_popup': display_popup,
-                                'pre_promoted_auctions': pre_promoted_auctions, 'facebook_user_id': member.facebook_id,
-                                'promoted_auctions': promoted_auctions, 'tosintro': tosintro, 'member': member, 'packages':packages})
+                                'pre_promoted_auctions': pre_promoted_auctions, 
+                                'promoted_auctions': promoted_auctions, 
+                                'has_played': has_played, 
+                                'display_popup': display_popup,
+                                'tosintro': tosintro, 
+                                'member': member, 
+                                'facebook_user_id': member.facebook_id,
+                                'packages':packages
+                                })
 
     return response
 
