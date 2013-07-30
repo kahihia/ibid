@@ -53,7 +53,34 @@ def canvashome(request):
                                 'display_popup': display_popup,
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
-                                'member': member})
+                                'member': member,
+                                'inCanvas':False})
+
+    return response
+
+
+def standalone(request):
+
+    member = request.user.get_profile()
+
+    display_popup = False
+    if not request.session.get("revisited"):
+        request.session["revisited"] = True
+        display_popup = True
+
+    if request.COOKIES.get('dont_show_welcome_%s' %
+            request.user.get_profile().facebook_id):
+        display_popup = False
+
+    response = render_response(request, 'bidding/mainpage.html',
+                               {'fb_app_id': settings.FACEBOOK_APP_ID,
+                                'PUBNUB_PUB': settings.PUBNUB_PUB,
+                                'PUBNUB_SUB': settings.PUBNUB_SUB,
+                                'display_popup': display_popup,
+                                'facebook_user_id': member.facebook_id,
+                                'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
+                                'member': member,
+                                'inCanvas':False})
 
     return response
 

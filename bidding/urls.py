@@ -17,6 +17,7 @@ urlpatterns = patterns('bidding.views.home',
                        url(r'^examples/404/$', 'example_404', name='example_404'),
                        url(r'^examples/500/$', 'example_500', name='example_500'),
                        url(r'^promo/$', 'promo', name='promo'),
+                       url(r'^standalone/$', 'standalone', name='standalone'),
 )
 
 urlpatterns += patterns('bidding.views.facebook',

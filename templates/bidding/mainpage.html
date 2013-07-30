@@ -34,7 +34,7 @@ preloadImage("{% static "images/help-img.png" %}");
 
 	</head>
 
-	<body style="overflow: hidden">
+	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
 
 		<div id="fb-root"></div>
 		<script>
