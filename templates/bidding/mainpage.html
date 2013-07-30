@@ -500,7 +500,7 @@ preloadImage("{% static "images/help-img.png" %}");
 							</div>
 							<div id="auction-bids">
 								<div ng-switch on="auction.status">
-									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBiding(auctionList[playFor].available[$index])">JOIN AUCTION</div>
+									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBidding(auctionList[playFor].available[$index])">JOIN AUCTION</div>
 									<div id="btn-start-bid" class="btn btn-red btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 								</div>
 							</div>
