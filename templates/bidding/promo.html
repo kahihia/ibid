@@ -1,0 +1,46 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>iBidGames Free Tokens</title>
+		<link rel="stylesheet" href="{% static "css/main.css" %}">
+		<!---->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+        <script type="text/javascript">
+            jQuery(function(){
+
+                jQuery('#enter_code').click(function(e){
+                    jQuery('#enter_code').attr('value', "");
+                })
+                jQuery('.info-txt').hide();
+                jQuery('.btn-promo').click(function(e){
+                    var code = jQuery('#enter_code')[0].value;
+                    if(code.toUpperCase() == 'CC169' || code.toUpperCase() == '#CC169'){
+                        jQuery('form').submit();
+                    }else{
+                        jQuery('.info-txt').show();
+                    }
+                })
+
+
+            })
+        </script>
+	</head>
+
+	<body>
+		<div class="logo"><img src="{% static "images/logo.png" %}" /></div>
+		<div class="content">
+	<div class="txt-promo">Enter your code to get</br>
+2000 Free TOKENS</div>
+<div class="code"><form action="{{ promo_url }}"><input id="enter_code" name="promoCode" type="text" value="enter code" style="height:32px; width:220px; border:0px;" /></form></div>
+<div class="info-txt">Your code is invalid, please verify your
+code and try again.</div>
+<div class="btn-promo">SEND CODE</div>
+	</div>
+	</body>
+
+</html>

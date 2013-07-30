@@ -6,28 +6,19 @@ from datetime import datetime
 from Pubnub import Pubnub
 pubnub = Pubnub( settings.PUBNUB_PUB, settings.PUBNUB_SUB, settings.PUBNUB_SECRET, False)
 
+
 def send_multiple_messages(pairs):
     for message, destination in pairs:
         send_pubnub_message(message, destination)
 
-def send_pubnub_message(message, destination):
 
+def send_pubnub_message(message, destination):
     if type(message) is dict:
         message['timestamp'] = str(datetime.now())
-
-    ## threaded
-    #th = threading.Thread(target=pubnub.publish, args=[{
-    #       'channel' : destination,
-    #       'message' : [message]
-    #   }])
-    #th.start()
-
-    ## non threaded
     info = pubnub.publish({
            'channel' : destination,
            'message' : [message]
        })
-    print(info)
 
 def _send_pubnub_message(message, destination):
 
@@ -63,18 +54,29 @@ def sendPackedMessages(clientMessages):
 def auction_created(auction):
     tmp = {}
 
-    tmp['bidType'] = auction.bid_type
-
     tmp['id'] = auction.id
-    tmp['playFor'] = {'bid':'ITEMS' ,'token':'TOKENS'}[auction.bid_type]
+    tmp['playFor'] = {'bid':'credit' ,'token':'token'}[auction.bid_type]
     tmp['completion'] = auction.completion()
     tmp['status'] = auction.status
+    if auction.bid_type == 'bid':
+        tmp['bidType'] = 'credit'
+    elif auction.bid_type == 'token':
+        tmp['bidType'] = 'token'
+
     tmp['bidPrice'] = auction.minimum_precap
     tmp['itemName'] = auction.item.name
     tmp['retailPrice'] = str(auction.item.retail_price)
     tmp['completion'] = auction.completion()
     tmp['itemImage'] = auction.item.get_thumbnail()
     tmp['bidders'] = auction.bidders.count()
+
+    tmp['placed'] = 0
+    tmp['timeleft'] = None
+    tmp['bidNumber'] = 0
+    tmp['bids'] = 0
+    tmp['auctioneerMessages'] = []
+    tmp['chatMessages'] = []
+
 
     result = {'method': 'appendAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')

@@ -8,15 +8,15 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        # Adding field 'Member.new_token_required'
-        db.add_column(u'bidding_member', 'new_token_required',
-                      self.gf('django.db.models.fields.BooleanField')(default=False),
+        # Adding field 'Member.session'
+        db.add_column(u'bidding_member', 'session',
+                      self.gf('django.db.models.fields.TextField')(default='{}'),
                       keep_default=False)
 
 
     def backwards(self, orm):
-        # Deleting field 'Member.new_token_required'
-        db.delete_column(u'bidding_member', 'new_token_required')
+        # Deleting field 'Member.session'
+        db.delete_column(u'bidding_member', 'session')
 
 
     models = {
@@ -128,6 +128,23 @@ class Migration(SchemaMigration):
             'total_bidsto': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'total_tokens': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
+        u'bidding.facebooklike': {
+            'Meta': {'unique_together': "(['user_id', 'facebook_id'],)", 'object_name': 'FacebookLike'},
+            'category': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'created_time': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'facebook_id': ('django.db.models.fields.BigIntegerField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'user_id': ('django.db.models.fields.IntegerField', [], {})
+        },
+        u'bidding.facebookuser': {
+            'Meta': {'unique_together': "(['user_id', 'facebook_id'],)", 'object_name': 'FacebookUser'},
+            'facebook_id': ('django.db.models.fields.BigIntegerField', [], {}),
+            'gender': ('django.db.models.fields.CharField', [], {'max_length': '1', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'name': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'user_id': ('django.db.models.fields.IntegerField', [], {})
+        },
         u'bidding.fborderinfo': {
             'Meta': {'object_name': 'FBOrderInfo'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -175,6 +192,7 @@ class Migration(SchemaMigration):
             'new_token_required': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'raw_data': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'remove_from_chat': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'session': ('django.db.models.fields.TextField', [], {'default': "'{}'"}),
             'tokens_left': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['auth.User']"}),
             'website_url': ('django.db.models.fields.TextField', [], {'blank': 'True'})

@@ -1304,7 +1304,14 @@ body {
 	height: 683px;
 	z-index: 10000;
 }
-
+#welcome .btn-close {
+	position: absolute;
+	right: 90px;
+	top: 151px;
+}
+#welcome .btn-close:hover {
+opacity:0.8;
+}
 #welcome .btn-welcome {
 	width: 320px;
 	height: 51px;
@@ -1317,6 +1324,9 @@ body {
 	position: absolute;
 	text-align: center;
 	line-height: 50px;
+}
+#welcome .btn-welcome:hover {
+opacity:0.8;
 }
 #welcome .text {
 	color: #fff;
@@ -1342,7 +1352,8 @@ body {
 	width: 94px;
 	height: 94px;
 }
-.btnRedEnabled {
+.btn-add-bid,
+.btn-rem-bid {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background-color: #1a82f7;
@@ -1377,7 +1388,8 @@ body {
 	-webkit-transition: .2s;
 	transition: .2s;
 }
-.btnRedDisabled {
+.btn-add-bid[disabled],
+.btn-rem-bid[disabled] {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background-color: #1a82f7;
@@ -1479,4 +1491,47 @@ body {
 	display: inline;
 	margin-left: 5px;
 	list-style-type: none;
+}
+
+.logo {
+	margin: 0 auto;
+	text-align:center;
+
+}
+
+.content {
+	margin: 0 auto;
+	text-align:center;
+	background-image: url("../images/bkg-content.png");
+	width: 700px;
+	height: 493px;
+}
+.txt-promo {
+	color:#fff;
+	padding-top:180px;
+	font-size: 24px;
+}
+.info-txt {
+	font-size:12px;
+	color:#dd2525
+
+}
+.code {
+	width:264px;
+	height:48px;
+	color:#666;
+	font-size:18px;
+	background-image: url("../images/bkg-imput.png");
+	margin:30px auto 15px auto;
+	line-height: 46px;
+}
+.btn-promo{
+	background-image: url("../images/btn.png");
+	width:260px;
+	height:51px;
+	margin:30px auto 0 auto;
+	color:#fff;
+	font-size:14px;
+	font-weight:700;
+	line-height: 50px;
 }
