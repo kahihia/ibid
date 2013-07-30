@@ -28,6 +28,9 @@ def start_auction(auction):
 
 
 def finish_auction(auction, bid_number):
+    #refresh the current database auction status
+    from models import Auction
+    auction = Auction.objects.filter(id=auction.id)[0]
     if auction.status == 'processing' and bid_number == auction.used_bids()/auction.minimum_precap:
         auction.finish()
         auction.create_from_fixtures()
