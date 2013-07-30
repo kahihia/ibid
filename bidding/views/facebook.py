@@ -6,6 +6,7 @@ from django.utils.http import urlencode
 from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
 from open_facebook.api import FacebookAuthorization
+from open_facebook.exceptions import ParameterException
 import json
 import datetime
 import logging
@@ -122,10 +123,11 @@ def fb_login(request):
         #authorization denied
         return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
 
-    #try:
-    token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
-    action, user = django_facebook.connect.connect_user(request, token)
-
+    try:
+        token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
+        action, user = django_facebook.connect.connect_user(request, token)
+    except ParameterException:
+        return HttpResponseRedirect(reverse('fb_auth'))
     #FIXME for test purposes
     #give_bids(request)
 
