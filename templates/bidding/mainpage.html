@@ -3,24 +3,23 @@
 <html ng-app>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+
 		<title>iBidGames</title>
+
 		<link rel="stylesheet" href="{% static "css/main.css" %}">
 		<link rel="stylesheet" href="{% static "css/popup.css" %}">
+		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
+
+		{% if not DEBUG %} {{ js_error_tracker|safe }} {% endif %}
 		<script language="javascript">
-function preloadImage(url) {
-var img = new Image();
-img.src = url;
-}
-preloadImage("{% static "images/btn-bid-play-disabled.png" %}");
-preloadImage("{% static "images/welcome.png" %}");
-preloadImage("{% static "images/help-img.png" %}");
-
+			function preloadImage(url) {
+				var img = new Image();
+				img.src = url;
+			}
+			preloadImage("{% static "images/btn-bid-play-disabled.png" %}");
+			preloadImage("{% static "images/welcome.png" %}");
+			preloadImage("{% static "images/help-img.png" %}");
 		</script>
-
-		<!---->
-		<link href='https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'
-		rel='stylesheet' type='text/css'>
-
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
 		<script src="{% static "js/lodash.min.js" %}"></script>
@@ -31,10 +30,9 @@ preloadImage("{% static "images/help-img.png" %}");
 		<script src="{% static "js/auctions.js"%}" ></script>
 		<script src="{% static "js/errorReport.js" %}"></script>
 		<script src="{% static "js/tutorial.js" %}" ></script>
-
 	</head>
 
-	<body style="overflow: hidden">
+	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
 
 		<div id="fb-root"></div>
 		<script>
@@ -500,7 +498,7 @@ preloadImage("{% static "images/help-img.png" %}");
 							</div>
 							<div id="auction-bids">
 								<div ng-switch on="auction.status">
-									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBiding(auctionList[playFor].available[$index])">JOIN AUCTION</div>
+									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBidding(auctionList[playFor].available[$index])" ng-disabled="!auction.interface.joinAuctionEnabled">JOIN AUCTION</div>
 									<div id="btn-start-bid" class="btn btn-red btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 								</div>
 							</div>

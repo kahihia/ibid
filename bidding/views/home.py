@@ -53,7 +53,69 @@ def canvashome(request):
                                 'display_popup': display_popup,
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
-                                'member': member})
+                                'member': member,
+                                'inCanvas':False})
+
+    return response
+
+
+def standalone(request):
+
+    member = request.user.get_profile()
+
+    display_popup = False
+    if not request.session.get("revisited"):
+        request.session["revisited"] = True
+        display_popup = True
+
+    if request.COOKIES.get('dont_show_welcome_%s' %
+            request.user.get_profile().facebook_id):
+        display_popup = False
+
+
+    from random import shuffle
+
+    debuggify = '''
+    <script type="text/javaScript" src="https://cdn.debuggify.net/js/a4f458fc1c74cf2b60f0909da8531164/debuggify.logger.http.js"></script>
+    '''
+
+    qbaka = '''
+    <script type="text/javascript">
+    (function(a,c){a.__qbaka_eh=a.onerror;a.__qbaka_reports=[];a.onerror=function(){a.__qbaka_reports.push(arguments);if(a.__qbaka_eh)try{a.__qbaka_eh.apply(a,arguments)}catch(b){}};a.onerror.qbaka=1;a.qbaka={report:function(){a.__qbaka_reports.push([arguments, new Error()]);},customParams:{},set:function(a,b){qbaka.customParams[a]=b},exec:function(a){try{a()}catch(b){qbaka.reportException(b)}},reportException:function(){}};var b=c.createElement("script"),e=c.getElementsByTagName("script")[0],d=function(){e.parentNode.insertBefore(b,e)};b.type="text/javascript";b.async=!0;b.src="//cdn.qbaka.net/reporting.js";"[object Opera]"==a.opera?c.addEventListener("DOMContentLoaded",d):d();qbaka.key="a72f5cc63c961ae53e177e4ca071beb5"})(window,document);qbaka.options={autoStacktrace:1,trackEvents:1};
+    </script>
+    '''
+
+    errorception = '''
+    <script>
+        (function(_,e,rr,s){_errs=[s];var c=_.onerror;_.onerror=function(){var a=arguments;_errs.push(a);
+        c&&c.apply(this,a)};var b=function(){var c=e.createElement(rr),b=e.getElementsByTagName(rr)[0];
+        c.src="//beacon.errorception.com/"+s+".js";c.async=!0;b.parentNode.insertBefore(c,b)};
+        _.addEventListener?_.addEventListener("load",b,!1):_.attachEvent("onload",b)})
+        (window,document,"script","51f15fe26c7008af50000013");
+    </script>
+    '''
+
+    exceptional = '''
+    <script type="text/javascript" src="http://js.exceptional.io/exceptional.js"></script>
+    <script type="text/javascript">
+      Exceptional.setKey('15fee4c8997d080bd8fcf93391bdee181f6f8133');
+    </script>
+    '''
+
+    js_error_tracker = [debuggify, qbaka, errorception, exceptional]
+    shuffle(js_error_tracker)
+
+    response = render_response(request, 'bidding/mainpage.html',
+                               {'fb_app_id': settings.FACEBOOK_APP_ID,
+                                'PUBNUB_PUB': settings.PUBNUB_PUB,
+                                'PUBNUB_SUB': settings.PUBNUB_SUB,
+                                'display_popup': display_popup,
+                                'facebook_user_id': member.facebook_id,
+                                'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
+                                'member': member,
+                                'js_error_tracker': js_error_tracker[0],
+                                'DEBUG': settings.DEBUG,
+                                'inCanvas':False})
 
     return response
 
