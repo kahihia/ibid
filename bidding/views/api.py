@@ -368,7 +368,7 @@ def claim(request):
     """
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
-    auction = Auction.objects.get(id=auction_id)
+    auction = Auction.objects.select_for_update().filter(id=auction_id)
 
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
 
