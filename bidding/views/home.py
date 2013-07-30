@@ -7,8 +7,9 @@ from django.contrib.flatpages.models import FlatPage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic.list import ListView
+from django.db.models import Count
 
-from bidding.models import Auction, ConvertHistory
+from bidding.models import Auction, ConvertHistory, Member
 
 def mainpage(request):
     return HttpResponse("""<script type='text/javascript'>
@@ -54,6 +55,17 @@ def canvashome(request):
                                 'member': member})
 
     return response
+
+def winners(request, page):
+    auctions = (Auction.objects.filter(is_active=True, winner__isnull=False)
+                               .annotate(current_price=Count('bid'))
+                               .select_related('item', 'winner')
+                               .order_by('-won_date'))
+    for auction in auctions:
+        auction.winner_member = Member.objects.filter(user__id=auction.winner.id)[0]
+    #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
+    return render_response(request, 'bidding/ibidgames_winners.html',{'auctions': auctions, 'current_page': page})
+
 
 def promo(request):
     print "promo_redirect", request.session.get('promo_redirect')
