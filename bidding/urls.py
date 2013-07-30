@@ -6,6 +6,7 @@ from bidding.views.home import CurrencyHistory
 
 urlpatterns = patterns('bidding.views.home',
                        url(r'^winners/(?P<page>\d+)/$', 'winners', name='bidding_winners'),
+                       url(r'^won_list/$', 'auction_won_list', name='bidding_auction_won_list'),
                        url(r'^$', 'web_home', name='bidding_anonym_home'),
                        url(r'^home/$', 'mainpage', name='bidding_home'),
                        url(r'^canvashome/$', 'canvashome', name='canvashome'),

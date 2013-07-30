@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic.list import ListView
 from django.db.models import Count
+from django.views.decorators.csrf import csrf_exempt
 
 from bidding.models import Auction, ConvertHistory, Member
 
@@ -66,6 +67,18 @@ def winners(request, page):
     #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
     return render_response(request, 'bidding/ibidgames_winners.html',{'auctions': auctions, 'current_page': page})
 
+@csrf_exempt
+def auction_won_list(request):
+    #FIXME ugly
+    extra_query = ('(select count(*) from bidding_auctioninvoice '
+                   'where bidding_auctioninvoice.status = %s '
+                   'and bidding_auctioninvoice.auction_id=bidding_auction.id)')
+    auctions = (Auction.objects.filter(winner=request.user)
+                               .select_related('item')
+                               .extra(select={'paid': extra_query},
+                                      select_params=('paid',)))
+    return render_response(request, 'bidding/auction_won_list.html',
+        {'auctions': auctions})
 
 def promo(request):
     print "promo_redirect", request.session.get('promo_redirect')
