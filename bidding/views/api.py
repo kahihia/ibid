@@ -259,10 +259,10 @@ def startBidding(request):
     try:
         amount = auction.minimum_precap
     except ValueError:
-        return HttpResponse('{"result":"not int"}', content_type="application/json")
+        return HttpResponse('{"success":"not int"}', content_type="application/json")
 
     if amount < auction.minimum_precap:
-        return HttpResponse('{"result":"not minimun", "minimun": %s}' % auction.minimum_precap,
+        return HttpResponse('{"success":"not minimun", "minimun": %s}' % auction.minimum_precap,
                             content_type="application/json")
 
     if auction.can_precap(member, amount):
@@ -276,10 +276,10 @@ def startBidding(request):
         client.sendPackedMessages(clientMessages)
     else:
         if auction.bid_type == 'bid':
-            ret = {"result":False, 'motive': 'NO_ENOUGH_CREDITS'}
+            ret = {"success":False, 'motive': 'NO_ENOUGH_CREDITS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
         else:
-            ret = {"result":False, 'motive': 'NO_ENOUGH_TOKENS'}
+            ret = {"success":False, 'motive': 'NO_ENOUGH_TOKENS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
@@ -325,7 +325,7 @@ def startBidding(request):
         }
         tmp['chatMessages'].insert(0, w)
 
-    ret = {"result":True, 'auction': tmp}
+    ret = {"success":True, 'auction': tmp}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
@@ -434,15 +434,15 @@ def claim(request):
                 tmp["placed_amount"] = bid.placed_amount
                 tmp["used_amount"] = bid.used_amount
 
-                tmp["result"] = True
+                tmp["success"] = True
             else:
                 #else ignore! because the claim is old, based on a previous timer.
-                tmp["result"] = False
+                tmp["success"] = False
         else:
             #else ignore! because the claim is old, based on a previous timer.
-            tmp["result"] = False
+            tmp["success"] = False
     else:
-        tmp["result"] = False
+        tmp["success"] = False
 
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
@@ -490,9 +490,9 @@ def sendMessage(request):
             #do_send_message(db_msg)
             client.do_send_chat_message(auction, db_msg)
 
-            return HttpResponse('{"result":true}', content_type="application/json")
+            return HttpResponse('{"success":true}', content_type="application/json")
 
-    return HttpResponse('{"result":false}', content_type="application/json")
+    return HttpResponse('{"success":false}', content_type="application/json")
 
 
 def inviteRequest(request):
