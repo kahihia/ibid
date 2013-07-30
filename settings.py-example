@@ -38,7 +38,7 @@ THUMBNAIL_DEBUG = DEBUG
 ## FACEBOOK_API_KEY = ''
 ## FACEBOOK_APP_ID = ''
 ## FACEBOOK_APP_SECRET = ''
-## AUTH_REDIRECT_URI = '{protocol}://apps.facebook.com/interactivebids/fb/login/'
+## AUTH_REDIRECT_URI = 'https://apps.facebook.com/interactivebids/fb/login/'
 
 
 # Pubnub settings

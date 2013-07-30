@@ -1,12 +1,11 @@
 from django.http import Http404, HttpResponse
 from chat.models import Message, ChatUser
-from django.utils import simplejson as json
+import json
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.decorators import login_required
-from bidding.models import Auction, Member
-from bidding.utils import send_stomp_message
+from bidding.models import Auction
 from django.utils.html import escape
-import re
+
 from bidding import client
 
 def get_chat_user(request):

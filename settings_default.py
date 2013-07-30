@@ -91,6 +91,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'bidding.middleware.P3PHeaderMiddleware',
+    'django.middleware.transaction.TransactionMiddleware',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -101,8 +102,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.request",
     "django.core.context_processors.media",
     "django.contrib.messages.context_processors.messages",
-    "bidding.context_processors.settings_context",
     'django_facebook.context_processors.facebook',
+    "bidding.context_processors.settings_context",
     "bidding.context_processors.packages_context",
 )
 
@@ -235,15 +236,16 @@ ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
 
 # Urls
 WEB_APP = "https://apps.facebook.ibidgames.com/"
-NOT_AUTHORIZED_PAGE = WEB_APP
-APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
 FB_APP = "https://apps.facebook.com/ibidgames/"
+
+APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
 FBAPP = WEB_APP + "fb/"
-FBAPP_HOME = FB_APP + "home/"
+IMAGES_SITE = WEB_APP
+NOT_AUTHORIZED_PAGE = WEB_APP
+SITE_NAME = WEB_APP
+
 CANVAS_HOME = FB_APP + "canvashome/"
-#see how to better handle this
-IMAGES_SITE = 'https://apps.facebook.ibidgames.com'
-SITE_NAME = 'https://apps.facebook.ibidgames.com/'
+FBAPP_HOME = FB_APP + "home/"
 
 
 # Facebook settings
@@ -253,7 +255,7 @@ FACEBOOK_APP_SECRET = ''
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
 FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
 FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream,user_birthday,user_location'
-AUTH_REDIRECT_URI = '{protocol}://apps.facebook.com/ibidgames/fb/login/'
+AUTH_REDIRECT_URI = 'https://apps.facebook.com/ibidgames/fb/login/'
 
 
 # PubNub settings

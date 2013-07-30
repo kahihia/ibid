@@ -1492,3 +1492,46 @@ opacity:0.8;
 	margin-left: 5px;
 	list-style-type: none;
 }
+
+.logo {
+	margin: 0 auto;
+	text-align:center;
+
+}
+
+.content {
+	margin: 0 auto;
+	text-align:center;
+	background-image: url("../images/bkg-content.png");
+	width: 700px;
+	height: 493px;
+}
+.txt-promo {
+	color:#fff;
+	padding-top:180px;
+	font-size: 24px;
+}
+.info-txt {
+	font-size:12px;
+	color:#dd2525
+
+}
+.code {
+	width:264px;
+	height:48px;
+	color:#666;
+	font-size:18px;
+	background-image: url("../images/bkg-imput.png");
+	margin:30px auto 15px auto;
+	line-height: 46px;
+}
+.btn-promo{
+	background-image: url("../images/btn.png");
+	width:260px;
+	height:51px;
+	margin:30px auto 0 auto;
+	color:#fff;
+	font-size:14px;
+	font-weight:700;
+	line-height: 50px;
+}

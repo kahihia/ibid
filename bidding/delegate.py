@@ -18,6 +18,9 @@ from bidding.signals import task_auction_start, task_auction_pause
 from django.db import connection, transaction
 
 def start_auction(auction):
+    #refresh the current database auction status
+    from models import Auction
+    auction = Auction.objects.filter(id=auction.id)[0]
     bid_number = 0
     if auction.status == 'waiting':
         auction.start()
@@ -28,6 +31,9 @@ def start_auction(auction):
 
 
 def finish_auction(auction, bid_number):
+    #refresh the current database auction status
+    from models import Auction
+    auction = Auction.objects.filter(id=auction.id)[0]
     if auction.status == 'processing' and bid_number == auction.used_bids()/auction.minimum_precap:
         auction.finish()
         auction.create_from_fixtures()
@@ -270,37 +276,18 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         """ 
         Uses one of the member's commited bids in the auction.
         """
-
         bid = self.auction.bid_set.get(bidder=member)
-        used_amount = bid.used_amount + self.auction.minimum_precap
-
-        cursor = connection.cursor()
-
-        cursor.execute("""SELECT (sum(used_amount) DIV %s)+1
-            from bidding_bid
-            where auction_id = %s;""", (self.auction.minimum_precap, self.auction.id))
-        currentBidNumber = int(cursor.fetchone()[0])
-
-        # Data modifying operation - commit required
-        ret = cursor.execute("""UPDATE bidding_bid
-            set unixtime = %s,
-            used_amount = %s
-            where auction_id = %s
-            and bidder_id = %s
-            and %s = %s + 1
-            limit 1;""", (float("%2f" % time.time()), used_amount, self.auction.id, member.id, int(currentBidNumber), bidNumber))
-
-        transaction.commit_unless_managed()
-
-        if ret:
-            if self._check_thresholds():
-                self.auction.pause()
-                start_auction_delayed(self.auction, self.auction.bidding_time)
-            else:
-                finish_auction_delayed(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
-            return True
+        bid.used_amount += self.auction.minimum_precap
+        bid_time = time.time()
+        bid.unixtime = Decimal("%f" % bid_time)
+        bid.save()
+        if self._check_thresholds():
+            self.auction.pause()
+            start_auction_delayed(self.auction, self.auction.bidding_time)
         else:
-            return False
+            finish_auction_delayed(self.auction, self.auction.getBidNumber(), self.auction.bidding_time)
+
+        return True
 
     def get_time_left(self):
         bid = self.auction.get_latest_bid()

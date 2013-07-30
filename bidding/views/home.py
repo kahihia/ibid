@@ -5,36 +5,12 @@ Home page views.
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, Http404, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse
 from django.views.generic.list import ListView
+from django.db.models import Count
+from django.views.decorators.csrf import csrf_exempt
 
-from bidding.models import Auction, BidPackage, ConvertHistory, PrePromotedAuction, PromotedAuction
-
-
-def split_member_auctions(member, auction_list):
-    """ 
-    Takes a list of auctions an returns a sublist of the auctions the member
-    has joined, and a sublist with 5 auctions the user hasn't joined.
-    """
-
-    mine = auction_list.filter(bidders=member)
-    other = auction_list.exclude(bidders=member)
-
-    return mine, other
-
-def split_bid_type(queryset, bids_auctions, tokens_auctions, key, limit=None):
-    """ 
-    Takes an auction queryset and splits it in token and bid auctions, putting
-    it in the correct dict under the given key.
-    """
-
-    bids_auctions[key] = queryset.filter(bid_type='bid')
-    tokens_auctions[key] = queryset.filter(bid_type='token')
-
-    if limit:
-        bids_auctions[key] = bids_auctions[key][:limit]
-        tokens_auctions[key] = tokens_auctions[key][:limit]
-
+from bidding.models import Auction, ConvertHistory, Member
 
 def mainpage(request):
     return HttpResponse("""<script type='text/javascript'>
@@ -43,24 +19,23 @@ def mainpage(request):
 
 
 def canvashome(request):
-    #if redirect cookie
-    #return HttpResponse("request.user.is_authenticated()" + str(request.user.is_authenticated()))
 
     redirectTo = request.session.get('redirect_to', False)
     if redirectTo:
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
 
-    #return HttpResponse('request.user.is_authenticated(): '+str(request.user.is_authenticated()))
-
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('bidding_anonym_home'))
-
     #TODO try catch to avoid ugly error when admin is logged
     member = request.user.get_profile()
 
-    bids_auctions = {}
-    tokens_auctions = {}
+    #give free tokens from promo
+    freeExtraTokens = request.session.get('freeExtraTokens', 0)
+    if freeExtraTokens and not member.getSession('freeExtraTokens', None):
+        member.tokens_left += freeExtraTokens
+        member.setSession('freeExtraTokens', 'used')
+        print " ----------- member session", member.session
+        member.save()
+        del request.session['freeExtraTokens']
 
     display_popup = False
     if not request.session.get("revisited"):
@@ -71,38 +46,51 @@ def canvashome(request):
             request.user.get_profile().facebook_id):
         display_popup = False
 
-    active = Auction.objects.filter(is_active=True).exclude(status__in=(
-        'waiting_payment', 'paid')
-    ).order_by('-status')
-
-    my_auctions, other_auctions = split_member_auctions(member, active)
-    split_bid_type(my_auctions, bids_auctions, tokens_auctions, 'my_auctions')
-    split_bid_type(other_auctions, bids_auctions, tokens_auctions, 'other_auctions', 5)
-
-    finished = Auction.objects.filter(is_active=True, status__in=(
-        'waiting_payment', 'paid')
-    ).order_by('-won_date')
-    split_bid_type(finished, bids_auctions, tokens_auctions, 'finished', 5)
-
-    has_played = bool(Auction.objects.filter(bidders=member))
-
-    pre_promoted_auctions = PrePromotedAuction.objects.all() #.filter(is_active=True)
-    promoted_auctions = PromotedAuction.objects.filter(promoter=member)
-
-    tosintro = FlatPage.objects.filter(title="tacintro")[0].content
-
-    packages = BidPackage.objects.all().order_by('bids')
-
     response = render_response(request, 'bidding/mainpage.html',
-                               {'fb_app_id': settings.FACEBOOK_APP_ID, 'PUBNUB_PUB': settings.PUBNUB_PUB,
-                                'PUBNUB_SUB': settings.PUBNUB_SUB, 'bids_auctions': bids_auctions,
-                                'tokens_auctions': tokens_auctions,
-                                'has_played': has_played, 'display_popup': display_popup,
-                                'pre_promoted_auctions': pre_promoted_auctions, 'facebook_user_id': member.facebook_id,
-                                'promoted_auctions': promoted_auctions, 'tosintro': tosintro, 'member': member, 'packages':packages})
+                               {'fb_app_id': settings.FACEBOOK_APP_ID,
+                                'PUBNUB_PUB': settings.PUBNUB_PUB,
+                                'PUBNUB_SUB': settings.PUBNUB_SUB,
+                                'display_popup': display_popup,
+                                'facebook_user_id': member.facebook_id,
+                                'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
+                                'member': member})
 
     return response
 
+def winners(request, page):
+    auctions = (Auction.objects.filter(is_active=True, winner__isnull=False)
+                               .annotate(current_price=Count('bid'))
+                               .select_related('item', 'winner')
+                               .order_by('-won_date'))
+    for auction in auctions:
+        auction.winner_member = Member.objects.filter(user__id=auction.winner.id)[0]
+    #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
+    return render_response(request, 'bidding/ibidgames_winners.html',{'auctions': auctions, 'current_page': page})
+
+@csrf_exempt
+def auction_won_list(request):
+    #FIXME ugly
+    extra_query = ('(select count(*) from bidding_auctioninvoice '
+                   'where bidding_auctioninvoice.status = %s '
+                   'and bidding_auctioninvoice.auction_id=bidding_auction.id)')
+    auctions = (Auction.objects.filter(winner=request.user)
+                               .select_related('item')
+                               .extra(select={'paid': extra_query},
+                                      select_params=('paid',)))
+    return render_response(request, 'bidding/auction_won_list.html',
+        {'auctions': auctions})
+
+def promo(request):
+    print "promo_redirect", request.session.get('promo_redirect')
+
+    promoCode = request.GET.get('promoCode', None)
+    if promoCode:
+        request.session['freeExtraTokens'] = 2000
+        return HttpResponseRedirect(settings.WEB_APP)
+
+    response = render_response(request, 'bidding/promo.html',
+                               {'promo_url': settings.WEB_APP+'promo/'})
+    return response
 
 def faq(request):
     if not request.user.is_authenticated():
@@ -118,47 +106,6 @@ def faq(request):
                                 'facebook_user_id': member.facebook_id})
 
     return response
-
-
-def promoted(request, auction_id):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('bidding_anonym_home'))
-
-    #TODO try catch to avoid ugly error when admin is logged
-    member = request.user.get_profile()
-
-    bids_auctions = {}
-    tokens_auctions = {}
-
-    display_popup = False
-    if not request.session.get("revisited"):
-        request.session["revisited"] = True
-        display_popup = True
-
-    if request.COOKIES.get('dont_show_welcome_%s' %
-            request.user.get_profile().facebook_id):
-        display_popup = False
-
-    pre_promoted_auctions = PrePromotedAuction.objects.all() #.filter(is_active=True)
-    view_promoted_auction = PromotedAuction.objects.filter(id=auction_id)[0]
-    active = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid')).exclude(
-        id__in=[p.id for p in PromotedAuction.objects.all()]).order_by('-status')
-
-    my_auctions, other_auctions = split_member_auctions(member, active)
-    split_bid_type(my_auctions, bids_auctions, tokens_auctions, 'my_auctions')
-    split_bid_type(other_auctions, bids_auctions, tokens_auctions, 'other_auctions', 5)
-
-    finished = Auction.objects.filter(is_active=True, status__in=(
-        'waiting_payment', 'paid')
-    ).order_by('-won_date')
-    split_bid_type(finished, bids_auctions, tokens_auctions, 'finished', 5)
-
-    has_played = bool(Auction.objects.filter(bidders=member))
-
-    return render_response(request, 'bidding/mainpage_promoted.html',
-                           {'bids_auctions': bids_auctions, 'tokens_auctions': tokens_auctions,
-                            'has_played': has_played, 'display_popup': display_popup,
-                            'facebook_user_id': member.facebook_id, 'view_promoted_auction': view_promoted_auction})
 
 
 def web_home(request):

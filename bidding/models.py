@@ -10,6 +10,7 @@ import re
 import open_facebook
 from sorl.thumbnail import get_thumbnail
 from datetime import timedelta
+import json
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -71,6 +72,8 @@ class Member(AuditedModel):
     bids_left = models.IntegerField(default=0)
     tokens_left = models.IntegerField(default=0)
     bidsto_left = models.IntegerField(default=0)
+
+    session = models.TextField(default='{}')
 
     remove_from_chat = models.BooleanField(default=False)
 
@@ -402,6 +405,33 @@ class Member(AuditedModel):
         self.access_token = new_value
         self.new_token_required = False
 
+    def getSession(self, key=None, default=None):
+        if not key:
+            if self.session:
+                ss = json.loads(self.session)
+                if type(ss) is not dict:
+                    ss = {}
+            else:
+                ss = {}
+            return ss
+        elif type(key) is str:
+            ss = self.getSession()
+            if key in ss:
+                return ss[key]
+            else:
+                return default
+        else:
+            raise Exception('key param is not str')
+
+    def setSession(self, sessionDict, sessionValue=None):
+        if not sessionValue and type(sessionDict) is dict:
+            #just dump the dict into session
+            self.session = json.dumps(sessionDict)
+        elif type(sessionDict) is str:
+            #set the key value
+            s = self.getSession()
+            s[sessionDict] = sessionValue
+            self.session = json.dumps(s)
 
 class FacebookUser(models.Model):
     '''
@@ -804,7 +834,7 @@ FB_STATUS_CHOICES = (('placed', 'placed'),
 )
 
 
-class FBOrderInfo(models.Model):
+class FBOrderInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
