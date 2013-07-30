@@ -134,7 +134,8 @@ def canvashome(request):
                                 'pre_promoted_auctions': pre_promoted_auctions, 'facebook_user_id': member.facebook_id,
                                 'promoted_auctions': promoted_auctions, 'tosintro': tosintro, 'member': member,
                                 'packages': packages,
-                                'js_error_tracker': js_error_tracker[0]})
+                                'js_error_tracker': js_error_tracker[0],
+                                'DEBUG': settings.DEBUG})
 
     return response
 
