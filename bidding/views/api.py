@@ -282,7 +282,50 @@ def startBidding(request):
             ret = {"result":False, 'motive': 'NO_ENOUGH_TOKENS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
 
-    ret = {"result":True}
+
+
+
+    auct = auction
+    tmp = {}
+
+    tmp['id'] = auct.id
+    if hasattr(auct, 'completion'):
+        tmp['completion'] = auct.completion()
+    else:
+        tmp['completion'] = 0
+    tmp['status'] = auct.status
+    tmp['bidPrice'] = auct.minimum_precap
+    tmp['bidType'] = 'token'
+    tmp['itemName'] = auct.item.name
+    tmp['retailPrice'] = str(auct.item.retail_price)
+    tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
+    tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap if auct.status == 'processing' else 0
+    tmp['placed'] = member.auction_bids_left(auct)
+    tmp['bids'] = member.auction_bids_left(auct)
+    tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+    tmp['bidders'] = auct.bidders.count()
+
+    tmp['auctioneerMessages'] = []
+    for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
+        w = {
+            'text': mm.format_message(),
+            'date': mm.get_time(),
+            'auctionId': auct.id
+        }
+        tmp['auctioneerMessages'].append(w)
+
+    tmp['chatMessages'] = []
+    for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
+        w = {'text': mm.format_message(),
+             'date': mm.get_time(),
+             'user': {'displayName': mm.get_user().display_name(),
+                      'profileFotoLink': mm.get_user().picture(),
+                      'profileLink': mm.user.user_link()},
+             'auctionId': auct.id
+        }
+        tmp['chatMessages'].insert(0, w)
+
+    ret = {"result":True, 'auction': tmp}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
