@@ -39,6 +39,8 @@ def finish_auction(auction, bid_number):
     if auction.status == 'processing' and bid_number == auction.getBidNumber():
         auction.finish()
         auction.create_from_fixtures()
+    else:
+        auction.save()
 
 
 def start_auction_delayed(auction, delay):
