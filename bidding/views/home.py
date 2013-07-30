@@ -10,7 +10,7 @@ from django.views.generic.list import ListView
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
 
-from bidding.models import Auction, ConvertHistory, Member
+from bidding.models import Auction, ConvertHistory, Member, AuctionFixture
 
 def mainpage(request):
     return HttpResponse("""<script type='text/javascript'>
@@ -122,6 +122,12 @@ def web_home(request):
 def history(request):
     member = request.user.get_profile()
     return render_response(request, "bidding/history.html", {'history': member.bids_history()})
+
+def run_fixture(request):
+    fixture_id = int(request.POST['fixture_id'])
+    AuctionFixture.objects.get(id=fixture_id).make_auctions()
+
+    return HttpResponse('')
 
 
 class CurrencyHistory(ListView):
