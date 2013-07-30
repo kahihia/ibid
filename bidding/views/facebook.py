@@ -10,10 +10,11 @@ import json
 import datetime
 import logging
 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, Invitation
-from bidding.views.auctions import get_auction_or_404
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
+
 from bidding.views.home import render_response
 from sslutils import get_protocol
+
 
 
 logger = logging.getLogger('django')
@@ -445,7 +446,21 @@ def _register_user(request, facebook, profile_callback=None,
 
     return new_user
 
+def get_auction_or_404(request):
+    """
+    Gets the auction id from the POST dict and returns the matching auction.
+    If it's not found, Http404 is raised.
+    """
+    if request.GET and request.user.is_authenticated():
+        auction_id = request.GET.get('auction_id')
+        if auction_id:
+            return get_object_or_404(Auction, id=auction_id)
+    elif request.POST and request.user.is_authenticated():
+        auction_id = request.POST.get('auction_id')
+        if auction_id:
+            return get_object_or_404(Auction, id=auction_id)
 
+    raise Http404
 
 django_facebook.connect.connect_user = connect_user
 django_facebook.connect._register_user = _register_user
