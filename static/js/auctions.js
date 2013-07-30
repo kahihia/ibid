@@ -73,7 +73,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         auction.interface = {
             bidEnabled: true,
             addBidEnabled: $scope.isUserAbleToAddBidToAuction(auction),
-            remBidEnabled: true
+            remBidEnabled: true,
+            joinAuctionEnabled: true
         };
         // Initialize default values.
         if (_.isUndefined(auction.chatMessage)) {
@@ -81,6 +82,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         }
         // If user is participating in auction, subscribe to channel.
         if ($scope.isAuctionMine(auction)) {
+            auction.interface.joinAuctionEnabled = false;
             $scope.subscribeToAuctionChannel(auction);
         }
         // If auction has a timeleft, it already begun, so counter
@@ -175,10 +177,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     };
 
     $scope.startBidding = function (auction) {
-        // If auction is not in precapitalization status, do nothing.
-        if (auction.status !== 'precap') {
+        // If auction is not in precapitalization status or user has
+        // already joined, do nothing.
+        if (auction.status !== 'precap' || ! auction.interface.joinAuctionEnabled) {
             return;
         }
+        auction.interface.joinAuctionEnabled = false;
         //tutorial
         if(tutorialActive == true && tutorialAuctionId == auction.id){
             $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent2');}, 2500);
@@ -197,6 +201,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     else if (data.motive === 'NO_ENOUGH_TOKENS') {
                         console.log('not enough tokens')
                     }
+                    auction.interface.joinAuctionEnabled = true;
                     return;
                 }
                 // Update auction with data received from the
