@@ -174,40 +174,38 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         this.auctionsAvailable.push({type: 'email', value: 'yourname@example.org'});
     };
 
-    $scope.startBiding = function (auction) {
-        //if($scope.auctionsAvailable[index].status <> "precap"){console.log('ERROR: startBiding - not precap')};
-
+    $scope.startBidding = function (auction) {
         // If auction is not in precapitalization status, do nothing.
         if (auction.status !== 'precap') {
             return;
         }
-
-        console.log("Joined auction", auction);
-
         //tutorial
         if(tutorialActive == true && tutorialAuctionId == auction.id){
             $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent2');}, 2500);
         }
+        // Post to server that user wants to start bidding on this
+        // auction.
         $http
             .post('/api/startBidding/', {id: auction.id})
             .success(function (data) {
-                if (data.result === true) {
-                    // Set initial placed tokens/credits and 1 bid.
-                    auction.bids = auction.placed = auction.bidPrice;
-                    // Move auction to mine.
-                    $scope.moveAuction(auction, 'available', 'mine');
-                    // Reload user data to refresh tokens/credits.
-                    $rootScope.$emit('reloadUserDataEvent');
-                } else if (data.result === false) {
-                    if (data.motive == 'NO_ENOUGH_CREDITS'){
+                // User can't bid on this auction.
+                if (!data.success) {
+                    if (data.motive === 'NO_ENOUGH_CREDITS') {
                         //opens the "get credits" popup
                         $rootScope.$emit('openGetCreditsPopover');
                     }
-                    else if (data.motive == 'NO_ENOUGH_TOKENS'){
+                    else if (data.motive === 'NO_ENOUGH_TOKENS') {
                         console.log('not enough tokens')
                     }
+                    return;
                 }
-
+                // Update auction with data received from the
+                // server.
+                auction = data.auction;
+                // Move auction to mine.
+                $scope.moveAuction(auction, 'available', 'mine');
+                // Reload user data to refresh tokens/credits.
+                $rootScope.$emit('reloadUserDataEvent');
             });
     };
 
@@ -331,16 +329,15 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             $http
                 .post('/api/claim/', {'id': auction.id, 'bidNumber': auction.bidNumber})
                 .success(function (response) {
-                    if (response.result === true) {
-                        console.log('Bid on auction %s succeeded', auction.id);
-                        auction.bids -= auction.bidPrice;
-                        $rootScope.$emit('reloadUserDataEvent');
-                    }
-                    else {
+                    if (!response.success) {
                         console.log('Bid on auction %s failed', auction.id);
                         // Bid failed, reset bid button.
                         auction.interface.bidEnabled = true;
+                        return;
                     }
+                    console.log('Bid on auction %s succeeded', auction.id);
+                    auction.bids -= auction.bidPrice;
+                    $rootScope.$emit('reloadUserDataEvent');
                 });
         }
     };
