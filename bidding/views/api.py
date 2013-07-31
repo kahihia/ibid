@@ -295,7 +295,7 @@ def startBidding(request):
         tmp['completion'] = 0
     tmp['status'] = auct.status
     tmp['bidPrice'] = auct.minimum_precap
-    tmp['bidType'] = 'token'
+    tmp['bidType'] = {'token':'token', 'bid':'credit'}[auct.bid_type]
     tmp['itemName'] = auct.item.name
     tmp['retailPrice'] = str(auct.item.retail_price)
     tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
