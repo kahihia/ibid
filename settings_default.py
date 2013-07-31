@@ -62,21 +62,31 @@ USE_I18N = False
 SITE_ID = 1
 
 # Media files
-MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
+MEDIA_URL = '/media/'
 
 # Static files
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(PROJECT_PATH, 'public_static')
 STATICFILES_DIRS = (
     os.path.join(PROJECT_PATH, 'static'),
 )
+STATIC_ROOT = os.path.join(PROJECT_PATH, 'public_static')
+STATIC_URL = '/static/'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.CachedStaticFilesStorage'
 
 # Admin Static Files
 ADMIN_MEDIA_PREFIX = '/static/admin/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'q0zs)p0r6h2u1^b5ak55z)nuu^mvi*rd4jx6$!=++_xqv6s(aa'
+
+# Cache backends
+CACHE = {
+    'staticfiles': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'public_static'
+    }
+}
+
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
