@@ -22,8 +22,8 @@
 								{{ auction.won_date|date:"m/d/y" }}
 							</div>
 							<div class="user">
-								<img src="{{ auction.winner_member.display_picture }}" width="40" height="40">
-								<span>{{ auction.winner.username }}</span>
+								<a href="https://facebook.com/{{ auction.winner_member.facebook_id }}"><img src="{{ auction.winner_member.display_picture }}" width="40" height="40"></a>
+								<a href="https://facebook.com/{{ auction.winner_member.facebook_id }}"><span>{{ auction.winner.first_name }}</span></a>
 							</div>
 							<div class="txt">
 								<p>
