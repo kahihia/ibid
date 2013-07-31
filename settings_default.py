@@ -67,7 +67,7 @@ MEDIA_ROOT = os.path.join(PROJECT_PATH, 'media')
 
 # Static files
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(PROJECT_PATH, 'static')
+STATIC_ROOT = os.path.join(PROJECT_PATH, 'public_static')
 STATICFILES_DIRS = (
     os.path.join(PROJECT_PATH, 'static'),
 )
@@ -118,13 +118,13 @@ INSTALLED_APPS = (
     'admin_tools.menu',
     'admin_tools.dashboard',
 
+    'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.sites',
-    'django.contrib.admin',
     'django.contrib.flatpages',
     'django.contrib.messages',
+    'django.contrib.sessions',
+    'django.contrib.sites',
 
     'audit',
     'bidding',
@@ -134,14 +134,11 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'south',
     'django_extensions',
-    'django.contrib.staticfiles',
     'cumulus',
 
     # Needed by django facebook
     'registration',
     'django_facebook',
-
-    # for django 1.4
     'django.contrib.staticfiles',
 )
 
