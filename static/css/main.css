@@ -1508,7 +1508,7 @@ opacity:0.8;
 }
 .txt-promo {
 	color:#fff;
-	padding-top:180px;
+	padding-top:200px;
 	font-size: 24px;
 }
 .info-txt {
@@ -1529,9 +1529,15 @@ opacity:0.8;
 	background-image: url("../images/btn.png");
 	width:260px;
 	height:51px;
-	margin:30px auto 0 auto;
+	margin:80px auto 0 auto;
 	color:#fff;
 	font-size:14px;
 	font-weight:700;
 	line-height: 50px;
+	cursor: pointer;
+}
+
+.btn-promo:hover {
+	opacity: 0.8;
+	cursor : pointer;
 }
