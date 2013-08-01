@@ -111,12 +111,6 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'chat message'
 
-    def toVO(self):
-        return vo.ChatMessage(date = self.get_time(),
-                              text = self.format_message(),
-                              user = self.user.get_User(),
-                              auctionId = self.auction.id)
-
 class AuctioneerPhrase(models.Model):
     key = models.CharField(max_length=20)
     text = models.TextField(blank=True, null=True)
