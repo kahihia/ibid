@@ -26,7 +26,7 @@ Time To Start
 	<div style="display: none;" class="btn place-button" onclick="precap_bid('{% url bidding_precap_bid %}', {{ auction.id }});
                                                                   this.blur();
                                                                   return false;">Place {{ auction.get_bid_type_display }}</div>
-    <div style="display: none;" class="inprogress"><img src="{%  static "images/ajax-loader.gif" %}" /></div>
+    <div style="display: none;" class="inprogress"><img src="{% static 'images/ajax-loader.gif' %}" /></div>
 {% endblock %}
 
 {% block price %}{%endblock%}

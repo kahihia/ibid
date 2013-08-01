@@ -5,7 +5,7 @@
 		<a href="{% url bidding_auction_detail auction.item.slug,auction.id %}">{{ auction.item.name }}</a> / Retail price: ${{ auction.item.retail_price|stringformat:"4.2f" }}
 		{% block status_span %}{% endblock %}
 		<div class="open-chat" title="Open Chat" onclick="$('#chat-{{auction.id}}').toggleClass('active');">
-			<img src="{% static "images/spechbubble_sq_line_aaa.png" %}" height="16" width="16">
+			<img src="{% static 'images/spechbubble_sq_line_aaa.png' %}" height="16" width="16">
 		</div>
 		{% block extra_button %}{% endblock %}
 	</header>

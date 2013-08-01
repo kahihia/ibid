@@ -105,6 +105,10 @@ def standalone(request):
     js_error_tracker = [debuggify, qbaka, errorception, exceptional]
     shuffle(js_error_tracker)
 
+    js_error_tracker = ''
+    if not settings.DEBUG:
+        js_error_tracker = js_error_tracker[0]
+
     response = render_response(request, 'bidding/mainpage.html',
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
@@ -113,8 +117,7 @@ def standalone(request):
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
-                                'js_error_tracker': js_error_tracker[0],
-                                'DEBUG': settings.DEBUG,
+                                'js_error_tracker': js_error_tracker,
                                 'inCanvas':False})
 
     return response
