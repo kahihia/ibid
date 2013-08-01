@@ -1,6 +1,3 @@
-__author__ = 'dnuske'
-__date__ = '2013-07-31'
-
 """
 value_objects are objects with no methods, only properties. They serializable to JSON or any other serial method.
 Multilingual, platform agnostic and provide a strict standard message for the whole platform.
@@ -12,9 +9,20 @@ Messages are also documented here:
 https://github.com/dnuske/ibiddjango/wiki/Message-objects
 
 """
+__author__ = 'dnuske'
+__date__ = '2013-07-31'
+
+import json
 
 
-class LoggedInUser(dict):
+class ValueObject(dict):
+    def __init__(self):
+        pass
+
+    def toJson(self):
+        return json.dumps(self)
+
+class LoggedInUser(ValueObject):
     def __init__(self, id = "", name = "", link = "", pictureUrl = "", credits = 0, tokens = 0):
         self['id'] = id
         self['name'] = name
@@ -24,7 +32,7 @@ class LoggedInUser(dict):
         self['tokens'] = tokens
 
 
-class User(dict):
+class User(ValueObject):
     def __init__(self, id = 0,name = "",link = "",pictureUrl = ""):
         self["id"] = id
         self["name"] = name
@@ -32,8 +40,8 @@ class User(dict):
         self["pictureUrl"] = pictureUrl
 
 
-class Auction(dict):
-   def __init__(self, completion = 0, status = "", itemImage = "", chatMessages = [], retailPrice = "0.00", bidders = 0, itemName = "", id = 0, auctioneerMessages = [], winner = '', timeleft = 0, bidNumber = 0, bids = 0, placed = 0):
+class Auction(ValueObject):
+   def __init__(self, completion = 0, status = "", itemImage = "", chatMessages = [], retailPrice = "0.00", bidders = 0, itemName = "", id = 0, auctioneerMessages = [], winner = '', timeleft = 0, bidNumber = 0, bids = 0, placed = 0, mine=False, bidPrice=0, bidType=''):
         self["completion"] = completion
         self["status"] = status
         self["itemImage"] = itemImage
@@ -48,9 +56,12 @@ class Auction(dict):
         self["bidNumber"] = bidNumber
         self["bids"] = bids
         self["placed"] = placed
+        self["mine"] = mine
+        self["bidPrice"] = bidPrice
+        self["bidType"] = bidType
 
 
-class ChatMessage(dict):
+class ChatMessage(ValueObject):
     def __init__(self, date = "",text = "",user = "",auctionId = 0):
         self["date"] = date
         self["text"] = text
@@ -58,14 +69,14 @@ class ChatMessage(dict):
         self["auctionId"] = auctionId
 
 
-class AuctioneerMessage(dict):
+class AuctioneerMessage(ValueObject):
     def __init__(self, date = "", text = "", auctionId = 0):
         self["date"] = date
         self["text"] = text
         self["auctionId"] = auctionId
 
 
-class Event(dict):
+class Event(ValueObject):
     """
     If objects were mythology entities this would be Zeus.
     """
@@ -90,5 +101,28 @@ class Event(dict):
         self['transport'] = transport
         self['timestamp'] = timestamp
         self['id'] = id
+
+    class TRANSPORT:
+        PUBNUB = 'pubnub'
+        REQUEST = 'request'
+        COMBINED = 'combined'
+
+    class SENDER:
+        SERVER = 'server'
+
+    class RECEIVER:
+        CLIENT_FB = 'client-fb-'
+
+    class EVENT:
+        MAIN__LOAD_USER_DETAILS = 'main:loadUserDetails'
+        MAIN__INITIALIZE_AUCTIONS = 'main:initializeAuctions'
+
+class EventList(list):
+    def __init__(self, *args):
+        for arg in args:
+            self.append(arg)
+
+    def toJson(self):
+        return json.dumps(self)
 
 

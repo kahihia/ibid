@@ -26,6 +26,8 @@ from django_facebook.utils import get_user_model
 from bidding.delegate import state_delegates
 from audit.models import AuditedModel
 
+import bidding.value_objects as vo
+
 
 re_bids = re.compile("(\d+)")
 
@@ -432,6 +434,16 @@ class Member(AuditedModel):
             s = self.getSession()
             s[sessionDict] = sessionValue
             self.session = json.dumps(s)
+
+    def get_LoggedInUser(self):
+        return vo.LoggedInUser(self.facebook_id,
+                               self.display_name(),
+                               self.facebook_profile_url,
+                               self.display_picture(),
+                               self.bids_left,
+                               self.tokens_left)
+
+
 
 class FacebookUser(models.Model):
     '''

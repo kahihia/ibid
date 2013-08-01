@@ -10,6 +10,8 @@ from django.contrib import auth
 
 from bidding.models import Auction, Member
 
+import bidding.value_objects as vo
+
 
 CHATROOM_STATUS_CHOICES = (
      ('created', 'Created'),
@@ -56,6 +58,14 @@ class ChatUser(models.Model):
         
         return not member.remove_from_chat and auction.has_joined(member)
 
+    def get_User(self):
+        member = self.user.get_profile()
+        return vo.User(member.facebook_id,
+                       member.display_name(),
+                       member.facebook_profile_url,
+                       member.display_picture(),
+                       )
+
 
 class AuctioneerProxy(object):
     def picture(self):
@@ -101,6 +111,11 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'chat message'
 
+    def toVO(self):
+        return vo.ChatMessage(date = self.get_time(),
+                              text = self.format_message(),
+                              user = self.user.get_User(),
+                              auctionId = self.auction.id)
 
 class AuctioneerPhrase(models.Model):
     key = models.CharField(max_length=20)
