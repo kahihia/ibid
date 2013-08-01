@@ -1,6 +1,5 @@
 {% extends "ibidgames_base_section.html" %}
 
-{% load staticfiles %}
 {% load thumbnail %}
 {% load thumbnail bidding_tags pagination_tag %}
 
@@ -33,7 +32,6 @@
 
 							</div>
 							<div class="pic">
-								<!--img src="images/auction-img.jpg" width="107" height="72"-->
                                 <img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "107x72" as thumb %}{{thumb.url}}{% endthumbnail %}" />
 							</div>
 						</div>
