@@ -88,11 +88,6 @@ def initialize(request):
     return eventList.toJson()
 
 
-
-
-
-
-
 def getUserDetails(request):
     member = request.user.get_profile()
 

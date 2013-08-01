@@ -15,7 +15,7 @@ def create_voAction(auction, member):
                                bidNumber = 0,
                                bids = 0,
                                placed = 0,
-                               mine = False,
+                               mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
                                bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
@@ -34,7 +34,7 @@ def create_voAction(auction, member):
                                bidNumber = auction.getBidNumber(),
                                bids = auction.auction_bids_left(auction),
                                placed = member.auction_bids_left(auction),
-                               mine = False,
+                               mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
                                bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left())
@@ -55,7 +55,7 @@ def create_voAction(auction, member):
                                bidNumber = auction.getBidNumber(),
                                bids = auction.auction_bids_left(auction),
                                placed = member.auction_bids_left(auction),
-                               mine = False,
+                               mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
                                bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left())
@@ -76,7 +76,7 @@ def create_voAction(auction, member):
                                bidNumber = auction.getBidNumber(),
                                bids = auction.auction_bids_left(auction),
                                placed = member.auction_bids_left(auction),
-                               mine = False,
+                               mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
                                bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left())
@@ -97,7 +97,7 @@ def create_voAction(auction, member):
                                bidNumber = 0,
                                bids = 0,
                                placed = 0,
-                               mine = False,
+                               mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
                                bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
@@ -116,7 +116,7 @@ def create_voAction(auction, member):
                                bidNumber = 0,
                                bids = 0,
                                placed = 0,
-                               mine = False,
+                               mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
                                bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
@@ -124,9 +124,6 @@ def create_voAction(auction, member):
                                completion = 0)
 
         return vo_auction
-
-
-
 
 
 def create_voAuctioneerMessage(message):
@@ -142,6 +139,7 @@ def create_voLoggedInUser(member):
                            member.display_picture(),
                            member.bids_left,
                            member.tokens_left)
+
 
 def create_voUser(member):
     return vo.User(member.facebook_id,
