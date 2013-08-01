@@ -11,20 +11,18 @@
 
 	<!-- Web Font -->
 	<link href="{% static "css/css.css" %}" rel="stylesheet" type="text/css">
-      <link rel="shortcut icon" href="{% static "images/fav.png" %}">
-      <link rel="stylesheet" href="{% static "css/my.css" %}" type="text/css" >
-      <link rel="stylesheet" href="{% static "css/main.css" %}">
-      <link rel="stylesheet" href="{% static "css/custom-theme/jquery-ui-1.8.6.custom.css" %}">
+    <link rel="shortcut icon" href="{% static "images/fav.png" %}">
+    <link rel="stylesheet" href="{% static "css/my.css" %}" type="text/css" >
+    <link rel="stylesheet" href="{% static "css/main.css" %}">
+    <link rel="stylesheet" href="{% static "css/custom-theme/jquery-ui-1.8.6.custom.css" %}">
 	<script type="text/javascript" src="{% static "js/jquery-1.7.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "js/jquery.json-2.2.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "js/jquery-ui-1.8.6.custom.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "js/jquery.glow.js" %}"></script>
 	<script type="text/javascript" src="{% static "js/facebook.js" %}"></script>
-
     <script type="text/javascript" src="{% static "js/jquery.cookie.js" %}"></script>
 
         {%  if display_popup %}
-
             <script type="text/javascript">
                 /*<!-[CDATA[*/
                 $(document).ready(function(){
@@ -36,12 +34,6 @@
 	
 	{% block extracss %}
     {% endblock %}
-
-  	<!--<link rel="shortcut icon" href="http://ibidchat.jazzpixels.com/global/img/fav.png"-->
-
-	<!--link rel="stylesheet" href="ibidchat.jazzpixels.com_files/main.css"-->
-
-	<!--script src="ibidchat.jazzpixels.com_files/jquery-1.js"></script>---->
 </head>
 <body>
 {% include 'fb_init.html' %}
