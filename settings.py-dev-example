@@ -1,0 +1,67 @@
+from settings_default import *
+
+
+# Debugging options usefull whien coding
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+THUMBNAIL_DEBUG = DEBUG
+
+
+# Log files location
+LOGGING['handlers']['file']['filename]' = 'logs/ibiddjango.log'
+LOGGING['handlers']['sql']['filename'] = 'logs/sql.log'
+LOGGING['handlers']['commands']['filename'] = 'logs/commands.log'
+
+
+# Databases, full definitions or just credentials/hosts
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'data/ibidgames.sqlite3',
+        'USER': 'root',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
+}
+
+
+# Email settings
+## EMAIL_HOST = 'smtp.gmail.com'
+## EMAIL_PORT = 587
+## EMAIL_HOST_USER = ''
+## EMAIL_HOST_PASSWORD = '
+## EMAIL_USE_TLS = True
+
+
+# Facebook app settings
+FACEBOOK_API_KEY = '<FB_APP_ID>'
+FACEBOOK_APP_ID = '<FB_APP_ID>'
+FACEBOOK_APP_SECRET = '<FB_APP_SECRET>'
+AUTH_REDIRECT_URI = 'http://apps.facebook.com/<FB_APP_NAME>/fb/login/'
+
+
+# Pubnub settings
+PUBNUB_PUB = '<PUBNUB_PUB>'
+PUBNUB_SUB = '<PUBNUB_SUB>'
+PUBNUB_SECRET = ''
+
+
+# Application Urls
+WEB_APP = 'http://localhost:8000/'
+APP_FIRST_REDIRECT =  WEB_APP + 'fb_redirect/'
+FBAPP =               WEB_APP + 'fb/'
+IMAGES_SITE =         WEB_APP
+NOT_AUTHORIZED_PAGE = WEB_APP
+SITE_NAME =           WEB_APP
+
+FB_APP = 'http://apps.facebook.com/<FB_APP_NAME>/'
+FBAPP_HOME =  FB_APP + 'home/'
+CANVAS_HOME = FB_APP + 'canvashome/'
+
+# Put your domain here
+## SESSION_COOKIE_DOMAIN = 'localhost'
+
+# Set to True if using SSL
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
