@@ -1,6 +1,6 @@
 {% load staticfiles %}
-<link rel="stylesheet" href="{% static "css/main.css" %}">
-<link rel="stylesheet" href="{% static "css/popup.css" %}">
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'css/popup.css' %}">
 
 <style media="screen" type="text/css">
 
@@ -15,7 +15,7 @@ body {
 {% load thumbnail %}
 
 {% block graywindowcontent %}
-<a style="text-align: center;" href="https://apps.facebook.com/ibidgames/canvashome/"><img style="margin: 20px 0 40px 0;" src="{% static "images/logo.png" %}" width="293" height="105"></a>
+<a style="text-align: center;" href="{% url 'canvashome' %}"><img style="margin: 20px 0 40px 0;" src="{% static 'images/logo.png' %}" width="293" height="105"></a>
 <div class="popup" style="margin: 0px auto 0 auto;display: inherit;">
 	<div class="title">
 

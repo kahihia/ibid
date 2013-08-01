@@ -23,42 +23,24 @@ function initWelcome(){
             });
 }
 
-tutorialImages = {
-    slide1: '/static/images/tutorial/1.png',
-    slide2: '/static/images/tutorial/2.png',
-    slide3: '/static/images/tutorial/3.png',
-    slide4: '/static/images/tutorial/4.png',
-    slide5: '/static/images/tutorial/5.png',
-    slide6: '/static/images/tutorial/6.png',
-    slide7: '/static/images/tutorial/7.png',
-    slide8: '/static/images/tutorial/8.png',
-    slide9: '/static/images/tutorial/9.png',
-    slide10: '/static/images/tutorial/10.png',
-    slide11: '/static/images/tutorial/11.png',
-    slide12: '/static/images/tutorial/12.png',
-    slide13: '/static/images/tutorial/13.png',
-    slide14: '/static/images/tutorial/14.png',
-    slide15: '/static/images/tutorial/15.png'
-    }
-
-preloadImage(tutorialImages.slide1);
-preloadImage(tutorialImages.slide2);
-preloadImage(tutorialImages.slide3);
-preloadImage(tutorialImages.slide4);
-preloadImage(tutorialImages.slide5);
-preloadImage(tutorialImages.slide6);
-preloadImage(tutorialImages.slide7);
-preloadImage(tutorialImages.slide8);
-preloadImage(tutorialImages.slide9);
-preloadImage(tutorialImages.slide10);
-preloadImage(tutorialImages.slide11);
-preloadImage(tutorialImages.slide12);
-preloadImage(tutorialImages.slide13);
-preloadImage(tutorialImages.slide14);
-preloadImage(tutorialImages.slide15);
 
 var tutorialActive = false;
 function initTutorial(){
+    preloadImage(tutorialImages.slide1);
+    preloadImage(tutorialImages.slide2);
+    preloadImage(tutorialImages.slide3);
+    preloadImage(tutorialImages.slide4);
+    preloadImage(tutorialImages.slide5);
+    preloadImage(tutorialImages.slide6);
+    preloadImage(tutorialImages.slide7);
+    preloadImage(tutorialImages.slide8);
+    preloadImage(tutorialImages.slide9);
+    preloadImage(tutorialImages.slide10);
+    preloadImage(tutorialImages.slide11);
+    preloadImage(tutorialImages.slide12);
+    preloadImage(tutorialImages.slide13);
+    preloadImage(tutorialImages.slide14);
+    preloadImage(tutorialImages.slide15);
 
     setTimeout(function(){TweenLite.to('#tutorial-dialog', 1, {opacity:1,left:'0px',ease:Back.easeOut});},600);
     //TweenLite.fromTo('#tutorial-dialog', 1, {scale:0},{scale:1});

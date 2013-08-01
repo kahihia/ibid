@@ -6,8 +6,8 @@
 
 		<title>iBidGames</title>
 
-		<link rel="stylesheet" href="{% static "css/main.css" %}">
-		<link rel="stylesheet" href="{% static "css/popup.css" %}">
+		<link rel="stylesheet" href="{% static 'css/main.css' %}">
+		<link rel="stylesheet" href="{% static 'css/popup.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -16,20 +16,40 @@
 				var img = new Image();
 				img.src = url;
 			}
-			preloadImage("{% static "images/btn-bid-play-disabled.png" %}");
-			preloadImage("{% static "images/welcome.png" %}");
-			preloadImage("{% static "images/help-img.png" %}");
+			preloadImage("{% static 'images/btn-bid-play-disabled.png' %}");
+			preloadImage("{% static 'images/welcome.png' %}");
+			preloadImage("{% static 'images/help-img.png' %}");
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-		<script src="{% static "js/lodash.min.js" %}"></script>
-		<script src="{% static "js/lib/jquery.json-2.2.min.js" %}"></script>
-		<script src="{% static "js/lib/jquery.center.js" %}"></script>
-		<script src="{% static "js/lib/TweenMax.min.js" %}"></script>
-		<script src="{% static "js/base_header.js" %}"></script>
-		<script src="{% static "js/auctions.js"%}" ></script>
-		<script src="{% static "js/errorReport.js" %}"></script>
-		<script src="{% static "js/tutorial.js" %}" ></script>
+		<script src="{% static 'js/lodash.min.js' %}"></script>
+		<script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
+		<script src="{% static 'js/lib/jquery.center.js' %}"></script>
+		<script src="{% static 'js/lib/TweenMax.min.js' %}"></script>
+		<script src="{% static 'js/base_header.js' %}"></script>
+		<script src="{% static 'js/auctions.js' %}" ></script>
+		<script src="{% static 'js/errorReport.js' %}"></script>
+
+		<script language="javascript">
+            tutorialImages = {
+                slide1:  "{% static 'images/tutorial/1.png' %}",
+                slide2:  "{% static 'images/tutorial/2.png' %}",
+                slide3:  "{% static 'images/tutorial/3.png' %}",
+                slide4:  "{% static 'images/tutorial/4.png' %}",
+                slide5:  "{% static 'images/tutorial/5.png' %}",
+                slide6:  "{% static 'images/tutorial/6.png' %}",
+                slide7:  "{% static 'images/tutorial/7.png' %}",
+                slide8:  "{% static 'images/tutorial/8.png' %}",
+                slide9:  "{% static 'images/tutorial/9.png' %}",
+                slide10: "{% static 'images/tutorial/10.png' %}",
+                slide11: "{% static 'images/tutorial/11.png' %}",
+                slide12: "{% static 'images/tutorial/12.png' %}",
+                slide13: "{% static 'images/tutorial/13.png' %}",
+                slide14: "{% static 'images/tutorial/14.png' %}",
+                slide15: "{% static 'images/tutorial/15.png' %}"
+                }
+        </script>
+		<script src="{% static 'js/tutorial.js' %}" ></script>
 	</head>
 
 	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
@@ -39,7 +59,7 @@
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-                    channelUrl : '//{{SITE_NAME}}{% static "channel.html" %}', // Channel File
+                    channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
                     status     : true, // check login status
                     cookie     : true, // enable cookies to allow the server to access the session
                     xfbml      : true  // parse XFBML
@@ -63,7 +83,7 @@
 			<!--tutorial widget-->
 			<div id="tooltip-help" style="position:absolute;top:200px;left:300px;z-index:1002; float:left;display:none;">
 				<div class="img">
-					<img src="{% static "images/help-img-small.png" %}" width="72" height="91">
+					<img src="{% static 'images/help-img-small.png' %}" width="72" height="91">
 				</div>
 				<div class="box">
 
@@ -76,7 +96,7 @@
 						</p>
 						Mensajemensaje mensaje mensajem
 					</div>
-					<div id="btn-tutorial" style=" text-align:right;text-align:center;"><img src="{% static "images/btn-next.png" %}" />
+					<div id="btn-tutorial" style=" text-align:right;text-align:center;"><img src="{% static 'images/btn-next.png' %}" />
 					</div>
 					<div style="width:100%;">
 						<!--	<div id="arrow-position" style="width: 100%;float: left;">
@@ -84,7 +104,7 @@
 						</div>-->
 						<div style="float: left;"></div>
 					</div>
-					<div><img src="/static/images/pico.png" style="float: right; margin: 0px 30px -30px 0px;">
+					<div><img src="{% static 'images/pico.png' %}" style="float: right; margin: 0px 30px -30px 0px;">
 					</div>
 				</div>
 
@@ -95,11 +115,11 @@
 					<div class="title">
 						<span class="close" ng-click="closeGetCredits()">×</span>
 						<img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
-						src="{% static "images/credits-big.png" %}">
+						src="{% static 'images/credits-big.png' %}">
 						<h1 style="margin-left: 35px;">Buy Credits</h1>
 					</div>
 					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><img src="{% static "images/icon-dollar.png" %}">Buy Credits</span></br>Buy your credits and get more chance to win auctions!
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><img src="{% static 'images/icon-dollar.png' %}">Buy Credits</span></br>Buy your credits and get more chance to win auctions!
 					</div>
 					{% for package in packages %}
 					<section>
@@ -119,7 +139,7 @@
 					<hr>
 
 					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><img src="{% static "images/icon-tokens.png" %}">Convert Tokens to Credits</span>
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><img src="{% static 'images/icon-tokens.png' %}">Convert Tokens to Credits</span>
 						</br>You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
 						Tokens and you can convert it up to
 						<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.
@@ -153,7 +173,7 @@
 					</div>
 					<div style="margin: 30px 10px 10px 130px;">
 
-						<div class="fb-like" data-href="https://apps.facebook.com/ibidgames/canvashome/" data-send="false"  data-width="300" data-show-faces="false"></div>
+						<div class="fb-like" data-href="{% url 'canvashome' %}" data-send="false"  data-width="300" data-show-faces="false"></div>
 					</div>
 				</div>
 			</div>
@@ -200,7 +220,7 @@
 
 					</div>
 					<div class="logo">
-						<img src="{% static "images/logo.png" %}" width="293" height="105">
+						<img src="{% static 'images/logo.png' %}" width="293" height="105">
 					</div>
 				</div>
 
@@ -275,7 +295,6 @@
 								<div id="auction-top" ng-switch-when="precap">
 									<div class="img">
 										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
-										<!--img src="{% static "images/auction-img.jpg" %}" width="107" height="72"-->
 									</div>
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
@@ -299,9 +318,9 @@
 										<div id="btn-bid-plus" class="btn-red btn-add-bid" ng-click="addBids(auctionList[playFor].mine[$index])" ng-disabled="!auction.interface.addBidEnabled">+</div>
 									</div>
 									<div id="auction-btns">
-										<div id="btn-invite-auction" class="disabled"><img src="{% static "images/btn-invite-auction-disabled.png" %}" width="36" height="42">
+										<div id="btn-invite-auction" class="disabled"><img src="{% static 'images/btn-invite-auction-disabled.png' %}" width="36" height="42">
 										</div>
-										<div id="btn-chat-auction" class="disabled"><img src="{% static "images/btn-chat-auction-disabled.png" %}" width="36" height="43">
+										<div id="btn-chat-auction" class="disabled"><img src="{% static 'images/btn-chat-auction-disabled.png' %}" width="36" height="43">
 										</div>
 									</div>
 
@@ -376,7 +395,7 @@
 											PAUSED
 										</div>
 										<div id="btn-bid-play">
-											<a href="#"><img src="{% static "images/btn-bid-play-disabled.png" %}" width="94" height="94"></a>
+											<a href="#"><img src="{% static 'images/btn-bid-play-disabled.png' %}" width="94" height="94"></a>
 										</div>
 										<div class="bids-left">
 											<p>
@@ -412,7 +431,7 @@
 
 								<div id="auction-auctioneer">
 									<div class="img">
-										<img src="{% static "images/auctioneer.jpg" %}" height="109" width="106">
+										<img src="{% static 'images/auctioneer.jpg' %}" height="109" width="106">
 									</div>
 									<div id="auctioneer-message" class="token">
 										<div ng-repeat="auctioneerMessage in auction.auctioneerMessages">
@@ -420,8 +439,8 @@
 										</div>
 
 										<div id="btn-acutioneer-up" class="scroll">
-											<img style="margin-top: 40px; display:none;" src="{% static "images/btn-auctioneer-down.png" %}" height="40" width="42">
-											<img style="display:none;" src="{% static "images/btn-auctioneer-up.png" %}" height="40" width="42" >
+											<img style="margin-top: 40px; display:none;" src="{% static 'images/btn-auctioneer-down.png' %}" height="40" width="42">
+											<img style="display:none;" src="{% static 'images/btn-auctioneer-up.png' %}" height="40" width="42" >
 										</div>
 										<div id="btn-acutioneer-down"></div>
 									</div>
@@ -503,10 +522,10 @@
 								</div>
 							</div>
 							<div id="auction-btns">
-								<div id="btn-invite-auction"><img src="{% static "images/btn-invite-auction.png" %}" width="36"
+								<div id="btn-invite-auction"><img src="{% static 'images/btn-invite-auction.png' %}" width="36"
 									height="42">
 								</div>
-								<div id="btn-chat-auction"><img src="{% static "images/btn-chat-auction.png" %}" width="36"
+								<div id="btn-chat-auction"><img src="{% static 'images/btn-chat-auction.png' %}" width="36"
 									height="43">
 								</div>
 							</div>
@@ -567,18 +586,18 @@
 		z-index:1000;"></div>
 		<div id="overlay-tutorial">
 			<div class="logo">
-				<img src="{% static "images/logo.png" %}" width="293" height="105">
+				<img src="{% static 'images/logo.png' %}" width="293" height="105">
 			</div>
 
 			<div id="tutorial-dialog" style="position:relative;left:-800px;text-align: right;width:100%">
 
-				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/prev.png" %}" id="prev" style="cursor:pointer;"/>
+				<div style="position:relative;float:left;padding-top: 180px;z-index: 1003;"><img src="{% static 'images/tutorial/prev.png' %}" id="prev" style="cursor:pointer;"/>
 				</div>
 				<div style="position:absolute;width:100%;text-align: center;"><img class="tutorial-img" src="" />
 				</div>
-				<div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static "images/tutorial/next.png" %}" id="next" style="cursor:pointer;"/>
+				<div style="position:relative;float:right;padding-top: 180px;z-index: 1003;"><img src="{% static 'images/tutorial/next.png' %}" id="next" style="cursor:pointer;"/>
 				</div>
-				<div style="position:relative;float:right;margin-top: -45px;z-index: 1003;"><img src="{% static "images/tutorial/close.png" %}" class="close" style="cursor:pointer; width: 75px"/>
+				<div style="position:relative;float:right;margin-top: -45px;z-index: 1003;"><img src="{% static 'images/tutorial/close.png' %}" class="close" style="cursor:pointer; width: 75px"/>
 				</div>
 			</div>
 		</div>
@@ -587,7 +606,7 @@
 		<!--welcome widget-->
 		<div id="welcome" style="display:none;">
 			<div class="btn-close">
-				<a href="#"><img src="{% static "images/btn-close.png" %}" width="39" height="39" /></a>
+				<a href="#"><img src="{% static 'images/btn-close.png' %}" width="39" height="39" /></a>
 			</div>
 
 			<div class="text">
