@@ -42,8 +42,8 @@ AUTH_REDIRECT_URI = 'http://apps.facebook.com/<FB_APP_NAME>/fb/login/'
 
 
 # Pubnub settings
-PUBNUB_PUB = '<PUBNUB_PUB>'
 PUBNUB_SUB = '<PUBNUB_SUB>'
+PUBNUB_PUB = '<PUBNUB_PUB>'
 PUBNUB_SECRET = ''
 
 

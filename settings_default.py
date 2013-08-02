@@ -8,7 +8,7 @@ TEMPLATE_DEBUG = DEBUG
 THUMBNAIL_DEBUG = DEBUG
 
 PROJECT_PATH = os.path.dirname(os.path.abspath(__file__))
-	
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -121,6 +121,10 @@ ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_PATH, 'templates'),
+)
+
+FIXTURE_DIRS = (
+    os.path.join(PROJECT_PATH, 'data/fixtures'),
 )
 
 INSTALLED_APPS = (
