@@ -10,7 +10,7 @@ from django.contrib import auth
 
 from bidding.models import Auction, Member
 
-import bidding.value_objects as vo
+import bidding.value_objects_factory as vo_factory
 
 
 CHATROOM_STATUS_CHOICES = (
@@ -60,11 +60,7 @@ class ChatUser(models.Model):
 
     def get_User(self):
         member = self.user.get_profile()
-        return vo.User(member.facebook_id,
-                       member.display_name(),
-                       member.facebook_profile_url,
-                       member.display_picture(),
-                       )
+        return  vo_factory.create_voUser(member)
 
 
 class AuctioneerProxy(object):

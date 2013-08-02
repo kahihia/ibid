@@ -13,6 +13,8 @@ __author__ = 'dnuske'
 __date__ = '2013-07-31'
 
 import json
+import datetime
+from time import mktime
 
 
 class ValueObject(dict):
@@ -20,7 +22,7 @@ class ValueObject(dict):
         pass
 
     def toJson(self):
-        return json.dumps(self)
+        return json.dumps(self, cls = DatatimeEncoder)
 
 class LoggedInUser(ValueObject):
     def __init__(self, id = "", name = "", link = "", pictureUrl = "", credits = 0, tokens = 0):
@@ -123,6 +125,19 @@ class EventList(list):
             self.append(arg)
 
     def toJson(self):
-        return json.dumps(self)
+        return json.dumps(self, cls = DatatimeEncoder)
+
+
+
+class DatatimeEncoder(json.JSONEncoder):
+    """
+    so json encodes datatime
+    """
+
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return int(mktime(obj.timetuple()))
+
+        return json.JSONEncoder.default(self, obj)
 
 

@@ -63,9 +63,9 @@ def initialize(request):
     auctions = []
 
     for auct in allAuctions:
-        auction = auct.toVO(member)
+        auction = vo_factory.create_voAction(auct, member)
 
-        if auction['status'] == 'processing':
+        if auction['mine'] and auction['status'] == 'processing':
             for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:20]:
                 w = vo_factory.create_voAuctioneerMessage(mm)
                 auction['auctioneerMessages'].append(w)
@@ -594,4 +594,5 @@ API = {
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
     'inviteRequest': inviteRequest,
+    'initialize': initialize
 }

@@ -17,9 +17,9 @@ def create_voAction(auction, member):
                                placed = 0,
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
-                               bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
+                               bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
-                               winner = create_voUser(auction.winner.get_profile()),
+                               winner = '',
                                completion = auction.completion())
 
         return vo_auction
@@ -36,7 +36,7 @@ def create_voAction(auction, member):
                                placed = member.auction_bids_left(auction),
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
-                               bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
+                               bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left())
 
         if hasattr(auction, 'completion'):
@@ -57,7 +57,7 @@ def create_voAction(auction, member):
                                placed = member.auction_bids_left(auction),
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
-                               bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
+                               bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left())
 
         if hasattr(auction, 'completion'):
@@ -78,7 +78,7 @@ def create_voAction(auction, member):
                                placed = member.auction_bids_left(auction),
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
-                               bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
+                               bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left())
 
         if hasattr(auction, 'completion'):
@@ -99,7 +99,7 @@ def create_voAction(auction, member):
                                placed = 0,
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
-                               bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
+                               bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
                                winner = create_voUser(auction.winner.get_profile()),
                                completion = 0)
@@ -118,7 +118,7 @@ def create_voAction(auction, member):
                                placed = 0,
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
-                               bidType = {'tokens': 'token', 'bids': 'credit'}[auction.bid_type],
+                               bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
                                winner = create_voUser(auction.winner.get_profile()),
                                completion = 0)
