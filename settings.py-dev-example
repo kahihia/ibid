@@ -8,7 +8,7 @@ THUMBNAIL_DEBUG = DEBUG
 
 
 # Log files location
-LOGGING['handlers']['file']['filename]' = 'logs/ibiddjango.log'
+LOGGING['handlers']['file']['filename'] = 'logs/ibiddjango.log'
 LOGGING['handlers']['sql']['filename'] = 'logs/sql.log'
 LOGGING['handlers']['commands']['filename'] = 'logs/commands.log'
 
