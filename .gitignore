@@ -4,13 +4,13 @@
 lib
 src
 settings.py
-
+.gitignore
 venv
 public_static
-
+logs
 deploy.sh
 nohup.out
-
+.DS_Store
 !static/js/lib
 !static/css/blueprint/src
 
