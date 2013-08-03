@@ -436,6 +436,7 @@ body {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+    text-align: center;
 }
 #auction-top .title-token {
 	color: #6796c7;
