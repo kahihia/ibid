@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 value_objects are objects with no methods, only properties. They serializable to JSON or any other serial method.
 Multilingual, platform agnostic and provide a strict standard message for the whole platform.

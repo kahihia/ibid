@@ -19,6 +19,7 @@ sitemaps = {
 
 urlpatterns = patterns('',
     (r'', include('bidding.urls')),
+    (r'', include('event.urls')),
     (r'^chat/', include('chat.urls')),
     (r'^paypal/ipn/', include('paypal.standard.ipn.urls')),
     (r'^admin/', include(admin.site.urls)),

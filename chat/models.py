@@ -10,8 +10,6 @@ from django.contrib import auth
 
 from bidding.models import Auction, Member
 
-import bidding.value_objects_factory as vo_factory
-
 
 CHATROOM_STATUS_CHOICES = (
      ('created', 'Created'),
@@ -57,10 +55,6 @@ class ChatUser(models.Model):
         member = self.user.get_profile()
         
         return not member.remove_from_chat and auction.has_joined(member)
-
-    def get_User(self):
-        member = self.user.get_profile()
-        return  vo_factory.create_voUser(member)
 
 
 class AuctioneerProxy(object):

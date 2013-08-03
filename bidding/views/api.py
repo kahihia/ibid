@@ -16,9 +16,6 @@ from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
 
-import bidding.value_objects as vo
-import bidding.value_objects_factory as vo_factory
-
 
 def api(request, method):
     """api calls go through this method"""
@@ -29,63 +26,6 @@ def api(request, method):
         return HttpResponse(API[method](request), content_type="application/json")
 
 
-def initialize(request):
-    member = request.user.get_profile()
-
-    eventList = vo.EventList()
-
-    event = vo.Event()
-    event['event'] = vo.Event.EVENT.MAIN__LOAD_USER_DETAILS
-    event['data'] = vo_factory.create_voLoggedInUser(member)
-    event['sender'] = vo.Event.SENDER.SERVER
-    event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
-    event['transport'] = vo.Event.TRANSPORT.REQUEST
-    event['timestamp'] = datetime.now()
-    event['id'] = id
-
-    eventList.append(event)
-
-    my_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid')).order_by(
-        '-status').filter(bidders=member)
-    other_auctions = Auction.objects.filter(is_active=True).exclude(
-        status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).order_by('-status').exclude(
-        bidders=member)
-    finished_auctions = Auction.objects.filter(is_active=True, status__in=(
-        'waiting_payment', 'paid', 'waiting', 'processing', 'pause')).filter(winner__isnull=False).order_by('-won_date')
-
-    allAuctions = []
-    allAuctions.extend(my_auctions)
-    allAuctions.extend(other_auctions.filter(bid_type='bid')[:12])
-    allAuctions.extend(other_auctions.filter(bid_type='token')[:12])
-    allAuctions.extend(finished_auctions.filter(bid_type='bid')[:12])
-    allAuctions.extend(finished_auctions.filter(bid_type='token')[:12])
-
-    auctions = []
-
-    for auct in allAuctions:
-        auction = vo_factory.create_voAction(auct, member)
-
-        if auction['mine'] and auction['status'] == 'processing':
-            for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:20]:
-                w = vo_factory.create_voAuctioneerMessage(mm)
-                auction['auctioneerMessages'].append(w)
-
-            for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:20]:
-                w = vo_factory.create_voMessage(mm)
-                auction['chatMessages'].insert(0, w)
-
-        auctions.append(auction)
-
-    event = vo.Event()
-    event['event'] = vo.Event.EVENT.MAIN__INITIALIZE_AUCTIONS
-    event['data'] = auctions
-    event['sender'] = vo.Event.SENDER.SERVER
-    event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
-    event['transport'] = vo.Event.TRANSPORT.REQUEST
-    event['timestamp'] = datetime.now()
-    event['id'] = id
-
-    return eventList.toJson()
 
 
 def getUserDetails(request):
@@ -594,5 +534,4 @@ API = {
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
     'inviteRequest': inviteRequest,
-    'initialize': initialize
 }
