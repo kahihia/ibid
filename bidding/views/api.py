@@ -13,6 +13,7 @@ from bidding.models import AuctionFixture
 from bidding.models import ConvertHistory
 from bidding.models import Invitation
 from bidding.models import Member
+from bidding.models import ConfigKey
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
@@ -344,6 +345,11 @@ def addBids(request):
     amount += member.auction_bids_left(auction)
 
     if auction.status == 'precap' and auction.can_precap(member, amount):
+         #check max tokens for member per auction
+        if auction.bid_type != 'bid' and (((amount*100)/(auction.precap_bids)) > int(ConfigKey.objects.filter(key='AUCTION_MAX_TOKENS')[0].value)):
+            ret = {"success":False, 'motive': 'AUCTION_MAX_TOKENS_REACHED', 'data': {'placed': member.auction_bids_left(auction)}}
+            return HttpResponse(json.dumps(ret), content_type="application/json")
+        
         auction.place_precap_bid(member, amount)
 
         client.updatePrecap(auction)
