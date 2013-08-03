@@ -43,6 +43,12 @@ class User(ValueObject):
         self["pictureUrl"] = pictureUrl
 
 
+class FriendInvitationAccepted(ValueObject):
+    def __init__(self, prize = 0,user = None):
+        self["prize"] = prize
+        self["user"] = user
+
+
 class Auction(ValueObject):
    def __init__(self, completion = 0, status = "", itemImage = "", chatMessages = [], retailPrice = "0.00", bidders = 0, itemName = "", id = 0, auctioneerMessages = [], winner = '', timeleft = 0, bidNumber = 0, bids = 0, placed = 0, mine=False, bidPrice=0, bidType=''):
         self["completion"] = completion
@@ -118,7 +124,8 @@ class Event(ValueObject):
 
     class EVENT:
         MAIN__LOAD_USER_DETAILS = 'main:loadUserDetails'
-        MAIN__INITIALIZE_AUCTIONS = 'main:initializeAuctions'
+        MAIN__LOAD_AUCTIONS = 'main:loadAuctions'
+        MAIN__FRIEND_INVITATION_ACCEPTED = 'main:friendInvitationAccepted'
 
 class EventList(list):
     def __init__(self, *args):

@@ -69,7 +69,18 @@ def initialize(request):
         auctions.append(auction)
 
     event = vo.Event()
-    event['event'] = vo.Event.EVENT.MAIN__INITIALIZE_AUCTIONS
+    event['event'] = vo.Event.EVENT.MAIN__LOAD_AUCTIONS
+    event['data'] = auctions
+    event['sender'] = vo.Event.SENDER.SERVER
+    event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
+    event['transport'] = vo.Event.TRANSPORT.REQUEST
+    event['timestamp'] = datetime.now()
+    event['id'] = None
+
+    eventList.append(event)
+
+    event = vo.Event()
+    event['event'] = vo.Event.EVENT.MAIN__FRIEND_INVITATION_ACCEPTED
     event['data'] = auctions
     event['sender'] = vo.Event.SENDER.SERVER
     event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)

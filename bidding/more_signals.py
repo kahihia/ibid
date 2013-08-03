@@ -2,14 +2,16 @@
 
 from django.dispatch.dispatcher import receiver, Signal
 from django.db.models.signals import post_save
-from django.db.models import signals
+#|from django.db.models import signals
 
 import client
 
 from bidding.models import Auction, Invitation, ConfigKey
+import event.value_objects as vo
+import event.value_objects_factory as vo_factory
+from django.contrib.auth.models import User
 
-import open_facebook
-
+from django_facebook import signals
 
 precap_finished_signal = Signal(providing_args=["auction"])
 
@@ -24,10 +26,6 @@ post_save.connect(auctionCreated, Auction)
 
 
 
-from django.contrib.auth.models import User
-from django_facebook import signals
-
-import urlparse
 
 def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
     member = user.get_profile()
@@ -40,8 +38,20 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
 
     if len(userList):
         invited = userList[0]
-        invited.inviter.tokens_left += int(ConfigKey.objects.filter(key='INVITE_FRIENDS_TOKEN_PRIZE')[0].value)
+        prize = int(ConfigKey.objects.filter(key='INVITE_FRIENDS_TOKEN_PRIZE')[0].value)
+        invited.inviter.tokens_left += prize
         invited.inviter.save()
+
+        #add an event to the inviter, to show it the next time he logs in
+        #TODO: change this to transport pubnub
+        eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, member)
+        print "--------------------------------------------------------"
+        eventList = vo.EventList()
+        eventList.append(eventFriendInvitationAccepted)
+        print eventList.toJson()
+
+        invited.inviter.setSession('event',eventList.toJson())
+
 
         #actok = urlparse.parse_qs(urlparse.urlsplit(facebook_data['image'])[3])['access_token']
         #check permission
