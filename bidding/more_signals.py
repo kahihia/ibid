@@ -45,12 +45,10 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
         #add an event to the inviter, to show it the next time he logs in
         #TODO: change this to transport pubnub
         eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, member)
-        print "--------------------------------------------------------"
         eventList = vo.EventList()
         eventList.append(eventFriendInvitationAccepted)
-        print eventList.toJson()
 
-        invited.inviter.setSession('event',eventList.toJson())
+        invited.inviter.setSession('event',eventList)
 
 
         #actok = urlparse.parse_qs(urlparse.urlsplit(facebook_data['image'])[3])['access_token']

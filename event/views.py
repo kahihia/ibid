@@ -81,8 +81,6 @@ def initialize(request):
 
 
     memberEvents = member.getSession('event', None)
-    print "pppppppppppppwwwwwwwwwww------------"
-    print memberEvents
 
     event = vo.Event()
     event['event'] = vo.Event.EVENT.MAIN__FRIEND_INVITATION_ACCEPTED
