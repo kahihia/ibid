@@ -79,19 +79,19 @@ def initialize(request):
 
     eventList.append(event)
 
-
+    #send main:friendInvitationAccepted event
     memberEvents = member.getSession('event', None)
+    if memberEvents:
+        event = vo.Event()
+        event['event'] = vo.Event.EVENT.MAIN__FRIEND_INVITATION_ACCEPTED
+        event['data'] = memberEvents[0]
+        event['sender'] = vo.Event.SENDER.SERVER
+        event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
+        event['transport'] = vo.Event.TRANSPORT.REQUEST
+        event['timestamp'] = datetime.now()
+        event['id'] = None
 
-    event = vo.Event()
-    event['event'] = vo.Event.EVENT.MAIN__FRIEND_INVITATION_ACCEPTED
-    event['data'] = memberEvents[0]
-    event['sender'] = vo.Event.SENDER.SERVER
-    event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
-    event['transport'] = vo.Event.TRANSPORT.REQUEST
-    event['timestamp'] = datetime.now()
-    event['id'] = None
-
-    eventList.append(event)
+        eventList.append(event)
 
     return eventList
 
