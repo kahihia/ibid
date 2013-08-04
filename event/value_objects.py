@@ -123,9 +123,9 @@ class Event(ValueObject):
         CLIENT_FB = 'client-fb-'
 
     class EVENT:
-        MAIN__LOAD_USER_DETAILS = 'main:loadUserDetails'
-        MAIN__LOAD_AUCTIONS = 'main:loadAuctions'
-        MAIN__FRIEND_INVITATION_ACCEPTED = 'main:friendInvitationAccepted'
+        MAIN__LOAD_USER_DETAILS =           'main:loadUserDetails'
+        MAIN__LOAD_AUCTIONS =               'main:loadAuctions'
+        MAIN__FRIEND_INVITATION_ACCEPTED =  'main:friendInvitationAccepted'
 
 class EventList(list):
     def __init__(self, *args):
