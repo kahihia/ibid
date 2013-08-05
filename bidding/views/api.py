@@ -9,7 +9,6 @@ from django.http import HttpResponse
 from bidding import client
 from bidding.delegate import GlobalAuctionDelegate
 from bidding.models import Auction
-from bidding.models import AuctionFixture
 from bidding.models import ConvertHistory
 from bidding.models import Invitation
 from bidding.models import Member
