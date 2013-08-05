@@ -1,7 +1,7 @@
 from django.contrib import admin
 
-from bidding.models import Auction, PromotedAuction, PrePromotedAuction, Item, ItemImage, AuctionFixture, \
-    TemplateAuction, BidPackage, ConvertHistory, FBOrderInfo, Member, ConfigKey
+from bidding.models import Auction, PromotedAuction, PrePromotedAuction, Item, ItemImage, BidPackage, \
+    ConvertHistory, FBOrderInfo, Member, ConfigKey
 from django.db.models import Count
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
@@ -31,6 +31,7 @@ class AuctionAdmin(admin.ModelAdmin):
                     'bid_type',
                     'status',
                     'is_active',
+                    'always_alive',
                     'winner',
                     'won_price',
                     'won_date',
@@ -40,7 +41,7 @@ class AuctionAdmin(admin.ModelAdmin):
     #raw_id_fields = ('item',)
     fieldsets = (
         (None, {
-            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active')
+            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active', 'always_alive')
         }),
         ('Bidding time', {
             'fields': ('bidding_time', 'threshold1', 'threshold2', 'threshold3',)
@@ -254,33 +255,8 @@ class MemberUserAdmin(UserAdmin):
     )
 
 
-class TemplateAuctionInline(admin.TabularInline):
-    model = TemplateAuction
-    extra = 5
-    max_num = 50
-
-
-class FixtureAdmin(admin.ModelAdmin):
-    list_display = ('bid_type', 'threshold', 'automatic', )
-
-    inlines = [TemplateAuctionInline, ]
-
-    class Media:
-        js = (
-            'js/jquery-1.7.min.js',
-            'js/jquery-ui-1.8.6.custom.min.js',
-            'js/combo_box.js',
-            'js/fixture_admin.js')
-
-        css = {
-            'all': ('css/custom-theme/jquery-ui-1.8.6.custom.css',
-                    'css/admin_fix.css',)
-        }
-
-
 admin.site.unregister(User)
 admin.site.register(User, MemberUserAdmin)
-admin.site.register(AuctionFixture, FixtureAdmin)
 admin.site.register(BidPackage)
 admin.site.register(Member)
 admin.site.register(ConvertHistory)
