@@ -8,7 +8,7 @@ THUMBNAIL_DEBUG = DEBUG
 
 
 # Log files location
-LOGGING['handlers']['file']['filename]' = 'logs/ibiddjango.log'
+LOGGING['handlers']['file']['filename'] = 'logs/ibiddjango.log'
 LOGGING['handlers']['sql']['filename'] = 'logs/sql.log'
 LOGGING['handlers']['commands']['filename'] = 'logs/commands.log'
 
@@ -42,8 +42,8 @@ AUTH_REDIRECT_URI = 'http://apps.facebook.com/<FB_APP_NAME>/fb/login/'
 
 
 # Pubnub settings
-PUBNUB_PUB = '<PUBNUB_PUB>'
 PUBNUB_SUB = '<PUBNUB_SUB>'
+PUBNUB_PUB = '<PUBNUB_PUB>'
 PUBNUB_SECRET = ''
 
 

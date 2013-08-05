@@ -3,21 +3,14 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from threading import Timer
-import json
 import logging
 import time
-import urllib
-import urllib2
 
 logger = logging.getLogger('django')
-
-from django.conf import settings
-from django.db import connection, transaction
 
 from bidding import client
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
-
 
 def start_auction(auction):
     #refresh the current database auction status
