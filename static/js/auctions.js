@@ -205,8 +205,9 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     return;
                 }
                 // Update auction with data received from the
-                // server.
-                auction = data.auction;
+                // server. Use _.extend() to avoid removing Angular's
+                // $$hashKey property.
+                _.extend(auction, data.auction);
                 // Move auction to mine.
                 $scope.moveAuction(auction, 'available', 'mine');
                 // Reload user data to refresh tokens/credits.
@@ -484,6 +485,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             return;
                         }
                         // Update auction with received data.
+                        // Use _.extend() to avoid removing Angular's
+                        // $$hashKey property.
                         _.extend(auction, message.data);
                         // Based on received status, do corresponding
                         // action.

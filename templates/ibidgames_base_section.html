@@ -5,16 +5,16 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>iBidGames</title>
-		<link rel="stylesheet" href="{% static "css/main.css" %}">
-		<link rel="stylesheet" href="{% static "css/popup.css" %}">
+		<link rel="stylesheet" href="{% static 'css/main.css' %}">
+		<link rel="stylesheet" href="{% static 'css/popup.css' %}">
 		<!---->
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,500,600,700,800' rel='stylesheet' type='text/css'>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-        <script src="{% static "js/lib/jquery.json-2.2.min.js" %}"></script>
-        <script src="{% static "js/lib/jquery.center.js" %}"></script>
-        <script src="{% static "js/lib/TweenMax.min.js" %}"></script>
-        <script src="{% static "js/base_header.js" %}"></script>
+        <script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
+        <script src="{% static 'js/lib/jquery.center.js' %}"></script>
+        <script src="{% static 'js/lib/TweenMax.min.js' %}"></script>
+        <script src="{% static 'js/base_header.js' %}"></script>
 
 	</head>
 
@@ -42,7 +42,7 @@
 
 					</div>
 					<div class="logo">
-						<a href="index.html"><img src="{% static "images/logo.png" %}" width="293" height="105"></a>
+						<a href="index.html"><img src="{% static 'images/logo.png' %}" width="293" height="105"></a>
 					</div>
 				</div>
 
@@ -77,8 +77,8 @@
 
 			<div id="menu-wrapper">
 				<div id="menu">
-					<a href="/canvashome/"><div class="btn-tokens"></div></a>
-					<a href="/canvashome/"><div class="btn-items"></div></a>
+					<a href="{% url 'canvashome' %}"><div class="btn-tokens"></div></a>
+					<a href="{% url 'canvashome' %}"><div class="btn-items"></div></a>
 					<div class="links">
 						<ul>
 
@@ -117,7 +117,7 @@
         <div class="title">
             <span class="close">×</span>
             <img style="position: absolute; top: -14px; left: -33px; opacity:8; width: 70px; height: 70px;"
-                 src="{% static "images/credits-big.png" %}">
+                 src="{% static 'images/credits-big.png' %}">
             <h1>You can buy Credits:</h1>
         </div>
         {% for package in packages %}
@@ -162,7 +162,7 @@
 					</div>
 					<div style="margin: 30px 10px 10px 130px;">
 
-						<div class="fb-like" data-href="https://apps.facebook.com/ibidgames/canvashome/" data-send="false"  data-width="300" data-show-faces="false"></div>
+						<div class="fb-like" data-href="{% url 'canvashome' %}" data-send="false"  data-width="300" data-show-faces="false"></div>
 					</div>
 				</div>
 			</div>
