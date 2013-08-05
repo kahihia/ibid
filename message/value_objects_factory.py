@@ -1,6 +1,6 @@
 __author__ = 'dnuske'
 
-import event.value_objects as vo
+import message.value_objects as vo
 
 
 def create_voAction(auction, member):

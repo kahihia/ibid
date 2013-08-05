@@ -8,11 +8,11 @@ from django.http import HttpResponse
 from bidding.models import Auction
 from chat.models import Message
 
-import event.value_objects as vo
-import event.value_objects_factory as vo_factory
+import message.value_objects as vo
+import message.value_objects_factory as vo_factory
 
 
-def event_listener(request, method):
+def message_listener(request, method):
     """api calls go through this method"""
     #TODO: put event listener here
     result = globals()[method](request)

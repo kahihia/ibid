@@ -7,8 +7,8 @@ from django.db.models.signals import post_save
 import client
 
 from bidding.models import Auction, Invitation, ConfigKey
-import event.value_objects as vo
-import event.value_objects_factory as vo_factory
+import message.value_objects as vo
+import message.value_objects_factory as vo_factory
 from django.contrib.auth.models import User
 
 from django_facebook import signals

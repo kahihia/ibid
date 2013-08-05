@@ -129,6 +129,7 @@ INSTALLED_APPS = (
     'audit',
     'bidding',
     'chat',
+    'message',
 
     'paypal.standard.ipn',
     'sorl.thumbnail',
