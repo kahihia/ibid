@@ -209,6 +209,54 @@
 
 						</div>
 					</div>
+					
+			<!--GLOBAL chat-->
+				<div class="global-chat">
+					<div class="top">
+						<div class="kenny"><img src="{% static 'images/kenny-chat-img.png' %}">
+						</div>
+						<div class="title"><img src="{% static 'images/kenny-chat-title.png' %}">
+						</div>
+						<div class="icon"><img src="{% static 'images/kenny-chat-icon.png' %}">
+						</div>
+						<div class="bkg"></div>
+					</div>
+
+					<div class="chat-container">
+						<div class="chat-list">
+
+							<div class="line" ng-repeat="chatMessage in auction.chatMessages">
+								<div class="avatar">
+									<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
+									width="30" height="30">
+								</div>
+								<div class="txt">
+									<p>
+										{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
+									</p>
+									{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
+								</div>
+
+							</div>
+
+						</div>
+					</div>
+					<div class="user">
+
+						<div style="margin: 0 auto; width: 759px;">
+							<form ng-submit="sendChatMessage($index)">
+								<input type="text" class="imput-txt" ng-model="auction.chatMessage"
+								value="Your message here"/>
+							</form>
+						</div>
+						<div class="enter-text">
+							Press Enter to send
+						</div>
+
+					</div>
+
+				</div>
+			
 
 			<div id="top-wrapper">
 				<div id="top">

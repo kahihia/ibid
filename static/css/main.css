@@ -1541,3 +1541,94 @@ opacity:0.8;
 	opacity: 0.8;
 	cursor : pointer;
 }
+
+/* ---------------------------------------- GLOBAL KENNY CHAT*/
+
+.global-chat {
+	width: 860px;
+
+	max-height: 300px;
+	position: absolute;
+	bottom: -150px;
+	
+	z-index: 100;
+	-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+.global-chat:hover {
+	bottom: 0px;
+}
+.global-chat .top {
+	position: relative;
+}
+
+.global-chat .top .kenny {
+	position: absolute;
+	left: -41px;
+	bottom: -5px;
+	z-index: 2;
+}
+.global-chat .top .title {
+	position: absolute;
+	left: 290px;
+	z-index: 2;
+	bottom: -3px;
+}
+.global-chat .top .icon {
+	position: absolute;
+	right: 8px;
+	z-index: 2;
+	bottom: 2px;
+}
+
+.global-chat .top .bkg {
+	background-color: #415e9b;
+	height: 38px;
+	width: 860px;
+	position: absolute;
+	bottom: 0px;
+	z-index: 1;
+	-webkit-box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.9);
+	-moz-box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.9);
+	box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.9);
+}
+.global-chat .chat-container {
+	background-color: #f8f8f8;
+}
+.global-chat .chat-container .chat-list {
+	max-height: 220px;
+	min-height: 70px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	width: 685px;
+	margin: 0 auto;
+}
+.global-chat .user {
+	margin: 0 0 11px 0;
+	height: 60px;
+	border-top: 1px solid #cdcecf;
+	background-color: #f2f2f2;
+	padding-top: 6px;
+}
+.global-chat .user .imput-txt {
+	margin: 5px 0 0 0;
+	width: 756px;
+	height: 20px;
+	float: left;
+	border: 1px solid #ccc;
+	font-size: 12px;
+	outline: none;
+	padding-left: 5px;
+	line-height: 20px;
+}
+
+.global-chat .user .enter-text {
+	font-size: 11px;
+	color: #666;
+	position: absolute;
+	margin: 30px 0 0 52px;
+}
+
