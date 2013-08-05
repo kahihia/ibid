@@ -584,7 +584,7 @@ body {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background-color: #1a82f7;
-	background-image: url(http://tomato-dev/~tuna/static/images/bkg-btn-blue.jpg);
+	background-image: url(../images/bkg-btn-blue.jpg);
 	font-size: 12px;
 	font-weight: bold;
 	box-shadow: 0px 1px 2px #bca4a4;
