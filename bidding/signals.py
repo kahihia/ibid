@@ -156,8 +156,9 @@ def send_in_thread(signal, **kwargs):
     Sends the given signal in a different thread, so it doesn't delay further
     actions.
     """
-    signal.send(**kwargs)
+    ## to disable thread uncomment this
+    #signal.send(**kwargs)
 
-    #th = threading.Thread(target=signal.send, kwargs=kwargs)
-    #th.start()
+    th = threading.Thread(target=signal.send, kwargs=kwargs)
+    th.start()
 
