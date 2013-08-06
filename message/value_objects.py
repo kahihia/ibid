@@ -44,9 +44,9 @@ class User(ValueObject):
 
 
 class FriendInvitationAccepted(ValueObject):
-    def __init__(self, prize = 0,user = None):
+    def __init__(self, prize = 0,users = []):
         self["prize"] = prize
-        self["user"] = user
+        self["users"] = users
 
 
 class Auction(ValueObject):

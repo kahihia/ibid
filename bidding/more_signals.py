@@ -44,7 +44,7 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
 
         #add an event to the inviter, to show it the next time he logs in
         #TODO: change this to transport pubnub
-        eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, member)
+        eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, [member])
         eventList = vo.EventList()
         eventList.append(eventFriendInvitationAccepted)
 

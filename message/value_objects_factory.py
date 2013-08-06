@@ -148,8 +148,8 @@ def create_voUser(member):
                    member.display_picture(),
                    )
 
-def create_voFriendInvitationAccepted(prize, invited):
+def create_voFriendInvitationAccepted(prize, inviteds):
     return vo.FriendInvitationAccepted(
         prize,
-        create_voUser(invited)
+        [create_voUser(invited) for invited in inviteds]
     )
