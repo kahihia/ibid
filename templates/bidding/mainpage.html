@@ -171,21 +171,21 @@
 				</div>
 			</div>
 			<!--friends invited NAMES popup-->
-			<div class="friend-join" style="display:none">
+			<div class="friend-join" ng-show="showJoinedFriendsDialog">
 						<div class="popup">
 							<div class="title">
-								<span class="close">×</span>
-								<h1>New friend joined!</h1>
+								<span class="close" ng-click="showJoinedFriendsDialog = false">×</span>
+								<h1 ng-pluralize count="joinedFriends.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
 							</div>
 							<div class="info">
-								<span style="color:#f36500; font-weight: 700; font-size: 16px;">Your friends accepted the invitation:</span>
-								</br>Friend one
-								</br>Friend two
-								</br>Friend three
-								<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
-									<span style="color:#484848; font-weight: 700; font-size: 16px;">You won XXX tokens!</span>
+								<span style="color:#f36500; font-weight: 700; font-size: 16px;"><span ng-pluralize count="joinedFriends.length" when="{'one': 'Your friend', 'other': 'Your friends'}"></span> accepted the invitation:</span>
+								<div ng-repeat="friend in joinedFriends">
+									<div>{% templatetag openvariable %}friend.displayName{% templatetag closevariable %}</div>
 								</div>
-								<div class="btn-blue">INVITE MORE FRIENDS!</div>
+								<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
+									<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsPrize{% templatetag closevariable %} tokens!</span>
+								</div>
+								<div class="btn-blue" ng-click="sendRequestViaMultiFriendSelector()">INVITE MORE FRIENDS!</div>
 							</div>
 
 						</div>
