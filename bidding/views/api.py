@@ -115,7 +115,7 @@ def getAuctionsInitialization(request):
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
-        tmp['bidNumber'] = 0
+        tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap
         tmp['bids'] = 0
         tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
@@ -135,7 +135,7 @@ def getAuctionsInitialization(request):
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
-        tmp['bidNumber'] = 0
+        tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap
         tmp['bids'] = 0
         tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
