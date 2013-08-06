@@ -259,10 +259,10 @@ def startBidding(request):
     try:
         amount = auction.minimum_precap
     except ValueError:
-        return HttpResponse('{"result":"not int"}', content_type="application/json")
+        return HttpResponse('{"success":"not int"}', content_type="application/json")
 
     if amount < auction.minimum_precap:
-        return HttpResponse('{"result":"not minimun", "minimun": %s}' % auction.minimum_precap,
+        return HttpResponse('{"success":"not minimun", "minimun": %s}' % auction.minimum_precap,
                             content_type="application/json")
 
     if auction.can_precap(member, amount):
@@ -276,13 +276,56 @@ def startBidding(request):
         client.sendPackedMessages(clientMessages)
     else:
         if auction.bid_type == 'bid':
-            ret = {"result":False, 'motive': 'NO_ENOUGH_CREDITS'}
+            ret = {"success":False, 'motive': 'NO_ENOUGH_CREDITS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
         else:
-            ret = {"result":False, 'motive': 'NO_ENOUGH_TOKENS'}
+            ret = {"success":False, 'motive': 'NO_ENOUGH_TOKENS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
 
-    ret = {"result":True}
+
+
+
+    auct = auction
+    tmp = {}
+
+    tmp['id'] = auct.id
+    if hasattr(auct, 'completion'):
+        tmp['completion'] = auct.completion()
+    else:
+        tmp['completion'] = 0
+    tmp['status'] = auct.status
+    tmp['bidPrice'] = auct.minimum_precap
+    tmp['bidType'] = {'token':'token', 'bid':'credit'}[auct.bid_type]
+    tmp['itemName'] = auct.item.name
+    tmp['retailPrice'] = str(auct.item.retail_price)
+    tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
+    tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap if auct.status == 'processing' else 0
+    tmp['placed'] = member.auction_bids_left(auct)
+    tmp['bids'] = member.auction_bids_left(auct)
+    tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+    tmp['bidders'] = auct.bidders.count()
+
+    tmp['auctioneerMessages'] = []
+    for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
+        w = {
+            'text': mm.format_message(),
+            'date': mm.get_time(),
+            'auctionId': auct.id
+        }
+        tmp['auctioneerMessages'].append(w)
+
+    tmp['chatMessages'] = []
+    for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
+        w = {'text': mm.format_message(),
+             'date': mm.get_time(),
+             'user': {'displayName': mm.get_user().display_name(),
+                      'profileFotoLink': mm.get_user().picture(),
+                      'profileLink': mm.user.user_link()},
+             'auctionId': auct.id
+        }
+        tmp['chatMessages'].insert(0, w)
+
+    ret = {"success":True, 'auction': tmp}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
@@ -368,7 +411,7 @@ def claim(request):
     """
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
-    auction = Auction.objects.get(id=auction_id)
+    auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
 
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
 
@@ -391,15 +434,15 @@ def claim(request):
                 tmp["placed_amount"] = bid.placed_amount
                 tmp["used_amount"] = bid.used_amount
 
-                tmp["result"] = True
+                tmp["success"] = True
             else:
                 #else ignore! because the claim is old, based on a previous timer.
-                tmp["result"] = False
+                tmp["success"] = False
         else:
             #else ignore! because the claim is old, based on a previous timer.
-            tmp["result"] = False
+            tmp["success"] = False
     else:
-        tmp["result"] = False
+        tmp["success"] = False
 
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
@@ -447,9 +490,9 @@ def sendMessage(request):
             #do_send_message(db_msg)
             client.do_send_chat_message(auction, db_msg)
 
-            return HttpResponse('{"result":true}', content_type="application/json")
+            return HttpResponse('{"success":true}', content_type="application/json")
 
-    return HttpResponse('{"result":false}', content_type="application/json")
+    return HttpResponse('{"success":false}', content_type="application/json")
 
 
 def inviteRequest(request):

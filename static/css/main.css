@@ -584,7 +584,7 @@ body {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background-color: #1a82f7;
-	background-image: url(http://tomato-dev/~tuna/static/images/bkg-btn-blue.jpg);
+	background-image: url(../images/bkg-btn-blue.jpg);
 	font-size: 12px;
 	font-weight: bold;
 	box-shadow: 0px 1px 2px #bca4a4;
@@ -1506,9 +1506,9 @@ opacity:0.8;
 	width: 700px;
 	height: 493px;
 }
-.txt {
+.txt-promo {
 	color:#fff;
-	padding-top:180px;
+	padding-top:200px;
 	font-size: 24px;
 }
 .info-txt {
@@ -1529,9 +1529,15 @@ opacity:0.8;
 	background-image: url("../images/btn.png");
 	width:260px;
 	height:51px;
-	margin:30px auto 0 auto;
+	margin:80px auto 0 auto;
 	color:#fff;
 	font-size:14px;
 	font-weight:700;
 	line-height: 50px;
+	cursor: pointer;
+}
+
+.btn-promo:hover {
+	opacity: 0.8;
+	cursor : pointer;
 }

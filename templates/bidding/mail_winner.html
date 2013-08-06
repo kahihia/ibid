@@ -60,7 +60,7 @@
 				padding-top: 12px;
 			}
 			#btn {
-				background-image: url({{ images_site }}{% static "images/mail/btn.jpg" %});
+				background-image: url({{ images_site }}{% static 'images/mail/btn.jpg' %});
 				height: 52px;
 				width: 320px;
 				margin: 0 auto;
@@ -84,9 +84,9 @@
 	<body>
 		<div style="width:600px; text-align: center;">
 		<div id="top">
-			<img style="display:block; float:left !important" src="{{images_site}}{% static "images/mail/top1.jpg" %}" height="116" width="194">
-			<a href="{{ images_site }}"><img style="display:block; float:left !important" src="{{ images_site }}{% static "images/mail/top2.jpg" %}" height="116" width="221"></a>
-			<img style="display:block; float:left !important" src="{{ images_site }}{% static "images/mail/top3.jpg" %}" height="116" width="185">
+			<img style="display:block; float:left !important" src="{{images_site}}{% static 'images/mail/top1.jpg' %}" height="116" width="194">
+			<a href="{{ images_site }}"><img style="display:block; float:left !important" src="{{ images_site }}{% static 'images/mail/top2.jpg' %}" height="116" width="221"></a>
+			<img style="display:block; float:left !important" src="{{ images_site }}{% static 'images/mail/top3.jpg' %}" height="116" width="185">
 		</div>
 		<div id="content">
 			<div id="winner" style="font-size: 18px;
@@ -116,7 +116,7 @@
 			padding-bottom: 2px;
 			padding-top: 12px;">
 				<a href="{{ images_site }}{% url "bidding_buy_item" auction.id %}">
-				<div id="btn" style="background-image: url({{ images_site }}{% static "images/mail/btn.jpg" %}); height: 52px;
+				<div id="btn" style="background-image: url({{ images_site }}{% static 'images/mail/btn.jpg' %}); height: 52px;
 				width: 320px;
 				margin: 0 auto;
 				line-height: 50px;
@@ -132,7 +132,7 @@
 				</div>
 			</div>
 		</div>
-		<div><img src="{{ images_site }}{% static "images/mail/foot.jpg" %}" width="600" height="104">
+		<div><img src="{{ images_site }}{% static 'images/mail/foot.jpg' %}" width="600" height="104">
 		</div>
 
 		</div>
