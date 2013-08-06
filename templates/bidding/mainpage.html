@@ -1,6 +1,6 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="app">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -30,6 +30,7 @@
 		<script src="{% static "js/auctions.js"%}" ></script>
 		<script src="{% static "js/errorReport.js" %}"></script>
 		<script src="{% static "js/tutorial.js" %}" ></script>
+		<script src="{% static "js/services.js" %}" ></script>
 	</head>
 
 	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
