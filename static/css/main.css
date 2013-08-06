@@ -26,6 +26,19 @@ a:hover {
 	-webkit-transition: .2s;
 	transition: .2s;
 }
+
+
+
+@font-face {
+	font-family: Digital;
+	src: url("../fonts/DS-DIGI.TTF");
+}
+@font-face {
+	font-family: Digital;
+	font-weight: bold;
+	src: url("../fonts/DS-DIGIB.TTF");
+}
+
 body {
 	width: 100%;
 	background-color: #fff;
@@ -426,11 +439,11 @@ body {
 	width: 107px;
 }
 #auction-item-title {
-	width: 243px;
+	width: 233px;
 	float: left;
 	margin: 26px 0 0 143px;
 	position: absolute;
-	font-size: 20px;
+	font-size: 19px;
 	text-shadow: 0px 1px 1px #fff;
 	font-weight: 600;
 	text-overflow: ellipsis;
@@ -441,7 +454,7 @@ body {
 #auction-top .title-token {
 	color: #6796c7;
 	white-space: nowrap;
-	width: 240px;
+	width: 233px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
@@ -449,7 +462,7 @@ body {
 	color: #f0485a;
 }
 #auction-retail-price {
-	width: 243px;
+	width: 233px;
 	float: left;
 	margin: 52px 0 0 143px;
 	position: absolute;
@@ -459,44 +472,46 @@ body {
 	font-weight: 600;
 	text-transform: uppercase;
 	text-align: center;
+	
 }
-#auction-final-price {
-	width: 243px;
+#auction-retail-final-price {
+	width: 233px;
 	float: left;
-	margin: 52px 0 0 143px;
+	margin: 55px 0 0 143px;
 	position: absolute;
 	color: #6c6c6b;
 	font-size: 12px;
 	text-shadow: 0px 1px 1px #fff;
-	font-weight: 700;
+	font-weight: 600;
 	text-transform: uppercase;
 	text-align: center;
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+	
+}
+#auction-retail-final-price span {
+	font-family: Digital;
+	font-weight: 600;
+	font-size: 22px;
+	vertical-align: -2px;
+	color:#d23030;
 	-o-transition: .1s;
 	-ms-transition: .1s;
 	-moz-transition: .1s;
 	-webkit-transition: .1s;
 	transition: .1s;
 }
-#auction-final-price-action {
-	
-	width: 243px;
-	float: left;
-	margin: 52px 0 0 143px;
-	position: absolute;
-	color: #6c6c6b;
-	font-size: 13px;
-	text-shadow: 0px 1px 1px #fff;
-	font-weight: 700;
-	text-transform: uppercase;
-	text-align: center;
+
+#auction-retail-final-price:hover {
+	transform:scale(1.1,1.1);
 	-o-transition: .1s;
 	-ms-transition: .1s;
 	-moz-transition: .1s;
 	-webkit-transition: .1s;
 	transition: .1s;
-	text-align: center;
-	opacity:0.5;
-
 }
 #auction-status {
 	width: 188px;
