@@ -1493,30 +1493,30 @@ opacity:0.8;
 	list-style-type: none;
 }
 
-.logo {
+.promo .logo {
 	margin: 0 auto;
 	text-align:center;
 
 }
 
-.content {
+.promo .content {
 	margin: 0 auto;
 	text-align:center;
 	background-image: url("../images/bkg-content.png");
 	width: 700px;
 	height: 493px;
 }
-.txt-promo {
+.promo .txt-promo {
 	color:#fff;
 	padding-top:200px;
 	font-size: 24px;
 }
-.info-txt {
+.promo .info-txt {
 	font-size:12px;
 	color:#dd2525
 
 }
-.code {
+.promo .code {
 	width:264px;
 	height:48px;
 	color:#666;
@@ -1525,7 +1525,7 @@ opacity:0.8;
 	margin:30px auto 15px auto;
 	line-height: 46px;
 }
-.btn-promo{
+.promo .btn-promo{
 	background-image: url("../images/btn.png");
 	width:260px;
 	height:51px;
@@ -1537,7 +1537,7 @@ opacity:0.8;
 	cursor: pointer;
 }
 
-.btn-promo:hover {
+.promo .btn-promo:hover {
 	opacity: 0.8;
 	cursor : pointer;
 }

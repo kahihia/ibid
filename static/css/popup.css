@@ -315,3 +315,164 @@
 	outline: none;
 	border-color: #f7834c;
 }
+
+
+/*--------------------------- WiN POPUPS */
+
+.win-popup {
+	width: 565px;
+	height: 391px;
+	background-image: url(../images/bkg-wood-frame.jpg);
+	-webkit-box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+	-o-box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+	box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+	position: absolute;
+	top: 100px;
+	z-index: 999;
+}
+.win-popup .title {
+	position: relative;
+	margin-top: -37px;
+}
+.win-popup .title img {
+	margin: 0 auto;
+	display: block;
+}
+.win-popup .kenny {
+	position: absolute;
+	top: 110px;
+	left: -150px;
+}
+.win-popup .prize {
+	position: absolute;
+	top: 250px;
+	left: 476px;
+}
+.win-popup .content {
+	text-align: center;
+	line-height: 24px;
+	margin-top: 18px;
+	
+}
+.win-popup .content .winner{
+	font-size:30px;
+	color:#fff;
+	
+}
+.win-popup .content .winner p{
+	font-size:18px;
+	color:#c2c2c2;
+	font-style: italic;
+}
+.win-popup .content .winner .item-name{
+	font-size:14px;
+	color:#c2c2c2;
+	font-weight: 600;
+	line-height: 35px;
+}
+.win-popup .content .item{
+margin-top:26px;
+}
+
+.win-popup .content .tokens {
+	display: inline;
+	font-size: 46px;
+	font-weight: 600;
+	letter-spacing: -2px;
+	vertical-align: 20px;
+	color: #64c4dc;
+	text-shadow: 0px 0px 20px #000;
+    filter: dropshadow(color=#000, offx=0, offy=0);
+	margin-left: 15px;
+}
+.win-popup .content .tokens span {
+	color:#fff;
+}
+.win-popup .content .item img {
+	-webkit-box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+	box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+	border: 1px solid #9a9a9a;
+}
+
+.win-popup .content .info {
+	font-size: 12px;
+	width: 300px;
+	margin: 29px auto 0 auto;
+	line-height: 15px;
+	color: #c2c2c2;
+	font-weight: 600;
+}
+.win-popup .content .info span {
+	display:block;
+}
+.win-popup .content .btn {
+	width: 260px;
+	height: 51px;
+	background-image: url(../images/btn-blue.png);
+	text-transform: uppercase;
+	text-align: center;
+	margin: 52px auto 0 auto;
+	line-height: 50px;
+	color: #fff;
+	font-weight: 700;
+	font-size: 14px;
+	-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+.win-popup .content .btn-tokens {
+	width: 260px;
+	height: 51px;
+	background-image: url(../images/btn-blue.png);
+	text-transform: uppercase;
+	text-align: center;
+	margin: 25px auto 0 auto;
+	line-height: 50px;
+	color: #fff;
+	font-weight: 700;
+	font-size: 14px;
+		-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+.win-popup .content .btn:hover{
+	-moz-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+		-webkit-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -o-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -ms-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+	cursor: pointer;
+}
+.win-popup .content .btn-tokens:hover{
+	-moz-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+		-webkit-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -o-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -ms-transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        transform: scale(1.04) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+	cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+
