@@ -790,18 +790,15 @@ class ConvertHistory(models.Model):
                                       total_bids=member.bids_left,
                                       total_bidsto=member.bidsto_left,
         )
-
-
-FB_STATUS_CHOICES = (('placed', 'placed'),
+FB_STATUS_CHOICES = (
                      ('confirmed', 'confirmed'),
 )
-
 
 class FBOrderInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
-
+    fb_payment_id = models.BigIntegerField(blank=True, null=True) #this field should be unique
 
 @receiver(post_save, sender=FBOrderInfo)
 def on_confirmed_order(sender, instance, **kwargs):
