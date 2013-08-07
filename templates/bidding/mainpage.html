@@ -335,7 +335,8 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										Retail price:
+										 ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
 									</div>
 									<div id="auction-play">
 										<div class="syncing">
@@ -354,8 +355,8 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+									<div id="auction-retail-final-price">
+										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %} </span> 
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
@@ -414,8 +415,8 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+									<div id="auction-retail-final-price">
+										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
 									</div>
 									<div id="auction-status-winner">
 										<p>
@@ -545,8 +546,8 @@
 							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
-							<div id="auction-retail-price">
-								Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+							<div id="auction-retail-final-price">
+								Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
 							</div>
 							<div id="auction-status-winner">
 								<p>
