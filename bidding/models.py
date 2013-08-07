@@ -371,6 +371,13 @@ class Member(AuditedModel):
         response = of.set('me/feed', **args)
         logger.debug("Response: %s" % response)
 
+    def post_win_story(self, **args):
+        # Posts a story when winning an item in an auction.
+        logger.debug("ARGS: %s" % args)
+        of = open_facebook.OpenFacebook(self.access_token)
+        response = of.set('me/ibiddev:win', **args)
+        logger.debug("Response: %s" % response)    
+
     def send_notification(self, message):
         of = open_facebook.OpenFacebook(self.access_token)
         of.set('me/apprequests', message=message)

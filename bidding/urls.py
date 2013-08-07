@@ -42,6 +42,7 @@ urlpatterns += patterns('bidding.views.paypal_views',
 
 urlpatterns += patterns('',
                         url(r'^leave/$', TemplateView.as_view(template_name="404.html"), name='bidding_leave_auction'),
+                        url(r'^fb_test_item/$', TemplateView.as_view(template_name="fb_test_item.html"), name='fb_test_item'),
 )
 
 #this is important, if not here this more_signals wont be included anywhere and stuff there wont work!

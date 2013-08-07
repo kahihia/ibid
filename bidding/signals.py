@@ -111,45 +111,21 @@ def send_start_email(sender, **kwargs):
 
 
 @receiver(auction_finished_signal)
-def post_win_wall(sender, **kwargs):
+def post_win_story(sender, **kwargs):
     auction = kwargs['auction']
+    logger.debug("story")
     logger.debug("Auction: %s" % auction)
     print auction.winner
     if auction.winner:
         member = auction.winner.get_profile()
         if auction.bid_type == 'token':
-            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                    'message': u'{name} has won this virtual item playing for tokens. If {name} had played for items he/she could have purchased it for {price} dollars!'
-                    .format(
-                        name=member.user.first_name,
-                        item=auction.item.name,
-                        price=auction.won_price),
-                    'picture': auction.item.get_thumbnail(),
-                    'link': settings.FB_APP,
-            }
+            args = {'product':'http://ibid.sytes.net/fb_test_item',} #'{url}.format(url=auction.item.url)
             try:
-                member.post_to_wall(**args)
+                member.post_win_story(**args)
             except PermissionException:
-                print "User forbid wallpost"
+                print "User forbid story post"
             except:
                 raise
-        else:
-            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                    'message': u'{name} can purchase {item} for {price} dollars!'
-                    .format(
-                        name=member.user.first_name,
-                        item=auction.item.name,
-                        price=auction.won_price),
-                    'picture': auction.item.get_thumbnail(),
-                    'link': settings.FB_APP,
-            }
-            try:
-                member.post_to_wall(**args)
-            except PermissionException:
-                print "User forbid wallpost"
-            except:
-                raise
-
 
 def send_in_thread(signal, **kwargs):
     """ 
