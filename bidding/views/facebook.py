@@ -22,13 +22,7 @@ logger = logging.getLogger('django')
 
 
 def fb_redirect(request):
-    response = HttpResponse("""<script type="text/javascript">
-<!--
-window.location = "%s"
-//-->
-</script>""" % (settings.NOT_AUTHORIZED_PAGE))
-    set_cookie(response, 'FBAPP_VISITED', 1, days_expire=7)
-    return response
+    return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
 
 
 def get_redirect_uri(request):
@@ -62,7 +56,7 @@ def fb_auth(request):
         app=settings.FACEBOOK_APP_ID,
         url=get_redirect_uri(request))
 
-    return render_response(request, 'fb_redirect.html', {'authorization_url': url})
+    return HttpResponseRedirect(url)
 
 
 def fb_test_user(request):
