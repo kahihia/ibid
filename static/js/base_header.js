@@ -132,34 +132,30 @@ function closePopupLike() {
     }})
 }
 
-function buy_bids(url, package_id) {
+function buy_bids(url, package_id,site_name) {
     var order_info = -1;
 
-    jQuery.post(url, {'package_id': package_id},
-        function (data) {
-            if (data.order_info != undefined) {
-                if (data.order_info >= 0) {
-
+    // I'm not shure about this:
+    //jQuery.post(url, {'package_id': package_id},
+    //    function (data) {
+    //        if (data.order_info != undefined) {
+    //            if (data.order_info >= 0) {
+                    
                     // calling the API ...
                     var obj = {
                         method: 'pay',
-                        order_info: data.order_info,
-                        purchase_type: 'item',
-                        dev_purchase_params: {
-                            'oscif': true
-                        }
+                        action: 'purchaseitem',
+                        product: 'http://'+site_name+'bid_package/'+package_id,
                     };
-                    console.log(obj);
-
                     FB.ui(obj, getCredits_callback);
-                }
-            }
-        }, 'json');
+    //            }
+    //        }
+    //    }, 'json');
 }
 
 var getCredits_callback = function (data) {
-    if (data['order_id']) {
-        refresh_user_bids();
+    if (data['status']=="completed") {
+        refresh_user_bids();//This method is not defined
         return true;
     } else {
         // handle errors here

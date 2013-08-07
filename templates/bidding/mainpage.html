@@ -124,7 +124,7 @@
 					{% for package in packages %}
 					<section>
 
-						<div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }})">
+						<div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }},'{{SITE_NAME}}')">
 							{{ package.description }}
 						</div>
 					</section>

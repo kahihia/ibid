@@ -10,7 +10,7 @@ from open_facebook.exceptions import ParameterException
 import json
 import datetime
 import logging
-
+from urllib2 import urlopen
 from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
 
 from bidding.views.home import render_response
@@ -211,21 +211,43 @@ def callback_status_update(request):
 @csrf_exempt
 def credits_callback(request):
     """ View for handling interaction with Facebook credits API. """
+    fb_req=request.body
+    logger.debug("Started FB payment callback: %s" % fb_req)
+    
+    payment = json.loads(fb_req)
+    for elems in payment['entry']:
+        url='https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials' % (settings.FACEBOOK_APP_ID,settings.FACEBOOK_APP_SECRET)
+        token=urlopen(url).read()
+        url='https://graph.facebook.com/%s/?%s'%(elems['id'],token)
+        pay_info=urlopen(url).read()
+        payment_info =json.loads(pay_info)
+        fid=payment_info['user']['id']
+        
+        status='placed'
+        if len(payment_info['actions']):
+            status='completed'
+        for it in payment_info['actions']:
+            if it['status']!='completed':
+                status ='placed'
 
-    response = {}
+        member = Member.objects.get(facebook_id=fid)
+        for it in payment_info['items']:
+            id_prod=it['product'].split('/bid_package/')
+            package = BidPackage.objects.get(pk=id_prod[1])
+            if status=='completed':
+                #only create it when is complited, not shure about this!
+                order = FBOrderInfo.objects.create(package=package,
+                                                   member=member,
+                                                   status=status,
+                )
+                logger.debug("FB payment callback, order: %s" % order.id)
+    return HttpResponse()
 
-    logger.debug("credist_callback: %s" % request.POST['method'])
-
-    if request.POST['method'] == 'payments_get_items':
-        response = callback_get_items(request)
-
-    elif (request.POST['method'] == 'payments_status_update' and
-                  request.POST['status'] == 'placed'):
-        response = callback_status_update(request)
-
-    return HttpResponse(json.dumps(response), mimetype='text/javascript')
-
-
+def bid_package_info(request,package_id):
+    package  = BidPackage.objects.get(pk= package_id)
+    
+    return render_response(request, "bid_package_info.html", {'package': package,'url_domain':settings.WEB_APP})
+    
 @csrf_exempt
 def deauthorized_callback(request):
     """ View for handling the deauthorization callback.

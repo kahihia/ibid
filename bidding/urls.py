@@ -30,6 +30,7 @@ urlpatterns += patterns('bidding.views.facebook',
                         url(r'^fb_callback/$', 'credits_callback', name='fb_callback'),
                         url(r'^fb_deauthorized/$', 'deauthorized_callback', name='fb_deauthorized'),
                         url(r'^fb_place_order/$', 'place_order', name='place_order'),
+                        url(r'^bid_package/(?P<package_id>\d+)$','bid_package_info', name='bid_package'),
 )
 
 urlpatterns += patterns('bidding.views.api',
