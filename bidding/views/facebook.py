@@ -84,6 +84,8 @@ def handle_invitations(request):
         try:
             invitation = AuctionInvitation.objects.get(request_id=request_id)
             invitation.delete_facebook_request(request.user.get_profile())
+
+
         except AuctionInvitation.DoesNotExist:
             pass
 

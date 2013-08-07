@@ -1,6 +1,6 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="app">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -50,7 +50,8 @@
                 }
         </script>
 		<script src="{% static 'js/tutorial.js' %}" ></script>
-        
+		<script src="{% static "js/app.js" %}" ></script>
+
         <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
         typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
         b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);
@@ -194,26 +195,26 @@
 					</div>
 				</div>
 			</div>
-			<!--friends invited NAMES popup-->
-			<div class="friend-join" style="display:none">
-						<div class="popup">
-							<div class="title">
-								<span class="close">×</span>
-								<h1>New friend joined!</h1>
-							</div>
-							<div class="info">
-								<span style="color:#f36500; font-weight: 700; font-size: 16px;">Your friends accepted the invitation:</span>
-								</br>Friend one
-								</br>Friend two
-								</br>Friend three
-								<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
-									<span style="color:#484848; font-weight: 700; font-size: 16px;">You won XXX tokens!</span>
-								</div>
-								<div class="btn-blue">INVITE MORE FRIENDS!</div>
-							</div>
 
-						</div>
+			<!-- Joined friends dialog -->
+			<div class="joined-friends-modal" ng-show="joinedFriendsData">
+				<div class="popup">
+					<div class="title">
+						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
+						<h1 ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
 					</div>
+					<div class="info">
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><span ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'Your friend', 'other': 'Your friends'}"></span> accepted the invitation:</span>
+						<div ng-repeat="friend in joinedFriendsData.users">
+							<div>{% templatetag openvariable %}friend.name{% templatetag closevariable %}</div>
+						</div>
+						<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
+							<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsData.prize{% templatetag closevariable %} tokens!</span>
+						</div>
+						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
+					</div>
+				</div>
+			</div>
 
 			<div id="top-wrapper">
 				<div id="top">
@@ -582,7 +583,7 @@
 		<div id="pubnub" sub-key="{{ PUBNUB_SUB }}" origin="pubsub.pubnub.com"></div>
 		<script src="https://cdn.pubnub.com/pubnub-3.5.3.min.js"></script>
 
-		<div id="overlay" style="position:absolute;
+		<div id="overlay" style="position:fixed;
 		top:0;
 		left:0;
 		right:0;

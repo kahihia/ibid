@@ -432,6 +432,8 @@ class Member(AuditedModel):
             s = self.getSession()
             s[sessionDict] = sessionValue
             self.session = json.dumps(s)
+            self.save()
+
 
 class FacebookUser(models.Model):
     '''

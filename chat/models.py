@@ -101,7 +101,6 @@ class Message(models.Model):
     class Meta:
         verbose_name = 'chat message'
 
-
 class AuctioneerPhrase(models.Model):
     key = models.CharField(max_length=20)
     text = models.TextField(blank=True, null=True)
