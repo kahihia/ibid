@@ -3,11 +3,11 @@ angular
     .run(function ($rootScope, $http) {
         $http
             .get('/action/initialize')
-            .then(function (result) {
-                _.forEach(result, function (message) {
+            .then(function (response) {
+                _.forEach(response.data, function (message) {
                     switch (message.event) {
                     case 'main:friendInvitationAccepted':
-                        console.log('!!!!!!');
+                        console.log('---emitted event');
                         $rootScope.$broadcast('user:friendAcceptedInvitation', message.data);
                         break;
                     }
