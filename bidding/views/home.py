@@ -175,7 +175,7 @@ def faq(request):
 
 
 def web_home(request):
-    return HttpResponseRedirect(settings.FBAPP)
+    return HttpResponseRedirect(reverse('fb_auth'))
 
 
 def history(request):
