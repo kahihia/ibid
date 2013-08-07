@@ -26,6 +26,19 @@ a:hover {
 	-webkit-transition: .2s;
 	transition: .2s;
 }
+
+
+
+@font-face {
+	font-family: Digital;
+	src: url("../fonts/DS-DIGI.TTF");
+}
+@font-face {
+	font-family: Digital;
+	font-weight: bold;
+	src: url("../fonts/DS-DIGIB.TTF");
+}
+
 body {
 	width: 100%;
 	background-color: #fff;
@@ -426,21 +439,22 @@ body {
 	width: 107px;
 }
 #auction-item-title {
-	width: 243px;
+	width: 233px;
 	float: left;
 	margin: 26px 0 0 143px;
 	position: absolute;
-	font-size: 20px;
+	font-size: 19px;
 	text-shadow: 0px 1px 1px #fff;
 	font-weight: 600;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+    text-align: center;
 }
 #auction-top .title-token {
 	color: #6796c7;
 	white-space: nowrap;
-	width: 240px;
+	width: 233px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
@@ -448,7 +462,7 @@ body {
 	color: #f0485a;
 }
 #auction-retail-price {
-	width: 243px;
+	width: 233px;
 	float: left;
 	margin: 52px 0 0 143px;
 	position: absolute;
@@ -457,6 +471,53 @@ body {
 	text-shadow: 0px 1px 1px #fff;
 	font-weight: 600;
 	text-transform: uppercase;
+	text-align: center;
+	
+}
+#auction-retail-final-price {
+	width: 233px;
+	float: left;
+	margin: 55px 0 0 143px;
+	position: absolute;
+	color: #6c6c6b;
+	font-size: 12px;
+	text-shadow: 0px 1px 1px #fff;
+	font-weight: 600;
+	text-transform: uppercase;
+	text-align: center;
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+	
+}
+#auction-retail-final-price span {
+	font-family: Digital;
+	font-weight: 600;
+	font-size: 22px;
+	vertical-align: -2px;
+	color:#d23030;
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+}
+
+#auction-retail-final-price:hover {
+	-moz-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+		-webkit-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -o-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -ms-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+	opacity: 0.5;
+	
 }
 #auction-status {
 	width: 188px;

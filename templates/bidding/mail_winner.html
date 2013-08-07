@@ -107,8 +107,8 @@
 			</div>
 			<div id="item" style="font-size: 14px;
 				color: #484848;">
-				You won {{ auction.item.name }} </br> <img style="border: 1px solid #91d3eb;
-				margin-top: 10px;" src="{{auction.item.get_thumbnail}}" >
+				You won {{ auction.item.name }} <p><img style="border: 1px solid #91d3eb;
+				margin-top: 10px;" src="{{auction.item.get_thumbnail}}" ></p>
 			</div>
 			<div id="click" style="	border-top: 1px solid #dcdcdc;
 			background-color: #ebebeb;
@@ -128,7 +128,7 @@
 				<div id="link" style="font-size: 12px;		margin-top: 10px;
 				margin-bottom: 15px;
 				color:#666;">
-					Or copy and paste it into your browser's address bar:</br> <a style="color:#0574dc;" href="">{{ images_site }}{% url 'bidding_buy_item' auction.id %}</a>
+					Or copy and paste it into your browser's address bar:<p><a style="color:#0574dc;" href="">{{ images_site }}{% url "bidding_buy_item" auction.id %}</a></p>
 				</div>
 			</div>
 		</div>
