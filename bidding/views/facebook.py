@@ -22,7 +22,7 @@ logger = logging.getLogger('django')
 
 
 def fb_redirect(request):
-    return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+    return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
 
 def get_redirect_uri(request):
@@ -116,7 +116,7 @@ def fb_login(request):
     code = request.GET.get('code')
     if not code:
         #authorization denied
-        return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+        return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
     try:
         token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
