@@ -249,14 +249,10 @@ ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
 WEB_APP = "https://apps.facebook.ibidgames.com/"
 FB_APP = "https://apps.facebook.com/ibidgames/"
 
-APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
-FBAPP = WEB_APP + "fb/"
 IMAGES_SITE = WEB_APP
-NOT_AUTHORIZED_PAGE = WEB_APP
 SITE_NAME = WEB_APP
 
 CANVAS_HOME = FB_APP + "canvashome/"
-FBAPP_HOME = FB_APP + "home/"
 
 
 # Facebook settings

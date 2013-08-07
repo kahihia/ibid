@@ -49,14 +49,10 @@ PUBNUB_SECRET = ''
 
 # Application Urls
 WEB_APP = 'http://localhost:8000/'
-APP_FIRST_REDIRECT =  WEB_APP + 'fb_redirect/'
-FBAPP =               WEB_APP + 'fb/'
 IMAGES_SITE =         WEB_APP
-NOT_AUTHORIZED_PAGE = WEB_APP
 SITE_NAME =           WEB_APP
 
 FB_APP = 'http://apps.facebook.com/<FB_APP_NAME>/'
-FBAPP_HOME =  FB_APP + 'home/'
 CANVAS_HOME = FB_APP + 'canvashome/'
 
 # Put your domain here
