@@ -65,6 +65,13 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         $scope.joinedFriendsData = data;
     };
 
+    $scope.hideJoinedFriendsDialog = function (showInviteMoreFriends) {
+        $scope.joinedFriendsData = null;
+        if (showInviteMoreFriends) {
+            $scope.sendRequestViaMultiFriendSelector();
+        }
+    };
+
     $scope.convertChips = function() {
         $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
             function (data, status) {
