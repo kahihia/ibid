@@ -175,7 +175,7 @@
 			<div class="joined-friends-modal" ng-show="joinedFriendsData">
 				<div class="popup">
 					<div class="title">
-						<span class="close" ng-click="joinedFriendsData = null">×</span>
+						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
 						<h1 ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
 					</div>
 					<div class="info">
@@ -186,7 +186,7 @@
 						<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
 							<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsData.prize{% templatetag closevariable %} tokens!</span>
 						</div>
-						<div class="btn-blue" ng-click="joinedFriendsData = null; sendRequestViaMultiFriendSelector()">INVITE MORE FRIENDS!</div>
+						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
 					</div>
 				</div>
 			</div>
