@@ -17,7 +17,6 @@
 				img.src = url;
 			}
 			preloadImage("{% static 'images/btn-bid-play-disabled.png' %}");
-			preloadImage("{% static 'images/welcome.png' %}");
 			preloadImage("{% static 'images/help-img.png' %}");
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -32,6 +31,7 @@
 
 		<script language="javascript">
             tutorialImages = {
+                slide0:  "{% static 'images/tutorial/0.png' %}",
                 slide1:  "{% static 'images/tutorial/1.png' %}",
                 slide2:  "{% static 'images/tutorial/2.png' %}",
                 slide3:  "{% static 'images/tutorial/3.png' %}",
@@ -602,40 +602,11 @@
 			</div>
 		</div>
 
-		<!--popup section-->
-		<!--welcome widget-->
-		<div id="welcome" style="display:none;">
-			<div class="btn-close">
-				<a href="#"><img src="{% static 'images/btn-close.png' %}" width="39" height="39" /></a>
-			</div>
-
-			<div class="text">
-				<p>
-					Hi {{ member.user.first_name }}.</br> I'm Kenny, your interactive auctioneer.
-				</p></br>
-				<!--span>I think you are here because you want to buy items at <strong>90%</strong> off the retail cost.</br> I'll be leading all auctions and giving you tips on how to </br> play the interactive auction ™ game and win.
-				<br/>
-			</br></br> Are you ready?</br><strong> Let's get started with the Interactive Tutorial.</strong></span-->
-			<br/>
-			<br/>
-			<span><strong>Welcome to iBidGames!</strong></br>I will be leading all auctions and giving you tips on how to
-				play</br>and win Facebook’s first interactive auction ™ game.
-				<br/><br/>
-				Are you ready? </span>
-			</div>
-			<br/>
-			<br/>
-			<br/>
-			<a href="#">
-				<div class="btn-welcome">
-					Let's get started with the Tutorial
-				</div> </a>
-			</div>
 		<!--welcome popup-->
 		{% if display_popup %}
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
-				initWelcome();
+				initTutorial();
 			})
 		</script>
 		{% endif %}
