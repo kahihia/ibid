@@ -61,9 +61,8 @@ function userDetailsCtrl($scope, $rootScope, $http) {
 
     $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
 
-    $scope.showJoinedFriendsDialog = function (event) {
-        console.log('---listened to event!', event);
-        $scope.joinedFriends = event.data;
+    $scope.showJoinedFriendsDialog = function (event, data) {
+        $scope.joinedFriendsData = data;
     };
 
     $scope.convertChips = function() {

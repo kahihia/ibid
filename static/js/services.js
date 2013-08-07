@@ -5,10 +5,10 @@ angular
             .get('/action/initialize')
             .then(function (response) {
                 _.forEach(response.data, function (message) {
+                    $rootScope.$broadcast('user:friendAcceptedInvitation', message.data);
                     switch (message.event) {
                     case 'main:friendInvitationAccepted':
-                        console.log('---emitted event');
-                        $rootScope.$broadcast('user:friendAcceptedInvitation', message.data);
+                        $rootScope.$broadcast('user:friendJoined', message.data);
                         break;
                     }
                 });
