@@ -233,6 +233,17 @@ def do_send_chat_message(auction, message):
 
     send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
+def do_send_global_chat_message(member, text):
+
+    user = {}
+    user['displayName'] = member.user.first_name
+    user['profileFotoLink'] = member.facebook_profile_url
+    user['profileLink'] = "https://facebook.com/%s" % str(member.facebook_id)
+
+    result = {'method':'receiveChatMessage', 'data':{'user': user, 'text': text}}
+
+    send_pubnub_message(result, 'global')
+
 def log(text):
     result = {'method': 'log', 'params': 'SERVER: '+repr(text)}
     send_pubnub_message(result, '/topic/main/' )
