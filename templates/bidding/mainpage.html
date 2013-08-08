@@ -28,6 +28,9 @@
 		<script src="{% static 'js/base_header.js' %}"></script>
 		<script src="{% static 'js/auctions.js' %}" ></script>
 		<script src="{% static 'js/errorReport.js' %}"></script>
+		<script src="{% static 'js/services.js' %}"></script>
+		<script src="{% static 'js/app.js' %}"></script>
+		<script src="{% static 'js/global-chat.js' %}"></script>
 
 		<script language="javascript">
             tutorialImages = {
@@ -217,51 +220,41 @@
 			</div>
 
 			<!--GLOBAL chat-->
-				<div class="global-chat">
-					<div class="top">
-						<div class="kenny"><img src="{% static 'images/kenny-chat-img.png' %}">
-						</div>
-						<div class="title"><img src="{% static 'images/kenny-chat-title.png' %}">
-						</div>
-						<div class="icon"><img src="{% static 'images/kenny-chat-icon.png' %}">
-						</div>
-						<div class="bkg"></div>
+			<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled">
+				<a class="top" ng-click="isGlobalChatOpen = !isGlobalChatOpen">
+					<div class="kenny">
+						<img src="{% static 'images/kenny-chat-img.png' %}">
 					</div>
-
-					<div class="chat-container">
-						<div class="chat-list">
-
-							<div class="line" ng-repeat="chatMessage in auction.chatMessages">
-								<div class="avatar">
-									<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
-									width="30" height="30">
-								</div>
-								<div class="txt">
-									<p>
-										{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
-									</p>
-									{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
-								</div>
-
+					<div class="title">
+						<img src="{% static 'images/kenny-chat-title.png' %}">
+					</div>
+					<div class="icon">
+						<img src="{% static 'images/kenny-chat-icon.png' %}">
+					</div>
+					<div class="bkg"></div>
+				</a>
+				<div class="chat-container">
+					<div class="chat-list">
+						<div class="line" ng-repeat="message in messages">
+							<div class="avatar">
+								<img ng-src="{% templatetag openvariable %}message.user.profileFotoLink{% templatetag closevariable %}" width="30" height="30">
 							</div>
-
+							<div class="txt">
+								<p>{% templatetag openvariable %}message.user.displayName{% templatetag closevariable %}</p>
+								<span>{% templatetag openvariable %}message.text{% templatetag closevariable %}</span>
+							</div>
 						</div>
 					</div>
-					<div class="user">
-
-						<div style="margin: 0 auto; width: 759px;">
-							<form ng-submit="sendChatMessage($index)">
-								<input type="text" class="imput-txt" ng-model="auction.chatMessage"
-								value="Your message here"/>
-							</form>
-						</div>
-						<div class="enter-text">
-							Press Enter to send
-						</div>
-
-					</div>
-
 				</div>
+				<div class="user">
+					<div style="margin: 0 auto; width: 759px;">
+						<form ng-submit="sendMessage()">
+							<input type="text" class="imput-txt" ng-model="message" placeholder="Your message here">
+						</form>
+					</div>
+					<div class="enter-text">Press Enter to send</div>
+				</div>
+			</div>
 
 			<div id="top-wrapper">
 				<div id="top">

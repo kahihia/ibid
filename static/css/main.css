@@ -424,7 +424,7 @@ body {
 #auction-top {
 
 	position: relative;
-	z-index: 100;
+	/*z-index: 100;*/
 	background-image: url("../images/bkg-auction.png");
 	width: 791px;
 	height: 93px;
@@ -472,7 +472,7 @@ body {
 	font-weight: 600;
 	text-transform: uppercase;
 	text-align: center;
-	
+
 }
 #auction-retail-final-price {
 	width: 233px;
@@ -490,7 +490,7 @@ body {
 	-moz-transition: .1s;
 	-webkit-transition: .1s;
 	transition: .1s;
-	
+
 }
 #auction-retail-final-price span {
 	font-family: Digital;
@@ -517,7 +517,7 @@ body {
 	-webkit-transition: .1s;
 	transition: .1s;
 	opacity: 0.5;
-	
+
 }
 #auction-status {
 	width: 188px;
@@ -1609,9 +1609,9 @@ opacity:0.8;
 	width: 860px;
 
 	max-height: 300px;
-	position: absolute;
-	bottom: -150px;
-	
+	position: fixed;
+	bottom: -137px;
+
 	z-index: 100;
 	-o-transition: .2s;
 	-ms-transition: .2s;
@@ -1619,10 +1619,11 @@ opacity:0.8;
 	-webkit-transition: .2s;
 	transition: .2s;
 }
-.global-chat:hover {
-	bottom: 0px;
+.global-chat.open {
+	bottom: 0;
 }
 .global-chat .top {
+	display: block;
 	position: relative;
 }
 
@@ -1668,7 +1669,7 @@ opacity:0.8;
 	margin: 0 auto;
 }
 .global-chat .user {
-	margin: 0 0 11px 0;
+	margin: 0;
 	height: 60px;
 	border-top: 1px solid #cdcecf;
 	background-color: #f2f2f2;

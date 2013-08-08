@@ -1,5 +1,5 @@
 angular
-    .module('app', [])
+    .module('app', ['app.services'])
     .run(function ($rootScope, $http) {
         $http
             .get('/action/initialize')
