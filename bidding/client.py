@@ -237,7 +237,7 @@ def do_send_global_chat_message(member, text):
 
     user = {}
     user['displayName'] = member.user.first_name
-    user['profileFotoLink'] = member.facebook_profile_url
+    user['profileFotoLink'] = "http://graph.facebook.com/%s/picture" % str(member.facebook_id)
     user['profileLink'] = "https://facebook.com/%s" % str(member.facebook_id)
 
     result = {'method':'receiveChatMessage', 'data':{'user': user, 'text': text}}
