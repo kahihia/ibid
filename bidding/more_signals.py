@@ -36,6 +36,8 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
     #was this user invited?
     userList = Invitation.objects.filter(invited_facebook_id=facebook_data['facebook_id'])
 
+    #rint eventFriendInvitationAccepted
+
     if len(userList):
         invited = userList[0]
         prize = int(ConfigKey.objects.filter(key='INVITE_FRIENDS_TOKEN_PRIZE')[0].value)
@@ -44,7 +46,8 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
 
         #add an event to the inviter, to show it the next time he logs in
         #TODO: change this to transport pubnub
-        eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, [member])
+        eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, [])
+        eventFriendInvitationAccepted['users'] = [vo.User( facebook_data['facebook_id'],facebook_data['facebook_name'],"http://facebook.com/%s"%str(facebook_data['facebook_id']) , facebook_data['image_thumb'])]
         eventList = vo.EventList()
         eventList.append(eventFriendInvitationAccepted)
 

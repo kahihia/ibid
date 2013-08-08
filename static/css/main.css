@@ -1318,7 +1318,7 @@ body {
 	vertical-align: middle;
 	text-align: center;
 	display: none;
-	background-image: url(/static/images/bkg-body2.jpg);
+	background-image: url(../images/bkg-body2.jpg);
 }
 #overlay-tutorial .logo {
 	margin: 0 auto;
