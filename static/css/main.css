@@ -1608,9 +1608,10 @@ opacity:0.8;
 .global-chat {
 	width: 860px;
 
-	max-height: 300px;
+	/*max-height: 300px;*/
 	position: fixed;
-	bottom: -137px;
+	/*bottom: -137px;*/
+	bottom: -67px;
 
 	z-index: 100;
 	-o-transition: .2s;
@@ -1661,12 +1662,18 @@ opacity:0.8;
 	background-color: #f8f8f8;
 }
 .global-chat .chat-container .chat-list {
-	max-height: 220px;
-	min-height: 70px;
+	/*max-height: 220px;
+	min-height: 70px;*/
+	height: 0;
 	overflow-y: auto;
 	overflow-x: hidden;
 	width: 685px;
 	margin: 0 auto;
+}
+.global-chat.open .chat-container .chat-list {
+	height: auto;
+	max-height: 220px;
+	min-height: 70px;
 }
 .global-chat .user {
 	margin: 0;

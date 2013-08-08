@@ -29,6 +29,7 @@
 		<script src="{% static 'js/auctions.js' %}" ></script>
 		<script src="{% static 'js/errorReport.js' %}"></script>
 		<script src="{% static 'js/services.js' %}"></script>
+		<script src="{% static 'js/directives.js' %}"></script>
 		<script src="{% static 'js/app.js' %}"></script>
 		<script src="{% static 'js/global-chat.js' %}"></script>
 
@@ -68,12 +69,12 @@
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-                    channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
-                    status     : true, // check login status
-                    cookie     : true, // enable cookies to allow the server to access the session
-                    xfbml      : true  // parse XFBML
+          channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
+          status     : true, // check login status
+          cookie     : true, // enable cookies to allow the server to access the session
+          xfbml      : true  // parse XFBML
 				});
-				FB.Canvas.setAutoGrow();
+				// FB.Canvas.setAutoGrow();
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
 					if (d.getElementById(id)) {
@@ -234,7 +235,7 @@
 					<div class="bkg"></div>
 				</a>
 				<div class="chat-container">
-					<div class="chat-list">
+					<div class="chat-list" ib-autoscroll ng-model="messages">
 						<div class="line" ng-repeat="message in messages">
 							<div class="avatar">
 								<img ng-src="{% templatetag openvariable %}message.user.profileFotoLink{% templatetag closevariable %}" width="30" height="30">
