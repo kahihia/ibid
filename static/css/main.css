@@ -458,6 +458,9 @@ body {
 	font-weight: 600;
 	text-transform: uppercase;
 }
+#auction-retail-price p {
+	font-size:10px;
+}
 #auction-status {
 	width: 188px;
 	float: left;
