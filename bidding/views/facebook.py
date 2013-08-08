@@ -12,7 +12,7 @@ import datetime
 import logging
 from urllib2 import urlopen
 from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
-
+from bidding import client 
 from bidding.views.home import render_response
 
 
@@ -237,8 +237,11 @@ def credits_callback(request):
                 )
                 member.bids_left += package.bids
                 member.save()
+                client.update_credits(member)
                 logger.debug("FB payment callback, order: %s" % order.id)
-
+            return HttpResponse()
+    return HttpResponse('error')
+    
 
 def bid_package_info(request,package_id):
     package  = BidPackage.objects.get(pk= package_id)

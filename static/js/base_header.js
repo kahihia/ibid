@@ -28,6 +28,11 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $rootScope.user.tokens = 0;
     $rootScope.user.credits = 0;
 
+    //define channel
+    $scope.realtimeStatus = "Connecting...";
+    $scope.channel = "/topic/main/";
+    $scope.limit = 20;
+    
     //API request get user details
     $http
         .post('/api/getUserDetails/')
@@ -106,7 +111,72 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $scope.closeGetCredits = function() {
         $rootScope.$emit('closeGetCreditsPopover');
     };
+    
+    $scope.buy_bids = function(member,package_id,site_name) {
+        // calling the API ...
+        var obj = {
+            method: 'pay',
+            action: 'purchaseitem',
+            product: 'http://'+site_name+'bid_package/'+package_id,
+        };
+        $scope.subscribeToPaymentChannel(member)
+        FB.ui(obj, getCredits_callback);
+    };
+    
+    var getCredits_callback = function(data) {};
+    
+    $scope.subscribeToPaymentChannel = function(member) {
+        $scope.subscribeToChannel({
+            channel: $scope.channel + member,
+            message: function(messages) {
+                _.forEach(messages, function(message) {
+                    console.log('PubNub channel %s message (%s)', $scope.channel + member, getCurrentDateTime(), message);
+                    gameState.pubnubMessages.push([getCurrentDateTime(), message]);
+                    $scope.$apply(function () {
+                        jQuery('.credits').text("CREDITS: " + message.data.credits)
+                        $scope.unsubscribeFromChannel($scope.channel + member)
+                    });
+                });
+            }
+        });
+    };
+    
+    $scope.subscribeToChannel = function (options) {
+        _.defaults(options, {
+            connect: function () {
+                console.log('PubNub channel %s connected', options.channel);
+            },
+            message: function (messages) {
+                _.forEach(messages, function (message) {
+                    console.log('PubNub channel %s message (%s)', options.channel, getCurrentDateTime(), message);
+                });
+            },
+            reconnect: function () {
+                console.log('PubNub channel %s reconnected', options.channel);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Connected';
+                });
+            },
+            disconnect: function () {
+                console.log('PubNub channel %s disconnected', options.channel);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Disconnected';
+                });
+            },
+            error: function (data) {
+                console.log('PubNub channel %s network error', options.channel, data);
+            }
+        });
+        return PUBNUB.subscribe(options);
+    };
 
+    $scope.unsubscribeFromChannel = function (channel) {
+        console.log('PubNub channel %s disconnected' , channel);
+        return PUBNUB.unsubscribe({
+            channel: channel
+        });
+    };
+    
 };
 
 
@@ -131,37 +201,6 @@ function closePopupLike() {
         jQuery('.like-popup').hide()
     }})
 }
-
-function buy_bids(url, package_id,site_name) {
-    var order_info = -1;
-
-    // I'm not shure about this:
-    //jQuery.post(url, {'package_id': package_id},
-    //    function (data) {
-    //        if (data.order_info != undefined) {
-    //            if (data.order_info >= 0) {
-                    
-                    // calling the API ...
-                    var obj = {
-                        method: 'pay',
-                        action: 'purchaseitem',
-                        product: 'http://'+site_name+'bid_package/'+package_id,
-                    };
-                    FB.ui(obj, getCredits_callback);
-    //            }
-    //        }
-    //    }, 'json');
-}
-
-var getCredits_callback = function (data) {
-    if (data['status']=="completed") {
-        refresh_user_bids();//This method is not defined
-        return true;
-    } else {
-        // handle errors here
-        return false;
-    }
-};
 
 
 function openPopupLike() {
