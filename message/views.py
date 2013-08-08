@@ -2,10 +2,11 @@
 # Create your views here.
 
 from datetime import datetime
+import time
 
 from django.http import HttpResponse
 
-from bidding.models import Auction
+from bidding.models import Auction, ConfigKey
 from chat.models import Message
 
 import message.value_objects as vo
@@ -98,7 +99,28 @@ def initialize(request):
         member.delSession('event')
 
 
+    #################################
+    ## event open global chat      ##
+    #################################
+    openGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value, '%H:%M')
+    closeGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='CLOSE_GLOBAL_CHAT')[0].value, '%H:%M')
+    currentTime = time.strptime(time.strftime( '%H:%M',time.localtime()), '%H:%M')
 
+    print openGlobalChatTime
+    print closeGlobalChatTime
+    print currentTime
+
+    if currentTime > openGlobalChatTime and currentTime < closeGlobalChatTime:
+        event = vo.Event()
+        event['event'] = vo.Event.EVENT.MAIN__OPEN_GLOBAL_CHAT
+        event['data'] = {}
+        event['sender'] = vo.Event.SENDER.SERVER
+        event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
+        event['transport'] = vo.Event.TRANSPORT.REQUEST
+        event['timestamp'] = datetime.now()
+        event['id'] = None
+
+        eventList.append(event)
 
 
     return eventList

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 import json
 
 from django.conf import settings
@@ -16,7 +15,6 @@ from bidding.models import ConfigKey
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
-
 
 def api(request, method):
     """api calls go through this method"""
