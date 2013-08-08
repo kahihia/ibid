@@ -21,9 +21,9 @@ def api(request, method):
     """api calls go through this method"""
     result = API[method](request)
     if type(result) is HttpResponse or result.__class__ == HttpResponse:
-        return API[method](request)
+        return result
     else:
-        return HttpResponse(API[method](request), content_type="application/json")
+        return HttpResponse(result, content_type="application/json")
 
 
 def getUserDetails(request):
