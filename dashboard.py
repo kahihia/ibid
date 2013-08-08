@@ -24,7 +24,6 @@ class CustomIndexDashboard(Dashboard):
             models=[
                 'bidding.models.Auction',
                 'bidding.models.Item',
-                'bidding.models.AuctionFixture',
                 'bidding.models.BidPackage',
                 'bidding.models.ConvertHistory',
                 'bidding.models.FBOrderInfo',
