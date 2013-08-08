@@ -25,7 +25,7 @@ from django_facebook.utils import get_user_model
 
 from bidding.delegate import state_delegates
 from audit.models import AuditedModel
-
+from urllib2 import urlopen
 
 re_bids = re.compile("(\d+)")
 
@@ -710,8 +710,12 @@ class BidPackage(models.Model):
 
     def __unicode__(self):
         return self.title
-
-
+    
+@receiver(post_save, sender=BidPackage)
+def update_fb_info(sender, instance, **kwargs):
+    url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.WEB_APP+'bid_package/'+str(instance.id))
+    urlopen(url)
+        
 class AuctionInvoice(AuditedModel):
     auction = models.ForeignKey(Auction)
     member = models.ForeignKey(Member)
