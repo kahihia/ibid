@@ -3,21 +3,14 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from threading import Timer
-import json
 import logging
 import time
-import urllib
-import urllib2
 
 logger = logging.getLogger('django')
-
-from django.conf import settings
-from django.db import connection, transaction
 
 from bidding import client
 from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
-
 
 def start_auction(auction):
     #refresh the current database auction status
@@ -36,9 +29,14 @@ def finish_auction(auction, bid_number):
     #refresh the current database auction status
     from models import Auction
     auction = Auction.objects.select_for_update().filter(id=auction.id)[0]
-    if auction.status == 'processing' and bid_number == auction.getBidNumber():
+    if auction.status == 'processing' and bid_number == auction.getBidNumber(): 
         auction.finish()
-        auction.create_from_fixtures()
+        if auction.always_alive:
+            auction_copy = Auction.objects.create(item=auction.item, bid_type=auction.bid_type,
+                                                  always_alive=auction.always_alive,
+                                                  precap_bids=auction.precap_bids,
+                                                  minimum_precap=auction.minimum_precap)
+            auction_copy.save()
     else:
         auction.save()
 

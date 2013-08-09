@@ -10,13 +10,10 @@ from django.views.generic.list import ListView
 from django.db.models import Count
 from django.views.decorators.csrf import csrf_exempt
 
-from bidding.models import Auction, ConvertHistory, Member, AuctionFixture
+from bidding.models import Auction, ConvertHistory, Member
 
 def mainpage(request):
-    return HttpResponse("""<script type='text/javascript'>
-    top.location.href = '""" + settings.CANVAS_HOME + """';
- </script>""")
-
+    return HttpResponseRedirect(settings.CANVAS_HOME)
 
 def canvashome(request):
 
@@ -105,6 +102,10 @@ def standalone(request):
     js_error_tracker = [debuggify, qbaka, errorception, exceptional]
     shuffle(js_error_tracker)
 
+    js_error_tracker = ''
+    if not settings.DEBUG:
+        js_error_tracker = js_error_tracker[0]
+
     response = render_response(request, 'bidding/mainpage.html',
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
@@ -113,8 +114,7 @@ def standalone(request):
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
-                                'js_error_tracker': js_error_tracker[0],
-                                'DEBUG': settings.DEBUG,
+                                'js_error_tracker': js_error_tracker,
                                 'inCanvas':False})
 
     return response
@@ -171,25 +171,11 @@ def faq(request):
 
 
 def web_home(request):
-    if request.user.is_authenticated():
-        return HttpResponseRedirect(settings.FBAPP)
-    else:
-        if request.COOKIES.get('FBAPP_VISITED'):
-            return HttpResponseRedirect(settings.FBAPP)
-        else:
-            return HttpResponse("""<script type='text/javascript'>
-        top.location.href = '""" + settings.APP_FIRST_REDIRECT + """';
-        </script>""")
+    return HttpResponseRedirect(settings.FBAPP)
 
 def history(request):
     member = request.user.get_profile()
     return render_response(request, "bidding/history.html", {'history': member.bids_history()})
-
-def run_fixture(request):
-    fixture_id = int(request.POST['fixture_id'])
-    AuctionFixture.objects.get(id=fixture_id).make_auctions()
-
-    return HttpResponse('')
 
 
 class CurrencyHistory(ListView):

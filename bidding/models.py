@@ -383,7 +383,7 @@ class Member(AuditedModel):
 
         default_url = reverse('facebook_connect')
         response = next_redirect(request, default=default_url, next_key='register_next')
-        response.set_cookie('fresh_registration', self.user_id)
+        #response.set_cookie('fresh_registration', self.user_id)
 
         return response
 
@@ -432,6 +432,13 @@ class Member(AuditedModel):
             s = self.getSession()
             s[sessionDict] = sessionValue
             self.session = json.dumps(s)
+            self.save()
+
+    def delSession(self, key):
+        s = self.getSession()
+        del s[key]
+        self.session = json.dumps(s)
+        self.save()
 
 class FacebookUser(models.Model):
     '''
@@ -535,6 +542,7 @@ class Auction(AbstractAuction):
     status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap')
     bidding_time = models.IntegerField(default=10)
     saved_time = models.IntegerField(default=0, blank=True, null=True)
+    always_alive = models.BooleanField(default=False)
 
     bidders = models.ManyToManyField(Member, blank=True, null=True)
 
@@ -607,17 +615,6 @@ class Auction(AbstractAuction):
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
 
-    def create_from_fixtures(self):
-        """ FIXME: Ugly hack to avoid circular references. Only used from delegate.finish_auction. """
-        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='token')) == 0:
-            aifx = AuctionFixture.objects.filter(bid_type='token')
-            if len(aifx):
-                rt = aifx[0].make_auctions()
-        if len(Auction.objects.filter(is_active=True).filter(status='precap').filter(bid_type='bid')) == 0:
-            aifx = AuctionFixture.objects.filter(bid_type='bid')
-            if len(aifx):
-                rt = aifx[0].make_auctions()
-
 
 class PrePromotedAuction(AbstractAuction):
     bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
@@ -689,33 +686,6 @@ class PrePromotedAuction(AbstractAuction):
 
 class PromotedAuction(Auction):
     promoter = models.ForeignKey(Member, blank=False, null=False, related_name="promoter_user")
-
-
-class AuctionFixture(models.Model):
-    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
-    automatic = models.BooleanField(help_text='If selected, will be automatically run when the threshold is reached',
-                                    default=True)
-    threshold = models.PositiveSmallIntegerField(help_text='Amount of upcoming auctions before the fixture is run',
-                                                 default=5)
-
-    def make_auctions(self):
-        auctions = []
-        for template in self.templateauction_set.all():
-            auctions.append(template.make_auction())
-        return auctions
-
-
-class TemplateAuction(AbstractAuction):
-    """ Auction to be used on Fixtures. """
-
-    fixture = models.ForeignKey(AuctionFixture)
-
-    def make_auction(self):
-        auction = Auction.objects.create(item=self.item, bid_type=self.fixture.bid_type,
-                                         precap_bids=self.precap_bids,
-                                         minimum_precap=self.minimum_precap)
-        auction.save()
-        return auction
 
 
 class Bid(AuditedModel):

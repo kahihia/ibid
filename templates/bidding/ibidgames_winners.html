@@ -1,6 +1,5 @@
 {% extends "ibidgames_base_section.html" %}
 
-{% load staticfiles %}
 {% load thumbnail %}
 {% load thumbnail bidding_tags pagination_tag %}
 
@@ -22,8 +21,8 @@
 								{{ auction.won_date|date:"m/d/y" }}
 							</div>
 							<div class="user">
-								<img src="{{ auction.winner_member.display_picture }}" width="40" height="40">
-								<span>{{ auction.winner.username }}</span>
+								<a href="https://facebook.com/{{ auction.winner_member.facebook_id }}"><img src="{{ auction.winner_member.display_picture }}" width="40" height="40"></a>
+								<a href="https://facebook.com/{{ auction.winner_member.facebook_id }}"><span>{{ auction.winner.first_name }}</span></a>
 							</div>
 							<div class="txt">
 								<p>
@@ -33,7 +32,6 @@
 
 							</div>
 							<div class="pic">
-								<!--img src="images/auction-img.jpg" width="107" height="72"-->
                                 <img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "107x72" as thumb %}{{thumb.url}}{% endthumbnail %}" />
 							</div>
 						</div>

@@ -6,6 +6,7 @@ src
 settings.py
 
 venv
+public_static
 
 deploy.sh
 nohup.out

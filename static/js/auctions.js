@@ -205,8 +205,9 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     return;
                 }
                 // Update auction with data received from the
-                // server.
-                auction = data.auction;
+                // server. Use _.extend() to avoid removing Angular's
+                // $$hashKey property.
+                _.extend(auction, data.auction);
                 // Move auction to mine.
                 $scope.moveAuction(auction, 'available', 'mine');
                 // Reload user data to refresh tokens/credits.
@@ -248,6 +249,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     }
                     else if (rdata.motive === 'NO_ENOUGH_TOKENS'){
                         console.log('Not enough tokens');
+                    }else if (rdata.motive === 'AUCTION_MAX_TOKENS_REACHED') {
+                        console.log('Amount commited exceeds maximum for user in an auction');
+                        // Re-enable add/rem bid buttons.
+                        auction.interface.addBidEnabled = false;
+                        auction.interface.remBidEnabled = true;
                     }
                     return;
                 }
@@ -466,38 +472,48 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             hideOverlay();
         },
         message: function (messages) {
-            console.log('test messages', messages);
             _.forEach(messages, function (message) {
-                console.log('message', message);
                 console.log('PubNub channel %s message (%s)', $scope.channel, getCurrentDateTime(), message);
                 gameState.pubnubMessages.push([getCurrentDateTime(), message]);
                 $scope.$apply(function () {
                     switch (message.method) {
                     case 'appendAuction':
-                        $scope.auctionList[message.data.bidType]['available'].push(message.data);
+                        $scope.auctionList[message.data.bidType].available.push(message.data);
                         $scope.initializeAuction(message.data);
                         break;
                     case 'updateAuction':
                         var auction = $scope.getLocalAuctionById(message.data.id);
-                        //check if the comming status is equal or higher than the actual
-                        if (typeof message.data.status == 'undefined' || statuses[message.data.status] >= statuses[auction.status]) {
-                            //overwrite the auction values with the new ones
-                            jQuery.extend(auction, message.data);
-                            if (message.data.status === 'waiting_payment') {
-                                console.log('WAITING PAYMENT!', auction.status);
+                        // If received auction data has a lower status
+                        // than current auction status, do nothing.
+                        if (!_.isUndefined(message.data.status) && statuses[message.data.status] < statuses[auction.status]) {
+                            console.log('updateAuction -- Received status is lower than current auction status. Doing nothing.');
+                            return;
+                        }
+                        // Update auction with received data.
+                        // Use _.extend() to avoid removing Angular's
+                        // $$hashKey property.
+                        _.extend(auction, message.data);
+                        // Based on received status, do corresponding
+                        // action.
+                        switch (auction.status) {
+                        case 'processing':
+                            // Auction started, start counter.
+                            $scope.startCounter(auction.id);
+                            // Tutorial.
+                            if (tutorialActive && tutorialAuctionId === auction.id) {
+                                $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent3');}, 500);
                             }
-                            //if this pack changes the timeleft, start da counter
-                            if (message.data.status == 'processing'){
-                                $scope.startCounter(auction.id);
+                            break;
+                        case 'waiting_payment':
+                            // If current user won, update his tokens.
+                            if (auction.bidType === $scope.AUCTION_TYPE_TOKENS && auction.winner.facebookId === $rootScope.user.facebookId) {
+                                $rootScope.user.tokens += Number(auction.retailPrice);
                             }
-                            if (tutorialActive == true && tutorialAuctionId == auction.id){
-                                if (message.data.status == 'processing'){
-                                    $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent3');}, 500);
-                                }
-                                if (message.data.status == 'waiting_payment'){
-                                    $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent5');}, 500);
-                                }
+                            // Tutorial.
+                            if (tutorialActive && tutorialAuctionId === auction.id) {
+                                $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent5');}, 500);
                             }
+                            break;
                         }
                         break;
                     }
