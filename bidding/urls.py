@@ -22,7 +22,6 @@ urlpatterns = patterns('bidding.views.home',
 )
 
 urlpatterns += patterns('bidding.views.facebook',
-                        
                         url(r'^fb_redirect/$', 'fb_redirect', name='fb_redirect'),
                         url(r'^fb/$', 'fb_auth', name='fb_auth'),
                         url(r'^fb/login/$', 'fb_login', name='fb_login'),
@@ -44,7 +43,6 @@ urlpatterns += patterns('bidding.views.paypal_views',
 
 urlpatterns += patterns('',
                         url(r'^leave/$', TemplateView.as_view(template_name="404.html"), name='bidding_leave_auction'),
-                        url(r'^fb_test_item/$', TemplateView.as_view(template_name="fb_test_item.html"), name='fb_test_item'),
 )
 
 #this is important, if not here this more_signals wont be included anywhere and stuff there wont work!
