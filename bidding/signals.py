@@ -118,15 +118,21 @@ def post_win_story(sender, **kwargs):
     print auction.winner
     if auction.winner:
         member = auction.winner.get_profile()
+        url = '{0}fb_item/{1}'.format(str(settings.WEB_APP), str(auction.item.id))
         if auction.bid_type == 'token':
-            url = str(settings.WEB_APP) + "fb_item/" + str(auction.item.id)
-            args = {'product': url,}
-            try:
-                member.post_win_story(**args)
-            except PermissionException:
-                print "User forbid story post"
-            except:
-                raise
+            info_message = '{0} has won this virtual item playing for tokens. If {1} had played for items he/she could have purchased it for {2} dollars!'.format(str(member.user), str(member.user), str(auction.won_price))
+        if auction.bid_type == 'bid':
+            info_message = '{0} can purchase {1} for {2} dollars!'.format(str(member.user), str(auction.item.name), str(auction.won_price))
+        args = {'product': url,
+                'info_message': info_message,}
+        try:
+            logger.debug("pass")
+            member.post_win_story(**args)
+        except PermissionException:
+            print "User forbid story post"
+        except Exception as e:
+            logger.debug(e)
+            raise
 
 def send_in_thread(signal, **kwargs):
     """ 
