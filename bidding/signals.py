@@ -119,7 +119,8 @@ def post_win_story(sender, **kwargs):
     if auction.winner:
         member = auction.winner.get_profile()
         if auction.bid_type == 'token':
-            args = {'product':'http://ibid.sytes.net/fb_test_item',} #'{url}.format(url=auction.item.url)
+            url = str(settings.WEB_APP) + "fb_item/" + str(auction.item.id)
+            args = {'product': url,}
             try:
                 member.post_win_story(**args)
             except PermissionException:

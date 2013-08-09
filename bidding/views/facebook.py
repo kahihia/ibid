@@ -11,7 +11,7 @@ import json
 import datetime
 import logging
 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, Item
 
 from bidding.views.home import render_response
 
@@ -224,6 +224,11 @@ def credits_callback(request):
         response = callback_status_update(request)
 
     return HttpResponse(json.dumps(response), mimetype='text/javascript')
+
+
+def fb_item_info(request, item_id):
+    item = Item.objects.get(pk=item_id)
+    return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP})
 
 
 @csrf_exempt

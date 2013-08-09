@@ -22,6 +22,7 @@ urlpatterns = patterns('bidding.views.home',
 )
 
 urlpatterns += patterns('bidding.views.facebook',
+                        
                         url(r'^fb_redirect/$', 'fb_redirect', name='fb_redirect'),
                         url(r'^fb/$', 'fb_auth', name='fb_auth'),
                         url(r'^fb/login/$', 'fb_login', name='fb_login'),
@@ -30,6 +31,7 @@ urlpatterns += patterns('bidding.views.facebook',
                         url(r'^fb_callback/$', 'credits_callback', name='fb_callback'),
                         url(r'^fb_deauthorized/$', 'deauthorized_callback', name='fb_deauthorized'),
                         url(r'^fb_place_order/$', 'place_order', name='place_order'),
+                        url(r'^fb_item/(?P<item_id>\d+)$', 'fb_item_info', name='fb_item_info'),
 )
 
 urlpatterns += patterns('bidding.views.api',
