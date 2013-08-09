@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
 import json
 
 from django.conf import settings
@@ -22,11 +21,9 @@ def api(request, method):
     """api calls go through this method"""
     result = API[method](request)
     if type(result) is HttpResponse or result.__class__ == HttpResponse:
-        return API[method](request)
+        return result
     else:
-        return HttpResponse(API[method](request), content_type="application/json")
-
-
+        return HttpResponse(result, content_type="application/json")
 
 
 def getUserDetails(request):
@@ -527,6 +524,18 @@ def inviteRequest(request):
 
     return HttpResponse(json.dumps([True]))
 
+def globalMessage(request):
+    member = request.user.get_profile()
+    if request.method == 'POST':
+        requPOST = json.loads(request.body)
+        text = requPOST['text']
+
+        client.do_send_global_chat_message(member, text)
+
+        return HttpResponse('{"success":true}', content_type="application/json")
+
+    return HttpResponse('{"success":false}', content_type="application/json")
+
 
 API = {
     'startBidding': startBidding,
@@ -540,4 +549,5 @@ API = {
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
     'inviteRequest': inviteRequest,
+    'globalMessage': globalMessage,
 }

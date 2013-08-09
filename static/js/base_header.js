@@ -10,13 +10,13 @@
  };*/
 
 
-var userDetailsData = {
-    displayName: '',
-    tokens: 0,
-    profileFotoLink: '',
-    credits: 0,
-    profileLink: ''
-};
+// var userDetailsData = {
+//     displayName: '',
+//     tokens: 0,
+//     profileFotoLink: '',
+//     credits: 0,
+//     profileLink: ''
+// };
 
 function userDetailsCtrl($scope, $rootScope, $http) {
 
