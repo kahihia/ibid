@@ -119,14 +119,46 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
+    $scope.fb_like= function(member) {
+        try {
+            $http.post('/fb_like/').success(
+             function(data){
+                 switch (data['info']) {
+                    case 'FIRST_LIKE':
+                        /*
+                         * In this case the user receives tokens because is the first like.
+                         * data['gift'] says the amount of tokens gifted.
+                         */
+                        jQuery('.tokens').text('TOKENS: ' + data['tokens'])
+                        break;
+                    case 'NOT_FIRST_LIKE':
+                        /*
+                         * In this case the user is liking but not for the first time.
+                         * For example when the user stops liking in facebook and likes again.
+                         * The user is not getting the tokens.
+                         */ 
+                        break;
+                    case 'ALREADY_LIKE':
+                        /*
+                         * This is a case that occurs when the user already likes and facebook returns
+                         * a error code 3501
+                         */
+                        break;
+                 }
+             });
+        } catch(e) {
+            alert(e);
+        }
+    };
+    
 };
 
 
 jQuery(function () {
     jQuery('.buy-bids-popup').hide();
-    jQuery('.like-popup').hide();
-    jQuery('.like').click(openPopupLike);
-    jQuery('.close', '.like-popup').click(closePopupLike);
+    //jQuery('.like-popup').hide();
+    //jQuery('.like').click(openPopupLike);
+    //jQuery('.close', '.like-popup').click(closePopupLike);
     jQuery('.friends-invited-popup').hide();
     jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
 })
@@ -134,15 +166,6 @@ jQuery(function () {
 var underlay = '.underlay';
 var popupClass = '.popup';
 var popupOuter = '.popup-outer';
-
-
-
-function closePopupLike() {
-    hideOverlay();
-    TweenLite.to('.like-popup', 1, {left: '-800px', onComplete: function () {
-        jQuery('.like-popup').hide()
-    }})
-}
 
 function buy_bids(url, package_id) {
     var order_info = -1;
@@ -180,13 +203,6 @@ var getCredits_callback = function (data) {
 };
 
 
-function openPopupLike() {
-    showOverlay();
-    setTimeout(function () {
-        jQuery('.like-popup').show();
-        TweenLite.fromTo('.like-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
-    }, 300);
-}
 function openPopupFrendsInvited() {
     showOverlay();
     setTimeout(function () {

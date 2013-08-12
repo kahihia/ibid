@@ -6,12 +6,12 @@ from django.utils.http import urlencode
 from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
 from open_facebook.api import FacebookAuthorization
-from open_facebook.exceptions import ParameterException
+from open_facebook.exceptions import ParameterException, OAuthException
 import json
 import datetime
 import logging
 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, FacebookLike, ConfigKey
 
 from bidding.views.home import render_response
 
@@ -133,6 +133,33 @@ def fb_login(request):
 
     return HttpResponseRedirect('/home/?aaa=2')
 
+
+def fb_like(request):
+    member = request.user.get_profile()
+    if request.method == 'POST':
+        try:
+            member.fb_like()
+            like = FacebookLike.objects.filter(user_id = member.user.id, facebook_id = member.facebook_id)
+            if not like:
+                like = FacebookLike.objects.create(user_id = member.user.id,
+                                                   facebook_id = member.facebook_id,
+                                                   created_time = datetime.datetime.now())
+                gift_tokens = ConfigKey.objects.get(key = 'LIKE_GIFT_TOKENS').value
+                member.tokens_left += long(gift_tokens)
+                member.save()
+                return HttpResponse(
+                    json.dumps({'info':'FIRST_LIKE',
+                                'gift': gift_tokens,
+                                'tokens': member.tokens_left,
+                               }), content_type="application/json")
+            return HttpResponse(
+                json.dumps({'info':'NOT_FIRST_LIKE',
+                            'gift': 0,
+                            }), content_type="application/json")
+        except OAuthException as e:
+            if str(e).find('error code 3501'):
+                return HttpResponse(json.dumps({'info':'ALREADY_LIKE',}))
+            raise
 
 def store_invitation(request):
     auction = get_auction_or_404(request)

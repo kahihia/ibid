@@ -370,6 +370,12 @@ class Member(AuditedModel):
         of = open_facebook.OpenFacebook(self.access_token)
         response = of.set('me/feed', **args)
         logger.debug("Response: %s" % response)
+    
+    def fb_like(self):
+        ''' User like the app in facebook '''
+        of = open_facebook.OpenFacebook(self.access_token)
+        response = of.set('me/og.likes', {'object':settings.FB_APP,})
+        logger.debug('Response: %s' % response)
 
     def send_notification(self, message):
         of = open_facebook.OpenFacebook(self.access_token)
