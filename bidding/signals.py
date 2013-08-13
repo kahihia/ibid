@@ -16,7 +16,9 @@ from django.conf import settings
 import json
 
 import client
+import open_facebook
 
+auction_started_signal = Signal(providing_args=["auction"])
 auction_finished_signal = Signal(providing_args=["auction"])
 precap_finished_signal = Signal(providing_args=["auction"])
 
@@ -150,6 +152,17 @@ def post_win_wall(sender, **kwargs):
             except:
                 raise
 
+@receiver(auction_started_signal)
+def notify_bidders(sender, **kwargs):
+    auction = kwargs['auction']
+    text = u'The auction for a {item} has started. Hurry and go win it!.'.format(item=auction.item.name)
+    for member in auction.bidders.all():
+        of = open_facebook.OpenFacebook(member.access_token)
+        args = {'template': text,
+            'access_token': open_facebook.FacebookAuthorization.get_app_access_token()}
+        logger.debug("Notification - ARGS: %s" % args)
+        destination = '{facebook_id}/notifications'.format(facebook_id=member.facebook_id)
+        response = of.set(destination, **args)
 
 def send_in_thread(signal, **kwargs):
     """ 
