@@ -56,7 +56,7 @@ def fb_auth(request):
         app=settings.FACEBOOK_APP_ID,
         url=get_redirect_uri(request))
 
-    return HttpResponseRedirect(url)
+    return render_response(request, 'fb_redirect.html', {'authorization_url': url})
 
 
 def fb_test_user(request):
@@ -84,6 +84,8 @@ def handle_invitations(request):
         try:
             invitation = AuctionInvitation.objects.get(request_id=request_id)
             invitation.delete_facebook_request(request.user.get_profile())
+
+
         except AuctionInvitation.DoesNotExist:
             pass
 

@@ -25,8 +25,8 @@ SERVER_EMAIL = 'info@ibidgames.com'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'info@ibidgames.com'
-EMAIL_HOST_PASSWORD = 'Argentina168'
+EMAIL_HOST_USER = 'test@nuske.com.ar'
+EMAIL_HOST_PASSWORD = 'test test'
 EMAIL_USE_TLS = True
 
 ADMINS = (
@@ -143,6 +143,7 @@ INSTALLED_APPS = (
     'audit',
     'bidding',
     'chat',
+    'message',
 
     'paypal.standard.ipn',
     'sorl.thumbnail',

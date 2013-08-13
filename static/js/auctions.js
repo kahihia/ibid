@@ -164,8 +164,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         }
                         catch (e) {}
                         auction.chatMessages.push(message.data);
-                        var scrollHeight = jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0])[0].scrollHeight;
-                        setTimeout(function(){jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0]).scrollTop(scrollHeight)} ,200);
                     });
                 });
             }

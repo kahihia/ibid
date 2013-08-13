@@ -432,6 +432,13 @@ class Member(AuditedModel):
             s = self.getSession()
             s[sessionDict] = sessionValue
             self.session = json.dumps(s)
+            self.save()
+
+    def delSession(self, key):
+        s = self.getSession()
+        del s[key]
+        self.session = json.dumps(s)
+        self.save()
 
 class FacebookUser(models.Model):
     '''
