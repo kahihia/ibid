@@ -265,7 +265,7 @@ FACEBOOK_APP_ID = ''
 FACEBOOK_APP_SECRET = ''
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
 FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
-FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
+FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_actions'
 AUTH_REDIRECT_URI = 'https://apps.facebook.com/ibidgames/fb/login/'
 
 
