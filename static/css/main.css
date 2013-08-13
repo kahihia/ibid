@@ -26,6 +26,19 @@ a:hover {
 	-webkit-transition: .2s;
 	transition: .2s;
 }
+
+
+
+@font-face {
+	font-family: Digital;
+	src: url("../fonts/DS-DIGI.TTF");
+}
+@font-face {
+	font-family: Digital;
+	font-weight: bold;
+	src: url("../fonts/DS-DIGIB.TTF");
+}
+
 body {
 	width: 100%;
 	background-color: #fff;
@@ -411,7 +424,7 @@ body {
 #auction-top {
 
 	position: relative;
-	z-index: 100;
+	/*z-index: 100;*/
 	background-image: url("../images/bkg-auction.png");
 	width: 791px;
 	height: 93px;
@@ -426,21 +439,22 @@ body {
 	width: 107px;
 }
 #auction-item-title {
-	width: 243px;
+	width: 233px;
 	float: left;
 	margin: 26px 0 0 143px;
 	position: absolute;
-	font-size: 20px;
+	font-size: 19px;
 	text-shadow: 0px 1px 1px #fff;
 	font-weight: 600;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+    text-align: center;
 }
 #auction-top .title-token {
 	color: #6796c7;
 	white-space: nowrap;
-	width: 240px;
+	width: 233px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 }
@@ -448,7 +462,7 @@ body {
 	color: #f0485a;
 }
 #auction-retail-price {
-	width: 243px;
+	width: 233px;
 	float: left;
 	margin: 52px 0 0 143px;
 	position: absolute;
@@ -457,6 +471,53 @@ body {
 	text-shadow: 0px 1px 1px #fff;
 	font-weight: 600;
 	text-transform: uppercase;
+	text-align: center;
+
+}
+#auction-retail-final-price {
+	width: 233px;
+	float: left;
+	margin: 55px 0 0 143px;
+	position: absolute;
+	color: #6c6c6b;
+	font-size: 12px;
+	text-shadow: 0px 1px 1px #fff;
+	font-weight: 600;
+	text-transform: uppercase;
+	text-align: center;
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+
+}
+#auction-retail-final-price span {
+	font-family: Digital;
+	font-weight: 600;
+	font-size: 22px;
+	vertical-align: -2px;
+	color:#d23030;
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+}
+
+#auction-retail-final-price:hover {
+	-moz-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+		-webkit-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -o-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        -ms-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+        transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+	-o-transition: .1s;
+	-ms-transition: .1s;
+	-moz-transition: .1s;
+	-webkit-transition: .1s;
+	transition: .1s;
+	opacity: 0.5;
+
 }
 #auction-status {
 	width: 188px;
@@ -584,7 +645,7 @@ body {
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	background-color: #1a82f7;
-	background-image: url(http://tomato-dev/~tuna/static/images/bkg-btn-blue.jpg);
+	background-image: url(../images/bkg-btn-blue.jpg);
 	font-size: 12px;
 	font-weight: bold;
 	box-shadow: 0px 1px 2px #bca4a4;
@@ -908,7 +969,8 @@ body {
 	transition: .2s;
 }
 
-#auction-chat .chat-list {
+/* Chat */
+.chat-list {
 	max-height: 220px;
 	min-height: 70px;
 	overflow-y: auto;
@@ -916,33 +978,30 @@ body {
 	width: 685px;
 	margin: 0 auto;
 }
-
-#auction-chat .chat-list ul {
+.chat-list ul {
 	direction: ltr;
 }
-
-#auction-chat .chat-list .line {
+.chat-list .line {
 	border-top: 1px solid #eee;
 	padding: 5px 0 0px 0;
 	min-height: 37px;
 	display: inline-block;
 	width: 685px;
 }
-#auction-chat .chat-list .line .avatar {
+.chat-list .line .avatar {
 	float: left;
 }
-#auction-chat .chat-list .line .avatar img {
+.chat-list .line .avatar img {
 	border: none;
 }
-
-#auction-chat .chat-list .line .txt {
+.chat-list .line .txt {
 	margin: 0 0 6px 10px;
 	float: left;
 	font-size: 11px;
 	color: #646464;
 	width: 580px;
 }
-#auction-chat .chat-list .line .txt p {
+.chat-list .line .txt p {
 	font-size: 11px;
 	color: #3b5998;
 	margin-left: 0px;
@@ -1257,7 +1316,7 @@ body {
 	vertical-align: middle;
 	text-align: center;
 	display: none;
-	background-image: url(/static/images/bkg-body2.jpg);
+	background-image: url(../images/bkg-body2.jpg);
 }
 #overlay-tutorial .logo {
 	margin: 0 auto;
@@ -1541,3 +1600,98 @@ opacity:0.8;
 	opacity: 0.8;
 	cursor : pointer;
 }
+
+/* ---------------------------------------- GLOBAL KENNY CHAT*/
+
+.global-chat {
+	width: 860px;
+
+	/*max-height: 300px;*/
+	position: fixed;
+	/*bottom: -137px;*/
+	bottom: -67px;
+
+	z-index: 100;
+	-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+.global-chat.open {
+	bottom: 0;
+}
+.global-chat .top {
+	display: block;
+	position: relative;
+}
+
+.global-chat .top .kenny {
+	position: absolute;
+	left: -41px;
+	bottom: -5px;
+	z-index: 2;
+}
+.global-chat .top .title {
+	position: absolute;
+	left: 290px;
+	z-index: 2;
+	bottom: -3px;
+}
+.global-chat .top .icon {
+	position: absolute;
+	right: 8px;
+	z-index: 2;
+	bottom: 2px;
+}
+
+.global-chat .top .bkg {
+	background-color: #415e9b;
+	height: 38px;
+	width: 860px;
+	position: absolute;
+	bottom: 0px;
+	z-index: 1;
+	-webkit-box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.9);
+	-moz-box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.9);
+	box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.9);
+}
+.global-chat .chat-container {
+	background-color: #f8f8f8;
+}
+.global-chat .chat-container .chat-list {
+	min-height: 0;
+	max-height: none;
+	height: 0;
+}
+.global-chat.open .chat-container .chat-list {
+	min-height: 70px;
+	max-height: 220px;
+	height: auto;
+}
+.global-chat .user {
+	margin: 0;
+	height: 60px;
+	border-top: 1px solid #cdcecf;
+	background-color: #f2f2f2;
+	padding-top: 6px;
+}
+.global-chat .user .imput-txt {
+	margin: 5px 0 0 0;
+	width: 756px;
+	height: 20px;
+	float: left;
+	border: 1px solid #ccc;
+	font-size: 12px;
+	outline: none;
+	padding-left: 5px;
+	line-height: 20px;
+}
+
+.global-chat .user .enter-text {
+	font-size: 11px;
+	color: #666;
+	position: absolute;
+	margin: 30px 0 0 52px;
+}
+

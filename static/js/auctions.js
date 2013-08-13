@@ -164,8 +164,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         }
                         catch (e) {}
                         auction.chatMessages.push(message.data);
-                        var scrollHeight = jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0])[0].scrollHeight;
-                        setTimeout(function(){jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0]).scrollTop(scrollHeight)} ,200);
                     });
                 });
             }
@@ -249,6 +247,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     }
                     else if (rdata.motive === 'NO_ENOUGH_TOKENS'){
                         console.log('Not enough tokens');
+                    }else if (rdata.motive === 'AUCTION_MAX_TOKENS_REACHED') {
+                        console.log('Amount commited exceeds maximum for user in an auction');
+                        // Re-enable add/rem bid buttons.
+                        auction.interface.addBidEnabled = false;
+                        auction.interface.remBidEnabled = true;
                     }
                     return;
                 }

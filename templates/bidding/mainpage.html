@@ -1,6 +1,6 @@
 {% load staticfiles %}
 <!DOCTYPE html>
-<html ng-app>
+<html ng-app="app">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
@@ -17,7 +17,6 @@
 				img.src = url;
 			}
 			preloadImage("{% static 'images/btn-bid-play-disabled.png' %}");
-			preloadImage("{% static 'images/welcome.png' %}");
 			preloadImage("{% static 'images/help-img.png' %}");
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -29,9 +28,14 @@
 		<script src="{% static 'js/base_header.js' %}"></script>
 		<script src="{% static 'js/auctions.js' %}" ></script>
 		<script src="{% static 'js/errorReport.js' %}"></script>
+		<script src="{% static 'js/services.js' %}"></script>
+		<script src="{% static 'js/directives.js' %}"></script>
+		<script src="{% static 'js/app.js' %}"></script>
+		<script src="{% static 'js/global-chat.js' %}"></script>
 
 		<script language="javascript">
             tutorialImages = {
+                slide0:  "{% static 'images/tutorial/0.png' %}",
                 slide1:  "{% static 'images/tutorial/1.png' %}",
                 slide2:  "{% static 'images/tutorial/2.png' %}",
                 slide3:  "{% static 'images/tutorial/3.png' %}",
@@ -50,7 +54,13 @@
                 }
         </script>
 		<script src="{% static 'js/tutorial.js' %}" ></script>
-	</head>
+		<script src="{% static "js/app.js" %}" ></script>
+
+        <!-- start Mixpanel --><script type="text/javascript">(function(e,b){if(!b.__SV){var a,f,i,g;window.mixpanel=b;a=e.createElement("script");a.type="text/javascript";a.async=!0;a.src=("https:"===e.location.protocol?"https:":"http:")+'//cdn.mxpnl.com/libs/mixpanel-2.2.min.js';f=e.getElementsByTagName("script")[0];f.parentNode.insertBefore(a,f);b._i=[];b.init=function(a,e,d){function f(b,h){var a=h.split(".");2==a.length&&(b=b[a[0]],h=a[1]);b[h]=function(){b.push([h].concat(Array.prototype.slice.call(arguments,0)))}}var c=b;"undefined"!==
+        typeof d?c=b[d]=[]:d="mixpanel";c.people=c.people||[];c.toString=function(b){var a="mixpanel";"mixpanel"!==d&&(a+="."+d);b||(a+=" (stub)");return a};c.people.toString=function(){return c.toString(1)+".people (stub)"};i="disable track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config people.set people.set_once people.increment people.append people.track_charge people.clear_charges people.delete_user".split(" ");for(g=0;g<i.length;g++)f(c,i[g]);
+        b._i.push([a,e,d])};b.__SV=1.2}})(document,window.mixpanel||[]);
+        mixpanel.init("baff1480b94c0f1acbf6fe1249ee35de");</script><!-- end Mixpanel -->
+    </head>
 
 	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
 
@@ -59,12 +69,12 @@
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-                    channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
-                    status     : true, // check login status
-                    cookie     : true, // enable cookies to allow the server to access the session
-                    xfbml      : true  // parse XFBML
+          channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
+          status     : true, // check login status
+          cookie     : true, // enable cookies to allow the server to access the session
+          xfbml      : true  // parse XFBML
 				});
-				FB.Canvas.setAutoGrow();
+				// FB.Canvas.setAutoGrow();
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
 					if (d.getElementById(id)) {
@@ -190,26 +200,63 @@
 					</div>
 				</div>
 			</div>
-			<!--friends invited NAMES popup-->
-			<div class="friend-join" style="display:none">
-						<div class="popup">
-							<div class="title">
-								<span class="close">×</span>
-								<h1>New friend joined!</h1>
-							</div>
-							<div class="info">
-								<span style="color:#f36500; font-weight: 700; font-size: 16px;">Your friends accepted the invitation:</span>
-								</br>Friend one
-								</br>Friend two
-								</br>Friend three
-								<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
-									<span style="color:#484848; font-weight: 700; font-size: 16px;">You won XXX tokens!</span>
-								</div>
-								<div class="btn-blue">INVITE MORE FRIENDS!</div>
-							</div>
 
+			<!-- Joined friends dialog -->
+			<div class="joined-friends-modal" ng-show="joinedFriendsData">
+				<div class="popup">
+					<div class="title">
+						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
+						<h1 ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
+					</div>
+					<div class="info">
+						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><span ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'Your friend', 'other': 'Your friends'}"></span> accepted the invitation:</span>
+						<div ng-repeat="friend in joinedFriendsData.users">
+							<div>{% templatetag openvariable %}friend.name{% templatetag closevariable %}</div>
+						</div>
+						<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
+							<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsData.prize{% templatetag closevariable %} tokens!</span>
+						</div>
+						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
+					</div>
+				</div>
+			</div>
+
+			<!--GLOBAL chat-->
+			<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled">
+				<a class="top" ng-click="isGlobalChatOpen = !isGlobalChatOpen">
+					<div class="kenny">
+						<img src="{% static 'images/kenny-chat-img.png' %}">
+					</div>
+					<div class="title">
+						<img src="{% static 'images/kenny-chat-title.png' %}">
+					</div>
+					<div class="icon">
+						<img src="{% static 'images/kenny-chat-icon.png' %}">
+					</div>
+					<div class="bkg"></div>
+				</a>
+				<div class="chat-container">
+					<div class="chat-list" ib-autoscroll ng-model="messages">
+						<div class="line" ng-repeat="message in messages">
+							<div class="avatar">
+								<img ng-src="{% templatetag openvariable %}message.user.profileFotoLink{% templatetag closevariable %}" width="30" height="30">
+							</div>
+							<div class="txt">
+								<p>{% templatetag openvariable %}message.user.displayName{% templatetag closevariable %}</p>
+								<span>{% templatetag openvariable %}message.text{% templatetag closevariable %}</span>
+							</div>
 						</div>
 					</div>
+				</div>
+				<div class="user">
+					<div style="margin: 0 auto; width: 759px;">
+						<form ng-submit="sendMessage()">
+							<input type="text" class="imput-txt" ng-model="message" placeholder="Your message here">
+						</form>
+					</div>
+					<div class="enter-text">Press Enter to send</div>
+				</div>
+			</div>
 
 			<!-- Win popover -->
 			<div class="win-popup" ng-show="wonAuction" ng-switch="wonAuction.bidType == AUCTION_TYPE_CREDITS">
@@ -368,7 +415,8 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										Retail price:
+										 ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
 									</div>
 									<div id="auction-play">
 										<div class="syncing">
@@ -387,8 +435,8 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+									<div id="auction-retail-final-price">
+										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %} </span>
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
@@ -447,8 +495,8 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+									<div id="auction-retail-final-price">
+										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
 									</div>
 									<div id="auction-status-winner">
 										<p>
@@ -481,42 +529,28 @@
 								</div>
 
 								<div id="auction-chat">
-									<div class="chat-title">
-										Live chat
-									</div>
+									<div class="chat-title">Live chat</div>
 									<div class="chat-container">
-										<div class="chat-list">
-
+										<div class="chat-list" ib-autoscroll ng-model="auction.chatMessages">
 											<div class="line" ng-repeat="chatMessage in auction.chatMessages">
 												<div class="avatar">
-													<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
-													width="30" height="30">
+													<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}" width="30" height="30">
 												</div>
 												<div class="txt">
-													<p>
-														{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
-													</p>
-													{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
+													<p>{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}</p>
+													<span>{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}</span>
 												</div>
-
 											</div>
-
 										</div>
 									</div>
 									<div class="user">
-
 										<div style="margin: 0 auto; width: 685px;">
 											<form ng-submit="sendChatMessage($index)">
-												<input type="text" class="imput-txt" ng-model="auction.chatMessage"
-												value="Your message here"/>
+												<input type="text" class="imput-txt" ng-model="auction.chatMessage" value="Your message here">
 											</form>
 										</div>
-										<div class="enter-text">
-											Press Enter to send
-										</div>
-
+										<div class="enter-text">Press Enter to send</div>
 									</div>
-
 								</div>
 							</div>
 						</div>
@@ -578,8 +612,8 @@
 							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
-							<div id="auction-retail-price">
-								Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+							<div id="auction-retail-final-price">
+								Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
 							</div>
 							<div id="auction-status-winner">
 								<p>
@@ -609,7 +643,7 @@
 		<div id="pubnub" sub-key="{{ PUBNUB_SUB }}" origin="pubsub.pubnub.com"></div>
 		<script src="https://cdn.pubnub.com/pubnub-3.5.3.min.js"></script>
 
-		<div id="overlay" style="position:absolute;
+		<div id="overlay" style="position:fixed;
 		top:0;
 		left:0;
 		right:0;
@@ -635,40 +669,11 @@
 			</div>
 		</div>
 
-		<!--popup section-->
-		<!--welcome widget-->
-		<div id="welcome" style="display:none;">
-			<div class="btn-close">
-				<a href="#"><img src="{% static 'images/btn-close.png' %}" width="39" height="39" /></a>
-			</div>
-
-			<div class="text">
-				<p>
-					Hi {{ member.user.first_name }}.</br> I'm Kenny, your interactive auctioneer.
-				</p></br>
-				<!--span>I think you are here because you want to buy items at <strong>90%</strong> off the retail cost.</br> I'll be leading all auctions and giving you tips on how to </br> play the interactive auction ™ game and win.
-				<br/>
-			</br></br> Are you ready?</br><strong> Let's get started with the Interactive Tutorial.</strong></span-->
-			<br/>
-			<br/>
-			<span><strong>Welcome to iBidGames!</strong></br>I will be leading all auctions and giving you tips on how to
-				play</br>and win Facebook’s first interactive auction ™ game.
-				<br/><br/>
-				Are you ready? </span>
-			</div>
-			<br/>
-			<br/>
-			<br/>
-			<a href="#">
-				<div class="btn-welcome">
-					Let's get started with the Tutorial
-				</div> </a>
-			</div>
 		<!--welcome popup-->
 		{% if display_popup %}
 		<script type="text/javascript">
 			jQuery(document).ready(function() {
-				initWelcome();
+				initTutorial();
 			})
 		</script>
 		{% endif %}
