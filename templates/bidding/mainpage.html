@@ -496,42 +496,28 @@
 								</div>
 
 								<div id="auction-chat">
-									<div class="chat-title">
-										Live chat
-									</div>
+									<div class="chat-title">Live chat</div>
 									<div class="chat-container">
-										<div class="chat-list">
-
+										<div class="chat-list" ib-autoscroll ng-model="auction.chatMessages">
 											<div class="line" ng-repeat="chatMessage in auction.chatMessages">
 												<div class="avatar">
-													<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}"
-													width="30" height="30">
+													<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}" width="30" height="30">
 												</div>
 												<div class="txt">
-													<p>
-														{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}
-													</p>
-													{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}
+													<p>{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}</p>
+													<span>{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}</span>
 												</div>
-
 											</div>
-
 										</div>
 									</div>
 									<div class="user">
-
 										<div style="margin: 0 auto; width: 685px;">
 											<form ng-submit="sendChatMessage($index)">
-												<input type="text" class="imput-txt" ng-model="auction.chatMessage"
-												value="Your message here"/>
+												<input type="text" class="imput-txt" ng-model="auction.chatMessage" value="Your message here">
 											</form>
 										</div>
-										<div class="enter-text">
-											Press Enter to send
-										</div>
-
+										<div class="enter-text">Press Enter to send</div>
 									</div>
-
 								</div>
 							</div>
 						</div>

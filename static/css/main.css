@@ -969,7 +969,8 @@ body {
 	transition: .2s;
 }
 
-#auction-chat .chat-list {
+/* Chat */
+.chat-list {
 	max-height: 220px;
 	min-height: 70px;
 	overflow-y: auto;
@@ -977,33 +978,30 @@ body {
 	width: 685px;
 	margin: 0 auto;
 }
-
-#auction-chat .chat-list ul {
+.chat-list ul {
 	direction: ltr;
 }
-
-#auction-chat .chat-list .line {
+.chat-list .line {
 	border-top: 1px solid #eee;
 	padding: 5px 0 0px 0;
 	min-height: 37px;
 	display: inline-block;
 	width: 685px;
 }
-#auction-chat .chat-list .line .avatar {
+.chat-list .line .avatar {
 	float: left;
 }
-#auction-chat .chat-list .line .avatar img {
+.chat-list .line .avatar img {
 	border: none;
 }
-
-#auction-chat .chat-list .line .txt {
+.chat-list .line .txt {
 	margin: 0 0 6px 10px;
 	float: left;
 	font-size: 11px;
 	color: #646464;
 	width: 580px;
 }
-#auction-chat .chat-list .line .txt p {
+.chat-list .line .txt p {
 	font-size: 11px;
 	color: #3b5998;
 	margin-left: 0px;
@@ -1662,18 +1660,14 @@ opacity:0.8;
 	background-color: #f8f8f8;
 }
 .global-chat .chat-container .chat-list {
-	/*max-height: 220px;
-	min-height: 70px;*/
+	min-height: 0;
+	max-height: none;
 	height: 0;
-	overflow-y: auto;
-	overflow-x: hidden;
-	width: 685px;
-	margin: 0 auto;
 }
 .global-chat.open .chat-container .chat-list {
-	height: auto;
-	max-height: 220px;
 	min-height: 70px;
+	max-height: 220px;
+	height: auto;
 }
 .global-chat .user {
 	margin: 0;
