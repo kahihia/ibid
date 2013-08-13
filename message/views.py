@@ -102,15 +102,9 @@ def initialize(request):
     #################################
     ## event open global chat      ##
     #################################
-    openGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value, '%H:%M')
-    closeGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='CLOSE_GLOBAL_CHAT')[0].value, '%H:%M')
-    currentTime = time.strptime(time.strftime( '%H:%M',time.localtime()), '%H:%M')
+    openGlobalChat = ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value
 
-    print openGlobalChatTime
-    print closeGlobalChatTime
-    print currentTime
-
-    if currentTime > openGlobalChatTime and currentTime < closeGlobalChatTime:
+    if openGlobalChat == 'yes':
         event = vo.Event()
         event['event'] = vo.Event.EVENT.MAIN__OPEN_GLOBAL_CHAT
         event['data'] = {}
@@ -119,9 +113,8 @@ def initialize(request):
         event['transport'] = vo.Event.TRANSPORT.REQUEST
         event['timestamp'] = datetime.now()
         event['id'] = None
-
+    
         eventList.append(event)
-
 
     return eventList
 

@@ -1,6 +1,34 @@
 from django import forms
+from exceptions import ValueError
 from bidding import models
-from bidding.models import ITEM_CATEGORY_CHOICES
+from bidding.models import ITEM_CATEGORY_CHOICES, CONFIG_KEY_TYPES
+
+class ConfigKeyAdminForm(forms.ModelForm):
+    value_type = forms.ChoiceField(choices=list(CONFIG_KEY_TYPES), label='Data type',
+                                   required=True)
+    def clean(self):
+        super(ConfigKeyAdminForm, self).clean()
+        
+        key = self.cleaned_data.get('key')
+        value = self.cleaned_data.get('value')
+        value_type = self.cleaned_data.get('value_type')
+        
+        if (value_type == 'boolean' and value not in ('yes','no')):
+            msg = u"Data_type is set to boolean. Value must be 'yes' or 'no'."
+            self._errors['value'] = self.error_class([msg])
+            del self.cleaned_data['value']
+        elif (value_type == 'int'):
+            try:
+                long(value)
+            except ValueError:
+                msg = u"Data type is set to int. Value must be a number."
+            self._errors['value'] = self.error_class([msg])
+            del self.cleaned_data['value']
+            
+        return self.cleaned_data
+    
+    class Meta:
+        model = models.ConfigKey
 
 class ItemAdminForm(forms.ModelForm):
     
