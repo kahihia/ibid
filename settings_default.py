@@ -252,6 +252,7 @@ FB_APP = "https://apps.facebook.com/ibidgames/"
 IMAGES_SITE = WEB_APP
 SITE_NAME = WEB_APP
 
+AUTH_REDIRECT_URI = FB_APP + 'fb/login/'
 CANVAS_HOME = FB_APP + "canvashome/"
 
 
@@ -262,7 +263,6 @@ FACEBOOK_APP_SECRET = ''
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
 FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
 FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
-AUTH_REDIRECT_URI = 'https://apps.facebook.com/ibidgames/fb/login/'
 
 
 # PubNub settings
