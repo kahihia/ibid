@@ -156,9 +156,6 @@ function userDetailsCtrl($scope, $rootScope, $http) {
 
 jQuery(function () {
     jQuery('.buy-bids-popup').hide();
-    //jQuery('.like-popup').hide();
-    //jQuery('.like').click(openPopupLike);
-    //jQuery('.close', '.like-popup').click(closePopupLike);
     jQuery('.friends-invited-popup').hide();
     jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
 })
