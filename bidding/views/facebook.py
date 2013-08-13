@@ -56,7 +56,8 @@ def fb_auth(request):
         app=settings.FACEBOOK_APP_ID,
         url=get_redirect_uri(request))
 
-    return render_response(request, 'fb_redirect.html', {'authorization_url': url})
+    return render_response(request, 'fb_redirect.html', {'authorization_url': url,'web_site':settings.WEB_APP,'fb_app':settings.FB_APP})
+
 
 
 def fb_test_user(request):
