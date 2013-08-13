@@ -59,6 +59,15 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         }})
     });
 
+    $rootScope.$on('user:won', function (event, auction) {
+        // Show win modal.
+        $scope.wonAuction = auction;
+        // If playing for tokens, update user tokens also.
+        if (auction.bidType === 'tokens') {
+            $rootScope.user.tokens += Number(auction.retailPrice);
+        }
+    });
+
 
     $scope.convertChips = function() {
         $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
