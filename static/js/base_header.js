@@ -63,7 +63,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         // Show win modal.
         $scope.wonAuction = auction;
         // If playing for tokens, update user tokens also.
-        if (auction.bidType === 'tokens') {
+        if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
             $rootScope.user.tokens += Number(auction.retailPrice);
         }
     });

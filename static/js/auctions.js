@@ -42,9 +42,6 @@ var gameState = {pubnubMessages:[]};
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
-    $rootScope.AUCTION_TYPE_CREDITS = 'credit';
-    $rootScope.AUCTION_TYPE_TOKENS  = 'token';
-
     //$scope.messages = [];
     //$scope.message = {'method': '', data: {}};
     $scope.realtimeStatus = "Connecting...";
