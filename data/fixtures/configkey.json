@@ -1,2 +1,3 @@
-[{"pk": 1, "model": "bidding.configkey", "fields": {"value": "1000", "key": "INVITE_FRIENDS_TOKEN_PRIZE"}},
- {"pk": 2, "model": "bidding.configkey", "fields": {"value": "34", "key": "AUCTION_MAX_TOKENS"}}]
+[{"pk": 1, "model": "bidding.configkey", "fields": {"value": "1000", "key": "INVITE_FRIENDS_TOKEN_PRIZE", "value_type":"int"}},
+ {"pk": 2, "model": "bidding.configkey", "fields": {"value": "34", "key": "AUCTION_MAX_TOKENS", "value_type":"int"}},
+ {"pk": 3, "model": "bidding.configkey", "fields": {"value": "no", "key": "OPEN_GLOBAL_CHAT", "value_type":"boolean"}}]

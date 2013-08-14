@@ -9,23 +9,9 @@
 TweenLite.selector = jQuery;
 
 
-function initWelcome(){
-    showOverlay();
-    jQuery('#welcome').center();
-
-    setTimeout(function(){jQuery('#welcome').show(); TweenLite.from('#welcome', 1, {left:'-800px',ease:Back.easeOut});}, 1000);
-
-    jQuery('.btn-welcome,.btn-close','#welcome').bind('click', function(e){
-            TweenLite.to('#welcome', 0.4, {left:'-800px'});
-            setTimeout(function(){jQuery('#welcome').hide();},500)
-            hideOverlay();
-            initTutorial();
-            });
-}
-
-
 var tutorialActive = false;
 function initTutorial(){
+    preloadImage(tutorialImages.slide0);
     preloadImage(tutorialImages.slide1);
     preloadImage(tutorialImages.slide2);
     preloadImage(tutorialImages.slide3);
@@ -45,8 +31,9 @@ function initTutorial(){
     setTimeout(function(){TweenLite.to('#tutorial-dialog', 1, {opacity:1,left:'0px',ease:Back.easeOut});},600);
     //TweenLite.fromTo('#tutorial-dialog', 1, {scale:0},{scale:1});
 
-    jQuery('#tutorial-dialog').bind('tutorialEventStart', function(e){displayTutorial({img:tutorialImages.slide1,  nextEvent:'tutorialEvent1'});});
-    jQuery('#tutorial-dialog').bind('tutorialEvent1', function(e){displayTutorial(    {img:tutorialImages.slide2,  prevEvent:'tutorialEventStart',  nextEvent:'tutorialEvent2'});});
+    jQuery('#tutorial-dialog').bind('tutorialEventStart', function(e){displayTutorial({img:tutorialImages.slide0,  nextEvent:'tutorialEvent0'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent0', function(e){displayTutorial(    {img:tutorialImages.slide1,  prevEvent:'tutorialEventStart',  nextEvent:'tutorialEvent1'});});
+    jQuery('#tutorial-dialog').bind('tutorialEvent1', function(e){displayTutorial(    {img:tutorialImages.slide2,  prevEvent:'tutorialEvent0',  nextEvent:'tutorialEvent2'});});
     jQuery('#tutorial-dialog').bind('tutorialEvent2', function(e){displayTutorial(    {img:tutorialImages.slide3,  prevEvent:'tutorialEvent1',  nextEvent:'tutorialEvent3'});});
     jQuery('#tutorial-dialog').bind('tutorialEvent3', function(e){displayTutorial(    {img:tutorialImages.slide4,  prevEvent:'tutorialEvent2',  nextEvent:'tutorialEvent4'});});
     jQuery('#tutorial-dialog').bind('tutorialEvent4', function(e){displayTutorial(    {img:tutorialImages.slide5,  prevEvent:'tutorialEvent3',  nextEvent:'tutorialEvent5'});});

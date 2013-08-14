@@ -10,13 +10,13 @@
  };*/
 
 
-var userDetailsData = {
-    displayName: '',
-    tokens: 0,
-    profileFotoLink: '',
-    credits: 0,
-    profileLink: ''
-};
+// var userDetailsData = {
+//     displayName: '',
+//     tokens: 0,
+//     profileFotoLink: '',
+//     credits: 0,
+//     profileLink: ''
+// };
 
 function userDetailsCtrl($scope, $rootScope, $http) {
 
@@ -64,6 +64,18 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         }})
     });
 
+    $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
+
+    $scope.showJoinedFriendsDialog = function (event, data) {
+        $scope.joinedFriendsData = data;
+    };
+
+    $scope.hideJoinedFriendsDialog = function (showInviteMoreFriends) {
+        $scope.joinedFriendsData = null;
+        if (showInviteMoreFriends) {
+            $scope.sendRequestViaMultiFriendSelector();
+        }
+    };
 
     $scope.convertChips = function() {
         $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
@@ -176,15 +188,44 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             channel: channel
         });
     };
+
+    $scope.fb_like= function(member) {
+        try {
+            $http.post('/fb_like/').success(
+             function(data){
+                 switch (data['info']) {
+                    case 'FIRST_LIKE':
+                        /*
+                         * In this case the user receives tokens because is the first like.
+                         * data['gift'] says the amount of tokens gifted.
+                         */
+                        jQuery('.tokens').text('TOKENS: ' + data['tokens'])
+                        break;
+                    case 'NOT_FIRST_LIKE':
+                        /*
+                         * In this case the user is liking but not for the first time.
+                         * For example when the user stops liking in facebook and likes again.
+                         * The user is not getting the tokens.
+                         */ 
+                        break;
+                    case 'ALREADY_LIKE':
+                        /*
+                         * This is a case that occurs when the user already likes and facebook returns
+                         * a error code 3501
+                         */
+                        break;
+                 }
+             });
+        } catch(e) {
+            alert(e);
+        }
+    };
     
 };
 
 
 jQuery(function () {
     jQuery('.buy-bids-popup').hide();
-    jQuery('.like-popup').hide();
-    jQuery('.like').click(openPopupLike);
-    jQuery('.close', '.like-popup').click(closePopupLike);
     jQuery('.friends-invited-popup').hide();
     jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
 })
@@ -192,7 +233,6 @@ jQuery(function () {
 var underlay = '.underlay';
 var popupClass = '.popup';
 var popupOuter = '.popup-outer';
-
 
 
 function closePopupLike() {
@@ -203,13 +243,42 @@ function closePopupLike() {
 }
 
 
-function openPopupLike() {
-    showOverlay();
-    setTimeout(function () {
-        jQuery('.like-popup').show();
-        TweenLite.fromTo('.like-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
-    }, 300);
+function buy_bids(url, package_id) {
+    var order_info = -1;
+
+    jQuery.post(url, {'package_id': package_id},
+        function (data) {
+            if (data.order_info != undefined) {
+                if (data.order_info >= 0) {
+
+                    // calling the API ...
+                    var obj = {
+                        method: 'pay',
+                        order_info: data.order_info,
+                        purchase_type: 'item',
+                        dev_purchase_params: {
+                            'oscif': true
+                        }
+                    };
+                    console.log(obj);
+
+                    FB.ui(obj, getCredits_callback);
+                }
+            }
+        }, 'json');
 }
+
+var getCredits_callback = function (data) {
+    if (data['order_id']) {
+        refresh_user_bids();
+        return true;
+    } else {
+        // handle errors here
+        return false;
+    }
+};
+
+
 function openPopupFrendsInvited() {
     showOverlay();
     setTimeout(function () {

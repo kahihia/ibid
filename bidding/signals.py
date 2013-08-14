@@ -16,7 +16,9 @@ from django.conf import settings
 import json
 
 import client
+import open_facebook
 
+auction_started_signal = Signal(providing_args=["auction"])
 auction_finished_signal = Signal(providing_args=["auction"])
 precap_finished_signal = Signal(providing_args=["auction"])
 
@@ -114,42 +116,39 @@ def send_start_email(sender, **kwargs):
 def post_win_wall(sender, **kwargs):
     auction = kwargs['auction']
     logger.debug("Auction: %s" % auction)
-    print auction.winner
     if auction.winner:
         member = auction.winner.get_profile()
         if auction.bid_type == 'token':
-            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                    'message': u'{name} has won this virtual item playing for tokens. If {name} had played for items he/she could have purchased it for {price} dollars!'
-                    .format(
-                        name=member.user.first_name,
-                        item=auction.item.name,
-                        price=auction.won_price),
-                    'picture': auction.item.get_thumbnail(),
-                    'link': settings.FB_APP,
-            }
-            try:
-                member.post_to_wall(**args)
-            except PermissionException:
-                print "User forbid wallpost"
-            except:
-                raise
+            msg = u'{name} has won this virtual item playing for tokens. If {name} had played for items he/she could have purchased it for {price} dollars!'
         else:
-            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                    'message': u'{name} can purchase {item} for {price} dollars!'
-                    .format(
-                        name=member.user.first_name,
-                        item=auction.item.name,
-                        price=auction.won_price),
-                    'picture': auction.item.get_thumbnail(),
-                    'link': settings.FB_APP,
-            }
-            try:
-                member.post_to_wall(**args)
-            except PermissionException:
-                print "User forbid wallpost"
-            except:
-                raise
+            msg = u'{name} can purchase {item} for {price} dollars!'
+        link = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
 
+        args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
+                'message': msg.format(name=member.user.first_name,
+                                      item=auction.item.name,
+                                      price=auction.won_price),
+                'picture': auction.item.get_thumbnail(),
+                'link': link,
+        }
+        try:
+            member.post_to_wall(**args)
+        except PermissionException:
+            logger.debug('User forbid wallpost')
+        except:
+            raise
+
+@receiver(auction_started_signal)
+def notify_bidders(sender, **kwargs):
+    auction = kwargs['auction']
+    text = u'The auction for a {item} has started. Hurry and go win it!.'.format(item=auction.item.name)
+    for member in auction.bidders.all():
+        of = open_facebook.OpenFacebook(member.access_token)
+        args = {'template': text,
+            'access_token': open_facebook.FacebookAuthorization.get_app_access_token()}
+        logger.debug("Notification - ARGS: %s" % args)
+        destination = '{facebook_id}/notifications'.format(facebook_id=member.facebook_id)
+        response = of.set(destination, **args)
 
 def send_in_thread(signal, **kwargs):
     """ 

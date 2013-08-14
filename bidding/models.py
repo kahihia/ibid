@@ -370,6 +370,12 @@ class Member(AuditedModel):
         of = open_facebook.OpenFacebook(self.access_token)
         response = of.set('me/feed', **args)
         logger.debug("Response: %s" % response)
+    
+    def fb_like(self):
+        ''' User like the app in facebook '''
+        of = open_facebook.OpenFacebook(self.access_token)
+        response = of.set('me/og.likes', {'object':settings.FB_APP,})
+        logger.debug('Response: %s' % response)
 
     def send_notification(self, message):
         of = open_facebook.OpenFacebook(self.access_token)
@@ -432,6 +438,13 @@ class Member(AuditedModel):
             s = self.getSession()
             s[sessionDict] = sessionValue
             self.session = json.dumps(s)
+            self.save()
+
+    def delSession(self, key):
+        s = self.getSession()
+        del s[key]
+        self.session = json.dumps(s)
+        self.save()
 
 class FacebookUser(models.Model):
     '''
@@ -816,8 +829,14 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bidsto=instance.member.bidsto_left,
         )
 
+CONFIG_KEY_TYPES = (('text' , 'text'),
+                    ('int' , 'int'),
+                    ('boolean' , 'boolean'))
+
 class ConfigKey(models.Model):
     key = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
     def __unicode__(self):
         return self.key

@@ -1,3 +1,8 @@
+from urllib2 import urlopen
+import json
+import datetime
+import logging
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -5,14 +10,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.http import urlencode
 from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
+
 from open_facebook.api import FacebookAuthorization
-from open_facebook.exceptions import ParameterException
-import json
-import datetime
-import logging
-from urllib2 import urlopen
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage
+from open_facebook.exceptions import ParameterException, OAuthException
+
 from bidding import client 
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, FacebookLike, ConfigKey
 from bidding.views.home import render_response
 
 
@@ -22,7 +25,7 @@ logger = logging.getLogger('django')
 
 
 def fb_redirect(request):
-    return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+    return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
 
 def get_redirect_uri(request):
@@ -35,7 +38,9 @@ def get_redirect_uri(request):
     if 'request_ids' in request.GET:
         request_ids = '?' + urlencode({'request_ids': request.GET['request_ids']})
 
-    return settings.AUTH_REDIRECT_URI + request_ids
+    url = settings.FACEBOOK_AUTH_REDIRECT_URL.format(appname=settings.FACEBOOK_APP_NAME)
+
+    return url + request_ids
 
 
 def fb_auth(request):
@@ -52,11 +57,10 @@ def fb_auth(request):
         except Member.DoesNotExist:
             return HttpResponseRedirect(reverse('bidding_home'))
 
-    url = settings.FACEBOOK_AUTH_URL.format(
-        app=settings.FACEBOOK_APP_ID,
-        url=get_redirect_uri(request))
+    url = settings.FACEBOOK_AUTH_URL.format(app=settings.FACEBOOK_APP_ID, 
+                                            url=get_redirect_uri(request))
 
-    return HttpResponseRedirect(url)
+    return render_response(request, 'fb_redirect.html', {'authorization_url': url})
 
 
 def fb_test_user(request):
@@ -84,6 +88,8 @@ def handle_invitations(request):
         try:
             invitation = AuctionInvitation.objects.get(request_id=request_id)
             invitation.delete_facebook_request(request.user.get_profile())
+
+
         except AuctionInvitation.DoesNotExist:
             pass
 
@@ -116,7 +122,7 @@ def fb_login(request):
     code = request.GET.get('code')
     if not code:
         #authorization denied
-        return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+        return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
     try:
         token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
@@ -131,6 +137,33 @@ def fb_login(request):
 
     return HttpResponseRedirect('/home/?aaa=2')
 
+
+def fb_like(request):
+    member = request.user.get_profile()
+    if request.method == 'POST':
+        try:
+            member.fb_like()
+            like = FacebookLike.objects.filter(user_id = member.user.id, facebook_id = member.facebook_id)
+            if not like:
+                like = FacebookLike.objects.create(user_id = member.user.id,
+                                                   facebook_id = member.facebook_id,
+                                                   created_time = datetime.datetime.now())
+                gift_tokens = ConfigKey.objects.get(key = 'LIKE_GIFT_TOKENS').value
+                member.tokens_left += long(gift_tokens)
+                member.save()
+                return HttpResponse(
+                    json.dumps({'info':'FIRST_LIKE',
+                                'gift': gift_tokens,
+                                'tokens': member.tokens_left,
+                               }), content_type="application/json")
+            return HttpResponse(
+                json.dumps({'info':'NOT_FIRST_LIKE',
+                            'gift': 0,
+                            }), content_type="application/json")
+        except OAuthException as e:
+            if str(e).find('error code 3501'):
+                return HttpResponse(json.dumps({'info':'ALREADY_LIKE',}))
+            raise
 
 def store_invitation(request):
     auction = get_auction_or_404(request)
