@@ -42,7 +42,7 @@ FACEBOOK_APP_NAME = 'ibidgames-dev'
 
 # if not using https, use http in FACEBOOK_*_URL
 FACEBOOK_APP_URL           = 'http://apps.facebook.com/{appname}/'
-FACEBOOK_AUTH_REDIRECT_URL = 'http://apps.facebook.com/{appname}/fb/login'
+FACEBOOK_AUTH_REDIRECT_URL = 'http://apps.facebook.com/{appname}/fb/login/'
 FACEBOOK_CANVAS_HOME_URL   = 'http://apps.facebook.com/{appname}/canvashome/' 
 
 
