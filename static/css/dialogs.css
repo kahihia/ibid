@@ -1,0 +1,431 @@
+body, h1, h2, h3, h4, h5, p, span, li, ul, a {
+	margin: 0px;
+	padding: 0px;
+}
+img, a {
+	border: 0;
+	border: none;
+}
+
+a {
+	cursor: pointer;
+	text-decoration: none;
+	color: #0c85b8;
+	-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+
+a:hover {
+	color: #666;
+	-o-transition: .2s;
+	-ms-transition: .2s;
+	-moz-transition: .2s;
+	-webkit-transition: .2s;
+	transition: .2s;
+}
+body {
+	background-color: #fff;
+	font-family: 'Open Sans', sans-serif;
+	-webkit-font-smoothing: antialiased;
+	background-image: url("../images/bkg-body.jpg");
+	padding: 50px;
+	color: #fff;
+}
+
+
+/*---------------------------------------------------------TEXT*/
+.text-large-w {
+	font-size: 16px;
+	color: #c2c2c2;
+}
+.text-medium-w {
+	font-size: 14px;
+	color: #c2c2c2;
+}
+.text-small-w {
+	font-size: 12px;
+	color: #939393;
+}
+.text-large-b {
+	font-size: 16px;
+}
+.text-medium-b {
+	font-size: 14px;
+}
+.text-small-b {
+	font-size: 12px;
+}
+/*---------------------------------END----------------------TEXT*/
+/*-------------------------------------------------MODALS POPUPS*/
+.popup {
+	position: fixed;
+    top: 100px;
+    left: 50%;
+    z-index: 99;
+    margin-left: -296px;
+    background-image: url("../images/popup-frame.jpg");
+    padding: 11px;
+    -moz-box-shadow: 0px 0px 50px #000, inset 0px 0px 3px 0px #000;
+    -webkit-box-shadow: 0px 0px 50px #000, inset 0px 0px 3px 0px #000;
+    box-shadow: 0px 0px 50px #000, inset 0px 0px 3px 0px #000;
+    height: 400px;
+    width: 570px;
+    color: #c2c2c2;
+    font-weight: 600;
+}
+.popup.wide {
+	width: 750px;
+}
+.popup .kenny {
+	position: absolute;
+	bottom: -60px;
+	left: -170px;
+}
+.popup .prize {
+	position: absolute;
+	bottom: -35px;
+	right: -60px;
+}
+.popup .credits-img {
+	float: left;
+	margin: -37px;
+}
+.popup .gloss {
+	background-color: #fff;
+	opacity: 0.1;
+	position: absolute;
+	height: 18px;
+	width: 100%;
+	margin: -9px 0 0 -9px;
+	box-shadow: 0 0 3px #fff;
+}
+.popup:after {
+    content: '';
+    display: block;
+	background-image: url("../images/popup-bkg.jpg");
+	-moz-box-shadow: 0px 0px 3px #000, inset 0px 0px 12px 0px #000;
+	-webkit-box-shadow: 0px 0px 3px #000, inset 0px 0px 12px 0px #000;
+	box-shadow: 0px 0px 3px #000, inset 0px 0px 12px 0px #000;
+	height: 100%;
+	width: 100%;
+}
+.popup .btn-close {
+	float: right;
+	margin: -17px;
+}
+.popup .title {
+	margin-top: -49px;
+	position: absolute;
+	width: 100%;
+    text-align: center;
+}
+.popup .title-small {
+	margin-top: -40px;
+	position: absolute;
+	width: 100%;
+}
+.popup .title img, .title-small img {
+	margin: 0 auto;
+	display: block;
+}
+.popup .content {
+	text-align: center;
+	line-height: 24px;
+	margin-top: 39px;
+	position: absolute;
+	width: 100%;
+}
+.popup .content .winner {
+    font-size: 18px;
+    color: #c2c2c2;
+    font-style: italic;
+    font-weight: 400;
+}
+.popup .content .winner .winner-name {
+    display: block;
+	font-size: 30px;
+	color: #fff;
+	font-weight: 600;
+    font-style: normal;
+}
+.popup .content .winner .item-name {
+    display: block;
+	font-size: 14px;
+	color: #c2c2c2;
+	font-weight: 600;
+    font-style: normal;
+	line-height: 35px;
+}
+.popup .content .tokens {
+	font-size: 46px;
+	font-weight: 600;
+	letter-spacing: -2px;
+	color: #64c4dc;
+	text-shadow: 0px 0px 20px #000;
+	filter: dropshadow(color=#000, offx=0, offy=0);
+	text-align: center;
+	display: inline-block;
+}
+.popup .content .tokens .value {
+	display: inline-block;
+	vertical-align: -14px;
+	line-height: 27px;
+}
+.popup .content .tokens p {
+	font-size: 12px;
+	letter-spacing: 0px;
+}
+.popup .content .tokens span {
+	color: #fff;
+	margin-left: 15px;
+}
+.popup .content .item {
+	margin-top: 24px;
+}
+.popup .content .item img {
+    -webkit-box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+    box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+    border: 1px solid #9a9a9a;
+    width: 190px;
+}
+.popup .info {
+	/*width: 100%;*/
+	margin: 29px auto 0 auto;
+	line-height: 15px;
+	font-weight: 600;
+	text-align: center;
+	/*bottom: 46px;
+	position: absolute;
+	display: block;*/
+    display: inline-block;
+    border-top: 1px dotted #939393;
+    padding-top: 1em;
+}
+.popup .content .title-content {
+	margin-bottom: 20px;
+}
+
+.popup .content .friends-list {
+	width: 200px;
+	float: left;
+	margin-left: 120px;
+	text-align: left;
+	margin-top: 30px;
+}
+
+.popup .content .friends-list ul {
+	height: 175px;
+	display: table-cell;
+	vertical-align: middle;
+}
+.popup .content .friends-list li {
+	color: #C2C2C2;
+	list-style-type: none;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 190px;
+	margin-bottom: 7px;
+}
+.popup .content .friends-list li img {
+	vertical-align: -10px;
+	-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+	border: 1px solid #9a9a9a;
+	margin-right: 10px;
+}
+.popup .content .tokens-column {
+	height: 200px;
+	display: table-cell;
+	vertical-align: middle;
+	padding-top: 13px;
+}
+.popup .content .column-left, .column-right {
+	float: left;
+	width: 375px;
+	height: 317px;
+}
+.popup .content .column-dot {
+	border-right: 1px dotted #fff;
+	float: left;
+	height: 307px;
+	margin-top: 10px;
+}
+.popup .content .credits-btn {
+	height: 73px;
+	width: 130px;
+	color: #fff;
+	text-transform: none;
+	line-height: 16px;
+	padding: 25px 0 0 0;
+	margin: 7px;
+}
+.popup .content .credits-btn p {
+	font-size: 35px;
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+.popup .content .column-right .tokens {
+	display: block;
+	margin: 36px 0 17px 0;
+}
+.popup .buttons {
+	width: 100%;
+	bottom: -8px;
+	position: absolute;
+	text-align: center;
+}
+.popup .buttons .btn-green {
+	position: relative;
+}
+.popup .buttons .btn-blue {
+	position: relative;
+}
+.popup .buttons .btn-red {
+	position: relative;
+}
+.popup .buttons .btn {
+	position: relative;
+	min-width: 100px;
+}
+.popup .btn-close {
+    -moz-box-shadow: 0px 0px 15px #000, inset 0px 1px 0px 0px #999;
+    -webkit-box-shadow: 0px 0px 15px #000, inset 0px 1px 0px 0px #999;
+    box-shadow: 0px 0px 15px #000, inset 0px 1px 0px 0px #999;
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, #606060), color-stop(1, #3f3c3a));
+    background: -moz-linear-gradient(top, #606060 5%, #3f3c3a 100%);
+    background: -webkit-linear-gradient(top, #606060 5%, #3f3c3a 100%);
+    background: -o-linear-gradient(top, #606060 5%, #3f3c3a 100%);
+    background: -ms-linear-gradient(top, #606060 5%, #3f3c3a 100%);
+    background: linear-gradient(to bottom, #606060 5%, #3f3c3a 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#606060', endColorstr='#3f3c3a',GradientType=0);
+    background-color: #e16b6b;
+    -moz-border-radius: 42px;
+    -webkit-border-radius: 42px;
+    border-radius: 42px;
+    border: 1px solid #494848;
+    display: inline-block;
+    color: #ffffff;
+    font-size: 20px;
+    font-weight: 800;
+    padding: 0.03em 0 0 0;
+    width: 1.15em;
+    line-height: 1.1em;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    z-index: 999;
+    position: relative;
+    -o-transition: .1s;
+    -ms-transition: .1s;
+    -moz-transition: .1s;
+    -webkit-transition: .1s;
+    transition: .1s;
+}
+.popup .btn-close:hover {
+    -moz-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -webkit-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -o-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -ms-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+}
+.popup .btn-close:active {
+    -o-transition: 0s;
+    -ms-transition: 0s;
+    -moz-transition: 0s;
+    -webkit-transition: 0s;
+    transition: 0s;
+    -moz-transform: scale(0.9) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -webkit-transform: scale(0.9) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -o-transform: scale(0.9) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    -ms-transform: scale(0.9) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+    transform: scale(0.9) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
+}
+/*-----------END-----------------------------------------MODALS POPUPS*/
+
+/*-----------==-----------------------------------------TOOLTIPS*/
+
+.tooltip-info {
+	position: absolute;
+}
+.tooltip-info .kenny {
+	float: left;
+	position: absolute;
+	z-index: 10;
+}
+.tooltip-info .content {
+	height: 68px;
+	width: 260px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 2px solid #3990b8;
+	float: left;
+	position: absolute;
+	margin: 50px 0px 0px 87px;
+	-moz-box-shadow: 0px 0px 45px #000;
+	-webkit-box-shadow: 0px 0px 45px #000;
+	box-shadow: 0px 0px 45px #000;
+	background-color: #fff;
+	padding: 0 15px 0 35px;
+}
+.tooltip-info .content .txt {
+	font-size: 12px;
+	color: #6c6c6b;
+	display: table-cell;
+	vertical-align: middle;
+	height: 68px;
+	font-weight: 700;
+}
+.tooltip-action {
+	position: absolute;
+}
+.tooltip-action .kenny {
+	float: left;
+	position: absolute;
+	z-index: 10;
+}
+.tooltip-action .content {
+	height: 106px;
+	width: 420px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 2px solid #3990b8;
+	float: left;
+	position: absolute;
+	margin: 56px 0px 0px 87px;
+	-moz-box-shadow: 0px 0px 45px #000;
+	-webkit-box-shadow: 0px 0px 45px #000;
+	box-shadow: 0px 0px 45px #000;
+	background-color: #fff;
+	padding: 0 15px 0 0px;
+	text-align: center;
+}
+.tooltip-action .content .gray {
+	width: 65px;
+	background-color: #f5f5f5;
+	height: 100%;
+	float: left;
+	margin-right: 35px;
+}
+.tooltip-action .content .txt {
+	font-size: 12px;
+	color: #6c6c6b;
+	display: table-cell;
+	vertical-align: middle;
+	height: 77px;
+	font-weight: 700;
+	text-align: center;
+	width: 320px;
+}
+.tooltip-action .content .btn {
+	position: relative;
+	height: 20px;
+	top: -10px;
+	box-shadow: none;
+}
+
