@@ -246,34 +246,28 @@ ADMIN_TOOLS_MENU = 'menu.CustomMenu'
 ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
 
 
-# Urls
-WEB_APP = "https://apps.facebook.ibidgames.com/"
-FB_APP = "https://apps.facebook.com/ibidgames/"
-
-APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
-FBAPP = WEB_APP + "fb/"
-IMAGES_SITE = WEB_APP
-NOT_AUTHORIZED_PAGE = WEB_APP
-SITE_NAME = WEB_APP
-
-CANVAS_HOME = FB_APP + "canvashome/"
-FBAPP_HOME = FB_APP + "home/"
-
-
 # Facebook settings
 FACEBOOK_API_KEY = ''
 FACEBOOK_APP_ID = ''
 FACEBOOK_APP_SECRET = ''
+FACEBOOK_APP_NAME = 'ibidgames'
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
 FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
 FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
-AUTH_REDIRECT_URI = 'https://apps.facebook.com/ibidgames/fb/login/'
+FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
+FACEBOOK_AUTH_REDIRECT_URL = 'https://apps.facebook.com/{appname}/fb/login'
+FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/' 
 
 
 # PubNub settings
 PUBNUB_PUB = 'pub-c-50278d15-1317-4bcb-92e2-d2981d99dcb8'
 PUBNUB_SUB = 'sub-c-43c0f9be-df39-11e2-ab32-02ee2ddab7fe'
 PUBNUB_SECRET = ''
+
+
+# Application Urls
+SITE_NAME = "https://apps.facebook.ibidgames.com/"
+IMAGES_SITE = SITE_NAME
 
 
 # App Settings

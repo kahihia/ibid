@@ -22,7 +22,7 @@ logger = logging.getLogger('django')
 
 
 def fb_redirect(request):
-    return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+    return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
 
 def get_redirect_uri(request):
@@ -35,7 +35,9 @@ def get_redirect_uri(request):
     if 'request_ids' in request.GET:
         request_ids = '?' + urlencode({'request_ids': request.GET['request_ids']})
 
-    return settings.AUTH_REDIRECT_URI + request_ids
+    url = settings.FACEBOOK_AUTH_REDIRECT_URL.format(appname=settings.FACEBOOK_APP_NAME)
+
+    return url + request_ids
 
 
 def fb_auth(request):
@@ -52,9 +54,8 @@ def fb_auth(request):
         except Member.DoesNotExist:
             return HttpResponseRedirect(reverse('bidding_home'))
 
-    url = settings.FACEBOOK_AUTH_URL.format(
-        app=settings.FACEBOOK_APP_ID,
-        url=get_redirect_uri(request))
+    url = settings.FACEBOOK_AUTH_URL.format(app=settings.FACEBOOK_APP_ID, 
+                                            url=get_redirect_uri(request))
 
     return render_response(request, 'fb_redirect.html', {'authorization_url': url})
 
@@ -118,7 +119,7 @@ def fb_login(request):
     code = request.GET.get('code')
     if not code:
         #authorization denied
-        return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+        return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
     try:
         token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
