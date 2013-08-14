@@ -35,7 +35,9 @@ def get_redirect_uri(request):
     if 'request_ids' in request.GET:
         request_ids = '?' + urlencode({'request_ids': request.GET['request_ids']})
 
-    return settings.AUTH_REDIRECT_URI + request_ids
+    url = settings.FACEBOOK_AUTH_REDIRECT_URL.format(appname=settings.FACEBOOK_APP_NAME)
+
+    return url + request_ids
 
 
 def fb_auth(request):
@@ -52,9 +54,8 @@ def fb_auth(request):
         except Member.DoesNotExist:
             return HttpResponseRedirect(reverse('bidding_home'))
 
-    url = settings.FACEBOOK_AUTH_URL.format(
-        app=settings.FACEBOOK_APP_ID,
-        url=get_redirect_uri(request))
+    url = settings.FACEBOOK_AUTH_URL.format(app=settings.FACEBOOK_APP_ID, 
+                                            url=get_redirect_uri(request))
 
     return render_response(request, 'fb_redirect.html', {'authorization_url': url})
 

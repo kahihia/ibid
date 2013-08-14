@@ -21,7 +21,8 @@ def render_response(req, *args, **kwargs):
 
 
 def mainpage(request):
-    return HttpResponseRedirect(settings.CANVAS_HOME)
+    url = settings.FACEBOOK_CANVAS_HOME_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    return HttpResponseRedirect(url)
 
 
 def canvashome(request):

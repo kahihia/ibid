@@ -1,11 +1,18 @@
 from django import forms
 from exceptions import ValueError
+
 from bidding import models
 from bidding.models import ITEM_CATEGORY_CHOICES, CONFIG_KEY_TYPES
 
+
 class ConfigKeyAdminForm(forms.ModelForm):
-    value_type = forms.ChoiceField(choices=list(CONFIG_KEY_TYPES), label='Data type',
+    class Meta:
+        model = models.ConfigKey
+
+    value_type = forms.ChoiceField(choices=list(CONFIG_KEY_TYPES),
+                                   label='Data type',
                                    required=True)
+
     def clean(self):
         super(ConfigKeyAdminForm, self).clean()
         
@@ -22,16 +29,12 @@ class ConfigKeyAdminForm(forms.ModelForm):
                 long(value)
             except ValueError:
                 msg = u"Data type is set to int. Value must be a number."
-            self._errors['value'] = self.error_class([msg])
-            del self.cleaned_data['value']
-            
+                self._errors['value'] = self.error_class([msg])
+                del self.cleaned_data['value']
         return self.cleaned_data
     
-    class Meta:
-        model = models.ConfigKey
 
 class ItemAdminForm(forms.ModelForm):
-    
     category = forms.ChoiceField(choices=[('', 'All')] + list(ITEM_CATEGORY_CHOICES), 
                                  label='Category', required=False)
     

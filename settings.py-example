@@ -38,7 +38,7 @@ THUMBNAIL_DEBUG = DEBUG
 ## FACEBOOK_API_KEY = ''
 ## FACEBOOK_APP_ID = ''
 ## FACEBOOK_APP_SECRET = ''
-## AUTH_REDIRECT_URI = 'https://apps.facebook.com/interactivebids/fb/login/'
+## FACEBOOK_APP_NAME = ''
 
 
 # Pubnub settings
@@ -48,16 +48,11 @@ THUMBNAIL_DEBUG = DEBUG
 
 
 # Application Urls
-## WEB_APP = 'http://localhost:8000/'
-## IMAGES_SITE =         WEB_APP
-## SITE_NAME =           WEB_APP
+## SITE_NAME   = 'http://localhost:8000/'
+## IMAGES_SITE = SITE_NAME
 
-## FB_APP = 'http://apps.facebook.com/interactivebids/'
-## CANVAS_HOME = FB_APP + 'canvashome/'
-
-# Put your domain here
-## SESSION_COOKIE_DOMAIN = 'ibidtest.istari.com.ar'
-
+# your domain here
+SESSION_COOKIE_DOMAIN = '<domain>'
 # Set to True if using SSL
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
