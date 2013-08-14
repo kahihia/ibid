@@ -828,8 +828,14 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bidsto=instance.member.bidsto_left,
         )
 
+CONFIG_KEY_TYPES = (('text' , 'text'),
+                    ('int' , 'int'),
+                    ('boolean' , 'boolean'))
+
 class ConfigKey(models.Model):
     key = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
     def __unicode__(self):
         return self.key
