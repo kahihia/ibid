@@ -279,7 +279,7 @@ def credits_callback(request):
 def bid_package_info(request,package_id):
     package  = BidPackage.objects.get(pk= package_id)
     
-    return render_response(request, "bid_package_info.html", {'package': package,'url_domain':settings.WEB_APP})
+    return render_response(request, "bid_package_info.html", {'package': package,'url_domain':settings.SITE_NAME})
     
 @csrf_exempt
 def deauthorized_callback(request):
