@@ -2,10 +2,19 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 	'use strict';
 
 	var channel = 'global';
-	$scope.isGlobalChatEnabled = false;
-	$scope.isGlobalChatOpen = false;
+	$scope.isGlobalChatEnabled = true;
+	$scope.isGlobalChatOpen = true;
 	$scope.messages = [];
 
+	$scope.chatGrowth = function(){
+		if ($scope.isGlobalChatOpen) {
+			$scope.isGlobalChatOpen=false;
+			$(".global-chat").data("height_growth", 0);
+		}else{
+			$scope.isGlobalChatOpen=true;
+			$(".global-chat").data("height_growth", 67);
+		};
+	};
 
 	/**
 	 * Initializes global chat. Connects to global channel.
