@@ -129,7 +129,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         var obj = {
             method: 'pay',
             action: 'purchaseitem',
-            product: 'http://'+site_name+'bid_package/'+package_id,
+            product: site_name+'bid_package/'+package_id,
         };
         $scope.subscribeToPaymentChannel(member)
         FB.ui(obj, getCredits_callback);

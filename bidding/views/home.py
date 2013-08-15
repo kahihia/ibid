@@ -56,6 +56,7 @@ def canvashome(request):
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
                                 'PUBNUB_SUB': settings.PUBNUB_SUB,
+                                'WEB_APP': settings.WEB_APP,
                                 'display_popup': display_popup,
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
