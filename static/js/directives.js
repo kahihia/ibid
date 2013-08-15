@@ -7,12 +7,13 @@
             return {
                 require: 'ngModel',
                 link: function postLink (scope, element, attributes, ngModel) {
-                    scope.$watch(function () {
-                        return ngModel.$modelValue;
-                    }, function () {
-                        element.scrollTop(element.get(0).scrollHeight);
-                    },
-                    true);
+                    scope.$watch(
+                        angular.identity(ngModel.$modelValue),
+                        function () {
+                            element.scrollTop(element.get(0).scrollHeight);
+                        },
+                        true
+                    );
                 }
             };
         })
@@ -24,8 +25,8 @@
                     title: '@dialogTitle'
                 },
                 templateUrl: '/static/templates/dialog.html',
-                transclude: true,
-                link: function postLink (scope, element, attributes) {}
+                transclude: true//,
+                // link: function postLink (scope, element, attributes) {}
             };
         });
 }());
