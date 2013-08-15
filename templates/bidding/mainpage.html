@@ -76,23 +76,8 @@
 				});
 				FB.Canvas.setAutoGrow();
 				
-				$(".global-chat").data("height_growth", 67);
-				num1=0;
-				num2=0;
-				num3=0;
-				function chatPosition() {
-					FB.Canvas.getPageInfo(function(pageInfo){
-						num1 = parseInt(pageInfo.scrollTop) -  parseInt(pageInfo.offsetTop);
-						num2 = parseInt(pageInfo.clientHeight) - $("global-chat").outerHeight();
-						num3 = $(".global-chat").data("height_growth");
-						if (num3) {
-							num3+=$(".global-chat .chat-list").height();
-						}
-						$(".global-chat").animate({top: ((num1 + num2) - num3) }, 0);
-						setTimeout(chatPosition, 100);
-					});
-				};
-				chatPosition();
+				angular.element($('.global-chat')).scope().chatPosition();
+				
 				
 				
 			}; ( function(d, s, id) {

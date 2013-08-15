@@ -4,15 +4,16 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 	var channel = 'global';
 	$scope.isGlobalChatEnabled = true;
 	$scope.isGlobalChatOpen = true;
+	$scope.heightGrowth=67;
 	$scope.messages = [];
 
 	$scope.chatGrowth = function(){
 		if ($scope.isGlobalChatOpen) {
 			$scope.isGlobalChatOpen=false;
-			$(".global-chat").data("height_growth", 0);
+			$scope.heightGrowth= 0;
 		}else{
 			$scope.isGlobalChatOpen=true;
-			$(".global-chat").data("height_growth", 67);
+			$scope.heightGrowth= 67;
 		};
 	};
 
@@ -20,6 +21,8 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 	 * Initializes global chat. Connects to global channel.
 	 */
 	$scope.initialize = function () {
+		
+		
 		// Subscribe to open global chat event.
 		$rootScope.$on('main:openGlobalChat', function () {
 			$scope.isGlobalChatEnabled = true;
@@ -44,4 +47,19 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 		$http.post('/api/globalMessage/', {text: $scope.message});
 		$scope.message = null;
 	};
+	
+	
+	$scope.chatPosition=function () {
+		FB.Canvas.getPageInfo(function(pageInfo){
+			var num1 = parseInt(pageInfo.scrollTop) -  parseInt(pageInfo.offsetTop);
+			var num2 = parseInt(pageInfo.clientHeight) - $("global-chat").outerHeight();
+			var num3 = $scope.heightGrowth;
+			if (num3) {
+				num3+=$(".global-chat .chat-list").height();
+			}
+			$(".global-chat").animate({top: ((num1 + num2) - num3) }, 0);
+			setTimeout($scope.chatPosition, 100);
+		});
+	};
+	
 }
