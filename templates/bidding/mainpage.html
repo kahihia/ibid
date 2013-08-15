@@ -69,12 +69,17 @@
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-          channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
-          status     : true, // check login status
-          cookie     : true, // enable cookies to allow the server to access the session
-          xfbml      : true  // parse XFBML
+					channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
+					status     : true, // check login status
+					cookie     : true, // enable cookies to allow the server to access the session
+					xfbml      : true  // parse XFBML
 				});
-				// FB.Canvas.setAutoGrow();
+				FB.Canvas.setAutoGrow();
+				
+				angular.element($('.global-chat')).scope().chatPosition();
+				
+				
+				
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
 					if (d.getElementById(id)) {
@@ -206,7 +211,7 @@
 
 			<!--GLOBAL chat-->
 			<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled">
-				<a class="top" ng-click="isGlobalChatOpen = !isGlobalChatOpen">
+				<a class="top" ng-click="chatGrowth()">
 					<div class="kenny">
 						<img src="{% static 'images/kenny-chat-img.png' %}">
 					</div>
