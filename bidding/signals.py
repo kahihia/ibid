@@ -113,20 +113,16 @@ def send_start_email(sender, **kwargs):
 @receiver(auction_finished_signal)
 def post_win_story(sender, **kwargs):
     auction = kwargs['auction']
-    logger.debug("story")
-    logger.debug("Auction: %s" % auction)
-    print auction.winner
     if auction.winner:
         member = auction.winner.get_profile()
-        url = '{0}fb_item/{1}'.format(str(settings.WEB_APP), str(auction.item.id))
+        url = '{site}fb_item/{item}'.format(site=settings.SITE_NAME, item=str(auction.item.id))
         if auction.bid_type == 'token':
-            info_message = '{0} has won this virtual item playing for tokens. If {1} had played for items he/she could have purchased it for {2} dollars!'.format(str(member.user), str(member.user), str(auction.won_price))
+            info_message = '{user} has won this virtual item playing for tokens. If {user} had played for items he/she could have purchased it for {price} dollars!'
         if auction.bid_type == 'bid':
-            info_message = '{0} can purchase {1} for {2} dollars!'.format(str(member.user), str(auction.item.name), str(auction.won_price))
+            info_message = '{user} can purchase {item} for {price} dollars!'
         args = {'product': url,
-                'info_message': info_message,}
+                'info_message': info_message.format(user=str(member.user), item=str(auction.item.name), price=str(auction.won_price)),}
         try:
-            logger.debug("pass")
             member.post_win_story(**args)
         except PermissionException:
             print "User forbid story post"

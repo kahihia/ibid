@@ -361,21 +361,11 @@ class Member(AuditedModel):
         #return of.my_image_url(size='square')
         return "https://graph.facebook.com/%s/picture" % self.facebook_id
 
-    def post_to_wall(self, **args):
-        """
-        Posts to the member wall. Some possible arguments are:
-        picture, name, link, caption, message.
-        """
-        logger.debug("ARGS: %s" % args)
-        of = open_facebook.OpenFacebook(self.access_token)
-        response = of.set('me/feed', **args)
-        logger.debug("Response: %s" % response)
-
     def post_win_story(self, **args):
         # Posts a story when winning an item in an auction.
         logger.debug("ARGS: %s" % args)
         of = open_facebook.OpenFacebook(self.access_token)
-        response = of.set('me/ibiddev:win',**args)
+        response = of.set('me/{app}:win'.format(app=settings.FACEBOOK_APP_NAME),**args)
         logger.debug("Response: %s" % response)    
 
     def send_notification(self, message):
