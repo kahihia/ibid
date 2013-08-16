@@ -134,8 +134,8 @@ def fb_login(request):
 
     if 'request_ids' in request.GET:
         return handle_invitations(request)
-
-    return HttpResponseRedirect('/home/?aaa=2')
+    
+    return render_response(request, 'fb_redirect.html', {'authorization_url': settings.FB_APP+'home/?aaa=2'})
 
 
 def fb_like(request):
