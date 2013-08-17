@@ -51,7 +51,7 @@ def dispatcher(returnEventList):
     dispatch each event through its defined transport
     """
     # save out events in eventLog
-    [EventLog().saveEvent(event) for event in returnEventList if event['transport']==vo.Event.TRANSPORT.PUBNUB]
+    [EventLog().saveEvent(event) for event in returnEventList]
 
     #define return lists for each transport
     transportEventList = {}
