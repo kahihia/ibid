@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+import time
 
 from django.conf import settings
 from django.core.mail import send_mail
@@ -12,6 +13,7 @@ from bidding.models import ConvertHistory
 from bidding.models import Invitation
 from bidding.models import Member
 from bidding.models import ConfigKey
+from bidding.models import FBOrderInfo
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
@@ -480,6 +482,18 @@ def convert_tokens(request):
                         'convert_combo': member.gen_available_tokens_to_bids(),
             }), content_type="application/json")
 
+def add_credits(request):
+    if request.method == "POST":
+        payment_id = int(request.POST['payment_id'])
+        order = FBOrderInfo.objects.filter(fb_payment_id=payment_id)
+        while not order:
+            time.sleep(1)
+            order = FBOrderInfo.objects.filter(fb_payment_id=payment_id)
+        update_credits=order[0].member.bids_left
+        return HttpResponse(
+            json.dumps({'update_credits': update_credits,}),
+            content_type="application/json")
+
 
 def sendMessage(request):
     if request.method == 'POST':
@@ -549,5 +563,6 @@ API = {
     'reportAnError': reportAnError,
     'convert_tokens': convert_tokens,
     'inviteRequest': inviteRequest,
+    'add_credits': add_credits,
     'globalMessage': globalMessage,
 }

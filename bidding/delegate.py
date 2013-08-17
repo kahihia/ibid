@@ -9,7 +9,7 @@ import time
 logger = logging.getLogger('django')
 
 from bidding import client
-from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
+from bidding.signals import auction_started_signal, auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
 
 def start_auction(auction):
@@ -193,6 +193,7 @@ class WaitingAuctionDelegate(StateAuctionDelegate):
         client.auctionActive(self.auction)
         self.auction.saved_time = self.auction.bidding_time
         self.auction.save()
+        send_in_thread(auction_started_signal, sender=self, auction=self.auction)
 
     def get_time_left(self):
         start_time = Decimal("%f" % time.mktime(

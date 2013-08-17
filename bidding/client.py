@@ -252,4 +252,7 @@ def callReverse(userIdentifier, function):
     result = {'method': 'callReverse', 'params': {'userIdentifier':userIdentifier, 'function': function}}
     send_pubnub_message(result, '/topic/main/' )
 
-    
+def update_credits(member):
+    tmp = {}
+    tmp['credits'] = member.bids_left
+    send_pubnub_message({'data':tmp}, '/topic/main/%s' % member.id)

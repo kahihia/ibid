@@ -25,7 +25,7 @@ from django_facebook.utils import get_user_model
 
 from bidding.delegate import state_delegates
 from audit.models import AuditedModel
-
+from urllib2 import urlopen
 
 re_bids = re.compile("(\d+)")
 
@@ -370,6 +370,12 @@ class Member(AuditedModel):
         of = open_facebook.OpenFacebook(self.access_token)
         response = of.set('me/feed', **args)
         logger.debug("Response: %s" % response)
+    
+    def fb_like(self):
+        ''' User like the app in facebook '''
+        of = open_facebook.OpenFacebook(self.access_token)
+        response = of.set('me/og.likes', {'object':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),})
+        logger.debug('Response: %s' % response)
 
     def send_notification(self, message):
         of = open_facebook.OpenFacebook(self.access_token)
@@ -717,8 +723,12 @@ class BidPackage(models.Model):
 
     def __unicode__(self):
         return self.title
-
-
+    
+@receiver(post_save, sender=BidPackage)
+def update_fb_info(sender, instance, **kwargs):
+    url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.WEB_APP+'bid_package/'+str(instance.id))
+    urlopen(url)
+        
 class AuctionInvoice(AuditedModel):
     auction = models.ForeignKey(Auction)
     member = models.ForeignKey(Member)
@@ -797,18 +807,15 @@ class ConvertHistory(models.Model):
                                       total_bids=member.bids_left,
                                       total_bidsto=member.bidsto_left,
         )
-
-
-FB_STATUS_CHOICES = (('placed', 'placed'),
+FB_STATUS_CHOICES = (
                      ('confirmed', 'confirmed'),
 )
-
 
 class FBOrderInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
-
+    fb_payment_id = models.BigIntegerField(blank=True, null=True) #this field should be unique
 
 @receiver(post_save, sender=FBOrderInfo)
 def on_confirmed_order(sender, instance, **kwargs):
@@ -822,8 +829,14 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bidsto=instance.member.bidsto_left,
         )
 
+CONFIG_KEY_TYPES = (('text' , 'text'),
+                    ('int' , 'int'),
+                    ('boolean' , 'boolean'))
+
 class ConfigKey(models.Model):
     key = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
+    description = models.TextField(null=True, blank=True)
+    value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
     def __unicode__(self):
         return self.key

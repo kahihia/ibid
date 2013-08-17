@@ -70,12 +70,17 @@
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-          channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
-          status     : true, // check login status
-          cookie     : true, // enable cookies to allow the server to access the session
-          xfbml      : true  // parse XFBML
+					channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
+					status     : true, // check login status
+					cookie     : true, // enable cookies to allow the server to access the session
+					xfbml      : true  // parse XFBML
 				});
-				// FB.Canvas.setAutoGrow();
+				FB.Canvas.setAutoGrow();
+				
+				angular.element($('.global-chat')).scope().chatPosition();
+				
+				
+				
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
 					if (d.getElementById(id)) {
@@ -135,7 +140,7 @@
 					{% for package in packages %}
 					<section>
 
-						<div class="btn" onclick="buy_bids({% url "place_order" %}, {{ package.id }})">
+						<div class="btn" ng-click="buy_bids({{user.get_profile.id}},{{ package.id }},'{{SITE_NAME}}')">
 							{{ package.description }}
 						</div>
 					</section>
@@ -169,22 +174,6 @@
 								Convert Now
 							</div>
 						</section>
-					</div>
-				</div>
-			</div>
-			<!--like popup-->
-			<div class="like-popup" >
-				<div class="popup">
-					<div class="title">
-						<span class="close">×</span>
-						<h1>Like us!</h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Click the Like button below to like us!</span></br>Also remember to invite your friends, you will earn 1000 tokens for free.
-					</div>
-					<div style="margin: 30px 10px 10px 130px;">
-
-						<div class="fb-like" data-href="{% url 'canvashome' %}" data-send="false"  data-width="300" data-show-faces="false"></div>
 					</div>
 				</div>
 			</div>
@@ -223,7 +212,7 @@
 
 			<!--GLOBAL chat-->
 			<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled">
-				<a class="top" ng-click="isGlobalChatOpen = !isGlobalChatOpen">
+				<a class="top" ng-click="chatGrowth()">
 					<div class="kenny">
 						<img src="{% static 'images/kenny-chat-img.png' %}">
 					</div>
@@ -263,7 +252,7 @@
 
 					<div class="buttons">
 						<div class="button invite" ng-click="sendRequestViaMultiFriendSelector()"></div>
-						<div class="button like"></div>
+						<div class="button like" ng-click="fb_like({{user.get_profile}})"></div>
 						<div class="button share" ng-click="shareOnTimeline()"></div>
 
 					</div>

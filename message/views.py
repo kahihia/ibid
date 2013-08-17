@@ -159,12 +159,9 @@ class bidding(object):
         #################################
         ## event open global chat      ##
         #################################
+        openGlobalChat = ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value
 
-        openGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value, '%H:%M')
-        closeGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='CLOSE_GLOBAL_CHAT')[0].value, '%H:%M')
-        currentTime = time.strptime(time.strftime( '%H:%M',time.localtime()), '%H:%M')
-
-        if currentTime > openGlobalChatTime and currentTime < closeGlobalChatTime:
+        if openGlobalChat == 'yes':
             event = vo.Event()
             event['event'] = vo.Event.EVENT.MAIN__OPEN_GLOBAL_CHAT
             event['data'] = {}
