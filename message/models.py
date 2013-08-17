@@ -8,7 +8,7 @@ class EventLog(models.Model):
     receiver = models.TextField()
     transport = models.TextField()
     timestamp = models.DateTimeField(null=True, blank=True)
-    event_id = models.IntegerField
+    event_id = models.IntegerField(null=True)
 
     def saveEvent(self, event):
         self.event = event["event"]

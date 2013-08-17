@@ -156,12 +156,16 @@ def create_voFriendInvitationAccepted(prize, inviteds):
     )
 
 def create_voEventList(request):
-    requPOST = json.loads(request.body)
-    events = requPOST['events']
+    getEvents = request.GET.get('events')
+    events = json.loads(getEvents)
+    print "-------------------------<x", getEvents
+    #requPOST = json.loads(request.body)
+    #events = requPOST['events']
 
     returnEvents = vo.EventList()
 
     for event in events:
+        print event
         returnEvents.append(vo.Event(
             event = event["event"],
             data = event["data"],

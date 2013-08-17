@@ -40,8 +40,7 @@ def listener(request):
         method = splitEvent[1]
         data = event['data']
         # the method call itself
-        #TODO: check how to call the method dinamically
-        result = globals()[_class][method](request, data)
+        result = getattr(globals()[_class](), method)(request, data)
         returnEventList.extend(result)
 
     return returnEventList
@@ -51,18 +50,19 @@ def dispatcher(returnEventList):
     """
     dispatch each event through its defined transport
     """
-    #define return lists for each transport
-    returnEventList[vo.Event.TRANSPORT.REQUEST] = [event for event in returnEventList if event['transport']==vo.Event.TRANSPORT.REQUEST]
-    returnEventList[vo.Event.TRANSPORT.PUBNUB] = [event for event in returnEventList if event['transport']==vo.Event.TRANSPORT.PUBNUB]
-
     # save out events in eventLog
     [EventLog().saveEvent(event) for event in returnEventList if event['transport']==vo.Event.TRANSPORT.PUBNUB]
+
+    #define return lists for each transport
+    transportEventList = {}
+    transportEventList[vo.Event.TRANSPORT.REQUEST] = [event for event in returnEventList if event['transport']==vo.Event.TRANSPORT.REQUEST]
+    transportEventList[vo.Event.TRANSPORT.PUBNUB] = [event for event in returnEventList if event['transport']==vo.Event.TRANSPORT.PUBNUB]
 
     # TODO:send messages for pubnub transport
     #transport.pubnub(returnEventList[vo.Event.TRANSPORT.PUBNUB])
 
     # send messages for request transport
-    return HttpResponse([event.toJson() for event in returnEventList[vo.Event.TRANSPORT.REQUEST]], content_type="application/json")
+    return HttpResponse(vo.EventList(*transportEventList[vo.Event.TRANSPORT.REQUEST]).toJson(), content_type="application/json")
 
 
 class bidding(object):
@@ -163,10 +163,6 @@ class bidding(object):
         openGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value, '%H:%M')
         closeGlobalChatTime = time.strptime(ConfigKey.objects.filter(key='CLOSE_GLOBAL_CHAT')[0].value, '%H:%M')
         currentTime = time.strptime(time.strftime( '%H:%M',time.localtime()), '%H:%M')
-
-        print openGlobalChatTime
-        print closeGlobalChatTime
-        print currentTime
 
         if currentTime > openGlobalChatTime and currentTime < closeGlobalChatTime:
             event = vo.Event()
