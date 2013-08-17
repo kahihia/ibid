@@ -839,6 +839,7 @@ class ConfigKey(models.Model):
     description = models.TextField(null=True, blank=True)
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
 
+    @staticmethod
     def get(self, key,default=None):
         result = ConfigKey.objects.filter(key=key)
         if len(result):
