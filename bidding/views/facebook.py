@@ -149,7 +149,7 @@ def fb_like(request):
                 like = FacebookLike.objects.create(user_id = member.user.id,
                                                    facebook_id = member.facebook_id,
                                                    created_time = datetime.datetime.now())
-                gift_tokens = ConfigKey.objects.get(key = 'LIKE_GIFT_TOKENS').value
+                gift_tokens = ConfigKey.get('LIKE_GIFT_TOKENS', 1000)
                 member.tokens_left += long(gift_tokens)
                 member.save()
                 return HttpResponse(

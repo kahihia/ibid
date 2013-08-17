@@ -347,7 +347,7 @@ def addBids(request):
 
     if auction.status == 'precap' and auction.can_precap(member, amount):
          #check max tokens for member per auction
-        if auction.bid_type != 'bid' and (((amount*100)/(auction.precap_bids)) > int(ConfigKey.objects.filter(key='AUCTION_MAX_TOKENS')[0].value)):
+        if auction.bid_type != 'bid' and (((amount*100)/(auction.precap_bids)) > ConfigKey.get('AUCTION_MAX_TOKENS', 100)):
             ret = {"success":False, 'motive': 'AUCTION_MAX_TOKENS_REACHED', 'data': {'placed': member.auction_bids_left(auction)}}
             return HttpResponse(json.dumps(ret), content_type="application/json")
         

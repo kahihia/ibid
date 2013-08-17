@@ -2,7 +2,6 @@
 # Create your views here.
 
 from datetime import datetime
-import time
 
 from django.http import HttpResponse
 
@@ -80,6 +79,7 @@ def initialize(request):
 
     eventList.append(event)
 
+
     #################################
     ## event friend invitation     ##
     #################################
@@ -102,9 +102,9 @@ def initialize(request):
     #################################
     ## event open global chat      ##
     #################################
-    openGlobalChat = ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value
+    openGlobalChat = ConfigKey.get('OPEN_GLOBAL_CHAT',False)
 
-    if openGlobalChat == 'yes':
+    if openGlobalChat:
         event = vo.Event()
         event['event'] = vo.Event.EVENT.MAIN__OPEN_GLOBAL_CHAT
         event['data'] = {}
