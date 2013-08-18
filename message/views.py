@@ -2,7 +2,6 @@
 # Create your views here.
 
 from datetime import datetime
-import time
 
 from django.http import HttpResponse
 
@@ -76,7 +75,6 @@ class bidding(object):
         #################################
         ## event load user data        ##
         #################################
-
         event = vo.Event()
         event['event'] = vo.Event.EVENT.MAIN__LOAD_USER_DETAILS
         event['data'] = vo_factory.create_voLoggedInUser(member)
