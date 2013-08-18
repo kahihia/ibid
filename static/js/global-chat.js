@@ -2,8 +2,8 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 	'use strict';
 
 	var channel = 'global';
-	$scope.isGlobalChatEnabled = true;
-	$scope.isGlobalChatOpen = true;
+	$scope.isGlobalChatEnabled = false;
+	$scope.isGlobalChatOpen = false;
 	$scope.heightGrowth=67;
 	$scope.messages = [];
 
@@ -22,10 +22,14 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 	 */
 	$scope.initialize = function () {
 		
-		
 		// Subscribe to open global chat event.
-		$rootScope.$on('main:openGlobalChat', function () {
+		$rootScope.$on('main:openGlobalChat', function (event, data) {
 			$scope.isGlobalChatEnabled = true;
+            //expand or keep it down.
+            console.log(data);
+            if(data.open){
+                $scope.chatGrowth();
+            };
 			// Subscribe to global chat communication channel.
 			pubSub.subscribe({
 				channel: channel,

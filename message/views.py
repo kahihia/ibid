@@ -162,7 +162,18 @@ class bidding(object):
         if openGlobalChat == 'yes':
             event = vo.Event()
             event['event'] = vo.Event.EVENT.MAIN__OPEN_GLOBAL_CHAT
-            event['data'] = {}
+            event['data'] = {'open':True}
+            event['sender'] = vo.Event.SENDER.SERVER
+            event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
+            event['transport'] = vo.Event.TRANSPORT.REQUEST
+            event['timestamp'] = datetime.now()
+            event['id'] = None
+
+            eventList.append(event)
+        else:
+            event = vo.Event()
+            event['event'] = vo.Event.EVENT.MAIN__OPEN_GLOBAL_CHAT
+            event['data'] = {'open':False}
             event['sender'] = vo.Event.SENDER.SERVER
             event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
             event['transport'] = vo.Event.TRANSPORT.REQUEST
