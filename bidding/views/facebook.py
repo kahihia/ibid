@@ -10,13 +10,12 @@ from django.shortcuts import get_object_or_404
 from django.utils.http import urlencode
 from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
-from django_facebook.models import FacebookLike
 
 from open_facebook.api import FacebookAuthorization
 from open_facebook.exceptions import ParameterException, OAuthException
 
 from bidding import client 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, ConfigKey
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, FacebookLike, ConfigKey
 from bidding.views.home import render_response
 
 
@@ -54,7 +53,7 @@ def fb_auth(request):
     if request.user.is_authenticated():
     #Fix so admin user don't break on the root url
         try:
-            request.user
+            request.user.get_profile()
         except Member.DoesNotExist:
             return HttpResponseRedirect(reverse('bidding_home'))
 
@@ -71,7 +70,7 @@ def fb_test_user(request):
     django_facebook.connect.connect_user(request, test_user['access_token'])
 
     #add bids by default
-    member = request.user
+    member = request.user.get_profile()
     member.bids_left = 1000
     member.tokens_left = 1000
     member.save()
@@ -88,7 +87,7 @@ def handle_invitations(request):
     for request_id in request_ids:
         try:
             invitation = AuctionInvitation.objects.get(request_id=request_id)
-            invitation.delete_facebook_request(request.user)
+            invitation.delete_facebook_request(request.user.get_profile())
 
 
         except AuctionInvitation.DoesNotExist:
@@ -103,7 +102,7 @@ def handle_invitations(request):
 
 
 def give_bids(request):
-    member = request.user
+    member = request.user.get_profile()
 
     if not member.bids_left:
         member.bids_left = 500
@@ -141,7 +140,7 @@ def fb_login(request):
 
 
 def fb_like(request):
-    member = request.user
+    member = request.user.get_profile()
     if request.method == 'POST':
         try:
             member.fb_like()
@@ -166,11 +165,10 @@ def fb_like(request):
             if str(e).find('error code 3501'):
                 return HttpResponse(json.dumps({'info':'ALREADY_LIKE',}))
             raise
-    return HttpResponse('ERROR')
 
 def store_invitation(request):
     auction = get_auction_or_404(request)
-    member = request.user
+    member = request.user.get_profile()
     request_id = int(request.POST['request_id'])
 
     AuctionInvitation.objects.create(auction=auction, inviter=member,
@@ -304,7 +302,7 @@ def place_order(request):
     response = {'order_info': -1}
     if request.POST.has_key('package_id'):
         package = BidPackage.objects.get(pk=request.POST['package_id'])
-        member = request.user
+        member = request.user.get_profile()
         status = 'placed'
         order = FBOrderInfo.objects.create(package=package,
                                            member=member,
@@ -515,4 +513,3 @@ def get_auction_or_404(request):
 
 django_facebook.connect.connect_user = connect_user
 django_facebook.connect._register_user = _register_user
-
