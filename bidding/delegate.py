@@ -220,7 +220,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         logger.debug("Entering finish")
 
         bidder = self.auction.get_last_bidder()
-        self.auction.winner = bidder.user if bidder else None
+        self.auction.winner = bidder if bidder else None
         self.auction.won_price = self.auction.price()
         self.auction.status = 'waiting_payment'
         self.auction.won_date = datetime.now()

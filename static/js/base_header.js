@@ -189,7 +189,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         });
     };
 
-    $scope.fb_like= function(member) {
+    $scope.fb_like= function() {
         try {
             $http.post('/fb_like/').success(
              function(data){

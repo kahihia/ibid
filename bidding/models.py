@@ -13,7 +13,7 @@ from datetime import timedelta
 import json
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,AbstractUser
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Sum
@@ -22,7 +22,7 @@ from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
 from django_facebook import model_managers, settings as facebook_settings
 from django_facebook.utils import get_user_model
-
+from django_facebook.models import FacebookModel
 from bidding.delegate import state_delegates
 from audit.models import AuditedModel
 from urllib2 import urlopen
@@ -66,9 +66,9 @@ BID_TYPE_CHOICES = (
 )
 
 
-class Member(AuditedModel):
-    user = models.ForeignKey(User)
-
+class Member(AbstractUser, FacebookModel):
+    
+    
     bids_left = models.IntegerField(default=0)
     tokens_left = models.IntegerField(default=0)
     bidsto_left = models.IntegerField(default=0)
@@ -189,20 +189,20 @@ class Member(AuditedModel):
                                                     'auction__bid_type')
 
     #Facebook fields
-    about_me = models.TextField(blank=True)
-    facebook_id = models.BigIntegerField(blank=True, unique=True, null=True)
-    access_token = models.TextField(blank=True, help_text='Facebook token for offline access')
-    facebook_name = models.CharField(max_length=255, blank=True)
-    facebook_profile_url = models.TextField(blank=True)
-    website_url = models.TextField(blank=True)
-    blog_url = models.TextField(blank=True)
-    image = models.ImageField(blank=True, null=True,
-                              upload_to='profile_images', max_length=255)
-    date_of_birth = models.DateField(blank=True, null=True)
-    raw_data = models.TextField(blank=True)
-
-    new_token_required = models.BooleanField(default=False,
-                                             help_text='Set to true if the access token is outdated or lacks permissions')
+    #about_me = models.TextField(blank=True)
+    #facebook_id = models.BigIntegerField(blank=True, unique=True, null=True)
+    #access_token = models.TextField(blank=True, help_text='Facebook token for offline access')
+    #facebook_name = models.CharField(max_length=255, blank=True)
+    #facebook_profile_url = models.TextField(blank=True)
+    #website_url = models.TextField(blank=True)
+    #blog_url = models.TextField(blank=True)
+    #image = models.ImageField(blank=True, null=True,
+    #                          upload_to='profile_images', max_length=255)
+    #date_of_birth = models.DateField(blank=True, null=True)
+    #raw_data = models.TextField(blank=True)
+    #
+    #new_token_required = models.BooleanField(default=False,
+    #                                         help_text='Set to true if the access token is outdated or lacks permissions')
 
     def refresh(self):
         '''
@@ -338,13 +338,13 @@ class Member(AuditedModel):
             reauthentication = True
         return reauthentication
 
-    def __unicode__(self):
-        return self.user.__unicode__()
+    #def __unicode__(self):
+        #return self.__unicode__()
 
 
     def display_name(self):
-        return "%s %s" % (self.user.first_name,
-                          self.user.last_name)
+        return "%s %s" % (self.first_name,
+                          self.last_name)
 
     def display_linked_facebook_profile(self):
         output = ""
@@ -554,7 +554,7 @@ class Auction(AbstractAuction):
 
     #winner info
     won_date = models.DateTimeField(null=True, blank=True)
-    winner = models.ForeignKey(User, blank=True, null=True)
+    winner = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='autcions', blank=True, null=True)
     won_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     #scheduling options

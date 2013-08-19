@@ -133,15 +133,15 @@
 
         <h1>You can convert Tokens to Credits:</h1>
         <p class="comment">
-        You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
+        You have <b class="number"><span id="convertible_tokens">{{ user.tokens_left }}</span></b>
         Tokens and you can convert it up to
-        <b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.<br>
+        <b class="number"><span id="maximun_bidsto">{{ user.maximun_bids_from_tokens }}</span></b> Credits.<br>
         Please select the required amount of Credits.
         </p>
         <div class="warning"></div>
         <section>
         <select id="tokens_to_convert">
-        {%  for conv in user.get_profile.gen_available_tokens_to_bids %}
+        {%  for conv in user.gen_available_tokens_to_bids %}
         <option value={{ conv }}>{{ conv }}</option>
         {% endfor %}
         </select>
@@ -150,22 +150,6 @@
         </section-->
     </div>
 </div>
-			<!--like popup-->
-			<div class="like-popup">
-				<div class="popup">
-					<div class="title">
-						<span class="close">×</span>
-						<h1>Like us!</h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;">Click Like button below to like us!</span></br>Also remember to invite friends, you will earn 1000 tokens for free.
-					</div>
-					<div style="margin: 30px 10px 10px 130px;">
-
-						<div class="fb-like" data-href="{% url 'canvashome' %}" data-send="false"  data-width="300" data-show-faces="false"></div>
-					</div>
-				</div>
-			</div>
 
 
 <div id="overlay" style="position:absolute;

@@ -101,7 +101,7 @@ def create_voAction(auction, member):
                                bidPrice = auction.minimum_precap,
                                bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
-                               winner = create_voUser(auction.winner.get_profile()),
+                               winner = create_voUser(auction.winner),
                                completion = 0)
 
         return vo_auction
@@ -120,7 +120,7 @@ def create_voAction(auction, member):
                                bidPrice = auction.minimum_precap,
                                bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
-                               winner = create_voUser(auction.winner.get_profile()),
+                               winner = create_voUser(auction.winner),
                                completion = 0)
 
         return vo_auction

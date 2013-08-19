@@ -77,13 +77,13 @@ def make_auction_invoice(sender, **kwargs):
 
         invoice = AuctionInvoice()
         invoice.auction = auction
-        invoice.member = auction.winner.get_profile()
+        invoice.member = auction.winner
         invoice.uid = uuid.uuid4()
         invoice.save()
 
         #winnner for fun earns retail price in tokens!
         if auction.bid_type == 'token':
-            mem = auction.winner.get_profile()
+            mem = auction.winner
             mem.tokens_left += int(auction.item.retail_price)
             mem.save()
 
@@ -117,7 +117,7 @@ def post_win_wall(sender, **kwargs):
     auction = kwargs['auction']
     logger.debug("Auction: %s" % auction)
     if auction.winner:
-        member = auction.winner.get_profile()
+        member = auction.winner
         if auction.bid_type == 'token':
             msg = u'{name} has won this virtual item playing for tokens. If {name} had played for items he/she could have purchased it for {price} dollars!'
         else:
