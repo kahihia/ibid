@@ -10,12 +10,13 @@ from django.shortcuts import get_object_or_404
 from django.utils.http import urlencode
 from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
+from django_facebook.models import FacebookLike
 
 from open_facebook.api import FacebookAuthorization
 from open_facebook.exceptions import ParameterException, OAuthException
 
 from bidding import client 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, FacebookLike, ConfigKey
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, ConfigKey
 from bidding.views.home import render_response
 
 
@@ -144,9 +145,9 @@ def fb_like(request):
     if request.method == 'POST':
         try:
             member.fb_like()
-            like = FacebookLike.objects.filter(user_id = member.user.id, facebook_id = member.facebook_id)
+            like = FacebookLike.objects.filter(user_id = member.id, facebook_id = member.facebook_id)
             if not like:
-                like = FacebookLike.objects.create(user_id = member.user.id,
+                like = FacebookLike.objects.create(user_id = member.id,
                                                    facebook_id = member.facebook_id,
                                                    created_time = datetime.datetime.now())
                 gift_tokens = ConfigKey.objects.get(key = 'LIKE_GIFT_TOKENS').value
