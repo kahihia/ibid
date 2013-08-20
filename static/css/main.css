@@ -110,13 +110,9 @@ body {
 
 #top .buttons .like {
 	width: 87px;
-	background-image: url("../images/btn-like.png");
+	background-image: url("../images/btn-test.png");
 }
-#top .buttons .liked {
-	width: 87px;
-	background-image: url("../images/btn-liked.png");
-	left:-50px;
-}
+
 #top .buttons .share {
 	width: 95px;
 	background-image: url("../images/btn-share.png");
