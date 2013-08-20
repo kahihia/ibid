@@ -22,7 +22,7 @@ def message_listener(request, method):
 
 
 def initialize(request):
-    member = request.user.get_profile()
+    member = request.user
 
     eventList = vo.EventList()
 
