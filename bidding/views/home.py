@@ -32,7 +32,7 @@ def canvashome(request):
         return HttpResponseRedirect(str(redirectTo))
 
     #TODO try catch to avoid ugly error when admin is logged
-    member = request.user.get_profile()
+    member = request.user
 
     #give free tokens from promo
     freeExtraTokens = request.session.get('freeExtraTokens', 0)
@@ -49,7 +49,7 @@ def canvashome(request):
         display_popup = True
 
     if request.COOKIES.get('dont_show_welcome_%s' %
-            request.user.get_profile().facebook_id):
+            request.user.facebook_id):
         display_popup = False
 
     response = render_response(request, 'bidding/mainpage.html',
@@ -66,7 +66,7 @@ def canvashome(request):
 
 
 def standalone(request):
-    member = request.user.get_profile()
+    member = request.user
 
     display_popup = False
     if not request.session.get("revisited"):
@@ -74,7 +74,7 @@ def standalone(request):
         display_popup = True
 
     if request.COOKIES.get('dont_show_welcome_%s' %
-            request.user.get_profile().facebook_id):
+            request.user.facebook_id):
         display_popup = False
 
 
@@ -134,7 +134,7 @@ def winners(request, page):
                                .select_related('item', 'winner')
                                .order_by('-won_date'))
     for auction in auctions:
-        auction.winner_member = Member.objects.filter(user__id=auction.winner.id)[0]
+        auction.winner_member = Member.objects.filter(id=auction.winner.id)[0]
     #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
     return render_response(request, 'bidding/ibidgames_winners.html',{'auctions': auctions, 'current_page': page})
 
@@ -165,7 +165,7 @@ def faq(request):
     if not request.user.is_authenticated():
         return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
-    member = request.user.get_profile()
+    member = request.user
 
     if not request.session.get("revisited"):
         request.session["revisited"] = True
@@ -181,7 +181,7 @@ def web_home(request):
 
 
 def history(request):
-    member = request.user.get_profile()
+    member = request.user
     return render_response(request, "bidding/history.html", {'history': member.bids_history()})
 
 
@@ -190,7 +190,7 @@ class CurrencyHistory(ListView):
     template_name = "bidding/history.html"
 
     def get_queryset(self):
-        return ConvertHistory.objects.filter(member=self.request.user.get_profile())
+        return ConvertHistory.objects.filter(member=self.request.user)
 
 
 def winner_email_example(request):
