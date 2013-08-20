@@ -513,4 +513,3 @@ def get_auction_or_404(request):
 
 django_facebook.connect.connect_user = connect_user
 django_facebook.connect._register_user = _register_user
-
