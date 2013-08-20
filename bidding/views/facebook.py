@@ -139,12 +139,27 @@ def fb_login(request):
     return render_response(request, 'fb_redirect.html', {'authorization_url': fb_url + 'home/?aaa=2'})
 
 
+def fb_check_like(request):
+    member = request.user.get_profile()
+    response = False
+    try:
+        likes = member.fb_check_like()
+        if likes:
+            for like in likes['data']:
+                if like['application']['name'] == settings.FACEBOOK_APP_NAME:
+                    logger.debug(like['application']['name'])
+                response = True
+                break
+    except Exception as e:
+        raise
+    return HttpResponse(json.dumps({'like':response,}))
+
 def fb_like(request):
     member = request.user.get_profile()
     if request.method == 'POST':
         try:
             member.fb_like()
-            like = FacebookLike.objects.filter(user_id = member.user.id, facebook_id = member.facebook_id)
+            like = member.likes()
             if not like:
                 like = FacebookLike.objects.create(user_id = member.user.id,
                                                    facebook_id = member.facebook_id,
@@ -165,6 +180,7 @@ def fb_like(request):
             if str(e).find('error code 3501'):
                 return HttpResponse(json.dumps({'info':'ALREADY_LIKE',}))
             raise
+    return HttpResponse(request.method)
 
 def store_invitation(request):
     auction = get_auction_or_404(request)

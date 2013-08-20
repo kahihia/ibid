@@ -371,6 +371,13 @@ class Member(AuditedModel):
         response = of.set('me/feed', **args)
         logger.debug("Response: %s" % response)
     
+    def fb_check_like(self):
+        ''' Checks if user likes the app in facebook '''
+        of = open_facebook.OpenFacebook(self.access_token)
+        response = of.get('me/og.likes',)
+        return response
+    
+    
     def fb_like(self):
         ''' User like the app in facebook '''
         of = open_facebook.OpenFacebook(self.access_token)
