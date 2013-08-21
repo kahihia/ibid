@@ -1,5 +1,7 @@
-from bidding.models import Auction
 from django.contrib.sitemaps import Sitemap
+
+from bidding.models import Auction
+
 
 class AuctionSitemap(Sitemap):
     changefreq = "never"

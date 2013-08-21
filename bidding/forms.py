@@ -54,6 +54,7 @@ class ItemAdminForm(forms.ModelForm):
     class Meta:
         model = models.Item
     
+
 class AuctionAdminForm(forms.ModelForm):
 
     def _validate_minimum(self):
@@ -94,6 +95,7 @@ class AuctionAdminForm(forms.ModelForm):
     
     class Meta:
         model = models.Auction
+
 
 """
 Forms and validation code for user registration.

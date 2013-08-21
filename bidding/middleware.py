@@ -8,6 +8,7 @@ from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
 
 SSL = 'SSL'
 
+
 class SSLRedirect:
     
     def process_view(self, request, view_func, view_args, view_kwargs):
@@ -40,17 +41,11 @@ class SSLRedirect:
 
         return HttpResponsePermanentRedirect(newurl)
 
+
 class P3PHeaderMiddleware(object):
     def process_response(self, request, response):
-        #response['P3P'] = getattr(settings, 'P3P_COMPACT_SAFARI', None)
         response['P3P'] = 'policyref="/w3c/p3p.xml", CP="NOI DSP COR NID CUR ADM DEV OUR BUS"'
         response['P3P'] = 'policyref="/w3c/p3p.xml", CP="CURa ADMa DEVa PSAo PSDo OUR BUS UNI PUR INT DEM STA PRE COM NAV OTC NOI DSP COR", Access-Control-Allow-Origin: *'
         response['Access-Control-Allow-Origin'] = '*'
         response['Set-Cookie'] = "test_cookie=1"
-
-
-        #response['P3P'] = getattr(settings, 'P3P_COMPACT_IE', None) + ', ' + getattr(settings, 'P3P_COMPACT_SAFARI', None)
         return response
-        
-
-
