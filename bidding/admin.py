@@ -1,12 +1,20 @@
 from django.contrib import admin
-#from django.contrib.auth import get_user_model
-from bidding.models import Auction, PromotedAuction, PrePromotedAuction, Item, ItemImage, BidPackage, \
-    ConvertHistory, FBOrderInfo, Member, ConfigKey
-from django.db.models import Count
 from django.contrib.auth.admin import UserAdmin
-#from django.contrib.auth.models import User
-#from django.conf import settings
-from bidding.forms import ItemAdminForm, AuctionAdminForm, ConfigKeyAdminForm
+from django.db.models import Count
+
+from bidding.forms import AuctionAdminForm
+from bidding.forms import ConfigKeyAdminForm
+from bidding.forms import ItemAdminForm
+from bidding.models import Auction
+from bidding.models import BidPackage
+from bidding.models import ConfigKey
+from bidding.models import ConvertHistory
+from bidding.models import FBOrderInfo
+from bidding.models import Item
+from bidding.models import ItemImage
+from bidding.models import Member
+from bidding.models import PrePromotedAuction
+from bidding.models import PromotedAuction
 
 
 class BidAdmin(admin.ModelAdmin):
@@ -24,10 +32,6 @@ def winner_name(obj):
 class AuctionAdmin(admin.ModelAdmin):
     form = AuctionAdminForm
 
-    #def queryset(self, request):
-    #    qs = (self.model._default_manager.get_query_set()
-    #          .extra(select={'db_address':"(SELECT street || ', ' || city || ', ' || state || ', ' || zip || ', ' || country from bidding_address where bidding_address.user_id = bidding_auction.winner_id)"}))
-    #    return qs
     list_display = ('item',
                     'bid_type',
                     'status',
@@ -39,7 +43,6 @@ class AuctionAdmin(admin.ModelAdmin):
                     winner_name)
     readonly_fields = ("id",)
     list_filter = ('is_active', 'status')
-    #raw_id_fields = ('item',)
     fieldsets = (
         (None, {
             'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active', 'always_alive')
@@ -77,16 +80,11 @@ admin.site.register(Auction, AuctionAdmin)
 class PrePromotedAuctionAdmin(admin.ModelAdmin):
     form = AuctionAdminForm
 
-    #def queryset(self, request):
-    #    qs = (self.model._default_manager.get_query_set()
-    #          .extra(select={'db_address':"(SELECT street || ', ' || city || ', ' || state || ', ' || zip || ', ' || country from bidding_address where bidding_address.user_id = bidding_auction.winner_id)"}))
-    #    return qs
     list_display = ('item',
                     'bid_type',
                     'status',
                     'is_active',)
     list_filter = ('is_active', 'status')
-    #raw_id_fields = ('item',)
     fieldsets = (
         (None, {
             'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active')
@@ -265,10 +263,8 @@ class ConfigKeyAdmin(admin.ModelAdmin):
 
 admin.site.register(ConfigKey, ConfigKeyAdmin)
 
-#admin.site.unregister(User)
 admin.site.register(Member, MemberUserAdmin)
 admin.site.register(BidPackage)
-#admin.site.register(Member)
 admin.site.register(ConvertHistory)
 admin.site.register(FBOrderInfo)
 

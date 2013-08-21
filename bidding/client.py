@@ -1,18 +1,22 @@
 # -*- coding: utf8 -*-
-from django.conf import settings
-import threading
 from datetime import datetime
-import time
-from Pubnub import Pubnub
-pubnub = Pubnub( settings.PUBNUB_PUB, settings.PUBNUB_SUB, settings.PUBNUB_SECRET, False)
-
 import logging
+import threading
+import time
+
+from django.conf import settings
+
+from Pubnub import Pubnub
+
+
 logger = logging.getLogger('django')
+pubnub = Pubnub( settings.PUBNUB_PUB, settings.PUBNUB_SUB, settings.PUBNUB_SECRET, False)
 
 
 def send_multiple_messages(pairs):
     for message, destination in pairs:
         send_pubnub_message(message, destination)
+
 
 def send_pubnub_message(message, destination):
     if type(message) is dict:
@@ -36,12 +40,6 @@ def _send_pubnub_message(message, destination):
    
     if type(message) is dict:
         message['timestamp'] = str(datetime.now())
-    ## threaded
-    #th = threading.Thread(target=pubnub.publish, args=[{
-    #      'channel' : destination,
-    #       'message' : message
-    #   }])
-    #th.start()
 
     ## non threaded
     info = pubnub.publish({
@@ -56,7 +54,7 @@ def _send_pubnub_message(message, destination):
         })
         if info[0]==0:
             logger.warn("Couldn't send message, connection lost.")  
-    #print(info)
+
 
 def sendPackedMessages(clientMessages):
     #group messages of the same channel
@@ -69,6 +67,7 @@ def sendPackedMessages(clientMessages):
 
     for key in tmp.keys():
         _send_pubnub_message(tmp[key], key)
+
 
 def auction_created(auction):
     tmp = {}
@@ -100,6 +99,7 @@ def auction_created(auction):
     result = {'method': 'appendAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
+
 def updatePrecap(auction):
     tmp = {}
     if auction.status == 'precap':
@@ -113,6 +113,7 @@ def updatePrecap(auction):
         
     nresult = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(nresult, '/topic/main/')
+
 
 def updatePrecapMessage(auction):
     tmp = {}
@@ -128,6 +129,7 @@ def updatePrecapMessage(auction):
     nresult = {'method': 'updateAuction', 'data': tmp}
     return (nresult, '/topic/main/')
 
+
 def auctionAwait(auction):
     tmp = {}
     tmp['id'] = auction.id
@@ -135,6 +137,7 @@ def auctionAwait(auction):
 
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
+
 
 def auctionActive(auction):
 
@@ -159,6 +162,7 @@ def auctionFinish(auction):
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
+
 def auctionPause(auction):
     tmp={}
     tmp['id'] = auction.id
@@ -166,6 +170,7 @@ def auctionPause(auction):
 
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
+
 
 def auctionResume(auction):
     tmp={}
@@ -175,6 +180,7 @@ def auctionResume(auction):
 
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
+
 
 def someoneClaimed(auction):
     tmp = {}
@@ -191,6 +197,7 @@ def someoneClaimed(auction):
     result = {'method': 'someoneClaimed', 'data': tmp}
     send_pubnub_message(result, '/topic/main/%s' % auction.id)
 
+
 def someoneClaimedMessage(auction):
     tmp = {}
     tmp['id'] = auction.id
@@ -206,6 +213,7 @@ def someoneClaimedMessage(auction):
     result = {'method': 'someoneClaimed', 'data': tmp}
     return (result, '/topic/main/%s' % auction.id)
 
+
 def do_send_auctioneer_message(auction,message):
     text = message.format_message()
 
@@ -218,6 +226,7 @@ def do_send_auctioneer_message(auction,message):
 
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
     send_pubnub_message(result, '/topic/main/%s' % auction.id)
+
 
 def do_send_chat_message(auction, message):
     text = message.format_message()
@@ -233,6 +242,7 @@ def do_send_chat_message(auction, message):
 
     send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
+
 def do_send_global_chat_message(member, text):
 
     user = {}
@@ -244,13 +254,16 @@ def do_send_global_chat_message(member, text):
 
     send_pubnub_message(result, 'global')
 
+
 def log(text):
     result = {'method': 'log', 'params': 'SERVER: '+repr(text)}
     send_pubnub_message(result, '/topic/main/' )
 
+
 def callReverse(userIdentifier, function):
     result = {'method': 'callReverse', 'params': {'userIdentifier':userIdentifier, 'function': function}}
     send_pubnub_message(result, '/topic/main/' )
+
 
 def update_credits(member):
     tmp = {}
