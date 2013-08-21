@@ -40,7 +40,7 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
 
     if len(userList):
         invited = userList[0]
-        prize = int(ConfigKey.objects.filter(key='INVITE_FRIENDS_TOKEN_PRIZE')[0].value)
+        prize = ConfigKey.get('INVITE_FRIENDS_TOKEN_PRIZE', 1000)
         invited.inviter.tokens_left += prize
         invited.inviter.save()
 

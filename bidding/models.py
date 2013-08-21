@@ -13,7 +13,7 @@ from datetime import timedelta
 import json
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User,AbstractUser
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Sum
@@ -22,7 +22,7 @@ from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
 from django_facebook import model_managers, settings as facebook_settings
 from django_facebook.utils import get_user_model
-
+from django_facebook.models import FacebookModel, FacebookUser, FacebookLike
 from bidding.delegate import state_delegates
 from audit.models import AuditedModel
 from urllib2 import urlopen
@@ -66,9 +66,9 @@ BID_TYPE_CHOICES = (
 )
 
 
-class Member(AuditedModel):
-    user = models.ForeignKey(User)
-
+class Member(AbstractUser, FacebookModel):
+    
+    
     bids_left = models.IntegerField(default=0)
     tokens_left = models.IntegerField(default=0)
     bidsto_left = models.IntegerField(default=0)
@@ -188,163 +188,9 @@ class Member(AuditedModel):
         return self.bid_set.all().order_by().values('auction__item__name', 'placed_amount', 'used_amount',
                                                     'auction__bid_type')
 
-    #Facebook fields
-    about_me = models.TextField(blank=True)
-    facebook_id = models.BigIntegerField(blank=True, unique=True, null=True)
-    access_token = models.TextField(blank=True, help_text='Facebook token for offline access')
-    facebook_name = models.CharField(max_length=255, blank=True)
-    facebook_profile_url = models.TextField(blank=True)
-    website_url = models.TextField(blank=True)
-    blog_url = models.TextField(blank=True)
-    image = models.ImageField(blank=True, null=True,
-                              upload_to='profile_images', max_length=255)
-    date_of_birth = models.DateField(blank=True, null=True)
-    raw_data = models.TextField(blank=True)
-
-    new_token_required = models.BooleanField(default=False,
-                                             help_text='Set to true if the access token is outdated or lacks permissions')
-
-    def refresh(self):
-        '''
-        Get the latest version of this object from the db
-        '''
-        return self.__class__.objects.get(id=self.id)
-
-    def get_user(self):
-        '''
-        Since this mixin can be used both for profile and user models
-        '''
-        if hasattr(self, 'user'):
-            user = self.user
-        else:
-            user = self
-        return user
-
-    def get_user_id(self):
-        '''
-        Since this mixin can be used both for profile and user_id models
-        '''
-        if hasattr(self, 'user_id'):
-            user_id = self.user_id
-        else:
-            user_id = self.id
-        return user_id
-
-    @property
-    def facebook_og_state(self):
-        if not self.facebook_id:
-            state = FACEBOOK_OG_STATE.NOT_CONNECTED
-        elif self.access_token and self.facebook_open_graph:
-            state = FACEBOOK_OG_STATE.SHARING
-        else:
-            state = FACEBOOK_OG_STATE.CONNECTED
-        return state
-
-    def likes(self):
-        likes = FacebookLike.objects.filter(user_id=self.get_user_id())
-        return likes
-
-    def friends(self):
-        friends = FacebookUser.objects.filter(user_id=self.get_user_id())
-        return friends
-
-    def disconnect_facebook(self):
-        self.access_token = None
-        self.new_token_required = False
-        self.facebook_id = None
-
-    def clear_access_token(self):
-        self.access_token = None
-        self.new_token_required = False
-        self.save()
-
-    def update_access_token(self, new_value):
-        '''
-        Updates the access token
-
-        **Example**::
-
-            # updates to 123 and sets new_token_required to False
-            profile.update_access_token(123)
-
-        :param new_value:
-            The new value for access_token
-        '''
-        self.access_token = new_value
-        self.new_token_required = False
-
-    def extend_access_token(self):
-        '''
-        https://developers.facebook.com/roadmap/offline-access-removal/
-        We can extend the token only once per day
-        Normal short lived tokens last 1-2 hours
-        Long lived tokens (given by extending) last 60 days
-
-        The token can be extended multiple times, supposedly on every visit
-        '''
-        logger.info('extending access token for user %s', self.get_user())
-        results = None
-        if facebook_settings.FACEBOOK_CELERY_TOKEN_EXTEND:
-            from django_facebook import tasks
-            tasks.extend_access_token.delay(self, self.access_token)
-        else:
-            results = self._extend_access_token(self.access_token)
-        return results
-
-    def _extend_access_token(self, access_token):
-        from open_facebook.api import FacebookAuthorization
-        results = FacebookAuthorization.extend_access_token(access_token)
-        access_token = results['access_token']
-        old_token = self.access_token
-        token_changed = access_token != old_token
-        message = 'a new' if token_changed else 'the same'
-        log_format = 'Facebook provided %s token, which expires at %s'
-        expires_delta = timedelta(days=60)
-        logger.info(log_format, message, expires_delta)
-        if token_changed:
-            logger.info('Saving the new access token')
-            self.update_access_token(access_token)
-            self.save()
-
-        from django_facebook.signals import facebook_token_extend_finished
-        facebook_token_extend_finished.send(
-            sender=get_user_model(), user=self.get_user(), profile=self,
-            token_changed=token_changed, old_token=old_token
-        )
-
-        return results
-
-    def get_offline_graph(self):
-        '''
-        Returns a open facebook graph client based on the access token stored
-        in the user's profile
-        '''
-        from open_facebook.api import OpenFacebook
-        if self.access_token:
-            graph = OpenFacebook(access_token=self.access_token)
-            graph.current_user_id = self.facebook_id
-            return graph
-
-
-    @property
-    def open_graph_new_token_required(self):
-        '''
-        Shows if we need to (re)authenticate the user for open graph sharing
-        '''
-        reauthentication = False
-        if self.facebook_open_graph and self.new_token_required:
-            reauthentication = True
-        elif self.facebook_open_graph is None:
-            reauthentication = True
-        return reauthentication
-
-    def __unicode__(self):
-        return self.user.__unicode__()
-
-
     def display_name(self):
-        return "%s %s" % (self.user.first_name,
-                          self.user.last_name)
+        return "%s %s" % (self.first_name,
+                          self.last_name)
 
     def display_linked_facebook_profile(self):
         output = ""
@@ -371,6 +217,13 @@ class Member(AuditedModel):
         response = of.set('me/feed', **args)
         logger.debug("Response: %s" % response)
     
+    def fb_check_like(self):
+        ''' Checks if user likes the app in facebook '''
+        of = open_facebook.OpenFacebook(self.access_token)
+        response = of.get('me/og.likes',)
+        return response
+    
+    
     def fb_like(self):
         ''' User like the app in facebook '''
         of = open_facebook.OpenFacebook(self.access_token)
@@ -392,24 +245,6 @@ class Member(AuditedModel):
         #response.set_cookie('fresh_registration', self.user_id)
 
         return response
-
-    def extend_access_token(self):
-        pass
-
-    def update_access_token(self, new_value):
-        '''
-        Updates the access token
-
-        **Example**::
-
-            # updates to 123 and sets new_token_required to False
-            profile.update_access_token(123)
-
-        :param new_value:
-            The new value for access_token
-        '''
-        self.access_token = new_value
-        self.new_token_required = False
 
     def getSession(self, key=None, default=None):
         if not key:
@@ -445,70 +280,6 @@ class Member(AuditedModel):
         del s[key]
         self.session = json.dumps(s)
         self.save()
-
-class FacebookUser(models.Model):
-    '''
-    Model for storing a users friends
-    '''
-    # in order to be able to easily move these to an another db,
-    # use a user_id and no foreign key
-    user_id = models.IntegerField()
-    facebook_id = models.BigIntegerField()
-    name = models.TextField(blank=True, null=True)
-    gender = models.CharField(choices=(
-        ('F', 'female'), ('M', 'male')), blank=True, null=True, max_length=1)
-
-    objects = model_managers.FacebookUserManager()
-
-    class Meta:
-        unique_together = ['user_id', 'facebook_id']
-
-    def __unicode__(self):
-        return u'Facebook user %s' % self.name
-
-
-class FacebookLike(models.Model):
-
-    '''
-    Model for storing all of a users fb likes
-    '''
-    # in order to be able to easily move these to an another db,
-    # use a user_id and no foreign key
-    user_id = models.IntegerField()
-    facebook_id = models.BigIntegerField()
-    name = models.TextField(blank=True, null=True)
-    category = models.TextField(blank=True, null=True)
-    created_time = models.DateTimeField(blank=True, null=True)
-
-    class Meta:
-
-        unique_together = ['user_id', 'facebook_id']
-
-class FACEBOOK_OG_STATE:
-
-    class NOT_CONNECTED:
-
-        '''
-        The user has not connected their profile with Facebook
-        '''
-        pass
-
-    class CONNECTED:
-
-        '''
-        The user has connected their profile with Facebook, but isn't
-        setup for Facebook sharing
-        - sharing is either disabled
-        - or we have no valid access token
-        '''
-        pass
-
-    class SHARING(CONNECTED):
-
-        '''
-        The user is connected to Facebook and sharing is enabled
-        '''
-        pass
 
 
 class Item(AuditedModel):
@@ -554,7 +325,7 @@ class Auction(AbstractAuction):
 
     #winner info
     won_date = models.DateTimeField(null=True, blank=True)
-    winner = models.ForeignKey(User, blank=True, null=True)
+    winner = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='autcions', blank=True, null=True)
     won_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     #scheduling options
@@ -838,5 +609,29 @@ class ConfigKey(models.Model):
     value = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
+
+    @staticmethod
+    def get(self, key,default=None):
+        result = ConfigKey.objects.filter(key=key)
+        if len(result):
+            result = result[0]
+            try:
+                #velidate the type
+                if result.value_type == 'text':
+                    return str(result)
+                elif result.value_type == 'int':
+                    return int(result)
+                elif result.value_type == 'boolean':
+                    if result.lower() in ('yes', 'si', 'true', 'verdad', 'verdadero'):
+                        return True
+                    else:
+                        return False
+                else:
+                    return result
+            except:
+                return default
+        else:
+            return default
+
     def __unicode__(self):
         return self.key

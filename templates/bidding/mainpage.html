@@ -139,7 +139,7 @@
 					{% for package in packages %}
 					<section>
 
-						<div class="btn" ng-click="buy_bids({{user.get_profile.id}},{{ package.id }},'{{SITE_NAME}}')">
+						<div class="btn" ng-click="buy_bids({{user.id}},{{ package.id }},'{{SITE_NAME}}')">
 							{{ package.description }}
 						</div>
 					</section>
@@ -155,16 +155,16 @@
 
 					<div class="info">
 						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><img src="{% static 'images/icon-tokens.png' %}">Convert Tokens to Credits</span>
-						</br>You have <b class="number"><span id="convertible_tokens">{{ user.get_profile.tokens_left }}</span></b>
+						</br>You have <b class="number"><span id="convertible_tokens">{{ user.tokens_left }}</span></b>
 						Tokens and you can convert it up to
-						<b class="number"><span id="maximun_bidsto">{{ user.get_profile.maximun_bids_from_tokens }}</span></b> Credits.
+						<b class="number"><span id="maximun_bidsto">{{ user.maximun_bids_from_tokens }}</span></b> Credits.
 						<br><strong>10,000 Tokens = 1 Credit</strong></br>
 
 						Please select the required amount of Credits.</br>
 						<div class="warning"></div>
 						<section>
 							<select id="tokens_to_convert">
-								{%  for conv in user.get_profile.gen_available_tokens_to_bids %}
+								{%  for conv in user.gen_available_tokens_to_bids %}
 								<option value={{ conv }}>{{ conv }}</option>
 								{% endfor %}
 							</select>
@@ -251,9 +251,8 @@
 
 					<div class="buttons">
 						<div class="button invite" ng-click="sendRequestViaMultiFriendSelector()"></div>
-						<div class="button like" ng-click="fb_like({{user.get_profile}})"></div>
+						<div class="button like" ng-init="fb_check_like()" ng-click="fb_like()"></div>
 						<div class="button share" ng-click="shareOnTimeline()"></div>
-
 					</div>
 					<div class="logo">
 						<img src="{% static 'images/logo.png' %}" width="293" height="105">
