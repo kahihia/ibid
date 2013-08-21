@@ -125,6 +125,8 @@ def fb_login(request):
         return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
     try:
+        if code[-1] == '/':
+            code = code[:-1:]
         token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
         action, user = django_facebook.connect.connect_user(request, token)
     except ParameterException:
