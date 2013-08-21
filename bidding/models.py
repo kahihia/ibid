@@ -13,7 +13,7 @@ from datetime import timedelta
 import json
 
 from django.conf import settings
-from django.contrib.auth.models import User,AbstractUser
+from django.contrib.auth.models import AbstractUser,UserManager
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Sum
@@ -67,7 +67,7 @@ BID_TYPE_CHOICES = (
 
 
 class Member(AbstractUser, FacebookModel):
-    
+    objects = UserManager()
     
     bids_left = models.IntegerField(default=0)
     tokens_left = models.IntegerField(default=0)

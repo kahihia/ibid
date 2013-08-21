@@ -43,7 +43,7 @@ AUTHENTICATION_BACKENDS = (
     'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
 )
-AUTH_USER_MODEL="bidding.member"
+AUTH_USER_MODEL="bidding.Member"
 #AUTH_PROFILE_MODULE = 'bidding.member'
 #ABSOLUTE_URL_OVERRIDES = {
 #    'auth.user': lambda o: '/bids/user/%s/' % o.username
@@ -135,7 +135,7 @@ FIXTURE_DIRS = (
 
 INSTALLED_APPS = (
     
-    'bidding',
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -143,7 +143,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
-    
+    'bidding',
     
     'south',
     
@@ -163,7 +163,7 @@ INSTALLED_APPS = (
     'cumulus',
 
     # Needed by django facebook
-    'registration',
+    #'registration',
     'django_facebook',
     'django.contrib.staticfiles',
 )
