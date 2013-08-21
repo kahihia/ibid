@@ -18,8 +18,6 @@ class YambidRegistration(object):
         
         new_user = Member.objects.create_user(username, email, password)
         new_user.is_active = True
-
-        new_user = Member()
         new_user.save()
         
         return new_user
