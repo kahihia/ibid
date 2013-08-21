@@ -107,6 +107,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'bidding.middleware.P3PHeaderMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'django_facebook.middleware.FacebookCanvasMiddleWare',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'

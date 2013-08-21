@@ -20,17 +20,15 @@ def render_response(req, *args, **kwargs):
     return render_to_response(*args, **kwargs)
 
 
-def mainpage(request):
-    url = settings.FACEBOOK_CANVAS_HOME_URL.format(appname=settings.FACEBOOK_APP_NAME)
-    return HttpResponseRedirect(url)
-
-
 def canvashome(request):
     redirectTo = request.session.get('redirect_to', False)
     if redirectTo:
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
-
+    
+    if not request.user.is_authenticated() :
+        return HttpResponseRedirect(reverse('fb_auth'))
+    
     #TODO try catch to avoid ugly error when admin is logged
     member = request.user
 
