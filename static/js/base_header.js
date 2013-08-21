@@ -194,8 +194,9 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             function(data){
                 if (data['like']){
                     jQuery('.button.like').addClass('disabled');
+                    jQuery('.button.like').addClass('liked');
+                    jQuery('.button.like').removeClass('like');
                 }else{
-                    jQuery('.button.like').removeClass('disabled');
                 }});
     };
     
@@ -209,6 +210,8 @@ function userDetailsCtrl($scope, $rootScope, $http) {
                      * data['gift'] says the amount of tokens gifted.
                      */
                     jQuery('.button.like').addClass('disabled');
+                    jQuery('.button.like').addClass('liked');
+                    jQuery('.button.like').removeClass('like');
                     jQuery('.tokens').text('TOKENS: ' + data['tokens']);
                     break;
                 case 'NOT_FIRST_LIKE':
@@ -218,6 +221,8 @@ function userDetailsCtrl($scope, $rootScope, $http) {
                      * The user is not getting the tokens.
                      */
                     jQuery('.button.like').addClass('disabled');
+                    jQuery('.button.like').addClass('liked');
+                    jQuery('.button.like').removeClass('like');
                     break;
                 case 'ALREADY_LIKE':
                     /*

@@ -611,18 +611,18 @@ class ConfigKey(models.Model):
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
 
     @staticmethod
-    def get(self, key,default=None):
-        result = ConfigKey.objects.filter(key=key)
+    def get( key,default=None):
+        result = ConfigKey.objects.filter(key=key).all()
         if len(result):
             result = result[0]
             try:
                 #velidate the type
                 if result.value_type == 'text':
-                    return str(result)
+                    return str(result.value)
                 elif result.value_type == 'int':
-                    return int(result)
+                    return int(result.value)
                 elif result.value_type == 'boolean':
-                    if result.lower() in ('yes', 'si', 'true', 'verdad', 'verdadero'):
+                    if result.value.lower() in ('yes', 'si', 'true', 'verdad', 'verdadero'):
                         return True
                     else:
                         return False
