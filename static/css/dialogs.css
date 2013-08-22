@@ -67,7 +67,7 @@ body {
 	position: fixed;
     top: 100px;
     left: 50%;
-    z-index: 99;
+    z-index: 1040;
     margin-left: -296px;
     background-image: url("../images/popup-frame.jpg");
     padding: 11px;
@@ -79,18 +79,36 @@ body {
     color: #c2c2c2;
     font-weight: 600;
 }
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  background-color: #000000;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
 .popup.wide {
 	width: 750px;
 }
 .popup .kenny {
-	position: absolute;
 	bottom: -60px;
 	left: -170px;
 }
 .popup .prize {
-	position: absolute;
 	bottom: -35px;
 	right: -60px;
+}
+.popup .kenny,
+.popup .prize {
+	display: none;
+	position: absolute;
+}
+.popup.item-decoration .kenny,
+.popup.item-decoration .prize {
+	display: block;
 }
 .popup .credits-img {
 	float: left;
@@ -126,6 +144,14 @@ body {
 	letter-spacing: 1px;
 	color: #ffeb00;
 	font-weight: normal;
+
+    -webkit-text-stroke: 1px black;
+    text-shadow:
+        3px 3px 0 black,
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
 }
 
 .popup .title-small {
@@ -174,6 +200,8 @@ body {
 	filter: dropshadow(color=#000, offx=0, offy=0);
 	text-align: center;
 	display: inline-block;
+	position: relative;
+	top: -20px;
 }
 .popup .content .tokens .value {
 	display: inline-block;
@@ -192,10 +220,11 @@ body {
 	margin-top: 24px;
 }
 .popup .content .item img {
-    -webkit-box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
-    box-shadow: 0px 0px 40px 3px rgba(0, 0, 0, 1);
+    -webkit-box-shadow: 0 0 40px 3px rgba(0, 0, 0, 1);
+    box-shadow: 0 0 40px 3px rgba(0, 0, 0, 1);
     border: 1px solid #9a9a9a;
-    width: 190px;
+    max-width: 190px;
+		max-height: 150px;
 }
 .popup .info {
 	/*width: 100%;*/

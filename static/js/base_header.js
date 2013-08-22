@@ -43,7 +43,6 @@ function userDetailsCtrl($scope, $rootScope, $http) {
                 $scope.user.credits = user.credits;
             });
     });
-
     $rootScope.$on('openGetCreditsPopover', function () {
         showOverlay();
         setTimeout(function () {
@@ -51,24 +50,39 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
         }, 300);
     });
-
     $rootScope.$on('closeGetCreditsPopover', function () {
         hideOverlay();
         TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
             jQuery('.buy-bids-popup').hide();
         }})
     });
-
-    $rootScope.$on('user:won', function (event, auction) {
-        // Show win modal.
-        $scope.wonAuction = auction;
-        // If playing for tokens, update user tokens also.
-        if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
+    $rootScope.$on('auction:finished', function (event, auction) {
+        $scope.$apply(function () {
+            // If current user won, show win modal.
+            if (auction.winner.facebookId !== $scope.user.facebookId) {
+                return;
+            }
+            $scope.wonAuction = auction;
+            $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
+            $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
+            // If playing for tokens, update user tokens.
+            if (auction.bidType !== $scope.AUCTION_TYPE_TOKENS) {
+                return;
+            }
             $rootScope.user.tokens += Number(auction.retailPrice);
-        }
+        });
     });
-
     $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
+
+    $scope.closeWonAuctionDialog = function () {
+        $scope.showWonTokensDialog = null;
+        $scope.showWonItemDialog = null;
+    };
+
+    $scope.closeWonAuctionDialogAndPlayForItems = function () {
+        $scope.closeWonAuctionDialog();
+        $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+    };
 
     $scope.showJoinedFriendsDialog = function (event, data) {
         $scope.joinedFriendsData = data;

@@ -16,17 +16,24 @@
                     );
                 }
             };
-        })
-        .directive('dialog', function () {
-            return {
-                replace: true,
-                restrict: 'E',
-                scope: {
-                    title: '@dialogTitle'
-                },
-                templateUrl: '/static/templates/dialog.html',
-                transclude: true//,
-                // link: function postLink (scope, element, attributes) {}
-            };
         });
+        // .directive('modal', function () {
+        //     return {
+        //         replace: true,
+        //         restrict: 'E',
+        //         scope: {
+        //             title: '@dialogTitle'//,
+        //             // closeButton: '@dialogClose',
+        //             // closeClass: '@dialogCloseClass'
+        //         },
+        //         templateUrl: '/static/template/dialog.html',
+        //         transclude: true//,
+        //         // link: function postLink (scope, element, attributes) {
+        //                // Alternative
+        //         //     scope.title = attributes.dialogTitle;
+        //         //     scope.close = attributes.dialogClose;
+        //         //     scope.closeClass = attributes.dialogCloseClass;
+        //         // }
+        //     };
+        // });
 }());

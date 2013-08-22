@@ -500,10 +500,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             }
                             break;
                         case 'waiting_payment':
-                            // If current user won, emit event.
-                            if (auction.winner.facebookId === $rootScope.user.facebookId) {
-                                $scope.$emit('user:won', auction);
-                            }
+                            $scope.$emit('auction:finished', auction);
                             // Tutorial.
                             if (tutorialActive && tutorialAuctionId === auction.id) {
                                 $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent5');}, 500);
