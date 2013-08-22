@@ -92,35 +92,6 @@ def give_bids(request):
 
     member.save()
 
-
-def fb_login(request):
-    """
-    Handles a facebook user's authentication and registering.
-    Creates the user if it's not registered. Otherwise just logs in.
-    """
-
-    code = request.GET.get('code')
-    if not code:
-        #authorization denied
-        return HttpResponseRedirect(reverse('bidding_anonym_home'))
-
-    try:
-        if code[-1] == '/':
-            code = code[:-1:]
-        token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
-        action, user = django_facebook.connect.connect_user(request, token)
-    except ParameterException:
-        return HttpResponseRedirect(reverse('fb_auth'))
-    #FIXME for test purposes
-    #give_bids(request)
-
-    if 'request_ids' in request.GET:
-        return handle_invitations(request)
-
-    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
-    return render_response(request, 'fb_redirect.html', {'authorization_url': fb_url + 'home/?aaa=2'})
-
-
 def fb_check_like(request):
     member = request.user
     response = False
@@ -159,8 +130,9 @@ def fb_like(request):
                             'gift': 0,
                             }), content_type="application/json")
         except OAuthException as e:
-            if str(e).find('error code 3501'):
+            if str(e).find('#3501') != -1:
                 return HttpResponse(json.dumps({'info':'ALREADY_LIKE',}))
+            #if str(e).find('#200') != -1:
             raise
     return HttpResponse(request.method)
 

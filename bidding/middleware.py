@@ -5,7 +5,9 @@ __contributors__ = "Jay Parlar - parlar@gmail.com"
 
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponsePermanentRedirect
-
+# this is important, if not here this more_signals wont be included anywhere
+# and stuff there wont work!
+import more_signals
 SSL = 'SSL'
 
 class SSLRedirect:

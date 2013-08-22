@@ -42,6 +42,7 @@ ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
 AUTHENTICATION_BACKENDS = (
     'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
+
 )
 AUTH_USER_MODEL="bidding.Member"
 #AUTH_PROFILE_MODULE = 'bidding.member'
