@@ -6,7 +6,7 @@ import time
 
 from django.conf import settings
 
-from Pubnub import Pubnub
+from lib.Pubnub import Pubnub
 
 
 logger = logging.getLogger('django')

@@ -134,8 +134,6 @@ FIXTURE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    
-    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -144,26 +142,18 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.sites',
     'bidding',
-    
     'south',
-    
     'audit',
-   
     'chat',
     'message',
     'admin_tools.theming',
     'admin_tools.menu',
     'admin_tools.dashboard',
-
     'paypal.standard.ipn',
     'sorl.thumbnail',
-    
-    
     'django_extensions',
     'cumulus',
-
     # Needed by django facebook
-    #'registration',
     'django_facebook',
     'django.contrib.staticfiles',
 )
