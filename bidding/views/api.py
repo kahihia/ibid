@@ -151,7 +151,6 @@ def getAuctionsInitialization(request):
         tmp['auctioneerMessages'] = []
         tmp['chatMessages'] = []
 
-        #tmp['won_price'] = str(auct.won_price)
         auctions_bid_finished.append(tmp)
 
     for auct in tokens_auctions['my_auctions']:
@@ -252,8 +251,6 @@ def getAuctionsInitialization(request):
 
 def startBidding(request):
     """ The users commits bids before the auction starts. """
-
-    #auction_id = int(request.GET.get('id', int(request.POST.get('id', 0))))
 
     requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])

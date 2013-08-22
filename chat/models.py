@@ -8,7 +8,6 @@ from django.db import models
 from django.conf import settings
 from django.contrib import auth
 
-from django.conf import settings
 from bidding.models import Auction, Member
 
 
@@ -18,6 +17,7 @@ CHATROOM_STATUS_CHOICES = (
      ('declined', 'Declined'),
      ('closed', 'Closed'),
 )
+
 
 def get_uuid():
     """
@@ -101,6 +101,7 @@ class Message(models.Model):
     
     class Meta:
         verbose_name = 'chat message'
+
 
 class AuctioneerPhrase(models.Model):
     key = models.CharField(max_length=20)

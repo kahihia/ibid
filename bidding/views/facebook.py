@@ -228,17 +228,12 @@ def callback_status_update(request):
     #checks that the request comes from Facebook
     if FacebookAuthorization.parse_signed_data(request.POST['signed_request']):
         details = json.loads(request.POST['order_details'])
-
-        #order_id = details['order_info']
-        #order = FBOrderInfo.objects.get(pk = order_id)
-        #package =
         logger.debug(details)
         logger.debug(request.POST)
         order_id = int(details['items'][0]['item_id'])
         order = FBOrderInfo.objects.get(pk=order_id)
         package = order.package
         logger.debug("Pacakge: %s" % package)
-        #package_id = int(details['items'][0]['item_id'])
 
         member = Member.objects.get(facebook_id=details['buyer'])
         member.bids_left += package.bids
