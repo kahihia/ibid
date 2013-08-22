@@ -44,6 +44,7 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 AUTH_USER_MODEL="bidding.Member"
+#AUTH_USER_MODEL="auth.User"
 #AUTH_PROFILE_MODULE = 'bidding.member'
 #ABSOLUTE_URL_OVERRIDES = {
 #    'auth.user': lambda o: '/bids/user/%s/' % o.username
