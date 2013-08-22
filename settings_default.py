@@ -243,8 +243,8 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
 
-ADMIN_TOOLS_MENU = 'menu.CustomMenu'
-ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_MENU = 'admtools.menu.CustomMenu'
+ADMIN_TOOLS_INDEX_DASHBOARD = 'admtools.dashboard.CustomIndexDashboard'
 
 
 # Facebook settings

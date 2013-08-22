@@ -3,7 +3,7 @@ from admin_tools.dashboard import modules, Dashboard, AppIndexDashboard
 
 # to activate your index dashboard add the following to your settings.py:
 #
-# ADMIN_TOOLS_INDEX_DASHBOARD = 'yambidsite.dashboard.CustomIndexDashboard'
+# ADMIN_TOOLS_INDEX_DASHBOARD = 'admtools.dashboard.CustomIndexDashboard'
 
 class CustomIndexDashboard(Dashboard):
     """
@@ -51,7 +51,7 @@ class CustomIndexDashboard(Dashboard):
 
 # to activate your app index dashboard add the following to your settings.py:
 #
-# ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'yambidsite.dashboard.CustomAppIndexDashboard'
+# ADMIN_TOOLS_APP_INDEX_DASHBOARD = 'admtools.dashboard.CustomAppIndexDashboard'
 
 class CustomAppIndexDashboard(AppIndexDashboard):
     """
