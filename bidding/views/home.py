@@ -12,7 +12,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import ListView
 
-from bidding.models import Auction, ConvertHistory, Member
+from bidding.models import Auction, ConvertHistory, Member, BidPackage
 
 
 def render_response(req, *args, **kwargs):
@@ -61,6 +61,7 @@ def canvashome(request):
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
+                                'packages': BidPackage.objects.all(),
                                 'inCanvas':False})
     return response
 
@@ -122,6 +123,7 @@ def standalone(request):
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
+                                'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
                                 'inCanvas':False})
 
