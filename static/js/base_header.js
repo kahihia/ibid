@@ -57,20 +57,18 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         }})
     });
     $rootScope.$on('auction:finished', function (event, auction) {
-        $scope.$apply(function () {
-            // If current user won, show win modal.
-            if (auction.winner.facebookId !== $scope.user.facebookId) {
-                return;
-            }
-            $scope.wonAuction = auction;
-            $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
-            $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
-            // If playing for tokens, update user tokens.
-            if (auction.bidType !== $scope.AUCTION_TYPE_TOKENS) {
-                return;
-            }
-            $rootScope.user.tokens += Number(auction.retailPrice);
-        });
+        // If current user won, show win modal.
+        if (auction.winner.facebookId !== $scope.user.facebookId) {
+            return;
+        }
+        $scope.wonAuction = auction;
+        $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
+        $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
+        // If playing for tokens, update user tokens.
+        if (auction.bidType !== $scope.AUCTION_TYPE_TOKENS) {
+            return;
+        }
+        $rootScope.user.tokens += Number(auction.retailPrice);
     });
     $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
 
