@@ -273,7 +273,7 @@ FACEBOOK_AUTH_REDIRECT_URL = FACEBOOK_CANVAS_HOME_URL
 FACEBOOK_DEFAULT_SCOPE = ['email', 'user_about_me', 'user_birthday', 'user_website','publish_actions']
 # Needed by django-facebook to use the middleware with the canvas (django_facebook.canvas.py)
 # It's the redirect url that the middleware sends when asking facebook for the permissions dialog
-FACEBOOK_CANVAS_PAGE='http://apps.facebook.com/ibiddev/canvashome/'
+FACEBOOK_CANVAS_PAGE='http://apps.facebook.com/ibidgames/canvashome/'
 
 
 # PubNub settings
