@@ -290,8 +290,8 @@
 				</div>
 			</div>
 
-			<!-- Joined friends dialog -->
-			<div class="joined-friends-modal" ng-show="joinedFriendsData">
+			<!-- Joined friends modal -->
+			<!-- <div class="joined-friends-modal" ng-show="joinedFriendsData">
 				<div class="popup">
 					<div class="title">
 						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
@@ -308,7 +308,64 @@
 						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
 					</div>
 				</div>
-			</div>
+			</div> -->
+            <div class="modal" ng-show="joinedFriendsData" ng-cloak>
+                <div class="btn-close">
+                    x
+                </div>
+
+                <div class="gloss"></div>
+                <div class="title-small"><img src="images/popup-title-newFriends.png" />
+                </div>
+                <div class="content">
+                    <div class="text-large-w">
+                        Your friends accepted the invitation:
+                    </div>
+                    <div class="friends-list text-small-w">
+                        <ul>
+                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
+                            </li>
+
+                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
+                            </li>
+
+                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
+                            </li>
+
+                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
+                            </li>
+
+                        </ul>
+                        <span class="text-small-w">and 40 friends more...</span>
+                    </div>
+                    <div class="tokens-column">
+                        <div class="tokens">
+                            <span>= </span>
+                            <div class="value">
+                                <p>
+                                    You get
+                                </p>
+                                23443
+                                <p>
+                                    free Tokens
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="info text-small-w">
+                    <span>...............................................................................................</span>
+                    </br>You will receive 5000 Tokens for each friend</br>
+                    that accept your request.
+                </div>
+                <div class="buttons">
+                    <div class="btn btn-green">
+                        Invite more friends!
+                    </div>
+                </div>
+                <div class="bkg"></div>
+            </div>
 
 			<!--GLOBAL chat-->
 			<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled">
