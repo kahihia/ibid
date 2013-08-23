@@ -211,6 +211,7 @@ body {
 	display: inline-block;
 	vertical-align: -14px;
 	line-height: 27px;
+	position:relative;
 }
 .modal .content .tokens p {
 	font-size: 12px;

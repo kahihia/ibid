@@ -144,6 +144,9 @@
 	-webkit-transition: .1s;
 	transition: .1s;
 }
+.btn-close:before {
+ content: X;
+}
 .btn-close:hover {
     -moz-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
     -webkit-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
