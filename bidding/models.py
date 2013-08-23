@@ -608,8 +608,8 @@ class ConfigKey(models.Model):
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
 
     @staticmethod
-    def get(key,default=None):
-        result = ConfigKey.objects.filter(key=key)
+    def get( key,default=None):
+        result = ConfigKey.objects.filter(key=key).all()
         if len(result):
             result = result[0]
             try:

@@ -10,8 +10,12 @@ from bidding.models import Auction, Invitation, ConfigKey
 import message.value_objects as vo
 import message.value_objects_factory as vo_factory
 from django.contrib.auth.models import User
+from django_facebook.utils import get_user_model
 
 from django_facebook import signals
+import logging
+
+logger = logging.getLogger('django')
 
 precap_finished_signal = Signal(providing_args=["auction"])
 
@@ -24,15 +28,12 @@ def auctionCreated(**kwargs):
 post_save.connect(auctionCreated, Auction)
 
 
-
-
-
 def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
+    logger.debug('fb_user_registered_handler')
     member = user
     member.bids_left = 0
     member.tokens_left = 2000
     member.save()
-
     #was this user invited?
     userList = Invitation.objects.filter(invited_facebook_id=facebook_data['facebook_id'])
 
@@ -53,22 +54,4 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
 
         invited.inviter.setSession('event',eventList)
 
-
-        #actok = urlparse.parse_qs(urlparse.urlsplit(facebook_data['image'])[3])['access_token']
-        #check permission
-        #of = open_facebook.OpenFacebook(actok[0])
-        #res = of.get('/me/permissions')
-        #res = {u'paging': {u'next': u'https://graph.facebook.com/100004432174268/permissions?access_token=AAADmEQx6CoMBACatrXgdjUzxQhzWWOZADs1Age3cyJhaK3V3CW1oz2VeTaeZBpl8rq0ghzwKV1oVpZCf3GnBPJci6ptSWWGTbTqgmvLGAZDZD&limit=5000&offset=5000'}, u'data': [{u'bookmarked': 1, u'publish_actions': 1, u'create_note': 1, u'user_birthday': 1, u'video_upload': 1, u'user_location': 1, u'installed': 1, u'publish_stream': 1, u'photo_upload': 1, u'share_item': 1, u'email': 1, u'status_update': 1}]}
-        #if 'data' in res and len(res['data']) and 'publish_stream' in res['data'][0] and bool(res['data'][0]['publish_stream']):
-        #    invited.inviter.tokens_left += 500
-        #invited.inviter.save()
-
-signals.facebook_user_registered.connect(fb_user_registered_handler, sender=User)
-
-#def auction_created(sender, instance, signal, *args, **kwargs):
-#    client.log('auction created !!!!')
-#    if 'created' in kwargs:
-#        if kwargs['created']:
-#            client.auction_created(sender)
-# Send email
-#post_save.connect(auction_created, sender=Auction)
+signals.facebook_user_registered.connect(fb_user_registered_handler, sender=get_user_model())

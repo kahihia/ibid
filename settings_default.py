@@ -42,6 +42,7 @@ ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
 AUTHENTICATION_BACKENDS = (
     'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
+
 )
 AUTH_USER_MODEL="bidding.Member"
 #AUTH_USER_MODEL="auth.User"
@@ -108,6 +109,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'bidding.middleware.P3PHeaderMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'django_facebook.middleware.FacebookCanvasMiddleWare',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'

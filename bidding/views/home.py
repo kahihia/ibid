@@ -13,16 +13,13 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import ListView
 
 from bidding.models import Auction, ConvertHistory, Member
+import logging
 
+logger = logging.getLogger('django')
 
 def render_response(req, *args, **kwargs):
     kwargs['context_instance'] = RequestContext(req)
     return render_to_response(*args, **kwargs)
-
-
-def mainpage(request):
-    url = settings.FACEBOOK_CANVAS_HOME_URL.format(appname=settings.FACEBOOK_APP_NAME)
-    return HttpResponseRedirect(url)
 
 
 def canvashome(request):
@@ -30,7 +27,14 @@ def canvashome(request):
     if redirectTo:
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
-
+    
+    if not request.user.is_authenticated() :
+        #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
+        fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+        request.META['HTTP_REFERER']=fb_url
+        return render_response(request, 'fb_redirect.html', {'authorization_url': fb_url })
+        
+        
     #TODO try catch to avoid ugly error when admin is logged
     member = request.user
 
@@ -51,6 +55,7 @@ def canvashome(request):
     if request.COOKIES.get('dont_show_welcome_%s' %
             request.user.facebook_id):
         display_popup = False
+    
 
     response = render_response(request, 'bidding/mainpage.html',
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
@@ -61,7 +66,8 @@ def canvashome(request):
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
-                                'inCanvas':False})
+                            'inCanvas':False})
+  
     return response
 
 
@@ -175,9 +181,6 @@ def faq(request):
                                 'facebook_user_id': member.facebook_id})
     return response
 
-
-def web_home(request):
-    return HttpResponseRedirect(reverse('fb_auth'))
 
 
 def history(request):
