@@ -265,12 +265,12 @@ FACEBOOK_APP_ID = ''
 FACEBOOK_APP_SECRET = ''
 FACEBOOK_APP_NAME = 'ibidgames'
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
-FACEBOOK_REGISTRATION_BACKEND = 'registration.backends.default.DefaultBackend'
-#FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
-FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
+FACEBOOK_REGISTRATION_BACKEND = 'authbackends.YambidRegistration'
+FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream,publish_actions'
 FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
-FACEBOOK_AUTH_REDIRECT_URL = 'https://apps.facebook.com/{appname}/fb/login/'
-FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/' 
+FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/'
+FACEBOOK_AUTH_REDIRECT_URL = FACEBOOK_CANVAS_HOME_URL
+FACEBOOK_DEFAULT_SCOPE = ['email', 'user_about_me', 'user_birthday', 'user_website','publish_actions'] 
 
 
 # PubNub settings
