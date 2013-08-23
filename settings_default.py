@@ -36,13 +36,18 @@ MANAGERS = ADMINS
 
 ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
 
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
-                           'django_facebook.auth_backends.FacebookBackend',)
+#AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
+#                           'django_facebook.auth_backends.FacebookBackend',)
 
-AUTH_PROFILE_MODULE = 'bidding.member'
-ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': lambda o: '/bids/user/%s/' % o.username
-}
+AUTHENTICATION_BACKENDS = (
+    'django_facebook.auth_backends.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+AUTH_USER_MODEL="bidding.Member"
+#AUTH_PROFILE_MODULE = 'bidding.member'
+#ABSOLUTE_URL_OVERRIDES = {
+#    'auth.user': lambda o: '/bids/user/%s/' % o.username
+#}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -107,14 +112,15 @@ MIDDLEWARE_CLASSES = (
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.request",
-    "django.core.context_processors.media",
-    "django.contrib.messages.context_processors.messages",
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     'django_facebook.context_processors.facebook',
-    "bidding.context_processors.settings_context",
-    "bidding.context_processors.packages_context",
 )
 
 ROOT_URLCONF = 'urls'
@@ -128,10 +134,8 @@ FIXTURE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'admin_tools.theming',
-    'admin_tools.menu',
-    'admin_tools.dashboard',
-
+    
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -139,20 +143,27 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
-
-    'audit',
     'bidding',
+    
+    'south',
+    
+    'audit',
+   
     'chat',
     'message',
+    'admin_tools.theming',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
 
     'paypal.standard.ipn',
     'sorl.thumbnail',
-    'south',
+    
+    
     'django_extensions',
     'cumulus',
 
     # Needed by django facebook
-    'registration',
+    #'registration',
     'django_facebook',
     'django.contrib.staticfiles',
 )
@@ -252,7 +263,8 @@ FACEBOOK_APP_ID = ''
 FACEBOOK_APP_SECRET = ''
 FACEBOOK_APP_NAME = 'ibidgames'
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
-FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
+FACEBOOK_REGISTRATION_BACKEND = 'registration.backends.default.DefaultBackend'
+#FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
 FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
 FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
 FACEBOOK_AUTH_REDIRECT_URL = 'https://apps.facebook.com/{appname}/fb/login/'

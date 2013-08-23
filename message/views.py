@@ -75,6 +75,7 @@ class bidding(object):
         #################################
         ## event load user data        ##
         #################################
+
         event = vo.Event()
         event['event'] = vo.Event.EVENT.MAIN__LOAD_USER_DETAILS
         event['data'] = vo_factory.create_voLoggedInUser(member)
@@ -157,6 +158,7 @@ class bidding(object):
         #################################
         ## event open global chat      ##
         #################################
+
         openGlobalChat = ConfigKey.objects.filter(key='OPEN_GLOBAL_CHAT')[0].value
 
         if openGlobalChat == 'yes':

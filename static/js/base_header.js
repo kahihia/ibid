@@ -189,36 +189,49 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         });
     };
 
-    $scope.fb_like= function(member) {
-        try {
-            $http.post('/fb_like/').success(
-             function(data){
-                 switch (data['info']) {
-                    case 'FIRST_LIKE':
-                        /*
-                         * In this case the user receives tokens because is the first like.
-                         * data['gift'] says the amount of tokens gifted.
-                         */
-                        jQuery('.tokens').text('TOKENS: ' + data['tokens'])
-                        break;
-                    case 'NOT_FIRST_LIKE':
-                        /*
-                         * In this case the user is liking but not for the first time.
-                         * For example when the user stops liking in facebook and likes again.
-                         * The user is not getting the tokens.
-                         */ 
-                        break;
-                    case 'ALREADY_LIKE':
-                        /*
-                         * This is a case that occurs when the user already likes and facebook returns
-                         * a error code 3501
-                         */
-                        break;
-                 }
-             });
-        } catch(e) {
-            alert(e);
-        }
+    $scope.fb_check_like= function() {
+        $http.post('/fb_check_like/').success(
+            function(data){
+                if (data['like']){
+                    jQuery('.button.like').addClass('disabled');
+                    jQuery('.button.like').addClass('liked');
+                    jQuery('.button.like').removeClass('like');
+                }else{
+                }});
+    };
+    
+    $scope.fb_like= function() {
+        $http.post('/fb_like/').success(
+         function(data){
+             switch (data['info']) {
+                case 'FIRST_LIKE':
+                    /*
+                     * In this case the user receives tokens because is the first like.
+                     * data['gift'] says the amount of tokens gifted.
+                     */
+                    jQuery('.button.like').addClass('disabled');
+                    jQuery('.button.like').addClass('liked');
+                    jQuery('.button.like').removeClass('like');
+                    jQuery('.tokens').text('TOKENS: ' + data['tokens']);
+                    break;
+                case 'NOT_FIRST_LIKE':
+                    /*
+                     * In this case the user is liking but not for the first time.
+                     * For example when the user stops liking in facebook and likes again.
+                     * The user is not getting the tokens.
+                     */
+                    jQuery('.button.like').addClass('disabled');
+                    jQuery('.button.like').addClass('liked');
+                    jQuery('.button.like').removeClass('like');
+                    break;
+                case 'ALREADY_LIKE':
+                    /*
+                     * This is a case that occurs when the user already likes and facebook returns
+                     * a error code 3501
+                     */
+                    break;
+             }
+         });
     };
     
 };
