@@ -119,8 +119,8 @@
 				</div>
 
 			</div>
-			<!--buy credits popup-->
-			<div class="buy-bids-popup" style="z-index:1001;display:none;">
+			<!-- Buy credits modal -->
+			<!-- <div class="buy-bids-popup" style="z-index:1001;display:none;">
 				<div class="popup">
 					<div class="title">
 						<span class="close" ng-click="closeGetCredits()">×</span>
@@ -170,7 +170,94 @@
 						</section>
 					</div>
 				</div>
-			</div>
+			</div> -->
+            <div class="modal modal-wide" ng-show="showBuyCreditsModal" ng-cloak>
+                <div class="credits-img">
+                    <img src="images/popup-credits.png">
+                </div>
+                <div class="btn-close">
+                    x
+                </div>
+
+                <div class="gloss"></div>
+                <div class="title">Get credits</div>
+                <div class="content">
+
+                    <div class="column-left">
+                        <div class="title-content text-large-w">
+                            Buy iBidCredits
+                            <p class="text-small-w">
+                                Buy credits and get more chance to win auctions!
+                            </p>
+                        </div>
+                        <div class="credits-btn btn btn-red">
+                            <p>
+                                50
+                            </p>
+                            iBidCredits</br>
+                            for $5 uSd
+                        </div>
+                        <div class="credits-btn btn btn-red">
+                            <p>
+                                100
+                            </p>
+                            iBidCredits</br>
+                            for $9 uSd
+                        </div>
+                        <div class="credits-btn btn btn-red">
+                            <p>
+                                300
+                            </p>
+                            iBid-Credits</br>
+                            for $25 uSd
+                        </div>
+                        <div class="credits-btn btn btn-red">
+                            <p>
+                                500
+                            </p>
+                            iBidCredits</br>
+                            for $40 uSd
+                        </div>
+                    </div>
+                    <div class="column-dot"></div>
+                    <div class="column-right">
+                        <div class="title-content text-large-w">
+                            Convert Tokens to iBidCredits
+                            <p class="text-small-w">
+                                10.000 Tokens = 1 Credits
+                            </p>
+                        </div>
+
+                        <div class="tokens">
+                            <div class="value">
+                                <p>
+                                    You have
+                                </p>
+                                23443
+                                <p>
+                                    Tokens
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="credits-btn btn btn-red">
+                            <p>
+                                2
+                            </p>
+                            iBidCredits</br>
+                            for 20.000 Tokens
+                        </div>
+                    </div>
+
+                </div>
+
+                <!--<div class="buttons">
+                <div class="btn">
+                Cancel
+                </div>
+                </div>-->
+                <div class="bkg"></div>
+            </div>
 
 			<!--like popup-->
 			<div class="like-popup" >

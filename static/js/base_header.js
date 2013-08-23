@@ -44,11 +44,12 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             });
     });
     $rootScope.$on('openGetCreditsPopover', function () {
-        showOverlay();
-        setTimeout(function () {
-            jQuery('.buy-bids-popup').show();
-            TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
-        }, 300);
+        // showOverlay();
+        // setTimeout(function () {
+        //     jQuery('.buy-bids-popup').show();
+        //     TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
+        // }, 300);
+        $scope.showBuyCreditsModal = true;
     });
     $rootScope.$on('closeGetCreditsPopover', function () {
         hideOverlay();
