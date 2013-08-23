@@ -29,9 +29,7 @@ def canvashome(request):
         return HttpResponseRedirect(str(redirectTo))
     
     if not request.user.is_authenticated() :
-        #return HttpResponse('no entra al midelware -- '+'referer: '+ request.META['HTTP_REFERER'])
-        # este es el caso que no viene desde facebook osea que el midelware lo deja pasar y no esta autenticado
-        
+        #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
         fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
         request.META['HTTP_REFERER']=fb_url
         return render_response(request, 'fb_redirect.html', {'authorization_url': fb_url })
