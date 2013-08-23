@@ -152,9 +152,9 @@ def auctionFinish(auction):
     tmp={}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
-    tmp['winner'] = {'firstName': auction.winner.get_profile().user.first_name if auction.winner else 'Nobody has bid!',
-                     'displayName': auction.winner.get_profile().display_name() if auction.winner else 'Nobody',
-                     'facebookId': auction.winner.get_profile().facebook_id if auction.winner else ''}
+    tmp['winner'] = {'firstName': auction.winner.first_name if auction.winner else 'Nobody has bid!',
+                     'displayName': auction.winner.display_name() if auction.winner else 'Nobody',
+                     'facebookId': auction.winner.facebook_id if auction.winner else ''}
 
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
@@ -183,7 +183,7 @@ def someoneClaimed(auction):
     tmp['timeleft'] = auction.get_time_left()
     tmp['lastClaimer'] = auction.get_last_bidder().display_name()
     tmp['facebook_id'] = auction.get_last_bidder().facebook_id
-    tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
+    tmp['user'] = {'firstName': auction.get_last_bidder().first_name,
                      'displayName': auction.get_last_bidder().display_name(),
                      'facebookId': auction.get_last_bidder().facebook_id}
     tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
@@ -198,7 +198,7 @@ def someoneClaimedMessage(auction):
     tmp['timeleft'] = auction.get_time_left()
     tmp['lastClaimer'] = auction.get_last_bidder().display_name()
     tmp['facebook_id'] = auction.get_last_bidder().facebook_id
-    tmp['user'] = {'firstName': auction.get_last_bidder().user.first_name,
+    tmp['user'] = {'firstName': auction.get_last_bidder().first_name,
                      'displayName': auction.get_last_bidder().display_name(),
                      'facebookId': auction.get_last_bidder().facebook_id}
     tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
@@ -233,6 +233,17 @@ def do_send_chat_message(auction, message):
 
     send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
+def do_send_global_chat_message(member, text):
+
+    user = {}
+    user['displayName'] = member.user.first_name
+    user['profileFotoLink'] = "http://graph.facebook.com/%s/picture" % str(member.facebook_id)
+    user['profileLink'] = "https://facebook.com/%s" % str(member.facebook_id)
+
+    result = {'method':'receiveChatMessage', 'data':{'user': user, 'text': text}}
+
+    send_pubnub_message(result, 'global')
+
 def log(text):
     result = {'method': 'log', 'params': 'SERVER: '+repr(text)}
     send_pubnub_message(result, '/topic/main/' )
@@ -241,4 +252,7 @@ def callReverse(userIdentifier, function):
     result = {'method': 'callReverse', 'params': {'userIdentifier':userIdentifier, 'function': function}}
     send_pubnub_message(result, '/topic/main/' )
 
-    
+def update_credits(member):
+    tmp = {}
+    tmp['credits'] = member.bids_left
+    send_pubnub_message({'data':tmp}, '/topic/main/%s' % member.id)

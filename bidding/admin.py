@@ -1,11 +1,12 @@
 from django.contrib import admin
-
+#from django.contrib.auth import get_user_model
 from bidding.models import Auction, PromotedAuction, PrePromotedAuction, Item, ItemImage, BidPackage, \
     ConvertHistory, FBOrderInfo, Member, ConfigKey
 from django.db.models import Count
 from django.contrib.auth.admin import UserAdmin
-from django.contrib.auth.models import User
-from bidding.forms import ItemAdminForm, AuctionAdminForm
+#from django.contrib.auth.models import User
+#from django.conf import settings
+from bidding.forms import ItemAdminForm, AuctionAdminForm, ConfigKeyAdminForm
 
 
 class BidAdmin(admin.ModelAdmin):
@@ -254,12 +255,20 @@ class MemberUserAdmin(UserAdmin):
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
     )
 
+class ConfigKeyAdmin(admin.ModelAdmin):
+    form = ConfigKeyAdminForm
+    
+    list_display = ('key',
+                    'value',
+                    'description',
+                    'value_type')
 
-admin.site.unregister(User)
-admin.site.register(User, MemberUserAdmin)
+admin.site.register(ConfigKey, ConfigKeyAdmin)
+
+#admin.site.unregister(User)
+admin.site.register(Member, MemberUserAdmin)
 admin.site.register(BidPackage)
-admin.site.register(Member)
+#admin.site.register(Member)
 admin.site.register(ConvertHistory)
 admin.site.register(FBOrderInfo)
-admin.site.register(ConfigKey)
 

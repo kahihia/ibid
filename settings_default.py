@@ -25,8 +25,8 @@ SERVER_EMAIL = 'info@ibidgames.com'
 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'info@ibidgames.com'
-EMAIL_HOST_PASSWORD = 'Argentina168'
+EMAIL_HOST_USER = 'test@nuske.com.ar'
+EMAIL_HOST_PASSWORD = 'test test'
 EMAIL_USE_TLS = True
 
 ADMINS = (
@@ -36,13 +36,19 @@ MANAGERS = ADMINS
 
 ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
 
-AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
-                           'django_facebook.auth_backends.FacebookBackend',)
+#AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
+#                           'django_facebook.auth_backends.FacebookBackend',)
 
-AUTH_PROFILE_MODULE = 'bidding.member'
-ABSOLUTE_URL_OVERRIDES = {
-    'auth.user': lambda o: '/bids/user/%s/' % o.username
-}
+AUTHENTICATION_BACKENDS = (
+    'django_facebook.auth_backends.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+AUTH_USER_MODEL="bidding.Member"
+#AUTH_USER_MODEL="auth.User"
+#AUTH_PROFILE_MODULE = 'bidding.member'
+#ABSOLUTE_URL_OVERRIDES = {
+#    'auth.user': lambda o: '/bids/user/%s/' % o.username
+#}
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -107,14 +113,15 @@ MIDDLEWARE_CLASSES = (
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
 
 TEMPLATE_CONTEXT_PROCESSORS = (
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.request",
-    "django.core.context_processors.media",
-    "django.contrib.messages.context_processors.messages",
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'django.core.context_processors.tz',
+    'django.core.context_processors.request',
+    'django.contrib.messages.context_processors.messages',
     'django_facebook.context_processors.facebook',
-    "bidding.context_processors.settings_context",
-    "bidding.context_processors.packages_context",
 )
 
 ROOT_URLCONF = 'urls'
@@ -128,10 +135,8 @@ FIXTURE_DIRS = (
 )
 
 INSTALLED_APPS = (
-    'admin_tools.theming',
-    'admin_tools.menu',
-    'admin_tools.dashboard',
-
+    
+    
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -139,19 +144,27 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.sites',
-
-    'audit',
     'bidding',
+    
+    'south',
+    
+    'audit',
+   
     'chat',
+    'message',
+    'admin_tools.theming',
+    'admin_tools.menu',
+    'admin_tools.dashboard',
 
     'paypal.standard.ipn',
     'sorl.thumbnail',
-    'south',
+    
+    
     'django_extensions',
     'cumulus',
 
     # Needed by django facebook
-    'registration',
+    #'registration',
     'django_facebook',
     'django.contrib.staticfiles',
 )
@@ -245,34 +258,28 @@ ADMIN_TOOLS_MENU = 'menu.CustomMenu'
 ADMIN_TOOLS_INDEX_DASHBOARD = 'dashboard.CustomIndexDashboard'
 
 
-# Urls
-WEB_APP = "https://apps.facebook.ibidgames.com/"
-FB_APP = "https://apps.facebook.com/ibidgames/"
-
-APP_FIRST_REDIRECT = WEB_APP + "fb_redirect/"
-FBAPP = WEB_APP + "fb/"
-IMAGES_SITE = WEB_APP
-NOT_AUTHORIZED_PAGE = WEB_APP
-SITE_NAME = WEB_APP
-
-CANVAS_HOME = FB_APP + "canvashome/"
-FBAPP_HOME = FB_APP + "home/"
-
-
 # Facebook settings
 FACEBOOK_API_KEY = ''
 FACEBOOK_APP_ID = ''
 FACEBOOK_APP_SECRET = ''
+FACEBOOK_APP_NAME = 'ibidgames'
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
-FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
-FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_actions'
-AUTH_REDIRECT_URI = 'https://apps.facebook.com/ibidgames/fb/login/'
+FACEBOOK_REGISTRATION_BACKEND = 'registration.backends.default.DefaultBackend'
+FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
+FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
+FACEBOOK_AUTH_REDIRECT_URL = 'https://apps.facebook.com/{appname}/fb/login/'
+FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/'
 
 
 # PubNub settings
 PUBNUB_PUB = 'pub-c-50278d15-1317-4bcb-92e2-d2981d99dcb8'
 PUBNUB_SUB = 'sub-c-43c0f9be-df39-11e2-ab32-02ee2ddab7fe'
 PUBNUB_SECRET = ''
+
+
+# Application Urls
+SITE_NAME = "https://apps.facebook.ibidgames.com/"
+IMAGES_SITE = SITE_NAME
 
 
 # App Settings

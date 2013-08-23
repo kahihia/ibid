@@ -1,3 +1,8 @@
+from urllib2 import urlopen
+import json
+import datetime
+import logging
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -5,14 +10,14 @@ from django.shortcuts import get_object_or_404
 from django.utils.http import urlencode
 from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
-from open_facebook.api import FacebookAuthorization
-from open_facebook.exceptions import ParameterException
-import json
-import datetime
-import logging
+from django_facebook.models import FacebookLike
 
 from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, Item
+from open_facebook.api import FacebookAuthorization
+from open_facebook.exceptions import ParameterException, OAuthException
 
+from bidding import client 
+from bidding.models import ConfigKey
 from bidding.views.home import render_response
 
 
@@ -22,7 +27,7 @@ logger = logging.getLogger('django')
 
 
 def fb_redirect(request):
-    return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+    return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
 
 def get_redirect_uri(request):
@@ -35,7 +40,9 @@ def get_redirect_uri(request):
     if 'request_ids' in request.GET:
         request_ids = '?' + urlencode({'request_ids': request.GET['request_ids']})
 
-    return settings.AUTH_REDIRECT_URI + request_ids
+    url = settings.FACEBOOK_AUTH_REDIRECT_URL.format(appname=settings.FACEBOOK_APP_NAME)
+
+    return url + request_ids
 
 
 def fb_auth(request):
@@ -48,15 +55,14 @@ def fb_auth(request):
     if request.user.is_authenticated():
     #Fix so admin user don't break on the root url
         try:
-            request.user.get_profile()
+            request.user
         except Member.DoesNotExist:
             return HttpResponseRedirect(reverse('bidding_home'))
 
-    url = settings.FACEBOOK_AUTH_URL.format(
-        app=settings.FACEBOOK_APP_ID,
-        url=get_redirect_uri(request))
+    url = settings.FACEBOOK_AUTH_URL.format(app=settings.FACEBOOK_APP_ID, 
+                                            url=get_redirect_uri(request))
 
-    return HttpResponseRedirect(url)
+    return render_response(request, 'fb_redirect.html', {'authorization_url': url})
 
 
 def fb_test_user(request):
@@ -66,7 +72,7 @@ def fb_test_user(request):
     django_facebook.connect.connect_user(request, test_user['access_token'])
 
     #add bids by default
-    member = request.user.get_profile()
+    member = request.user
     member.bids_left = 1000
     member.tokens_left = 1000
     member.save()
@@ -83,7 +89,9 @@ def handle_invitations(request):
     for request_id in request_ids:
         try:
             invitation = AuctionInvitation.objects.get(request_id=request_id)
-            invitation.delete_facebook_request(request.user.get_profile())
+            invitation.delete_facebook_request(request.user)
+
+
         except AuctionInvitation.DoesNotExist:
             pass
 
@@ -96,7 +104,7 @@ def handle_invitations(request):
 
 
 def give_bids(request):
-    member = request.user.get_profile()
+    member = request.user
 
     if not member.bids_left:
         member.bids_left = 500
@@ -116,9 +124,11 @@ def fb_login(request):
     code = request.GET.get('code')
     if not code:
         #authorization denied
-        return HttpResponseRedirect(settings.NOT_AUTHORIZED_PAGE)
+        return HttpResponseRedirect(reverse('bidding_anonym_home'))
 
     try:
+        if code[-1] == '/':
+            code = code[:-1:]
         token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
         action, user = django_facebook.connect.connect_user(request, token)
     except ParameterException:
@@ -129,12 +139,56 @@ def fb_login(request):
     if 'request_ids' in request.GET:
         return handle_invitations(request)
 
-    return HttpResponseRedirect('/home/?aaa=2')
+    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    return render_response(request, 'fb_redirect.html', {'authorization_url': fb_url + 'home/?aaa=2'})
 
+
+def fb_check_like(request):
+    member = request.user
+    response = False
+    try:
+        likes = member.fb_check_like()
+        if likes:
+            for like in likes['data']:
+                if like['application']['name'] == settings.FACEBOOK_APP_NAME:
+                    logger.debug(like['application']['name'])
+                response = True
+                break
+    except Exception as e:
+        raise
+    return HttpResponse(json.dumps({'like':response,}))
+
+def fb_like(request):
+    member = request.user
+    if request.method == 'POST':
+        try:
+            member.fb_like()
+            like = member.likes()
+            if not like:
+                like = FacebookLike.objects.create(user_id = member.id,
+                                                   facebook_id = member.facebook_id,
+                                                   created_time = datetime.datetime.now())
+                gift_tokens = ConfigKey.get('LIKE_GIFT_TOKENS', 1000)
+                member.tokens_left += long(gift_tokens)
+                member.save()
+                return HttpResponse(
+                    json.dumps({'info':'FIRST_LIKE',
+                                'gift': gift_tokens,
+                                'tokens': member.tokens_left,
+                               }), content_type="application/json")
+            return HttpResponse(
+                json.dumps({'info':'NOT_FIRST_LIKE',
+                            'gift': 0,
+                            }), content_type="application/json")
+        except OAuthException as e:
+            if str(e).find('error code 3501'):
+                return HttpResponse(json.dumps({'info':'ALREADY_LIKE',}))
+            raise
+    return HttpResponse(request.method)
 
 def store_invitation(request):
     auction = get_auction_or_404(request)
-    member = request.user.get_profile()
+    member = request.user
     request_id = int(request.POST['request_id'])
 
     AuctionInvitation.objects.create(auction=auction, inviter=member,
@@ -211,26 +265,46 @@ def callback_status_update(request):
 @csrf_exempt
 def credits_callback(request):
     """ View for handling interaction with Facebook credits API. """
-
-    response = {}
-
-    logger.debug("credist_callback: %s" % request.POST['method'])
-
-    if request.POST['method'] == 'payments_get_items':
-        response = callback_get_items(request)
-
-    elif (request.POST['method'] == 'payments_status_update' and
-                  request.POST['status'] == 'placed'):
-        response = callback_status_update(request)
-
-    return HttpResponse(json.dumps(response), mimetype='text/javascript')
-
-
+    fb_req=request.body
+    logger.debug("Started FB payment callback: %s" % fb_req)
+    
+    payment = json.loads(fb_req)
+    for elems in payment['entry']:
+        url='https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials' % (settings.FACEBOOK_APP_ID,settings.FACEBOOK_APP_SECRET)
+        token=urlopen(url).read()
+        url='https://graph.facebook.com/%s/?%s'%(elems['id'],token)
+        pay_info=urlopen(url).read()
+        payment_info =json.loads(pay_info)
+        fid=payment_info['user']['id']
+        status='completed'
+        for it in payment_info['actions']:
+            if it['status']!='completed':
+                status ='not_completed'
+        if status=='completed':
+            member = Member.objects.get(facebook_id=fid)
+            for it in payment_info['items']:
+                id_prod=it['product'].split('/bid_package/')
+                package = BidPackage.objects.get(pk=id_prod[1])
+                order = FBOrderInfo.objects.create(package=package,
+                                               member=member,
+                                               fb_payment_id=payment_info['id']
+                )
+                member.bids_left += package.bids
+                member.save()
+                client.update_credits(member)
+                logger.debug("FB payment callback, order: %s" % order.id)
+            return HttpResponse()
+    return HttpResponse('error')
+    
 def fb_item_info(request, item_id):
     item = Item.objects.get(pk=item_id)
     return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP})
 
-
+def bid_package_info(request,package_id):
+    package  = BidPackage.objects.get(pk= package_id)
+    
+    return render_response(request, "bid_package_info.html", {'package': package,'url_domain':settings.SITE_NAME})
+    
 @csrf_exempt
 def deauthorized_callback(request):
     """ View for handling the deauthorization callback.
@@ -251,7 +325,7 @@ def place_order(request):
     response = {'order_info': -1}
     if request.POST.has_key('package_id'):
         package = BidPackage.objects.get(pk=request.POST['package_id'])
-        member = request.user.get_profile()
+        member = request.user
         status = 'placed'
         order = FBOrderInfo.objects.create(package=package,
                                            member=member,
@@ -462,4 +536,3 @@ def get_auction_or_404(request):
 
 django_facebook.connect.connect_user = connect_user
 django_facebook.connect._register_user = _register_user
-

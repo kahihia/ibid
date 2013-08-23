@@ -2,14 +2,16 @@
 
 from django.dispatch.dispatcher import receiver, Signal
 from django.db.models.signals import post_save
-from django.db.models import signals
+#|from django.db.models import signals
 
 import client
 
 from bidding.models import Auction, Invitation, ConfigKey
+import message.value_objects as vo
+import message.value_objects_factory as vo_factory
+from django.contrib.auth.models import User
 
-import open_facebook
-
+from django_facebook import signals
 
 precap_finished_signal = Signal(providing_args=["auction"])
 
@@ -24,13 +26,9 @@ post_save.connect(auctionCreated, Auction)
 
 
 
-from django.contrib.auth.models import User
-from django_facebook import signals
-
-import urlparse
 
 def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
-    member = user.get_profile()
+    member = user
     member.bids_left = 0
     member.tokens_left = 2000
     member.save()
@@ -38,10 +36,23 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
     #was this user invited?
     userList = Invitation.objects.filter(invited_facebook_id=facebook_data['facebook_id'])
 
+    #rint eventFriendInvitationAccepted
+
     if len(userList):
         invited = userList[0]
-        invited.inviter.tokens_left += int(ConfigKey.objects.filter(key='INVITE_FRIENDS_TOKEN_PRIZE')[0].value)
+        prize = ConfigKey.get('INVITE_FRIENDS_TOKEN_PRIZE', 1000)
+        invited.inviter.tokens_left += prize
         invited.inviter.save()
+
+        #add an event to the inviter, to show it the next time he logs in
+        #TODO: change this to transport pubnub
+        eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, [])
+        eventFriendInvitationAccepted['users'] = [vo.User( facebook_data['facebook_id'],facebook_data['facebook_name'],"http://facebook.com/%s"%str(facebook_data['facebook_id']) , facebook_data['image_thumb'])]
+        eventList = vo.EventList()
+        eventList.append(eventFriendInvitationAccepted)
+
+        invited.inviter.setSession('event',eventList)
+
 
         #actok = urlparse.parse_qs(urlparse.urlsplit(facebook_data['image'])[3])['access_token']
         #check permission
@@ -61,4 +72,3 @@ signals.facebook_user_registered.connect(fb_user_registered_handler, sender=User
 #            client.auction_created(sender)
 # Send email
 #post_save.connect(auction_created, sender=Auction)
-

@@ -8,6 +8,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib import auth
 
+from django.conf import settings
 from bidding.models import Auction, Member
 
 
@@ -35,7 +36,7 @@ class ChatUser(models.Model):
     current site root.
     """
     
-    user = models.ForeignKey(auth.models.User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     
     def picture(self):
         """ Returns the chat avatar. """
@@ -100,7 +101,6 @@ class Message(models.Model):
     
     class Meta:
         verbose_name = 'chat message'
-
 
 class AuctioneerPhrase(models.Model):
     key = models.CharField(max_length=20)

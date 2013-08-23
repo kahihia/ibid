@@ -38,7 +38,12 @@ DATABASES = {
 FACEBOOK_API_KEY = '<FB_APP_ID>'
 FACEBOOK_APP_ID = '<FB_APP_ID>'
 FACEBOOK_APP_SECRET = '<FB_APP_SECRET>'
-AUTH_REDIRECT_URI = 'http://apps.facebook.com/<FB_APP_NAME>/fb/login/'
+FACEBOOK_APP_NAME = 'ibidgames-dev'
+
+# if not using https, use http in FACEBOOK_*_URL
+FACEBOOK_APP_URL           = 'http://apps.facebook.com/{appname}/'
+FACEBOOK_AUTH_REDIRECT_URL = 'http://apps.facebook.com/{appname}/fb/login/'
+FACEBOOK_CANVAS_HOME_URL   = 'http://apps.facebook.com/{appname}/canvashome/' 
 
 
 # Pubnub settings
@@ -48,20 +53,12 @@ PUBNUB_SECRET = ''
 
 
 # Application Urls
-WEB_APP = 'http://localhost:8000/'
-APP_FIRST_REDIRECT =  WEB_APP + 'fb_redirect/'
-FBAPP =               WEB_APP + 'fb/'
-IMAGES_SITE =         WEB_APP
-NOT_AUTHORIZED_PAGE = WEB_APP
-SITE_NAME =           WEB_APP
+SITE_NAME   =  'http://localhost:8000/'
+IMAGES_SITE = SITE_NAME
 
-FB_APP = 'http://apps.facebook.com/<FB_APP_NAME>/'
-FBAPP_HOME =  FB_APP + 'home/'
-CANVAS_HOME = FB_APP + 'canvashome/'
 
-# Put your domain here
-## SESSION_COOKIE_DOMAIN = 'localhost'
-
+# your domain here
+SESSION_COOKIE_DOMAIN = '<domain>'
 # Set to True if using SSL
 SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
