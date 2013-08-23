@@ -259,7 +259,7 @@
 			</div>
 
             <!-- Tokens won modal -->
-            <div class="popup" ng-show="showWonTokensDialog">
+            <div class="modal" ng-show="showWonTokensDialog" ng-cloak>
                 <div class="title">Tokens won!</div>
                 <div class="content">
                     <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>
@@ -285,7 +285,7 @@
             </div>
 
             <!-- Item won modal -->
-            <div class="popup" ng-show="showWonItemDialog">
+            <div class="modal" ng-show="showWonItemDialog" ng-cloak>
                 <div class="title">Tokens won!</div>
                 <div class="content">
                     <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>

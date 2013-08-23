@@ -63,7 +63,7 @@ body {
 }
 /*---------------------------------END----------------------TEXT*/
 /*-------------------------------------------------MODALS POPUPS*/
-.popup {
+.modal {
 	position: fixed;
     top: 100px;
     left: 50%;
@@ -90,31 +90,31 @@ body {
   opacity: 0.5;
   filter: alpha(opacity=50);
 }
-.popup.wide {
+.modal.wide {
 	width: 750px;
 }
-.popup .kenny {
+.modal .kenny {
 	bottom: -60px;
 	left: -170px;
 }
-.popup .prize {
+.modal .prize {
 	bottom: -35px;
 	right: -60px;
 }
-.popup .kenny,
-.popup .prize {
+.modal .kenny,
+.modal .prize {
 	display: none;
 	position: absolute;
 }
-.popup.item-decoration .kenny,
-.popup.item-decoration .prize {
+.modal.item-decoration .kenny,
+.modal.item-decoration .prize {
 	display: block;
 }
-.popup .credits-img {
+.modal .credits-img {
 	float: left;
 	margin: -37px;
 }
-.popup .gloss {
+.modal .gloss {
 	background-color: #fff;
 	opacity: 0.1;
 	position: absolute;
@@ -123,7 +123,7 @@ body {
 	margin: -9px 0 0 -9px;
 	box-shadow: 0 0 3px #fff;
 }
-.popup:after {
+.modal:after {
     content: '';
     display: block;
 	background-image: url("../images/popup-bkg.jpg");
@@ -134,7 +134,7 @@ body {
 	width: 100%;
 }
 
-.popup .title {
+.modal .title {
 	margin-top: -34px;
 	position: absolute;
 	width: 100%;
@@ -154,36 +154,36 @@ body {
         1px 1px 0 black;
 }
 
-.popup .title-small {
+.modal .title-small {
 	margin-top: -40px;
 	position: absolute;
 	width: 100%;
 }
-.popup .title img, .title-small img {
+.modal .title img, .title-small img {
 	margin: 0 auto;
 	display: block;
 }
-.popup .content {
+.modal .content {
 	text-align: center;
 	line-height: 24px;
 	margin-top: 39px;
 	position: absolute;
 	width: 100%;
 }
-.popup .content .winner {
+.modal .content .winner {
     font-size: 18px;
     color: #c2c2c2;
     font-style: italic;
     font-weight: 400;
 }
-.popup .content .winner .winner-name {
+.modal .content .winner .winner-name {
     display: block;
 	font-size: 30px;
 	color: #fff;
 	font-weight: 600;
     font-style: normal;
 }
-.popup .content .winner .item-name {
+.modal .content .winner .item-name {
     display: block;
 	font-size: 14px;
 	color: #c2c2c2;
@@ -191,7 +191,7 @@ body {
     font-style: normal;
 	line-height: 35px;
 }
-.popup .content .tokens {
+.modal .content .tokens {
 	font-size: 46px;
 	font-weight: 600;
 	letter-spacing: -2px;
@@ -203,30 +203,30 @@ body {
 	position: relative;
 	top: -20px;
 }
-.popup .content .tokens .value {
+.modal .content .tokens .value {
 	display: inline-block;
 	vertical-align: -14px;
 	line-height: 27px;
 }
-.popup .content .tokens p {
+.modal .content .tokens p {
 	font-size: 12px;
 	letter-spacing: 0px;
 }
-.popup .content .tokens span {
+.modal .content .tokens span {
 	color: #fff;
 	margin-left: 15px;
 }
-.popup .content .item {
+.modal .content .item {
 	margin-top: 24px;
 }
-.popup .content .item img {
+.modal .content .item img {
     -webkit-box-shadow: 0 0 40px 3px rgba(0, 0, 0, 1);
     box-shadow: 0 0 40px 3px rgba(0, 0, 0, 1);
     border: 1px solid #9a9a9a;
     max-width: 190px;
 		max-height: 150px;
 }
-.popup .info {
+.modal .info {
 	/*width: 100%;*/
 	margin: 29px auto 0 auto;
 	line-height: 15px;
@@ -239,11 +239,11 @@ body {
     border-top: 1px dotted #939393;
     padding-top: 1em;
 }
-.popup .content .title-content {
+.modal .content .title-content {
 	margin-bottom: 20px;
 }
 
-.popup .content .friends-list {
+.modal .content .friends-list {
 	width: 200px;
 	float: left;
 	margin-left: 120px;
@@ -251,12 +251,12 @@ body {
 	margin-top: 30px;
 }
 
-.popup .content .friends-list ul {
+.modal .content .friends-list ul {
 	height: 175px;
 	display: table-cell;
 	vertical-align: middle;
 }
-.popup .content .friends-list li {
+.modal .content .friends-list li {
 	color: #C2C2C2;
 	list-style-type: none;
 	overflow: hidden;
@@ -265,31 +265,31 @@ body {
 	width: 190px;
 	margin-bottom: 7px;
 }
-.popup .content .friends-list li img {
+.modal .content .friends-list li img {
 	vertical-align: -10px;
 	-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
 	box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
 	border: 1px solid #9a9a9a;
 	margin-right: 10px;
 }
-.popup .content .tokens-column {
+.modal .content .tokens-column {
 	height: 200px;
 	display: table-cell;
 	vertical-align: middle;
 	padding-top: 13px;
 }
-.popup .content .column-left, .column-right {
+.modal .content .column-left, .column-right {
 	float: left;
 	width: 375px;
 	height: 317px;
 }
-.popup .content .column-dot {
+.modal .content .column-dot {
 	border-right: 1px dotted #fff;
 	float: left;
 	height: 307px;
 	margin-top: 10px;
 }
-.popup .content .credits-btn {
+.modal .content .credits-btn {
 	height: 73px;
 	width: 130px;
 	color: #fff;
@@ -298,35 +298,35 @@ body {
 	padding: 25px 0 0 0;
 	margin: 7px;
 }
-.popup .content .credits-btn p {
+.modal .content .credits-btn p {
 	font-size: 35px;
 	font-weight: 700;
 	margin-bottom: 8px;
 }
-.popup .content .column-right .tokens {
+.modal .content .column-right .tokens {
 	display: block;
 	margin: 36px 0 17px 0;
 }
-.popup .buttons {
+.modal .buttons {
 	width: 100%;
 	bottom: -8px;
 	position: absolute;
 	text-align: center;
 }
-.popup .buttons .btn-green {
+.modal .buttons .btn-green {
 	position: relative;
 }
-.popup .buttons .btn-blue {
+.modal .buttons .btn-blue {
 	position: relative;
 }
-.popup .buttons .btn-red {
+.modal .buttons .btn-red {
 	position: relative;
 }
-.popup .buttons .btn {
+.modal .buttons .btn {
 	position: relative;
 	min-width: 100px;
 }
-.popup .close {
+.modal .close {
     float: right;
     margin: -17px;
     -moz-box-shadow: 0px 0px 15px #000, inset 0px 1px 0px 0px #999;
@@ -362,14 +362,14 @@ body {
     -webkit-transition: .1s;
     transition: .1s;
 }
-.popup .close:hover {
+.modal .close:hover {
     -moz-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
     -webkit-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
     -o-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
     -ms-transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
     transform: scale(1.2) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
 }
-.popup .close:active {
+.modal .close:active {
     -o-transition: 0s;
     -ms-transition: 0s;
     -moz-transition: 0s;
