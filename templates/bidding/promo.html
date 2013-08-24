@@ -37,7 +37,7 @@
 		<div class="content-promo">
 	<div class="txt-promo">Enter your code to get</br>
 2000 Free TOKENS</div>
-<div class="code"><form action="{{ promo_url }}"><input id="enter_code" name="promoCode" type="text" value="enter code" style="height: 43px; width:220px; border:0px; font-size: 24px;text-align: center; color: #666; line-height: 52px;" /></form></div>
+<div class="code"><form action="{% url 'promo' %}"><input id="enter_code" name="promoCode" type="text" value="enter code" style="height: 43px; width:220px; border:0px; font-size: 24px;text-align: center; color: #666; line-height: 52px;" /></form></div>
 <div class="info-txt">Your code is invalid, please verify your
 code and try again.</div>
 <div class="btn-promo">SEND CODE</div>

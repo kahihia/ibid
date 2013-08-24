@@ -1,5 +1,6 @@
 __author__ = 'dnuske'
 
+import json
 import message.value_objects as vo
 
 
@@ -32,7 +33,7 @@ def create_voAction(auction, member):
                                itemName = auction.item.name,
                                id = auction.id,
                                bidNumber = auction.getBidNumber(),
-                               bids = auction.auction_bids_left(auction),
+                               bids = member.auction_bids_left(auction),
                                placed = member.auction_bids_left(auction),
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
@@ -53,7 +54,7 @@ def create_voAction(auction, member):
                                itemName = auction.item.name,
                                id = auction.id,
                                bidNumber = auction.getBidNumber(),
-                               bids = auction.auction_bids_left(auction),
+                               bids = member.auction_bids_left(auction),
                                placed = member.auction_bids_left(auction),
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
@@ -74,7 +75,7 @@ def create_voAction(auction, member):
                                itemName = auction.item.name,
                                id = auction.id,
                                bidNumber = auction.getBidNumber(),
-                               bids = auction.auction_bids_left(auction),
+                               bids = member.auction_bids_left(auction),
                                placed = member.auction_bids_left(auction),
                                mine = member in auction.bidders.all(),
                                bidPrice = auction.minimum_precap,
@@ -101,7 +102,7 @@ def create_voAction(auction, member):
                                bidPrice = auction.minimum_precap,
                                bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
-                               winner = create_voUser(auction.winner.get_profile()),
+                               winner = create_voUser(auction.winner),
                                completion = 0)
 
         return vo_auction
@@ -120,7 +121,7 @@ def create_voAction(auction, member):
                                bidPrice = auction.minimum_precap,
                                bidType = {'token': 'token', 'bid': 'credit'}[auction.bid_type],
                                timeleft = auction.get_time_left(),
-                               winner = create_voUser(auction.winner.get_profile()),
+                               winner = create_voUser(auction.winner),
                                completion = 0)
 
         return vo_auction
@@ -153,3 +154,24 @@ def create_voFriendInvitationAccepted(prize, inviteds):
         prize,
         [create_voUser(invited) for invited in inviteds]
     )
+
+def create_voEventList(request):
+    getEvents = request.GET.get('events')
+    events = json.loads(getEvents)
+    #requPOST = json.loads(request.body)
+    #events = requPOST['events']
+
+    returnEvents = vo.EventList()
+
+    for event in events:
+        returnEvents.append(vo.Event(
+            event = event["event"],
+            data = event["data"],
+            sender = event["sender"],
+            receiver = event["receiver"],
+            transport = event["transport"],
+            timestamp = event["timestamp"],
+            id = event["id"]
+        ))
+
+    return returnEvents
