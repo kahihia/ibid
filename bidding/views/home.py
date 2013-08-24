@@ -2,6 +2,8 @@
 Home page views.
 '''
 
+import logging
+
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
 from django.core.urlresolvers import reverse
@@ -12,10 +14,14 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import ListView
 
-from bidding.models import Auction, ConvertHistory, Member
-import logging
+from bidding.models import Auction
+from bidding.models import ConvertHistory
+from bidding.models import Member
+from bidding.models import BidPackage
+
 
 logger = logging.getLogger('django')
+
 
 def render_response(req, *args, **kwargs):
     kwargs['context_instance'] = RequestContext(req)
@@ -66,8 +72,8 @@ def canvashome(request):
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
-                            'inCanvas':False})
-  
+                                'packages': BidPackage.objects.all(),
+                                'inCanvas':False})
     return response
 
 
@@ -128,6 +134,7 @@ def standalone(request):
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
+                                'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
                                 'inCanvas':False})
 
