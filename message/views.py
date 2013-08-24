@@ -67,7 +67,7 @@ def dispatcher(returnEventList):
 class bidding(object):
     @staticmethod
     def initialize(request, data):
-        member = request.user.get_profile()
+        member = request.user
 
         eventList = vo.EventList()
 

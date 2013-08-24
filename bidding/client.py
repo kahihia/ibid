@@ -223,9 +223,9 @@ def do_send_chat_message(auction, message):
     text = message.format_message()
 
     user = {}
-    user['displayName'] = message.user.display_name()
-    user['profileFotoLink'] = message.user.picture()
-    user['profileLink'] = message.user.user_link()
+    user['displayName'] = message.display_name()
+    user['profileFotoLink'] = message.picture()
+    user['profileLink'] = message.user_link()
     user['tokens'] = 0
     user['credits'] = 0
 
@@ -236,7 +236,7 @@ def do_send_chat_message(auction, message):
 def do_send_global_chat_message(member, text):
 
     user = {}
-    user['displayName'] = member.user.first_name
+    user['displayName'] = member.first_name
     user['profileFotoLink'] = "http://graph.facebook.com/%s/picture" % str(member.facebook_id)
     user['profileLink'] = "https://facebook.com/%s" % str(member.facebook_id)
 

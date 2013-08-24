@@ -2,9 +2,9 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 	'use strict';
 
 	var channel = 'global';
-	$scope.isGlobalChatEnabled = false;
+	$scope.isGlobalChatEnabled = true;
 	$scope.isGlobalChatOpen = false;
-	$scope.heightGrowth=67;
+	$scope.heightGrowth=0;
 	$scope.messages = [];
 
 	$scope.chatGrowth = function(){
