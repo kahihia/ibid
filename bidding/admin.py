@@ -203,18 +203,18 @@ class MemberInline(admin.StackedInline):
 
 
 def bids_left(obj):
-    return obj.get_profile().get_bids_left()
+    return obj.get_bids_left()
 
 
 bids_left.admin_order_field = 'bids_left'
 
 
 def tokens_left(obj):
-    return obj.get_profile().get_tokens_left()
+    return obj.get_tokens_left()
 
 
 def bidsto_left(obj):
-    return obj.get_profile().bidsto_left
+    return obj.bidsto_left
 
 
 def auctions_won(obj):
