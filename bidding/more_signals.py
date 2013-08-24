@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from django.dispatch.dispatcher import receiver, Signal
+from django.dispatch.dispatcher import Signal
 from django.db.models.signals import post_save
-#|from django.db.models import signals
 
 import client
 
 from bidding.models import Auction, Invitation, ConfigKey
 import message.value_objects as vo
 import message.value_objects_factory as vo_factory
-from django.contrib.auth.models import User
 from django_facebook.utils import get_user_model
 
 from django_facebook import signals

@@ -161,6 +161,9 @@ def create_voEventList(request):
     #requPOST = json.loads(request.body)
     #events = requPOST['events']
 
+    print " -------- received events -----------"
+    print type(events), events
+
     returnEvents = vo.EventList()
 
     for event in events:
