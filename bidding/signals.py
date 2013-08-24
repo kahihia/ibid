@@ -128,6 +128,8 @@ def post_win_story(sender, **kwargs):
             member.post_win_story(**args)
         except PermissionException:
             print "User forbid story post"
+            #TODO: save the wallpost to user session
+            #TODO: request wallpost permission
         except Exception as e:
             logger.debug(e)
             raise
