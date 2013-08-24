@@ -266,14 +266,14 @@ FACEBOOK_APP_SECRET = ''
 FACEBOOK_APP_NAME = 'ibidgames'
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
 FACEBOOK_REGISTRATION_BACKEND = 'authbackends.YambidRegistration'
-FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream,publish_actions'
+FACEBOOK_AUTH_URL          = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream,publish_actions'
 FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
 FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/'
 FACEBOOK_AUTH_REDIRECT_URL = FACEBOOK_CANVAS_HOME_URL
 FACEBOOK_DEFAULT_SCOPE = ['email', 'user_about_me', 'user_birthday', 'user_website','publish_actions']
 # Needed by django-facebook to use the middleware with the canvas (django_facebook.canvas.py)
 # It's the redirect url that the middleware sends when asking facebook for the permissions dialog
-FACEBOOK_CANVAS_PAGE='http://apps.facebook.com/ibidgames/canvashome/'
+FACEBOOK_CANVAS_PAGE       = 'https://apps.facebook.com/ibidgames/canvashome/'
 
 
 # PubNub settings
