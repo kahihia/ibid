@@ -113,29 +113,25 @@ def send_start_email(sender, **kwargs):
 
 
 @receiver(auction_finished_signal)
-def post_win_wall(sender, **kwargs):
+def post_win_story(sender, **kwargs):
     auction = kwargs['auction']
-    logger.debug("Auction: %s" % auction)
     if auction.winner:
         member = auction.winner
+        url = '{site}fb_item/{item}'.format(site=settings.SITE_NAME, item=str(auction.item.id))
         if auction.bid_type == 'token':
-            msg = u'{name} has won this virtual item playing for tokens. If {name} had played for items he/she could have purchased it for {price} dollars!'
-        else:
-            msg = u'{name} can purchase {item} for {price} dollars!'
-        link = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
-
-        args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                'message': msg.format(name=member.user.first_name,
-                                      item=auction.item.name,
-                                      price=auction.won_price),
-                'picture': auction.item.get_thumbnail(),
-                'link': link,
-        }
+            info_message = '{user} has won this virtual item playing for tokens. If {user} had played for items he/she could have purchased it for {price} dollars!'
+        if auction.bid_type == 'bid':
+            info_message = '{user} can purchase {item} for {price} dollars!'
+        args = {'product': url,
+                'info_message': info_message.format(user=str(member), item=str(auction.item.name), price=str(auction.won_price)),}
         try:
-            member.post_to_wall(**args)
+            member.post_win_story(**args)
         except PermissionException:
-            logger.debug('User forbid wallpost')
-        except:
+            print "User forbid story post"
+            #TODO: save the wallpost to user session
+            #TODO: request wallpost permission
+        except Exception as e:
+            logger.debug(e)
             raise
 
 @receiver(auction_started_signal)

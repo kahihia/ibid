@@ -42,8 +42,10 @@ ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
 AUTHENTICATION_BACKENDS = (
     'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
+
 )
 AUTH_USER_MODEL="bidding.Member"
+#AUTH_USER_MODEL="auth.User"
 #AUTH_PROFILE_MODULE = 'bidding.member'
 #ABSOLUTE_URL_OVERRIDES = {
 #    'auth.user': lambda o: '/bids/user/%s/' % o.username
@@ -107,6 +109,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'bidding.middleware.P3PHeaderMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'django_facebook.middleware.FacebookCanvasMiddleWare',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -264,8 +267,10 @@ FACEBOOK_APP_SECRET = ''
 FACEBOOK_APP_NAME = 'ibidgames'
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
 FACEBOOK_REGISTRATION_BACKEND = 'ibiddjango.authbackends.YambidRegistration'
-FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
-AUTH_REDIRECT_URI = 'https://apps.facebook.com/ibidgames/fb/login/'
+FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email'
+FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
+FACEBOOK_AUTH_REDIRECT_URL = 'https://apps.facebook.com/{appname}/fb/login/'
+FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/'
 
 
 # PubNub settings
