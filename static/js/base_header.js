@@ -79,6 +79,9 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
 
     $scope.closeWonAuctionDialog = function () {
+        //request for perm if does not have it
+        $scope.requestPermisionPublishActions();
+
         $scope.showWonTokensDialog = null;
         $scope.showWonItemDialog = null;
     };
@@ -257,6 +260,14 @@ function userDetailsCtrl($scope, $rootScope, $http) {
              }
          });
     };
+    $scope.requestPermisionPublishActions= function() {
+        FB.login(function(response) {
+            console.log("yeee",response)
+            //TODO: call api method to send the wall post
+        }, {scope: 'publish_actions'});
+    };
+
+
     
 };
 
