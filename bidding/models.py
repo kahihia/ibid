@@ -497,7 +497,7 @@ class BidPackage(models.Model):
     
 @receiver(post_save, sender=BidPackage)
 def update_fb_info(sender, instance, **kwargs):
-    url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.WEB_APP+'bid_package/'+str(instance.id))
+    url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)+'bid_package/'+str(instance.id))
     urlopen(url)
         
 class AuctionInvoice(AuditedModel):
