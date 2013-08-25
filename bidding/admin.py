@@ -1,9 +1,20 @@
-from django.contrib import admin
-from bidding.models import Auction, PromotedAuction, PrePromotedAuction, Item, ItemImage, BidPackage, \
-    ConvertHistory, FBOrderInfo, Member, ConfigKey
 from django.db.models import Count
+from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from bidding.forms import ItemAdminForm, AuctionAdminForm, ConfigKeyAdminForm
+
+from bidding.forms import AuctionAdminForm
+from bidding.forms import ConfigKeyAdminForm
+from bidding.forms import ItemAdminForm
+from bidding.models import Auction
+from bidding.models import BidPackage
+from bidding.models import ConfigKey
+from bidding.models import ConvertHistory
+from bidding.models import FBOrderInfo
+from bidding.models import Item
+from bidding.models import ItemImage
+from bidding.models import Member
+from bidding.models import PrePromotedAuction
+from bidding.models import PromotedAuction
 
 
 class BidAdmin(admin.ModelAdmin):
@@ -20,11 +31,6 @@ def winner_name(obj):
 
 class AuctionAdmin(admin.ModelAdmin):
     form = AuctionAdminForm
-
-    #def queryset(self, request):
-    #    qs = (self.model._default_manager.get_query_set()
-    #          .extra(select={'db_address':"(SELECT street || ', ' || city || ', ' || state || ', ' || zip || ', ' || country from bidding_address where bidding_address.user_id = bidding_auction.winner_id)"}))
-    #    return qs
     list_display = ('item',
                     'bid_type',
                     'status',
@@ -36,7 +42,6 @@ class AuctionAdmin(admin.ModelAdmin):
                     winner_name)
     readonly_fields = ("id",)
     list_filter = ('is_active', 'status')
-    #raw_id_fields = ('item',)
     fieldsets = (
         (None, {
             'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active', 'always_alive')
@@ -68,22 +73,15 @@ class AuctionAdmin(admin.ModelAdmin):
         }
 
 
-admin.site.register(Auction, AuctionAdmin)
 
 
 class PrePromotedAuctionAdmin(admin.ModelAdmin):
     form = AuctionAdminForm
-
-    #def queryset(self, request):
-    #    qs = (self.model._default_manager.get_query_set()
-    #          .extra(select={'db_address':"(SELECT street || ', ' || city || ', ' || state || ', ' || zip || ', ' || country from bidding_address where bidding_address.user_id = bidding_auction.winner_id)"}))
-    #    return qs
     list_display = ('item',
                     'bid_type',
                     'status',
                     'is_active',)
     list_filter = ('is_active', 'status')
-    #raw_id_fields = ('item',)
     fieldsets = (
         (None, {
             'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active')
@@ -116,8 +114,6 @@ class PromotedAuctionAdmin(admin.ModelAdmin):
     pass
 
 
-admin.site.register(PrePromotedAuction, PrePromotedAuctionAdmin)
-admin.site.register(PromotedAuction, PromotedAuctionAdmin)
 
 
 class InlineImage(admin.TabularInline):
@@ -180,26 +176,6 @@ class ItemAdmin(admin.ModelAdmin):
         return qs
 
 
-admin.site.register(Item, ItemAdmin)
-
-
-class MemberInline(admin.StackedInline):
-    model = Member
-    max_num = 1
-    can_delete = False
-    verbose_name = 'Member'
-    verbose_name_plural = "Member info"
-
-    readonly_fields = ('facebook_id', 'facebook_name', 'facebook_profile_url',)
-
-    fieldsets = (
-        (None, {
-            'fields': ('bids_left', 'tokens_left', 'bidsto_left', 'remove_from_chat',)
-        }),
-        ('Facebook info', {
-            'fields': ('facebook_id', 'facebook_name', 'facebook_profile_url', )
-        }),
-    )
 
 
 def bids_left(obj):
@@ -243,10 +219,6 @@ class MemberUserAdmin(UserAdmin):
                     auctions_won,
     )
 
-    inlines = [
-        MemberInline,
-    ]
-
     fieldsets = (
         (None, {'fields': ('username', 'password', 'is_active', 'is_superuser', 'is_staff')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
@@ -260,9 +232,13 @@ class ConfigKeyAdmin(admin.ModelAdmin):
                     'description',
                     'value_type')
 
-admin.site.register(ConfigKey, ConfigKeyAdmin)
-admin.site.register(Member, MemberUserAdmin)
+
+admin.site.register(Auction, AuctionAdmin)
 admin.site.register(BidPackage)
+admin.site.register(ConfigKey, ConfigKeyAdmin)
 admin.site.register(ConvertHistory)
 admin.site.register(FBOrderInfo)
-
+admin.site.register(Item, ItemAdmin)
+admin.site.register(Member, MemberUserAdmin)
+admin.site.register(PrePromotedAuction, PrePromotedAuctionAdmin)
+admin.site.register(PromotedAuction, PromotedAuctionAdmin)
