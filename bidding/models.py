@@ -274,9 +274,10 @@ class Member(AbstractUser, FacebookModel):
 
     def delSession(self, key):
         s = self.getSession()
-        del s[key]
-        self.session = json.dumps(s)
-        self.save()
+        if key in s:
+            del s[key]
+            self.session = json.dumps(s)
+            self.save()
 
 
 class Item(AuditedModel):

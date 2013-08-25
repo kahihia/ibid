@@ -189,24 +189,20 @@ class bidding(object):
 
     @staticmethod
     def updateAccessToken(request, data):
-        print " ------------   save access token   ------------ "
-        member = request.user
-        member.access_token = data.accessToken
-        member.save()
-        print " ------------   access token saved  ------------ "
+        user = request.user
+        user.access_token = data['accessToken']
+        user.save()
 
         return []
 
     @staticmethod
     def sendStoredWallPosts(request, data):
-        member = request.user
+        user = request.user
 
-        wallPost = member.getSession('wallPost')
-        print " ------------   C<   ------------ "
-        print wallPost
+        wallPost = user.getSession('wallPost')
 
-        member.post_win_story(**wallPost)
-
+        if wallPost:
+            user.post_win_story(**wallPost)
 
         return []
 
