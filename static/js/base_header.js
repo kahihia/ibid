@@ -57,10 +57,11 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         $scope.showBuyCreditsModal = true;
     });
     $rootScope.$on('closeGetCreditsPopover', function () {
-        hideOverlay();
-        TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
-            jQuery('.buy-bids-popup').hide();
-        }})
+//        hideOverlay();
+//        TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
+//            jQuery('.buy-bids-popup').hide();
+//        }})
+        $scope.showBuyCreditsModal = false;
     });
     $rootScope.$on('auction:finished', function (event, auction) {
         // If current user won, show win modal.

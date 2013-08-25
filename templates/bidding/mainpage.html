@@ -180,7 +180,7 @@
                 <div class="credits-img">
                     <img src="{% static 'images/popup-credits.png' %}">
                 </div>
-                <div class="btn-close">
+                <div class="btn-close" ng-click="closeGetCredits()">
                     x
                 </div>
 
@@ -195,33 +195,19 @@
                                 Buy credits and get more chance to win auctions!
                             </p>
                         </div>
+
+                        {% for package in packages %}
+                        <div class="credits-btn btn btn-red" ng-click="buy_bids({{user.id}},{{ package.id }},'{{SITE_NAME}}')">
+                            {{ package.description|safe }}
+                        </div>
+                        {% endfor %}
+
                         <div class="credits-btn btn btn-red">
                             <p>
                                 50
                             </p>
                             iBidCredits</br>
                             for $5 uSd
-                        </div>
-                        <div class="credits-btn btn btn-red">
-                            <p>
-                                100
-                            </p>
-                            iBidCredits</br>
-                            for $9 uSd
-                        </div>
-                        <div class="credits-btn btn btn-red">
-                            <p>
-                                300
-                            </p>
-                            iBid-Credits</br>
-                            for $25 uSd
-                        </div>
-                        <div class="credits-btn btn btn-red">
-                            <p>
-                                500
-                            </p>
-                            iBidCredits</br>
-                            for $40 uSd
                         </div>
                     </div>
                     <div class="column-dot"></div>
