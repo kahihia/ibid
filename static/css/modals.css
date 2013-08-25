@@ -1,39 +1,4 @@
-body, h1, h2, h3, h4, h5, p, span, li, ul, a {
-	margin: 0px;
-	padding: 0px;
-}
-img, a {
-	border: 0;
-	border: none;
-}
 
-a {
-	cursor: pointer;
-	text-decoration: none;
-	color: #0c85b8;
-	-o-transition: .2s;
-	-ms-transition: .2s;
-	-moz-transition: .2s;
-	-webkit-transition: .2s;
-	transition: .2s;
-}
-
-a:hover {
-	color: #666;
-	-o-transition: .2s;
-	-ms-transition: .2s;
-	-moz-transition: .2s;
-	-webkit-transition: .2s;
-	transition: .2s;
-}
-body {
-	background-color: #fff;
-	font-family: 'Open Sans', sans-serif;
-	-webkit-font-smoothing: antialiased;
-	background-image: url("../images/bkg-body.jpg");
-	padding: 50px;
-	color: #fff;
-}
 /*---------------------------------------------------------TITLE FONT*/
 @font-face {
 	font-family: ArtBrush;
