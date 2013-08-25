@@ -679,6 +679,8 @@ body {
 	transition: .2s;
 }
 
+
+*/
 .btn-red.btn-longtext {
 	font-size: 11px;
 }
@@ -686,8 +688,6 @@ body {
 	cursor: default !important;
 	opacity: 0.5;
 }
-*/
-
 #btn-start-bid {
 	width: 139px;
 	height: 35px;
