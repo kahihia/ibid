@@ -48,21 +48,48 @@ function userDetailsCtrl($scope, $rootScope, $http) {
                 $scope.user.credits = user.credits;
             });
     });
-
     $rootScope.$on('openGetCreditsPopover', function () {
-        showOverlay();
-        setTimeout(function () {
-            jQuery('.buy-bids-popup').show();
-            TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
-        }, 300);
+        // showOverlay();
+        // setTimeout(function () {
+        //     jQuery('.buy-bids-popup').show();
+        //     TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
+        // }, 300);
+        $scope.showBuyCreditsModal = true;
     });
-
     $rootScope.$on('closeGetCreditsPopover', function () {
         hideOverlay();
         TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
             jQuery('.buy-bids-popup').hide();
         }})
     });
+    $rootScope.$on('auction:finished', function (event, auction) {
+        // If current user won, show win modal.
+        if (auction.winner.facebookId !== $scope.user.facebookId) {
+            return;
+        }
+        $scope.wonAuction = auction;
+        $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
+        $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
+        // If playing for tokens, update user tokens.
+        if (auction.bidType !== $scope.AUCTION_TYPE_TOKENS) {
+            return;
+        }
+        $rootScope.user.tokens += Number(auction.retailPrice);
+    });
+    $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
+
+    $scope.closeWonAuctionDialog = function () {
+        //request for perm if does not have it
+        $scope.requestPermisionPublishActions();
+
+        $scope.showWonTokensDialog = null;
+        $scope.showWonItemDialog = null;
+    };
+
+    $scope.closeWonAuctionDialogAndPlayForItems = function () {
+        $scope.closeWonAuctionDialog();
+        $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+    };
 
     $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
 
@@ -233,6 +260,36 @@ function userDetailsCtrl($scope, $rootScope, $http) {
              }
          });
     };
+    $scope.requestPermisionPublishActions= function() {
+        FB.login(function(response) {
+            console.log("yeee",response)
+            //TODO: call api method to send the wall post
+
+
+
+            var events = []
+            if(response.authResponse){
+                events.push(new Event(Event.prototype.EVENT.BIDDING__UPDATE_ACCESS_TOKEN, {accessToken: response.authResponse.accessToken}, Event.prototype.SENDER.CLIENT_FB, Event.prototype.RECEIVER.SERVER, Event.prototype.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+            }
+            events.push(new Event(Event.prototype.EVENT.BIDDING__SEND_STORED_WALL_POSTS, {}, Event.prototype.SENDER.CLIENT_FB, Event.prototype.RECEIVER.SERVER, Event.prototype.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+
+            // begin dispatcher
+            console.log({events: angular.toJson(events)});
+            $http
+                .get('/action/', {params: {events: angular.toJson(events)}})
+                .then(function (response) {
+                    //listener - TRANSPORT request
+                    _.forEach(response.data, function (message) {
+                        $rootScope.$broadcast(message.event, message.data);
+                    });
+                });
+            // end dispatcher
+
+
+        }, {scope: 'publish_actions'});
+    };
+
+
     
 };
 

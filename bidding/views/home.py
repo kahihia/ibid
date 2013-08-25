@@ -27,7 +27,6 @@ def render_response(req, *args, **kwargs):
     kwargs['context_instance'] = RequestContext(req)
     return render_to_response(*args, **kwargs)
 
-
 def canvashome(request):
     redirectTo = request.session.get('redirect_to', False)
     if redirectTo:

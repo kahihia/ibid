@@ -67,7 +67,7 @@ def dispatcher(returnEventList):
 class bidding(object):
     @staticmethod
     def initialize(request, data):
-        member = request.user.get_profile()
+        member = request.user
 
         eventList = vo.EventList()
 
@@ -186,4 +186,23 @@ class bidding(object):
 
 
         return eventList
+
+    @staticmethod
+    def updateAccessToken(request, data):
+        user = request.user
+        user.access_token = data['accessToken']
+        user.save()
+
+        return []
+
+    @staticmethod
+    def sendStoredWallPosts(request, data):
+        user = request.user
+
+        wallPost = user.getSession('wallPost')
+
+        if wallPost:
+            user.post_win_story(**wallPost)
+
+        return []
 

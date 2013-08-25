@@ -12,11 +12,12 @@ from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
 from django_facebook.models import FacebookLike
 
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, Item
 from open_facebook.api import FacebookAuthorization
 from open_facebook.exceptions import ParameterException, OAuthException
 
 from bidding import client 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, ConfigKey
+from bidding.models import ConfigKey
 from bidding.views.home import render_response
 
 
@@ -246,6 +247,9 @@ def credits_callback(request):
             return HttpResponse()
     return HttpResponse('error')
     
+def fb_item_info(request, item_id):
+    item = Item.objects.get(pk=item_id)
+    return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP})
 
 def bid_package_info(request,package_id):
     package  = BidPackage.objects.get(pk= package_id)

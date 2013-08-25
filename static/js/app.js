@@ -1,6 +1,9 @@
 angular
     .module('app', ['app.directives', 'app.services'])
     .run(function ($rootScope, $http) {
+        // Declare basic variables.
+        $rootScope.AUCTION_TYPE_CREDITS = 'credit';
+        $rootScope.AUCTION_TYPE_TOKENS  = 'token';
         // dispatcher
         var eventMessage = new Event(Event.prototype.EVENT.BIDDING__INITIALIZE, {}, Event.prototype.SENDER.CLIENT_FB, Event.prototype.RECEIVER.SERVER, Event.prototype.TRANSPORT.REQUEST, getCurrentDateTime(), null);
 

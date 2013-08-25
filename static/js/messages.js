@@ -24,6 +24,7 @@ Event.prototype.RECEIVER = new function () {
 
 Event.prototype.EVENT = new function () {
     this.BIDDING__INITIALIZE = 'bidding:initialize';
+    this.BIDDING__UPDATE_ACCESS_TOKEN = 'bidding:updateAccessToken';
+    this.BIDDING__SEND_STORED_WALL_POSTS = 'bidding:sendStoredWallPosts';
 }();
 
-console.log('holaaa >-----------------');
