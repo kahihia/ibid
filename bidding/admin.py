@@ -5,6 +5,7 @@ from django.contrib.auth.admin import UserAdmin
 from bidding.forms import AuctionAdminForm
 from bidding.forms import ConfigKeyAdminForm
 from bidding.forms import ItemAdminForm
+from bidding.forms import MemberAdminForm
 from bidding.models import Auction
 from bidding.models import BidPackage
 from bidding.models import ConfigKey
@@ -17,7 +18,7 @@ from bidding.models import PrePromotedAuction
 from bidding.models import PromotedAuction
 
 
-class BidAdmin(admin.ModelAdmin):
+class BidAdmiA(admin.ModelAdmin):
     list_display = ('auction', 'bidder', 'unixtime')
     list_filter = ('auction', )
 
@@ -114,8 +115,6 @@ class PromotedAuctionAdmin(admin.ModelAdmin):
     pass
 
 
-
-
 class InlineImage(admin.TabularInline):
     model = ItemImage
 
@@ -176,21 +175,17 @@ class ItemAdmin(admin.ModelAdmin):
         return qs
 
 
+# def bids_left(obj):
+#     return obj.get_bids_left()
+# bids_left.admin_order_field = 'bids_left'
 
 
-def bids_left(obj):
-    return obj.get_bids_left()
+#def tokens_left(obj):
+#    return obj.get_tokens_left()
 
 
-bids_left.admin_order_field = 'bids_left'
-
-
-def tokens_left(obj):
-    return obj.get_tokens_left()
-
-
-def bidsto_left(obj):
-    return obj.bidsto_left
+#def bidsto_left(obj):
+#    return obj.bidsto_left
 
 
 def auctions_won(obj):
@@ -206,6 +201,7 @@ class MemberUserAdmin(UserAdmin):
               .annotate(auctions_won=Count('auction')))
         return qs
 
+    form = MemberAdminForm
     readonly_fields = ('first_name', 'last_name', 'email',)
 
     list_display = ('username',
@@ -213,16 +209,18 @@ class MemberUserAdmin(UserAdmin):
                     'last_name',
                     'email',
                     'is_staff',
-                    bids_left,
-                    tokens_left,
-                    bidsto_left,
+                    'bids_left',
+                    'tokens_left',
+                    'bidsto_left',
                     auctions_won,
     )
 
     fieldsets = (
         (None, {'fields': ('username', 'password', 'is_active', 'is_superuser', 'is_staff')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
-    )
+        ('Bidding', {'fields': ('bids_left', 'tokens_left', 'bidsto_left', 'remove_from_chat')}),
+        )
+
 
 class ConfigKeyAdmin(admin.ModelAdmin):
     form = ConfigKeyAdminForm
