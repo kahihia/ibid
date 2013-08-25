@@ -138,6 +138,10 @@ def post_win_story(sender, **kwargs):
 
 @receiver(auction_started_signal)
 def notify_bidders(sender, **kwargs):
+    th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
+    th.start()
+
+def notify_bidders_thread(**kwargs):
     auction = kwargs['auction']
     text = u'The auction for a {item} has started. Hurry and go win it!.'.format(item=auction.item.name)
     for member in auction.bidders.all():
