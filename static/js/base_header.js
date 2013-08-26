@@ -93,7 +93,6 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         }
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
-    $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
 
     $scope.closeWonAuctionDialog = function () {
         //request for perm if does not have it
@@ -108,11 +107,11 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
     };
 
-    $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
-
     $scope.showJoinedFriendsDialog = function (event, data) {
         $scope.joinedFriendsData = data;
     };
+
+    $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
 
     $scope.hideJoinedFriendsDialog = function (showInviteMoreFriends) {
         $scope.joinedFriendsData = null;
@@ -274,7 +273,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     };
     $scope.requestPermisionPublishActions= function() {
         FB.login(function(response) {
-            console.log("yeee",response)
+
             //TODO: call api method to send the wall post
 
 
