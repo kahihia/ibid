@@ -31,14 +31,18 @@ def api(request, method):
 def getUserDetails(request):
     member = request.user
 
-    data = {
-        u'displayName': member.display_name(),
-        u'facebookId': member.facebook_id,
-        u'profileFotoLink': member.display_picture(),
-        u'profileLink': member.facebook_profile_url,
-        u'credits': member.bids_left,
-        u'tokens': member.tokens_left
-    }
+    data = {u'user':{
+                u'displayName': member.display_name(),
+                u'facebookId': member.facebook_id,
+                u'profileFotoLink': member.display_picture(),
+                u'profileLink': member.facebook_profile_url,
+                u'credits': member.bids_left,
+                u'tokens': member.tokens_left
+            },
+            u'app':{
+                u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE
+            }
+        }
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 
@@ -468,19 +472,13 @@ def reportAnError(request):
     return HttpResponse('', content_type="application/json")
 
 
-def convert_tokens(request):
+def convertTokens(request):
     if request.method == "POST":
-        requPOST = json.loads(request.body)
-        amount = int(requPOST['amount'])
-
         member = request.user
+        amount = member.maximun_bids_from_tokens()
         ConvertHistory.convert(member, int(amount))
-        return HttpResponse(
-            json.dumps({'tokens': member.get_bids("token"),
-                        'bids': member.get_bids('bid'),
-                        'maximun_bidsto': member.maximun_bids_from_tokens(),
-                        'convert_combo': member.gen_available_tokens_to_bids(),
-            }), content_type="application/json")
+        return HttpResponse('{"success":true}', content_type="application/json")
+    return HttpResponse('{"success":false}', content_type="application/json")
 
 def add_credits(request):
     if request.method == "POST":
@@ -561,7 +559,7 @@ API = {
     'getUserDetails': getUserDetails,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
-    'convert_tokens': convert_tokens,
+    'convertTokens': convertTokens,
     'inviteRequest': inviteRequest,
     'add_credits': add_credits,
     'globalMessage': globalMessage,
