@@ -489,7 +489,7 @@
 							</div>
 							<div id="auction-retail-price">
 								Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
-                                <p> Winner Gets {% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %} tokens</p>
+                                <p ng-show="auction.bidType == AUCTION_TYPE_TOKENS">Winner gets {% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %} tokens</p>
 							</div>
 							<div id="auction-status">
 								<p>
