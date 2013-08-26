@@ -525,6 +525,9 @@ body {
 	opacity: 0.5;
 
 }
+#auction-retail-price p {
+	font-size:10px;
+}
 #auction-status {
 	width: 188px;
 	float: left;
