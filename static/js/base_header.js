@@ -362,7 +362,7 @@ var getCredits_callback = function (data) {
 
 
 function openPopupFrendsInvited() {
-    showOverlay();
+    //showOverlay();
     setTimeout(function () {
         jQuery('.friends-invited-popup').show();
         TweenLite.fromTo('.friends-invited-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});

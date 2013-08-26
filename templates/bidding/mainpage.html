@@ -1,4 +1,4 @@
-{% load staticfiles %}
+b{% load staticfiles %}
 <!DOCTYPE html>
 <html ng-app="app">
 	<head>
@@ -196,15 +196,16 @@
 
 			<!--friends invited popup-->
 			<div class="friends-invited-popup">
-				<div class="popup">
-					<div class="title">
-						<span class="close">×</span>
-						<h1>Friends invited!</h1> &nbsp;
-					</div>
-					<div class="info">
-						<span style="text-align:center ; font-size: 16px;">The invitations have been sent! Thank you!</span>
+				<div class="tooltip-info">
+					
+				<div class="kenny"><img src="{% static 'images/tooltip-info-kenny.png' %}">
+				</div>
+				<div class="content">
+					<div class="txt">
+						The invitations have been sent! Thank you!
 					</div>
 				</div>
+			</div>
 			</div>
 
 			<!-- Joined friends dialog -->
