@@ -29,9 +29,9 @@
             </div>
             <div class="email_confirm_block confirm_status">
                 {% if email.verified %}
-                <img src="/static/images/confirmed_email.png" width="24" height="24" alt="Email confirmed"/>
+                <img src="{% static 'images/confirmed_email.png' %}" width="24" height="24" alt="Email confirmed"/>
                 {% else %}
-                <img src="/static/images/not_confirmed_email.png" width="24" height="24" alt="Email not confirmed"/>
+                <img src="{% static 'images/not_confirmed_email.png' %}" width="24" height="24" alt="Email not confirmed"/>
                 {% endif %}
             </div>
             <div class="email_confirm_block confirm_button">

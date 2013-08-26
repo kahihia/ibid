@@ -42,9 +42,6 @@ var gameState = {pubnubMessages:[]};
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
-    $scope.AUCTION_TYPE_CREDITS = 'credit';
-    $scope.AUCTION_TYPE_TOKENS  = 'token';
-
     //$scope.messages = [];
     //$scope.message = {'method': '', data: {}};
     $scope.realtimeStatus = "Connecting...";
@@ -164,8 +161,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                         }
                         catch (e) {}
                         auction.chatMessages.push(message.data);
-                        var scrollHeight = jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0])[0].scrollHeight;
-                        setTimeout(function(){jQuery(jQuery(".chat-list", jQuery(jQuery("input[value='"+auction.id+"']", '#user-auctions')[0]).next()[0])[0]).scrollTop(scrollHeight)} ,200);
                     });
                 });
             }
@@ -205,8 +200,9 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     return;
                 }
                 // Update auction with data received from the
-                // server.
-                auction = data.auction;
+                // server. Use _.extend() to avoid removing Angular's
+                // $$hashKey property.
+                _.extend(auction, data.auction);
                 // Move auction to mine.
                 $scope.moveAuction(auction, 'available', 'mine');
                 // Reload user data to refresh tokens/credits.
@@ -248,6 +244,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     }
                     else if (rdata.motive === 'NO_ENOUGH_TOKENS'){
                         console.log('Not enough tokens');
+                    }else if (rdata.motive === 'AUCTION_MAX_TOKENS_REACHED') {
+                        console.log('Amount commited exceeds maximum for user in an auction');
+                        // Re-enable add/rem bid buttons.
+                        auction.interface.addBidEnabled = false;
+                        auction.interface.remBidEnabled = true;
                     }
                     return;
                 }
@@ -484,6 +485,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             return;
                         }
                         // Update auction with received data.
+                        // Use _.extend() to avoid removing Angular's
+                        // $$hashKey property.
                         _.extend(auction, message.data);
                         // Based on received status, do corresponding
                         // action.
@@ -497,10 +500,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             }
                             break;
                         case 'waiting_payment':
-                            // If current user won, update his tokens.
-                            if (auction.bidType === $scope.AUCTION_TYPE_TOKENS && auction.winner.facebookId === $rootScope.user.facebookId) {
-                                $rootScope.user.tokens += Number(auction.retailPrice);
-                            }
+                            $scope.$emit('auction:finished', auction);
                             // Tutorial.
                             if (tutorialActive && tutorialAuctionId === auction.id) {
                                 $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent5');}, 500);

@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import json
+import time
 
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
 
 from bidding import client
-from bidding.delegate import GlobalAuctionDelegate
 from bidding.models import Auction
-from bidding.models import AuctionFixture
 from bidding.models import ConvertHistory
 from bidding.models import Invitation
 from bidding.models import Member
+from bidding.models import ConfigKey
+from bidding.models import FBOrderInfo
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
@@ -20,26 +21,34 @@ from chat.models import Message
 
 def api(request, method):
     """api calls go through this method"""
-    return API[method](request)
+    result = API[method](request)
+    if type(result) is HttpResponse or result.__class__ == HttpResponse:
+        return result
+    else:
+        return HttpResponse(result, content_type="application/json")
 
 
 def getUserDetails(request):
-    member = request.user.get_profile()
+    member = request.user
 
-    data = {
-        u'displayName': member.display_name(),
-        u'facebookId': member.facebook_id,
-        u'profileFotoLink': member.display_picture(),
-        u'profileLink': member.facebook_profile_url,
-        u'credits': member.bids_left,
-        u'tokens': member.tokens_left
-    }
+    data = {u'user':{
+                u'displayName': member.display_name(),
+                u'facebookId': member.facebook_id,
+                u'profileFotoLink': member.display_picture(),
+                u'profileLink': member.facebook_profile_url,
+                u'credits': member.bids_left,
+                u'tokens': member.tokens_left
+            },
+            u'app':{
+                u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE
+            }
+        }
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
 def getAuctionsInitialization(request):
-    member = request.user.get_profile()
+    member = request.user
 
     my_auctions = Auction.objects.filter(is_active=True).exclude(status__in=('waiting_payment', 'paid')).order_by(
         '-status').filter(bidders=member)
@@ -47,7 +56,7 @@ def getAuctionsInitialization(request):
         status__in=('waiting_payment', 'paid', 'waiting', 'processing', 'pause')).order_by('-status').exclude(
         bidders=member)
     finished_auctions = Auction.objects.filter(is_active=True, status__in=(
-    'waiting_payment', 'paid', 'waiting', 'processing', 'pause')).filter(winner__isnull=False).order_by('-won_date')
+        'waiting_payment', 'paid', 'waiting', 'processing', 'pause')).filter(winner__isnull=False).order_by('-won_date')
 
     bids_auctions = {}
     tokens_auctions = {}
@@ -115,14 +124,14 @@ def getAuctionsInitialization(request):
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'token'
         tmp['itemName'] = auct.item.name
-        tmp['bidNumber'] = 0
+        tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap
         tmp['bids'] = 0
         tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
-        tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
-                         'displayName': auct.winner.get_profile().display_name(),
-                         'facebookId': auct.winner.get_profile().facebook_id}
+        tmp['winner'] = {'firstName': auct.winner.first_name,
+                         'displayName': auct.winner.display_name(),
+                         'facebookId': auct.winner.facebook_id}
         tmp['auctioneerMessages'] = []
         tmp['chatMessages'] = []
 
@@ -135,14 +144,14 @@ def getAuctionsInitialization(request):
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'credit'
         tmp['itemName'] = auct.item.name
-        tmp['bidNumber'] = 0
+        tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap
         tmp['bids'] = 0
         tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
-        tmp['winner'] = {'firstName': auct.winner.get_profile().user.first_name,
-                         'displayName': auct.winner.get_profile().display_name(),
-                         'facebookId': auct.winner.get_profile().facebook_id}
+        tmp['winner'] = {'firstName': auct.winner.first_name,
+                         'displayName': auct.winner.display_name(),
+                         'facebookId': auct.winner.facebook_id}
         tmp['auctioneerMessages'] = []
         tmp['chatMessages'] = []
 
@@ -182,9 +191,9 @@ def getAuctionsInitialization(request):
         for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
-                 'user': {'displayName': mm.get_user().display_name(),
-                          'profileFotoLink': mm.get_user().picture(),
-                          'profileLink': mm.user.user_link()},
+                 'user': {'displayName': mm.display_name(),
+                          'profileFotoLink': mm.picture(),
+                          'profileLink': mm.user_link()},
                  'auctionId': auct.id
             }
             tmp['chatMessages'].insert(0, w)
@@ -223,8 +232,8 @@ def getAuctionsInitialization(request):
         for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
-                 'user': {'displayName': mm.get_user().display_name(),
-                          'profileFotoLink': mm.get_user().picture(),
+                 'user': {'displayName': mm.display_name(),
+                          'profileFotoLink': mm.picture(),
                           'profileLink': mm.user.user_link()},
                  'auctionId': auct.id
             }
@@ -254,7 +263,7 @@ def startBidding(request):
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
 
-    member = request.user.get_profile()
+    member = request.user
 
     try:
         amount = auction.minimum_precap
@@ -276,14 +285,11 @@ def startBidding(request):
         client.sendPackedMessages(clientMessages)
     else:
         if auction.bid_type == 'bid':
-            ret = {"success":False, 'motive': 'NO_ENOUGH_CREDITS'}
+            ret = {"success": False, 'motive': 'NO_ENOUGH_CREDITS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
         else:
-            ret = {"success":False, 'motive': 'NO_ENOUGH_TOKENS'}
+            ret = {"success": False, 'motive': 'NO_ENOUGH_TOKENS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
-
-
-
 
     auct = auction
     tmp = {}
@@ -295,7 +301,7 @@ def startBidding(request):
         tmp['completion'] = 0
     tmp['status'] = auct.status
     tmp['bidPrice'] = auct.minimum_precap
-    tmp['bidType'] = {'token':'token', 'bid':'credit'}[auct.bid_type]
+    tmp['bidType'] = {'token': 'token', 'bid': 'credit'}[auct.bid_type]
     tmp['itemName'] = auct.item.name
     tmp['retailPrice'] = str(auct.item.retail_price)
     tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
@@ -318,14 +324,14 @@ def startBidding(request):
     for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
         w = {'text': mm.format_message(),
              'date': mm.get_time(),
-             'user': {'displayName': mm.get_user().display_name(),
-                      'profileFotoLink': mm.get_user().picture(),
-                      'profileLink': mm.user.user_link()},
+             'user': {'displayName': mm.display_name(),
+                      'profileFotoLink': mm.picture(),
+                      'profileLink': mm.user_link()},
              'auctionId': auct.id
         }
         tmp['chatMessages'].insert(0, w)
 
-    ret = {"success":True, 'auction': tmp}
+    ret = {"success": True, 'auction': tmp}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
@@ -336,7 +342,7 @@ def addBids(request):
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
 
-    member = request.user.get_profile()
+    member = request.user
 
     #minimum_precap means bid_price
     amount = auction.minimum_precap
@@ -344,6 +350,11 @@ def addBids(request):
     amount += member.auction_bids_left(auction)
 
     if auction.status == 'precap' and auction.can_precap(member, amount):
+         #check max tokens for member per auction
+        if auction.bid_type != 'bid' and (((amount*100)/(auction.precap_bids)) > ConfigKey.get('AUCTION_MAX_TOKENS', 100)):
+            ret = {"success":False, 'motive': 'AUCTION_MAX_TOKENS_REACHED', 'data': {'placed': member.auction_bids_left(auction)}}
+            return HttpResponse(json.dumps(ret), content_type="application/json")
+        
         auction.place_precap_bid(member, amount)
 
         client.updatePrecap(auction)
@@ -353,12 +364,13 @@ def addBids(request):
         return HttpResponse(json.dumps(res), content_type="application/json")
     else:
         if auction.bid_type == 'bid':
-            ret = {"success":False, 'motive': 'NO_ENOUGH_CREDITS', 'data': {'placed': member.auction_bids_left(auction)}}
+            ret = {"success": False, 'motive': 'NO_ENOUGH_CREDITS',
+                   'data': {'placed': member.auction_bids_left(auction)}}
             return HttpResponse(json.dumps(ret), content_type="application/json")
         else:
-            ret = {"success":False, 'motive': 'NO_ENOUGH_TOKENS', 'data': {'placed': member.auction_bids_left(auction)}}
+            ret = {"success": False, 'motive': 'NO_ENOUGH_TOKENS',
+                   'data': {'placed': member.auction_bids_left(auction)}}
             return HttpResponse(json.dumps(ret), content_type="application/json")
-
 
 
 def remBids(request):
@@ -368,7 +380,7 @@ def remBids(request):
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.get(id=auction_id)
 
-    member = request.user.get_profile()
+    member = request.user
     #minimum_precap means bid_price
     amount = auction.minimum_precap
 
@@ -391,7 +403,7 @@ def stopBidding(request):
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
 
-    member = request.user.get_profile()
+    member = request.user
 
     auction.leave_auction(member)
 
@@ -400,7 +412,7 @@ def stopBidding(request):
     clientMessages.append(auctioneer.member_left_message(auction, member))
     client.sendPackedMessages(clientMessages)
 
-    ret = {'success':True, 'data':{'do':'close'}}
+    ret = {'success': True, 'data': {'do': 'close'}}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
@@ -415,7 +427,7 @@ def claim(request):
 
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
 
-    member = request.user.get_profile()
+    member = request.user
 
     tmp = {}
 
@@ -451,7 +463,7 @@ def reportAnError(request):
     """
     sends an email to us
     """
-    member = request.user.get_profile()
+    member = request.user
     message = request.POST.get('message', '')
     gameState = request.POST.get('gameState', '{}')
     subject = settings.ERROR_REPORT_TITLE + ' - ' + member.facebook_name
@@ -460,19 +472,25 @@ def reportAnError(request):
     return HttpResponse('', content_type="application/json")
 
 
-def convert_tokens(request):
+def convertTokens(request):
     if request.method == "POST":
-        requPOST = json.loads(request.body)
-        amount = int(requPOST['amount'])
-
-        member = request.user.get_profile()
+        member = request.user
+        amount = member.maximun_bids_from_tokens()
         ConvertHistory.convert(member, int(amount))
+        return HttpResponse('{"success":true}', content_type="application/json")
+    return HttpResponse('{"success":false}', content_type="application/json")
+
+def add_credits(request):
+    if request.method == "POST":
+        payment_id = int(request.POST['payment_id'])
+        order = FBOrderInfo.objects.filter(fb_payment_id=payment_id)
+        while not order:
+            time.sleep(1)
+            order = FBOrderInfo.objects.filter(fb_payment_id=payment_id)
+        update_credits=order[0].member.bids_left
         return HttpResponse(
-            json.dumps({'tokens': member.get_bids("token"),
-                        'bids': member.get_bids('bid'),
-                        'maximun_bidsto': member.maximun_bids_from_tokens(),
-                        'convert_combo': member.gen_available_tokens_to_bids(),
-            }), content_type="application/json")
+            json.dumps({'update_credits': update_credits,}),
+            content_type="application/json")
 
 
 def sendMessage(request):
@@ -496,7 +514,7 @@ def sendMessage(request):
 
 
 def inviteRequest(request):
-    member = request.user.get_profile()
+    member = request.user
 
     requPOST = json.loads(request.body)
     invited = request.GET.get('invited', requPOST['invited'])
@@ -518,6 +536,18 @@ def inviteRequest(request):
 
     return HttpResponse(json.dumps([True]))
 
+def globalMessage(request):
+    member = request.user
+    if request.method == 'POST':
+        requPOST = json.loads(request.body)
+        text = requPOST['text']
+
+        client.do_send_global_chat_message(member, text)
+
+        return HttpResponse('{"success":true}', content_type="application/json")
+
+    return HttpResponse('{"success":false}', content_type="application/json")
+
 
 API = {
     'startBidding': startBidding,
@@ -529,6 +559,8 @@ API = {
     'getUserDetails': getUserDetails,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
-    'convert_tokens': convert_tokens,
+    'convertTokens': convertTokens,
     'inviteRequest': inviteRequest,
+    'add_credits': add_credits,
+    'globalMessage': globalMessage,
 }

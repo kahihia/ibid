@@ -16,7 +16,9 @@ from django.conf import settings
 import json
 
 import client
+import open_facebook
 
+auction_started_signal = Signal(providing_args=["auction"])
 auction_finished_signal = Signal(providing_args=["auction"])
 precap_finished_signal = Signal(providing_args=["auction"])
 
@@ -75,13 +77,13 @@ def make_auction_invoice(sender, **kwargs):
 
         invoice = AuctionInvoice()
         invoice.auction = auction
-        invoice.member = auction.winner.get_profile()
+        invoice.member = auction.winner
         invoice.uid = uuid.uuid4()
         invoice.save()
 
         #winnner for fun earns retail price in tokens!
         if auction.bid_type == 'token':
-            mem = auction.winner.get_profile()
+            mem = auction.winner
             mem.tokens_left += int(auction.item.retail_price)
             mem.save()
 
@@ -111,53 +113,52 @@ def send_start_email(sender, **kwargs):
 
 
 @receiver(auction_finished_signal)
-def post_win_wall(sender, **kwargs):
+def post_win_story(sender, **kwargs):
     auction = kwargs['auction']
-    logger.debug("Auction: %s" % auction)
-    print auction.winner
     if auction.winner:
-        member = auction.winner.get_profile()
+        member = auction.winner
+        url = '{site}fb_item/{item}'.format(site=settings.SITE_NAME, item=str(auction.item.id))
         if auction.bid_type == 'token':
-            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                    'message': u'{name} has won this virtual item playing for tokens. If {name} had played for items he/she could have purchased it for {price} dollars!'
-                    .format(
-                        name=member.user.first_name,
-                        item=auction.item.name,
-                        price=auction.won_price),
-                    'picture': auction.item.get_thumbnail(),
-                    'link': settings.FB_APP,
-            }
-            try:
-                member.post_to_wall(**args)
-            except PermissionException:
-                print "User forbid wallpost"
-            except:
-                raise
-        else:
-            args = {'caption': u'Auction won - {item}'.format(item=auction.item.name),
-                    'message': u'{name} can purchase {item} for {price} dollars!'
-                    .format(
-                        name=member.user.first_name,
-                        item=auction.item.name,
-                        price=auction.won_price),
-                    'picture': auction.item.get_thumbnail(),
-                    'link': settings.FB_APP,
-            }
-            try:
-                member.post_to_wall(**args)
-            except PermissionException:
-                print "User forbid wallpost"
-            except:
-                raise
+            info_message = '{user} has won this virtual item playing for tokens. If {user} had played for items he/she could have purchased it for {price} dollars!'
+        if auction.bid_type == 'bid':
+            info_message = '{user} can purchase {item} for {price} dollars!'
+        args = {'product': url,
+                'info_message': info_message.format(user=str(member), item=str(auction.item.name), price=str(auction.won_price)),}
+        try:
+            member.post_win_story(**args)
+        except PermissionException:
+            print "User forbid story post"
+            member.delSession('wallPost')
+            #save the wallpost to user session
+            member.setSession('wallPost', args)
+            #TODO: request wallpost permission
+        except Exception as e:
+            logger.exception(e)
 
+@receiver(auction_started_signal)
+def notify_bidders(sender, **kwargs):
+    th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
+    th.start()
+
+def notify_bidders_thread(**kwargs):
+    auction = kwargs['auction']
+    text = u'The auction for a {item} has started. Hurry and go win it!.'.format(item=auction.item.name)
+    for member in auction.bidders.all():
+        of = open_facebook.OpenFacebook(member.access_token)
+        args = {'template': text,
+            'access_token': open_facebook.FacebookAuthorization.get_app_access_token()}
+        logger.debug("Notification - ARGS: %s" % args)
+        destination = '{facebook_id}/notifications'.format(facebook_id=member.facebook_id)
+        response = of.set(destination, **args)
 
 def send_in_thread(signal, **kwargs):
     """ 
     Sends the given signal in a different thread, so it doesn't delay further
     actions.
     """
-    signal.send(**kwargs)
+    ## to disable thread uncomment this
+    #signal.send(**kwargs)
 
-    #th = threading.Thread(target=signal.send, kwargs=kwargs)
-    #th.start()
+    th = threading.Thread(target=signal.send, kwargs=kwargs)
+    th.start()
 

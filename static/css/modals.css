@@ -1,0 +1,385 @@
+
+/*---------------------------------------------------------TITLE FONT*/
+@font-face {
+	font-family: ArtBrush;
+	src: url("../fonts/Artbrush.ttf");
+}
+/*---------------------------------------------------------TEXT*/
+.text-large-w {
+	font-size: 16px;
+	color: #c2c2c2;
+}
+.text-medium-w {
+	font-size: 14px;
+	color: #c2c2c2;
+}
+.text-small-w {
+	font-size: 12px;
+	color: #939393;
+}
+.text-large-b {
+	font-size: 16px;
+}
+.text-medium-b {
+	font-size: 14px;
+}
+.text-small-b {
+	font-size: 12px;
+}
+/*---------------------------------END----------------------TEXT*/
+/*-------------------------------------------------MODALS POPUPS*/
+.modal {
+	position: fixed;
+    top: 100px;
+    left: 50%;
+    z-index: 1040;
+    margin-left: -296px;
+    background-image: url("../images/popup-frame.jpg");
+    padding: 11px;
+    -moz-box-shadow: 0px 0px 50px #000, inset 0px 0px 3px 0px #000;
+    -webkit-box-shadow: 0px 0px 50px #000, inset 0px 0px 3px 0px #000;
+    box-shadow: 0px 0px 50px #000, inset 0px 0px 3px 0px #000;
+    height: 400px;
+    width: 570px;
+    color: #c2c2c2;
+    font-weight: 600;
+}
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  background-color: #000000;
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+}
+.modal.modal-wide {
+	width: 750px;
+}
+.modal .kenny {
+	bottom: -60px;
+	left: -170px;
+}
+.modal .prize {
+	bottom: -35px;
+	right: -60px;
+}
+.modal .kenny,
+.modal .prize {
+	display: none;
+	position: absolute;
+}
+.modal.item-decoration .kenny,
+.modal.item-decoration .prize {
+	display: block;
+}
+.modal .credits-img {
+	float: left;
+	margin: -37px;
+}
+.modal .gloss {
+	background-color: #fff;
+	opacity: 0.1;
+	position: absolute;
+	height: 18px;
+	width: 100%;
+	margin: -9px 0 0 -9px;
+	box-shadow: 0 0 3px #fff;
+}
+.modal:after {
+    content: '';
+    display: block;
+	background-image: url("../images/popup-bkg.jpg");
+	-moz-box-shadow: 0px 0px 3px #000, inset 0px 0px 12px 0px #000;
+	-webkit-box-shadow: 0px 0px 3px #000, inset 0px 0px 12px 0px #000;
+	box-shadow: 0px 0px 3px #000, inset 0px 0px 12px 0px #000;
+	height: 100%;
+	width: 100%;
+}
+
+.modal .title {
+	margin-top: -34px;
+	position: absolute;
+	width: 100%;
+	text-align: center;
+	font-family: ArtBrush;
+	font-size: 55px;
+	letter-spacing: 1px;
+	color: #ffeb00;
+	font-weight: normal;
+
+    -webkit-text-stroke: 1px black;
+    text-shadow:
+        3px 3px 0 black,
+        -1px -1px 0 black,
+        1px -1px 0 black,
+        -1px 1px 0 black,
+        1px 1px 0 black;
+}
+.modal .btn-close {
+	position:absolute;
+	right:-10px;
+	top:-7px;
+}
+.modal .title-small {
+	margin-top: -40px;
+	position: absolute;
+	width: 100%;
+}
+.modal .title img, .title-small img {
+	margin: 0 auto;
+	display: block;
+}
+.modal .content {
+	text-align: center;
+	line-height: 24px;
+	margin-top: 39px;
+	position: absolute;
+	width: 100%;
+}
+.modal .content .winner {
+    font-size: 18px;
+    color: #c2c2c2;
+    font-style: italic;
+    font-weight: 400;
+}
+.modal .content .winner .winner-name {
+    display: block;
+	font-size: 30px;
+	color: #fff;
+	font-weight: 600;
+    font-style: normal;
+}
+.modal .content .winner .item-name {
+    display: block;
+	font-size: 14px;
+	color: #c2c2c2;
+	font-weight: 600;
+    font-style: normal;
+	line-height: 35px;
+}
+.modal .content .tokens {
+	font-size: 46px;
+	font-weight: 600;
+	letter-spacing: -2px;
+	color: #64c4dc;
+	text-shadow: 0px 0px 20px #000;
+	filter: dropshadow(color=#000, offx=0, offy=0);
+	text-align: center;
+	display: inline-block;
+	position: relative;
+	top: -20px;
+}
+.modal .content .tokens .value {
+	display: inline-block;
+	vertical-align: -14px;
+	line-height: 27px;
+	position:relative;
+}
+.modal .content .tokens p {
+	font-size: 12px;
+	letter-spacing: 0px;
+}
+.modal .content .tokens span {
+	color: #fff;
+	margin-left: 15px;
+}
+.modal .content .item {
+	margin-top: 24px;
+}
+.modal .content .item img {
+    -webkit-box-shadow: 0 0 40px 3px rgba(0, 0, 0, 1);
+    box-shadow: 0 0 40px 3px rgba(0, 0, 0, 1);
+    border: 1px solid #9a9a9a;
+    max-width: 190px;
+		max-height: 150px;
+}
+.modal .info {
+	/*width: 100%;*/
+	margin: 29px auto 0 auto;
+	line-height: 15px;
+	font-weight: 600;
+	text-align: center;
+	/*bottom: 46px;
+	position: absolute;
+	display: block;*/
+    display: inline-block;
+    border-top: 1px dotted #939393;
+    padding-top: 1em;
+}
+.modal .content .title-content {
+	margin-bottom: 20px;
+}
+
+.modal .content .friends-list {
+	width: 200px;
+	float: left;
+	margin-left: 120px;
+	text-align: left;
+	margin-top: 30px;
+}
+
+.modal .content .friends-list ul {
+	height: 175px;
+	display: table-cell;
+	vertical-align: middle;
+}
+.modal .content .friends-list li {
+	color: #C2C2C2;
+	list-style-type: none;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	width: 190px;
+	margin-bottom: 7px;
+}
+.modal .content .friends-list li img {
+	vertical-align: -10px;
+	-webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+	box-shadow: 0px 0px 10px rgba(0, 0, 0, 1);
+	border: 1px solid #9a9a9a;
+	margin-right: 10px;
+}
+.modal .content .tokens-column {
+	height: 200px;
+	display: table-cell;
+	vertical-align: middle;
+	padding-top: 13px;
+}
+.modal .content .column-left, .column-right {
+	float: left;
+	width: 375px;
+	height: 317px;
+}
+.modal .content .column-dot {
+	border-right: 1px dotted #fff;
+	float: left;
+	height: 307px;
+	margin-top: 10px;
+}
+.modal .content .credits-btn {
+	height: 73px;
+	width: 130px;
+	color: #fff;
+	text-transform: none;
+	line-height: 16px;
+	padding: 25px 0 0 0;
+	margin: 7px;
+}
+.modal .content .credits-btn p {
+	font-size: 35px;
+	font-weight: 700;
+	margin-bottom: 8px;
+}
+.modal .content .column-right .tokens {
+	display: block;
+	margin: 36px 0 17px 0;
+}
+.modal .buttons {
+	width: 100%;
+	bottom: -8px;
+	position: absolute;
+	text-align: center;
+}
+.modal .buttons .btn-green {
+	position: relative;
+}
+.modal .buttons .btn-blue {
+	position: relative;
+}
+.modal .buttons .btn-red {
+	position: relative;
+}
+.modal .buttons .btn {
+	position: relative;
+	min-width: 100px;
+}
+
+
+/*-----------END-----------------------------------------MODALS POPUPS*/
+
+/*-----------==-----------------------------------------TOOLTIPS*/
+
+.tooltip-info {
+	position: absolute;
+}
+.tooltip-info .kenny {
+	float: left;
+	position: absolute;
+	z-index: 10;
+}
+.tooltip-info .content {
+	height: 68px;
+	width: 260px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 2px solid #3990b8;
+	float: left;
+	position: absolute;
+	margin: 50px 0px 0px 87px;
+	-moz-box-shadow: 0px 0px 45px #000;
+	-webkit-box-shadow: 0px 0px 45px #000;
+	box-shadow: 0px 0px 45px #000;
+	background-color: #fff;
+	padding: 0 15px 0 35px;
+}
+.tooltip-info .content .txt {
+	font-size: 12px;
+	color: #6c6c6b;
+	display: table-cell;
+	vertical-align: middle;
+	height: 68px;
+	font-weight: 700;
+}
+.tooltip-action {
+	position: absolute;
+}
+.tooltip-action .kenny {
+	float: left;
+	position: absolute;
+	z-index: 10;
+}
+.tooltip-action .content {
+	height: 106px;
+	width: 420px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 2px solid #3990b8;
+	float: left;
+	position: absolute;
+	margin: 56px 0px 0px 87px;
+	-moz-box-shadow: 0px 0px 45px #000;
+	-webkit-box-shadow: 0px 0px 45px #000;
+	box-shadow: 0px 0px 45px #000;
+	background-color: #fff;
+	padding: 0 15px 0 0px;
+	text-align: center;
+}
+.tooltip-action .content .gray {
+	width: 65px;
+	background-color: #f5f5f5;
+	height: 100%;
+	float: left;
+	margin-right: 35px;
+}
+.tooltip-action .content .txt {
+	font-size: 12px;
+	color: #6c6c6b;
+	display: table-cell;
+	vertical-align: middle;
+	height: 77px;
+	font-weight: 700;
+	text-align: center;
+	width: 320px;
+}
+.tooltip-action .content .btn {
+	position: relative;
+	height: 20px;
+	top: -10px;
+	box-shadow: none;
+}
+
