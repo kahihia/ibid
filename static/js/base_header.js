@@ -369,7 +369,7 @@ function openPopupFrendsInvited() {
     }, 300);
 }
 function closePopupFriendsInvited() {
-    hideOverlay();
+    //hideOverlay();
     TweenLite.to('.friends-invited-popup', 1, {left: '-800px', onComplete: function () {
         jQuery('.friends-invited-popup').hide()
     }})
