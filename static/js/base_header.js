@@ -28,6 +28,13 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $rootScope.user.tokens = 0;
     $rootScope.user.credits = 0;
 
+    $rootScope.convertTokens = {}
+    //TODO: get this value on "app initialization" event
+    $rootScope.convertTokens.tokenValueInCredits = 0;
+
+    $rootScope.convertTokens.tokens = 0;
+    $rootScope.convertTokens.credits = 0;
+
     //define channel
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
@@ -36,16 +43,20 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     //API request get user details
     $http
         .post('/api/getUserDetails/')
-        .success(function (user) {
-            $rootScope.user = user;
+        .success(function (data) {
+            $rootScope.user = data.user;
+            $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
         });
 
     $rootScope.$on('reloadUserDataEvent', function () {
         $http
             .post('/api/getUserDetails/')
-            .success(function (user) {
-                $scope.user.tokens = user.tokens;
-                $scope.user.credits = user.credits;
+            .success(function (data) {
+                $scope.user.tokens = data.user.tokens;
+                $scope.user.credits = data.user.credits;
+
+                $rootScope.convertTokens.credits = parseInt($rootScope.user.tokens*$rootScope.convertTokens.tokenValueInCredits);
+                $rootScope.convertTokens.tokens = $rootScope.convertTokens.credits/$rootScope.convertTokens.tokenValueInCredits;
             });
     });
     $rootScope.$on('openGetCreditsPopover', function () {
@@ -55,6 +66,11 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         //     TweenLite.fromTo('.buy-bids-popup', 1, {left: '50px'},{left: '150x', ease: Back.easeOut});
         // }, 300);
         $scope.showBuyCreditsModal = true;
+
+        //what to show on convert tokens
+        $rootScope.convertTokens.credits = parseInt($rootScope.user.tokens*$rootScope.convertTokens.tokenValueInCredits);
+        $rootScope.convertTokens.tokens = $rootScope.convertTokens.credits/$rootScope.convertTokens.tokenValueInCredits;
+
     });
     $rootScope.$on('closeGetCreditsPopover', function () {
 //        hideOverlay();
@@ -106,20 +122,15 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     };
 
     $scope.convertChips = function() {
-        $http.post('/api/convert_tokens/', {'amount': jQuery('#tokens_to_convert').val()}).success(
-            function (data, status) {
-                $rootScope.$emit('reloadUserDataEvent');
+        if ( $rootScope.convertTokens.credits > 0){
+            $http
+                .post('/api/convertTokens/')
+                .success(
+                function (data, status) {
+                    $rootScope.$emit('reloadUserDataEvent');
 
-                jQuery('#user_bids').text(data.bids);
-                jQuery('#user_tokens').text(data.tokens);
-                jQuery('#convertible_tokens').text(data.tokens);
-                jQuery('#maximun_bidsto').text(data.maximun_bidsto);
-                var options = '';
-                for (var i = 0; i < data.convert_combo.length; i++) {
-                    options += '<option value="' + data.convert_combo[i] + '">' + data.convert_combo[i] + '</option>';
-                }
-                jQuery('select#tokens_to_convert').html(options);
-            });
+                });
+        }
     };
 
     $scope.shareOnTimeline = function () {
