@@ -1,8 +1,14 @@
 from django import forms
+from django.contrib.auth.forms import UserChangeForm
 from exceptions import ValueError
 
 from bidding import models
 from bidding.models import ITEM_CATEGORY_CHOICES, CONFIG_KEY_TYPES
+
+
+class MemberAdminForm(UserChangeForm):
+    class Meta:
+        model = models.Member
 
 
 class ConfigKeyAdminForm(forms.ModelForm):

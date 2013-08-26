@@ -207,16 +207,13 @@ class Member(AbstractUser, FacebookModel):
         #return of.my_image_url(size='square')
         return "https://graph.facebook.com/%s/picture" % self.facebook_id
 
-    def post_to_wall(self, **args):
-        """
-        Posts to the member wall. Some possible arguments are:
-        picture, name, link, caption, message.
-        """
+    def post_win_story(self, **args):
+        # Posts a story when winning an item in an auction.
         logger.debug("ARGS: %s" % args)
         of = open_facebook.OpenFacebook(self.access_token)
-        response = of.set('me/feed', **args)
-        logger.debug("Response: %s" % response)
-    
+        response = of.set('me/{app}:win'.format(app=settings.FACEBOOK_APP_NAME),**args)
+        logger.debug("Response: %s" % response)    
+
     def fb_check_like(self):
         ''' Checks if user likes the app in facebook '''
         of = open_facebook.OpenFacebook(self.access_token)
@@ -277,9 +274,10 @@ class Member(AbstractUser, FacebookModel):
 
     def delSession(self, key):
         s = self.getSession()
-        del s[key]
-        self.session = json.dumps(s)
-        self.save()
+        if key in s:
+            del s[key]
+            self.session = json.dumps(s)
+            self.save()
 
 
 class Item(AuditedModel):
@@ -497,7 +495,7 @@ class BidPackage(models.Model):
     
 @receiver(post_save, sender=BidPackage)
 def update_fb_info(sender, instance, **kwargs):
-    url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.WEB_APP+'bid_package/'+str(instance.id))
+    url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)+'bid_package/'+str(instance.id))
     urlopen(url)
         
 class AuctionInvoice(AuditedModel):
@@ -627,7 +625,7 @@ class ConfigKey(models.Model):
                     else:
                         return False
                 else:
-                    return result
+                    return result.value
             except:
                 return default
         else:

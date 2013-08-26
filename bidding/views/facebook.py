@@ -12,11 +12,12 @@ from django.views.decorators.csrf import csrf_exempt
 import django_facebook.connect
 from django_facebook.models import FacebookLike
 
+from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, Item
 from open_facebook.api import FacebookAuthorization
 from open_facebook.exceptions import ParameterException, OAuthException
 
 from bidding import client 
-from bidding.models import AuctionInvitation, Member, FBOrderInfo, BidPackage, ConfigKey
+from bidding.models import ConfigKey
 from bidding.views.home import render_response
 
 
@@ -42,27 +43,6 @@ def get_redirect_uri(request):
     url = settings.FACEBOOK_AUTH_REDIRECT_URL.format(appname=settings.FACEBOOK_APP_NAME)
 
     return url + request_ids
-
-
-def fb_auth(request):
-    """
-    Redirects to Facebook to ask the user for giving authorization 
-    to the app to access its personal information.
-    Afterwards redirects to home page.
-    """
-
-    if request.user.is_authenticated():
-    #Fix so admin user don't break on the root url
-        try:
-            request.user
-        except Member.DoesNotExist:
-            return HttpResponseRedirect(reverse('bidding_home'))
-
-    url = settings.FACEBOOK_AUTH_URL.format(app=settings.FACEBOOK_APP_ID, 
-                                            url=get_redirect_uri(request))
-
-    return render_response(request, 'fb_redirect.html', {'authorization_url': url})
-
 
 def fb_test_user(request):
     token = FacebookAuthorization.get_app_access_token()
@@ -113,35 +93,6 @@ def give_bids(request):
 
     member.save()
 
-
-def fb_login(request):
-    """
-    Handles a facebook user's authentication and registering.
-    Creates the user if it's not registered. Otherwise just logs in.
-    """
-
-    code = request.GET.get('code')
-    if not code:
-        #authorization denied
-        return HttpResponseRedirect(reverse('bidding_anonym_home'))
-
-    try:
-        if code[-1] == '/':
-            code = code[:-1:]
-        token = FacebookAuthorization.convert_code(code, get_redirect_uri(request))['access_token']
-        action, user = django_facebook.connect.connect_user(request, token)
-    except ParameterException:
-        return HttpResponseRedirect(reverse('fb_auth'))
-    #FIXME for test purposes
-    #give_bids(request)
-
-    if 'request_ids' in request.GET:
-        return handle_invitations(request)
-
-    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
-    return render_response(request, 'fb_redirect.html', {'authorization_url': fb_url + 'home/?aaa=2'})
-
-
 def fb_check_like(request):
     member = request.user
     response = False
@@ -180,8 +131,9 @@ def fb_like(request):
                             'gift': 0,
                             }), content_type="application/json")
         except OAuthException as e:
-            if str(e).find('error code 3501'):
+            if str(e).find('#3501') != -1:
                 return HttpResponse(json.dumps({'info':'ALREADY_LIKE',}))
+            #if str(e).find('#200') != -1:
             raise
     return HttpResponse(request.method)
 
@@ -290,6 +242,9 @@ def credits_callback(request):
             return HttpResponse()
     return HttpResponse('error')
     
+def fb_item_info(request, item_id):
+    item = Item.objects.get(pk=item_id)
+    return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP})
 
 def bid_package_info(request,package_id):
     package  = BidPackage.objects.get(pk= package_id)
@@ -336,194 +291,3 @@ def set_cookie(response, key, value, days_expire=7):
     response.set_cookie(key, value, max_age=max_age, expires=expires, domain=settings.SESSION_COOKIE_DOMAIN,
                         secure=settings.SESSION_COOKIE_SECURE or None)
 
-
-###############################
-#### facebook monkey patch ####
-###############################
-
-from django_facebook.utils import get_registration_backend, get_form_class, \
-    get_profile_model, to_bool, get_user_model, get_instance_for,\
-    get_user_attribute, try_get_profile, get_model_for_attribute,\
-    get_instance_for_attribute, update_user_attributes
-from django_facebook.api import get_facebook_graph
-from django_facebook.connect import CONNECT_ACTIONS, _login_user, _update_likes_and_friends, \
-    _update_access_token, _remove_old_connections, _update_user, _connect_user
-from django.contrib.auth import authenticate, login
-from django.db.utils import IntegrityError
-from random import randint
-from django_facebook import exceptions as facebook_exceptions, \
-    settings as facebook_settings, signals
-from django.contrib import auth
-
-
-def connect_user(request, access_token=None, facebook_graph=None, connect_facebook=False):
-    '''
-    Given a request either
-
-    - (if authenticated) connect the user
-    - login
-    - register
-    '''
-    user = None
-    graph = facebook_graph or get_facebook_graph(request, access_token)
-
-    converter = get_instance_for('user_conversion', graph)
-
-    assert converter.is_authenticated()
-    facebook_data = converter.facebook_profile_data()
-
-    if 'email' not in facebook_data or not facebook_data['email'] and facebook_data['username']:
-        facebook_data['email'] = '%s@facebook.com' % facebook_data['username']
-
-    force_registration = request.REQUEST.get('force_registration') or\
-        request.REQUEST.get('force_registration_hard')
-
-    logger.debug('force registration is set to %s', force_registration)
-    if connect_facebook and request.user.is_authenticated() and not force_registration:
-        # we should only allow connect if users indicate they really want to connect
-        # only when the request.CONNECT_FACEBOOK = 1
-        # if this isn't present we just do a login
-        action = CONNECT_ACTIONS.CONNECT
-        # default behaviour is not to overwrite old data
-        user = _connect_user(request, converter, overwrite=True)
-    else:
-        email = facebook_data.get('email', False)
-        email_verified = facebook_data.get('verified', False)
-        kwargs = {}
-        if email and email_verified:
-            kwargs = {'facebook_email': email}
-        auth_user = authenticate(facebook_id=facebook_data['id'], **kwargs)
-        if auth_user and not force_registration:
-            action = CONNECT_ACTIONS.LOGIN
-
-            # Has the user registered without Facebook, using the verified FB
-            # email address?
-            # It is after all quite common to use email addresses for usernames
-            update = getattr(auth_user, 'fb_update_required', False)
-            profile = try_get_profile(auth_user)
-            current_facebook_id = get_user_attribute(
-                auth_user, profile, 'facebook_id')
-            if not current_facebook_id:
-                update = True
-            # login the user
-            user = _login_user(request, converter, auth_user, update=update)
-        else:
-            action = CONNECT_ACTIONS.REGISTER
-            # when force registration is active we should remove the old
-            # profile
-            try:
-                user = _register_user(request, converter,
-                                      remove_old_connections=force_registration)
-            except facebook_exceptions.AlreadyRegistered, e:
-                # in Multithreaded environments it's possible someone beats us to
-                # the punch, in that case just login
-                logger.info(
-                    'parallel register encountered, slower thread is doing a login')
-                auth_user = authenticate(
-                    facebook_id=facebook_data['id'], **kwargs)
-                action = CONNECT_ACTIONS.LOGIN
-                user = _login_user(request, converter, auth_user, update=False)
-
-    _update_likes_and_friends(request, user, converter)
-
-    _update_access_token(user, graph)
-
-    logger.info('connect finished with action %s', action)
-
-    return action, user
-
-
-def _register_user(request, facebook, profile_callback=None,
-                   remove_old_connections=False):
-    '''
-    Creates a new user and authenticates
-    The registration form handles the registration and validation
-    Other data on the user profile is updates afterwards
-
-    if remove_old_connections = True we will disconnect old
-    profiles from their facebook flow
-    '''
-    if not facebook.is_authenticated():
-        raise ValueError(
-            'Facebook needs to be authenticated for connect flows')
-
-    # get the backend on new registration systems, or none
-    # if we are on an older version
-    backend = get_registration_backend()
-    logger.info('running backend %s for registration', backend)
-
-    # gets the form class specified in FACEBOOK_REGISTRATION_FORM
-    form_class = get_form_class(backend, request)
-
-    facebook_data = facebook.facebook_registration_data()
-
-    if 'email' not in facebook_data or not facebook_data['email']:
-        facebook_data['email'] = '%s@facebook.com' % facebook_data['email']
-
-    data = request.POST.copy()
-    for k, v in facebook_data.items():
-        if not data.get(k):
-            data[k] = v
-    if remove_old_connections:
-        _remove_old_connections(facebook_data['facebook_id'])
-
-    if request.REQUEST.get('force_registration_hard'):
-        data['email'] = data['email'].replace(
-            '@', '+test%s@' % randint(0, 1000000000))
-
-    form = form_class(data=data, files=request.FILES,
-                      initial={'ip': request.META['REMOTE_ADDR']})
-
-    if not form.is_valid():
-        error_message_format = u'Facebook data %s gave error %s'
-        error_message = error_message_format % (facebook_data, form.errors)
-        error = facebook_exceptions.IncompleteProfileError(error_message)
-        error.form = form
-        raise error
-
-    try:
-        # for new registration systems use the backends methods of saving
-        new_user = None
-        if backend:
-            new_user = backend.register(request,
-                                        form=form, **form.cleaned_data)
-        # fall back to the form approach
-        if new_user is None:
-            raise ValueError(
-                'new_user is None, note that backward compatability for the older versions of django registration has been dropped.')
-    except IntegrityError, e:
-        # this happens when users click multiple times, the first request registers
-        # the second one raises an error
-        raise facebook_exceptions.AlreadyRegistered(e)
-
-    signals.facebook_user_registered.send(sender=get_user_model(),
-                                          user=new_user, facebook_data=facebook_data, request=request)
-
-    # update some extra data not yet done by the form
-    new_user = _update_user(new_user, facebook)
-
-    # IS this the correct way for django 1.3? seems to require the backend
-    # attribute for some reason
-    new_user.backend = 'django_facebook.auth_backends.FacebookBackend'
-    auth.login(request, new_user)
-
-    return new_user
-
-def get_auction_or_404(request):
-    """
-    Gets the auction id from the POST dict and returns the matching auction.
-    If it's not found, Http404 is raised.
-    """
-    if request.GET and request.user.is_authenticated():
-        auction_id = request.GET.get('auction_id')
-        if auction_id:
-            return get_object_or_404(Auction, id=auction_id)
-    elif request.POST and request.user.is_authenticated():
-        auction_id = request.POST.get('auction_id')
-        if auction_id:
-            return get_object_or_404(Auction, id=auction_id)
-
-    raise Http404
-
-django_facebook.connect.connect_user = connect_user
-django_facebook.connect._register_user = _register_user

@@ -186,9 +186,9 @@ def getAuctionsInitialization(request):
         for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
-                 'user': {'displayName': mm.get_user().display_name(),
-                          'profileFotoLink': mm.get_user().picture(),
-                          'profileLink': mm.user.user_link()},
+                 'user': {'displayName': mm.display_name(),
+                          'profileFotoLink': mm.picture(),
+                          'profileLink': mm.user_link()},
                  'auctionId': auct.id
             }
             tmp['chatMessages'].insert(0, w)
@@ -227,8 +227,8 @@ def getAuctionsInitialization(request):
         for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
-                 'user': {'displayName': mm.get_user().display_name(),
-                          'profileFotoLink': mm.get_user().picture(),
+                 'user': {'displayName': mm.display_name(),
+                          'profileFotoLink': mm.picture(),
                           'profileLink': mm.user.user_link()},
                  'auctionId': auct.id
             }
@@ -317,9 +317,9 @@ def startBidding(request):
     for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
         w = {'text': mm.format_message(),
              'date': mm.get_time(),
-             'user': {'displayName': mm.get_user().display_name(),
-                      'profileFotoLink': mm.get_user().picture(),
-                      'profileLink': mm.user.user_link()},
+             'user': {'displayName': mm.display_name(),
+                      'profileFotoLink': mm.picture(),
+                      'profileLink': mm.user_link()},
              'auctionId': auct.id
         }
         tmp['chatMessages'].insert(0, w)

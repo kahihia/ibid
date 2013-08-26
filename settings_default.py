@@ -42,6 +42,7 @@ ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
 AUTHENTICATION_BACKENDS = (
     'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
+
 )
 AUTH_USER_MODEL="bidding.Member"
 #AUTH_USER_MODEL="auth.User"
@@ -108,6 +109,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'bidding.middleware.P3PHeaderMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'django_facebook.middleware.FacebookCanvasMiddleWare',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -254,11 +256,15 @@ FACEBOOK_APP_ID = ''
 FACEBOOK_APP_SECRET = ''
 FACEBOOK_APP_NAME = 'ibidgames'
 FACEBOOK_FORCE_PROFILE_UPDATE_ON_LOGIN = True
-FACEBOOK_REGISTRATION_BACKEND = 'registration.backends.default.DefaultBackend'
-FACEBOOK_AUTH_URL = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}&scope=email,publish_stream'
+FACEBOOK_REGISTRATION_BACKEND = 'authbackends.YambidRegistration'
+FACEBOOK_AUTH_URL          = 'https://www.facebook.com/dialog/oauth?client_id={app}&redirect_uri={url}'
 FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
-FACEBOOK_AUTH_REDIRECT_URL = 'https://apps.facebook.com/{appname}/fb/login/'
-FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/' 
+FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/'
+FACEBOOK_AUTH_REDIRECT_URL = FACEBOOK_CANVAS_HOME_URL
+FACEBOOK_DEFAULT_SCOPE = ['email', 'user_birthday']
+# Needed by django-facebook to use the middleware with the canvas (django_facebook.canvas.py)
+# It's the redirect url that the middleware sends when asking facebook for the permissions dialog
+FACEBOOK_CANVAS_PAGE       = 'https://apps.facebook.com/ibidgames/canvashome/'
 
 
 # PubNub settings
@@ -279,3 +285,5 @@ PAGINATED_BY = 20
 TODO_BID_PRICE = 5
 TOKENS_TO_BIDS_RATE = 0.0001
 PAYPAL_RECEIVER_EMAIL = 'payment@ibidgames.com'
+
+AUCTION_MAX_TOKENS = 120;

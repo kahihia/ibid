@@ -42,9 +42,6 @@ var gameState = {pubnubMessages:[]};
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
-    $scope.AUCTION_TYPE_CREDITS = 'credit';
-    $scope.AUCTION_TYPE_TOKENS  = 'token';
-
     //$scope.messages = [];
     //$scope.message = {'method': '', data: {}};
     $scope.realtimeStatus = "Connecting...";
@@ -503,10 +500,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             }
                             break;
                         case 'waiting_payment':
-                            // If current user won, update his tokens.
-                            if (auction.bidType === $scope.AUCTION_TYPE_TOKENS && auction.winner.facebookId === $rootScope.user.facebookId) {
-                                $rootScope.user.tokens += Number(auction.retailPrice);
-                            }
+                            $scope.$emit('auction:finished', auction);
                             // Tutorial.
                             if (tutorialActive && tutorialAuctionId === auction.id) {
                                 $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent5');}, 500);

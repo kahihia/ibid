@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
+import logging
 
-from django.contrib.auth.models import User
 from django.db.models.signals import post_save
-from django.dispatch.dispatcher import receiver, Signal
+from django.dispatch.dispatcher import Signal
 from django_facebook import signals
+from django_facebook.utils import get_user_model
 
+from bidding.models import Auction
+from bidding.models import ConfigKey
+from bidding.models import Invitation
+import client
 import message.value_objects as vo
 import message.value_objects_factory as vo_factory
 
-import client
-from bidding.models import Auction, Invitation, ConfigKey
 
+logger = logging.getLogger('django')
 
 precap_finished_signal = Signal(providing_args=["auction"])
 
@@ -24,11 +28,11 @@ post_save.connect(auctionCreated, Auction)
 
 
 def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
-    member = user.get_profile()
+    logger.debug('fb_user_registered_handler')
+    member = user
     member.bids_left = 0
     member.tokens_left = 2000
     member.save()
-
     #was this user invited?
     userList = Invitation.objects.filter(invited_facebook_id=facebook_data['facebook_id'])
     if len(userList):
@@ -46,4 +50,4 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
 
         invited.inviter.setSession('event',eventList)
 
-signals.facebook_user_registered.connect(fb_user_registered_handler, sender=User)
+signals.facebook_user_registered.connect(fb_user_registered_handler, sender=get_user_model())

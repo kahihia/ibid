@@ -17,7 +17,7 @@ from bidding.models import PrePromotedAuction
 from bidding.models import PromotedAuction
 
 
-class BidAdmin(admin.ModelAdmin):
+class BidAdmiA(admin.ModelAdmin):
     list_display = ('auction', 'bidder', 'unixtime')
     list_filter = ('auction', )
 
@@ -31,7 +31,6 @@ def winner_name(obj):
 
 class AuctionAdmin(admin.ModelAdmin):
     form = AuctionAdminForm
-
     list_display = ('item',
                     'bid_type',
                     'status',
@@ -74,12 +73,8 @@ class AuctionAdmin(admin.ModelAdmin):
         }
 
 
-admin.site.register(Auction, AuctionAdmin)
-
-
 class PrePromotedAuctionAdmin(admin.ModelAdmin):
     form = AuctionAdminForm
-
     list_display = ('item',
                     'bid_type',
                     'status',
@@ -115,10 +110,6 @@ class PrePromotedAuctionAdmin(admin.ModelAdmin):
 
 class PromotedAuctionAdmin(admin.ModelAdmin):
     pass
-
-
-admin.site.register(PrePromotedAuction, PrePromotedAuctionAdmin)
-admin.site.register(PromotedAuction, PromotedAuctionAdmin)
 
 
 class InlineImage(admin.TabularInline):
@@ -181,43 +172,6 @@ class ItemAdmin(admin.ModelAdmin):
         return qs
 
 
-admin.site.register(Item, ItemAdmin)
-
-
-class MemberInline(admin.StackedInline):
-    model = Member
-    max_num = 1
-    can_delete = False
-    verbose_name = 'Member'
-    verbose_name_plural = "Member info"
-
-    readonly_fields = ('facebook_id', 'facebook_name', 'facebook_profile_url',)
-
-    fieldsets = (
-        (None, {
-            'fields': ('bids_left', 'tokens_left', 'bidsto_left', 'remove_from_chat',)
-        }),
-        ('Facebook info', {
-            'fields': ('facebook_id', 'facebook_name', 'facebook_profile_url', )
-        }),
-    )
-
-
-def bids_left(obj):
-    return obj.get_profile().get_bids_left()
-
-
-bids_left.admin_order_field = 'bids_left'
-
-
-def tokens_left(obj):
-    return obj.get_profile().get_tokens_left()
-
-
-def bidsto_left(obj):
-    return obj.get_profile().bidsto_left
-
-
 def auctions_won(obj):
     return obj.auctions_won
 
@@ -231,6 +185,7 @@ class MemberUserAdmin(UserAdmin):
               .annotate(auctions_won=Count('auction')))
         return qs
 
+    form = MemberAdminForm
     readonly_fields = ('first_name', 'last_name', 'email',)
 
     list_display = ('username',
@@ -238,20 +193,18 @@ class MemberUserAdmin(UserAdmin):
                     'last_name',
                     'email',
                     'is_staff',
-                    bids_left,
-                    tokens_left,
-                    bidsto_left,
+                    'bids_left',
+                    'tokens_left',
+                    'bidsto_left',
                     auctions_won,
     )
-
-    inlines = [
-        MemberInline,
-    ]
 
     fieldsets = (
         (None, {'fields': ('username', 'password', 'is_active', 'is_superuser', 'is_staff')}),
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
-    )
+        ('Bidding', {'fields': ('bids_left', 'tokens_left', 'bidsto_left', 'remove_from_chat')}),
+        )
+
 
 class ConfigKeyAdmin(admin.ModelAdmin):
     form = ConfigKeyAdminForm
@@ -261,10 +214,13 @@ class ConfigKeyAdmin(admin.ModelAdmin):
                     'description',
                     'value_type')
 
-admin.site.register(ConfigKey, ConfigKeyAdmin)
 
-admin.site.register(Member, MemberUserAdmin)
+admin.site.register(Auction, AuctionAdmin)
 admin.site.register(BidPackage)
+admin.site.register(ConfigKey, ConfigKeyAdmin)
 admin.site.register(ConvertHistory)
 admin.site.register(FBOrderInfo)
-
+admin.site.register(Item, ItemAdmin)
+admin.site.register(Member, MemberUserAdmin)
+admin.site.register(PrePromotedAuction, PrePromotedAuctionAdmin)
+admin.site.register(PromotedAuction, PromotedAuctionAdmin)
