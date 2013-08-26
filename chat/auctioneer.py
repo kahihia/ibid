@@ -65,9 +65,12 @@ def threshold_message(auction, number):
 
 def auction_finished_message(auction):
     if auction.winner:
-        member = auction.winner.get_profile()
-        text = AuctioneerPhrase.objects.get(key='finish').text
-        message = text.format(user=member.display_name(), facebook_id=member.facebook_id)
+        member = auction.winner
+        if auction.bid_type == "bid":
+            text = AuctioneerPhrase.objects.get(key='finishITEMS').text
+        elif auction.bid_type == "token":
+            text = AuctioneerPhrase.objects.get(key='finishTOKENS').text
+        message = text.format(user=member.display_name(), price=auction.price(), facebook_id=member.facebook_id, item=auction.item)
         send_auctioneer_message(auction, message)
 
 

@@ -5,7 +5,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>iBidGames Free Tokens</title>
-		<link rel="stylesheet" href="{% static "css/main.css" %}">
+		<link rel="stylesheet" href="{% static 'css/main.css' %}">
 		<!---->
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
         <script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
@@ -32,14 +32,16 @@
 	</head>
 
 	<body>
-		<div class="logo"><img src="{% static "images/logo.png" %}" /></div>
-		<div class="content">
+		<div class="promo">
+		<div class="logo"><img src="{% static 'images/logo.png' %}" /></div>
+		<div class="content-promo">
 	<div class="txt-promo">Enter your code to get</br>
 2000 Free TOKENS</div>
-<div class="code"><form action="{{ promo_url }}"><input id="enter_code" name="promoCode" type="text" value="enter code" style="height: 43px; width:220px; border:0px; font-size: 24px;text-align: center; color: #666; line-height: 52px;" /></form></div>
+<div class="code"><form action="{% url 'promo' %}"><input id="enter_code" name="promoCode" type="text" value="enter code" style="height: 43px; width:220px; border:0px; font-size: 24px;text-align: center; color: #666; line-height: 52px;" /></form></div>
 <div class="info-txt">Your code is invalid, please verify your
 code and try again.</div>
 <div class="btn-promo">SEND CODE</div>
+	</div>
 	</div>
 	</body>
 

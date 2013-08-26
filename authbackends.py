@@ -2,28 +2,26 @@
 Registration backend to use with django-facebook connect, 
 instead of the default from django-registration.
 '''
-from django.contrib.auth.models import User
-from registration.forms import RegistrationForm
+#from django.contrib.auth.models import User
+from bidding.forms import RegistrationForm
 from bidding.models import Member
 from django_facebook.auth_backends import FacebookBackend
 import open_facebook
 
 import logging
 
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
+logger = logging.getLogger('django')
 
 class YambidRegistration(object):
+   
     def register(self, request, **kwargs):
         username, email, password = kwargs['username'], kwargs['email'], kwargs['password1']
         
-        new_user = User.objects.create_user(username, email, password)
+        new_user = Member.objects.create_user(username, email, password)
         new_user.is_active = True
         new_user.save()
-        
-        profile = Member()
-        profile.user = new_user
-        profile.save()
-        
+        logger.info('Se regisra el usuario'+ new_user.username)
         return new_user
 
     def activate(self, request, activation_key):
@@ -54,12 +52,11 @@ class YambidAuthBacked(FacebookBackend):
         
         if user:
             #Sets profile pic for the session
-            member = user.get_profile()
+            member = user
             of = open_facebook.OpenFacebook(member.access_token)
             member.profile_pic = of.my_image_url(size='square')
             logger.info(of.me())
             member.save()
-        
         return user
     
     

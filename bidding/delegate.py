@@ -3,21 +3,14 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 from threading import Timer
-import json
 import logging
 import time
-import urllib
-import urllib2
 
 logger = logging.getLogger('django')
 
-from django.conf import settings
-from django.db import connection, transaction
-
 from bidding import client
-from bidding.signals import auction_finished_signal, send_in_thread, precap_finished_signal
+from bidding.signals import auction_started_signal, auction_finished_signal, send_in_thread, precap_finished_signal
 from bidding.signals import task_auction_start, task_auction_pause
-
 
 def start_auction(auction):
     #refresh the current database auction status
@@ -36,9 +29,14 @@ def finish_auction(auction, bid_number):
     #refresh the current database auction status
     from models import Auction
     auction = Auction.objects.select_for_update().filter(id=auction.id)[0]
-    if auction.status == 'processing' and bid_number == auction.getBidNumber():
+    if auction.status == 'processing' and bid_number == auction.getBidNumber(): 
         auction.finish()
-        auction.create_from_fixtures()
+        if auction.always_alive:
+            auction_copy = Auction.objects.create(item=auction.item, bid_type=auction.bid_type,
+                                                  always_alive=auction.always_alive,
+                                                  precap_bids=auction.precap_bids,
+                                                  minimum_precap=auction.minimum_precap)
+            auction_copy.save()
     else:
         auction.save()
 
@@ -195,6 +193,7 @@ class WaitingAuctionDelegate(StateAuctionDelegate):
         client.auctionActive(self.auction)
         self.auction.saved_time = self.auction.bidding_time
         self.auction.save()
+        send_in_thread(auction_started_signal, sender=self, auction=self.auction)
 
     def get_time_left(self):
         start_time = Decimal("%f" % time.mktime(
@@ -221,7 +220,7 @@ class RunningAuctionDelegate(StateAuctionDelegate):
         logger.debug("Entering finish")
 
         bidder = self.auction.get_last_bidder()
-        self.auction.winner = bidder.user if bidder else None
+        self.auction.winner = bidder if bidder else None
         self.auction.won_price = self.auction.price()
         self.auction.status = 'waiting_payment'
         self.auction.won_date = datetime.now()

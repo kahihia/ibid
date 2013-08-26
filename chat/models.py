@@ -8,6 +8,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib import auth
 
+from django.conf import settings
 from bidding.models import Auction, Member
 
 
@@ -35,24 +36,24 @@ class ChatUser(models.Model):
     current site root.
     """
     
-    user = models.ForeignKey(auth.models.User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     
     def picture(self):
         """ Returns the chat avatar. """
-        return self.user.get_profile().display_picture()
+        return self.user.display_picture()
         
     def display_name(self):
-        return self.user.get_profile().display_name()
+        return self.user.display_name()
     
     def user_link(self):
-        return self.user.get_profile().facebook_profile_url
+        return self.user.facebook_profile_url
 
     def __unicode__(self):
         return self.display_name()
 
     def can_chat(self, auction):
         """ Returns True if the user can chat in the given auction. """
-        member = self.user.get_profile()
+        member = self.user
         
         return not member.remove_from_chat and auction.has_joined(member)
 
@@ -100,7 +101,6 @@ class Message(models.Model):
     
     class Meta:
         verbose_name = 'chat message'
-
 
 class AuctioneerPhrase(models.Model):
     key = models.CharField(max_length=20)

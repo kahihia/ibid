@@ -60,7 +60,7 @@
 				padding-top: 12px;
 			}
 			#btn {
-				background-image: url({{ images_site }}{% static "images/mail/btn.jpg" %});
+				background-image: url({{ images_site }}{% static 'images/mail/btn.jpg' %});
 				height: 52px;
 				width: 320px;
 				margin: 0 auto;
@@ -84,9 +84,9 @@
 	<body>
 		<div style="width:600px; text-align: center;">
 		<div id="top">
-			<img style="display:block; float:left !important" src="{{images_site}}{% static "images/mail/top1.jpg" %}" height="116" width="194">
-			<a href="{{ images_site }}"><img style="display:block; float:left !important" src="{{ images_site }}{% static "images/mail/top2.jpg" %}" height="116" width="221"></a>
-			<img style="display:block; float:left !important" src="{{ images_site }}{% static "images/mail/top3.jpg" %}" height="116" width="185">
+			<img style="display:block; float:left !important" src="{{images_site}}{% static 'images/mail/top1.jpg' %}" height="116" width="194">
+			<a href="{{ images_site }}"><img style="display:block; float:left !important" src="{{ images_site }}{% static 'images/mail/top2.jpg' %}" height="116" width="221"></a>
+			<img style="display:block; float:left !important" src="{{ images_site }}{% static 'images/mail/top3.jpg' %}" height="116" width="185">
 		</div>
 		<div id="content">
 			<div id="winner" style="font-size: 18px;
@@ -99,7 +99,7 @@
 				font-style: normal;
 				color: #f26522;
 				font-weight: 600;">
-					{{ user.get_profile.display_name|title }}
+					{{ user.display_name|title }}
 				</p>
 			</div>
 			<div style="margin-top:17px ; margin-bottom:17px ; color:#cbcbcb">
@@ -107,8 +107,8 @@
 			</div>
 			<div id="item" style="font-size: 14px;
 				color: #484848;">
-				You won {{ auction.item.name }} </br> <img style="border: 1px solid #91d3eb;
-				margin-top: 10px;" src="{{auction.item.get_thumbnail}}" >
+				You won {{ auction.item.name }} <p><img style="border: 1px solid #91d3eb;
+				margin-top: 10px;" src="{{auction.item.get_thumbnail}}" ></p>
 			</div>
 			<div id="click" style="	border-top: 1px solid #dcdcdc;
 			background-color: #ebebeb;
@@ -116,7 +116,7 @@
 			padding-bottom: 2px;
 			padding-top: 12px;">
 				<a href="{{ images_site }}{% url "bidding_buy_item" auction.id %}">
-				<div id="btn" style="background-image: url({{ images_site }}{% static "images/mail/btn.jpg" %}); height: 52px;
+				<div id="btn" style="background-image: url({{ images_site }}{% static 'images/mail/btn.jpg' %}); height: 52px;
 				width: 320px;
 				margin: 0 auto;
 				line-height: 50px;
@@ -128,11 +128,11 @@
 				<div id="link" style="font-size: 12px;		margin-top: 10px;
 				margin-bottom: 15px;
 				color:#666;">
-					Or copy and paste it into your browser's address bar:</br> <a style="color:#0574dc;" href="">{{ images_site }}{% url "bidding_buy_item" auction.id %}</a>
+					Or copy and paste it into your browser's address bar:<p><a style="color:#0574dc;" href="">{{ images_site }}{% url "bidding_buy_item" auction.id %}</a></p>
 				</div>
 			</div>
 		</div>
-		<div><img src="{{ images_site }}{% static "images/mail/foot.jpg" %}" width="600" height="104">
+		<div><img src="{{ images_site }}{% static 'images/mail/foot.jpg' %}" width="600" height="104">
 		</div>
 
 		</div>
