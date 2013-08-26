@@ -116,7 +116,7 @@ body {
 #top .buttons .liked {
   width: 87px;
   background-image: url("../images/btn-liked.png");
-  left:-50px;
+  left:-60px;
 }
 
 #top .buttons .share {
@@ -1525,14 +1525,12 @@ opacity:0.8;
 	transition: .2s;
 	cursor: auto;
 }
-#top .buttons .like.disabled {
+#top .buttons .liked.disabled {
 	width: 87px;
 	height: 24px;
 	margin-bottom: 3px;
-	/*background-image: url("../images/btn-test-disabled.png");*/
 	display: block;
 	background-repeat: no-repeat;
-	background-position: -10px 0;
 	opacity: 0.8;
 	-o-transition: .2s;
 	-ms-transition: .2s;
