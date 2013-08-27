@@ -5,7 +5,7 @@ angular
         $rootScope.AUCTION_TYPE_CREDITS = 'credit';
         $rootScope.AUCTION_TYPE_TOKENS  = 'token';
         // dispatcher
-        var eventMessage = new MessageEvent(MessageEvent.EVENT.BIDDING__INITIALIZE, {}, MessageEvent.SENDER.CLIENT_FB, MessageEvent.RECEIVER.SERVER, MessageEvent.TRANSPORT.REQUEST, getCurrentDateTime(), null);
+        var eventMessage = new EventMessage(EventMessage.EVENT.BIDDING__INITIALIZE, {}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null);
 
         console.log({events: angular.toJson([eventMessage])});
         $http
