@@ -202,7 +202,10 @@ class bidding(object):
         wallPost = user.getSession('wallPost')
 
         if wallPost:
-            user.post_win_story(**wallPost)
+            try:
+                user.post_win_story(**wallPost)
+            except Exception as e:
+                print e
 
         return []
 

@@ -1,17 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import logging
-logger = logging.getLogger('django')
-
-from datetime import datetime
 import time
-from decimal import Decimal
 import re
-import open_facebook
-from sorl.thumbnail import get_thumbnail
-from datetime import timedelta
 import json
+from datetime import datetime
+from decimal import Decimal
 
+import open_facebook
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser,UserManager
 from django.core.urlresolvers import reverse
@@ -20,12 +15,14 @@ from django.db.models.aggregates import Sum
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
-from django_facebook import model_managers, settings as facebook_settings
-from django_facebook.utils import get_user_model
-from django_facebook.models import FacebookModel, FacebookUser, FacebookLike
+from django_facebook.models import FacebookModel
 from bidding.delegate import state_delegates
 from audit.models import AuditedModel
 from urllib2 import urlopen
+from sorl.thumbnail import get_thumbnail
+
+import logging
+logger = logging.getLogger('django')
 
 re_bids = re.compile("(\d+)")
 
@@ -278,6 +275,9 @@ class Member(AbstractUser, FacebookModel):
             del s[key]
             self.session = json.dumps(s)
             self.save()
+
+    def __unicode__(self):
+        return self.username
 
 
 class Item(AuditedModel):
@@ -559,9 +559,6 @@ class ConvertHistory(models.Model):
     def convert(member, num_bids):
         tokens_amount = (num_bids / settings.TOKENS_TO_BIDS_RATE)
 
-        print "convert"
-        print tokens_amount, member.tokens_left, tokens_amount
-
         if member.tokens_left >= tokens_amount:
             #TODO: add bidsto
             #member.bidsto_left += num_bids
@@ -585,6 +582,9 @@ class FBOrderInfo(AuditedModel):
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
     fb_payment_id = models.BigIntegerField(blank=True, null=True) #this field should be unique
+
+    def __unicode__(self):
+        return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
 
 @receiver(post_save, sender=FBOrderInfo)
 def on_confirmed_order(sender, instance, **kwargs):

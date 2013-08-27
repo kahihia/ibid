@@ -135,8 +135,7 @@ def post_win_story(sender, **kwargs):
             member.setSession('wallPost', args)
             #TODO: request wallpost permission
         except Exception as e:
-            logger.debug(e)
-            raise
+            logger.exception(e)
 
 
 @receiver(auction_started_signal)
