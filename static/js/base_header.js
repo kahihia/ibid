@@ -71,7 +71,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
                 email: data.user.email,
                 name : data.user.first_name,
                 last_name : data.user.last_name,
-                fb_id : data.user.facebook_id
+                fb_id : data.user.facebookId
             });
         });
     };
