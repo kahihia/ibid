@@ -13,7 +13,6 @@ angular
             .then(function (response) {
                 //listener - TRANSPORT request
                 _.forEach(response.data, function (message) {
-                    console.log(message);
                     $rootScope.$broadcast(message.event, message.data);
                 });
             });
