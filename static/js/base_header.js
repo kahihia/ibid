@@ -100,9 +100,9 @@ function userDetailsCtrl($scope, $rootScope, $http) {
                 //TODO: call api method to send the wall post
                 var events = []
                 if(response.authResponse){
-                    events.push(new MessageEvent(MessageEvent.prototype.EVENT.BIDDING__UPDATE_ACCESS_TOKEN, {accessToken: response.authResponse.accessToken}, MessageEvent.prototype.SENDER.CLIENT_FB, MessageEvent.prototype.RECEIVER.SERVER, MessageEvent.prototype.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+                    events.push(new MessageEvent(MessageEvent.EVENT.BIDDING__UPDATE_ACCESS_TOKEN, {accessToken: response.authResponse.accessToken}, MessageEvent.SENDER.CLIENT_FB, MessageEvent.RECEIVER.SERVER, MessageEvent.TRANSPORT.REQUEST, getCurrentDateTime(), null));
                 }
-                events.push(new MessageEvent(MessageEvent.prototype.EVENT.BIDDING__SEND_STORED_WALL_POSTS, {}, MessageEvent.prototype.SENDER.CLIENT_FB, MessageEvent.prototype.RECEIVER.SERVER, MessageEvent.prototype.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+                events.push(new MessageEvent(MessageEvent.EVENT.BIDDING__SEND_STORED_WALL_POSTS, {}, MessageEvent.SENDER.CLIENT_FB, MessageEvent.RECEIVER.SERVER, MessageEvent.TRANSPORT.REQUEST, getCurrentDateTime(), null));
 
                 // begin dispatcher
                 console.log({events: angular.toJson(events)});
