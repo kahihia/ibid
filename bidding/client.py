@@ -223,9 +223,9 @@ def do_send_chat_message(auction, message):
     text = message.format_message()
 
     user = {}
-    user['displayName'] = message.display_name()
-    user['profileFotoLink'] = message.picture()
-    user['profileLink'] = message.user_link()
+    user['displayName'] = message.get_user().display_name()
+    user['profileFotoLink'] = message.get_user().picture()
+    user['profileLink'] = message.get_user().user_link()
     user['tokens'] = 0
     user['credits'] = 0
 

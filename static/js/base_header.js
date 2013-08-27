@@ -9,7 +9,6 @@
  $scope.bidders = 43;
  };*/
 
-
 // var userDetailsData = {
 //     displayName: '',
 //     tokens: 0,
@@ -93,7 +92,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
-    $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
 
 
 
@@ -126,6 +124,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $scope.joinedFriendsData = data;
     };
 
+    $rootScope.$on('user:friendJoined', $scope.showJoinedFriendsDialog);
+
     $scope.hideJoinedFriendsDialog = function (showInviteMoreFriends) {
         $scope.joinedFriendsData = null;
         if (showInviteMoreFriends) {
@@ -155,10 +155,10 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.sendRequestViaMultiFriendSelector = function() {
         FB.ui({method: 'apprequests',
             message: 'Come join me to play and win amazing deals at iBidGames!'
-        }, $scope.sendRequestViaMultiFriendSelectorCallback);
+        }, sendRequestViaMultiFriendSelectorCallback);
     };
 
-    $scope.sendRequestViaMultiFriendSelectorCallback = function(data) {
+    var sendRequestViaMultiFriendSelectorCallback = function (data) {
         if (data) {
             // Store invitations sent.
             $http.post('/api/inviteRequest/', {invited: data.to});
@@ -251,63 +251,66 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     $scope.fb_like= function() {
-        $http.post('/fb_like/').success(
-         function(data){
-             switch (data['info']) {
-                case 'FIRST_LIKE':
-                    /*
-                     * In this case the user receives tokens because is the first like.
-                     * data['gift'] says the amount of tokens gifted.
-                     */
-                    jQuery('.button.like').addClass('disabled');
-                    jQuery('.button.like').addClass('liked');
-                    jQuery('.button.like').removeClass('like');
-                    jQuery('.tokens').text('TOKENS: ' + data['tokens']);
-                    break;
-                case 'NOT_FIRST_LIKE':
-                    /*
-                     * In this case the user is liking but not for the first time.
-                     * For example when the user stops liking in facebook and likes again.
-                     * The user is not getting the tokens.
-                     */
-                    jQuery('.button.like').addClass('disabled');
-                    jQuery('.button.like').addClass('liked');
-                    jQuery('.button.like').removeClass('like');
-                    break;
-                case 'ALREADY_LIKE':
-                    /*
-                     * This is a case that occurs when the user already likes and facebook returns
-                     * a error code 3501
-                     */
-                    break;
-             }
-         });
-    };
-    $scope.requestPermisionPublishActions= function() {
-        FB.login(function(response) {
-            console.log("yeee",response)
-            //TODO: call api method to send the wall post
 
+        $scope.requestPermisionPublishActions();
 
-
-            var events = []
-            if(response.authResponse){
-                events.push(new Event(Event.prototype.EVENT.BIDDING__UPDATE_ACCESS_TOKEN, {accessToken: response.authResponse.accessToken}, Event.prototype.SENDER.CLIENT_FB, Event.prototype.RECEIVER.SERVER, Event.prototype.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+        $http
+        .post('/fb_like/')
+        .success(
+            function (data) {
+                switch (data['info']) {
+                    case 'FIRST_LIKE':
+                        /*
+                         * In this case the user receives tokens because is the first like.
+                         * data['gift'] says the amount of tokens gifted.
+                         */
+                        jQuery('.button.like').addClass('disabled');
+                        jQuery('.button.like').addClass('liked');
+                        jQuery('.button.like').removeClass('like');
+                        jQuery('.tokens').text('TOKENS: ' + data['tokens']);
+                        break;
+                    case 'NOT_FIRST_LIKE':
+                        /*
+                         * In this case the user is liking but not for the first time.
+                         * For example when the user stops liking in facebook and likes again.
+                         * The user is not getting the tokens.
+                         */
+                        jQuery('.button.like').addClass('disabled');
+                        jQuery('.button.like').addClass('liked');
+                        jQuery('.button.like').removeClass('like');
+                        break;
+                    case 'ALREADY_LIKE':
+                        /*
+                         * This is a case that occurs when the user already likes and facebook returns
+                         * a error code 3501
+                         */
+                        break;
+                }
             }
-            events.push(new Event(Event.prototype.EVENT.BIDDING__SEND_STORED_WALL_POSTS, {}, Event.prototype.SENDER.CLIENT_FB, Event.prototype.RECEIVER.SERVER, Event.prototype.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+        );
 
-            // begin dispatcher
-            console.log({events: angular.toJson(events)});
-            $http
-                .get('/action/', {params: {events: angular.toJson(events)}})
-                .then(function (response) {
-                    //listener - TRANSPORT request
-                    _.forEach(response.data, function (message) {
-                        $rootScope.$broadcast(message.event, message.data);
+    };
+    $scope.requestPermisionPublishActions = function () {
+        FB.login(function (response) {
+
+                //TODO: call api method to send the wall post
+                var events = []
+                if(response.authResponse){
+                    events.push(new EventMessage(EventMessage.EVENT.BIDDING__UPDATE_ACCESS_TOKEN, {accessToken: response.authResponse.accessToken}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+                }
+                events.push(new EventMessage(EventMessage.EVENT.BIDDING__SEND_STORED_WALL_POSTS, {}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+
+                // begin dispatcher
+                console.log({events: angular.toJson(events)});
+                $http
+                    .get('/action/', {params: {events: angular.toJson(events)}})
+                    .then(function (response) {
+                        //listener - TRANSPORT request
+                        _.forEach(response.data, function (message) {
+                            $rootScope.$broadcast(message.event, message.data);
+                        });
                     });
-                });
-            // end dispatcher
-
+                // end dispatcher
 
         }, {scope: 'publish_actions'});
     };
