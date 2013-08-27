@@ -33,11 +33,15 @@ def getUserDetails(request):
 
     data = {u'user':{
                 u'displayName': member.display_name(),
-                u'facebookId': member.facebook_id,
+                u'facebook_Id': member.facebook_id,
                 u'profileFotoLink': member.display_picture(),
                 u'profileLink': member.facebook_profile_url,
                 u'credits': member.bids_left,
-                u'tokens': member.tokens_left
+                u'tokens': member.tokens_left,
+                u'username': member.username,
+                u'email': member.email,
+                u'first_name': member.first_name,
+                u'last_name': member.last_name
             },
             u'app':{
                 u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE
