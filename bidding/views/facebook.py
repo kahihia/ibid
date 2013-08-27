@@ -59,29 +59,6 @@ def fb_test_user(request):
     return HttpResponseRedirect(reverse('bidding_home'))
 
 
-def handle_invitations(request):
-    """ Deletes pending FB user requests, and redirects to the last one. """
-
-    request_ids = request.GET['request_ids'].split(',')
-
-    invitation = None
-    for request_id in request_ids:
-        try:
-            invitation = AuctionInvitation.objects.get(request_id=request_id)
-            invitation.delete_facebook_request(request.user)
-
-
-        except AuctionInvitation.DoesNotExist:
-            pass
-
-    if not invitation:
-        return HttpResponseRedirect(reverse('bidding_home'))
-
-    return HttpResponseRedirect(reverse('bidding_auction_detail', args=
-    (invitation.auction.item.slug,
-     invitation.auction.id)))
-
-
 def give_bids(request):
     member = request.user
 
@@ -170,42 +147,6 @@ def callback_get_items(request):
     logger.debug("Returns %s" % response)
     return response
 
-
-def callback_status_update(request):
-    """ 
-    Constructs the response to settle the payment. If the signed_request is 
-    not validated, the payment is set as canceled.  
-    """
-
-    #checks that the request comes from Facebook
-    if FacebookAuthorization.parse_signed_data(request.POST['signed_request']):
-        details = json.loads(request.POST['order_details'])
-        logger.debug(details)
-        logger.debug(request.POST)
-        order_id = int(details['items'][0]['item_id'])
-        order = FBOrderInfo.objects.get(pk=order_id)
-        package = order.package
-        logger.debug("Pacakge: %s" % package)
-
-        member = Member.objects.get(facebook_id=details['buyer'])
-        member.bids_left += package.bids
-        member.save()
-        logger.debug("Member: %s" % member)
-
-        order.status = 'confirmed'
-        order.save()
-        logger.debug("Order: %s" % order)
-
-        return {'method': 'payments_status_update',
-                'content': {'status': 'settled',
-                            'order_id': request.POST['order_id']},
-        }
-    else:
-        # TODO: If the order is canceled we should mark it as cancelled internally too
-        return {'method': 'payments_status_update',
-                'content': {'status': 'canceled',
-                            'order_id': request.POST['order_id']},
-        }
 
 
 @csrf_exempt
