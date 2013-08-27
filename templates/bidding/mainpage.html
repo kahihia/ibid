@@ -208,7 +208,7 @@
 			</div>
 
 			<!-- Joined friends dialog -->
-			<div class="joined-friends-modal" ng-show="joinedFriendsData">
+			<!--div class="joined-friends-modal" ng-show="joinedFriendsData">
 				<div class="popup">
 					<div class="title">
 						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
@@ -225,7 +225,7 @@
 						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
 					</div>
 				</div>
-			</div>
+			</div-->
 
 			<!-- Joined friends modal -->
 			<!-- <div class="joined-friends-modal" ng-show="joinedFriendsData">
@@ -247,12 +247,12 @@
 				</div>
 			</div> -->
             <div class="modal" ng-show="joinedFriendsData" ng-cloak>
-                <div class="btn-close">
+                <div class="btn-close" ng-click="hideJoinedFriendsDialog()">
                     x
                 </div>
 
                 <div class="gloss"></div>
-                <div class="title-small"><img src="images/popup-title-newFriends.png" />
+                <div class="title-small"><img src="{% static 'images/popup-title-newFriends.png' %}" />
                 </div>
                 <div class="content">
                     <div class="text-large-w">
@@ -260,20 +260,13 @@
                     </div>
                     <div class="friends-list text-small-w">
                         <ul>
-                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
+                            <div ng-repeat="user in joinedFriendsData.users">
+                            <li>
+                            <img src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}" /> {% templatetag openvariable %} user.name {% templatetag closevariable %}
                             </li>
-
-                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
-                            </li>
-
-                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
-                            </li>
-
-                            <li><img src="images/popup-friendImg.jpg" /> Piringundito Sanchez Romero
-                            </li>
-
+                            </div>
                         </ul>
-                        <span class="text-small-w">and 40 friends more...</span>
+                        <!--span class="text-small-w">and 40 friends more...</span-->
                     </div>
                     <div class="tokens-column">
                         <div class="tokens">
@@ -282,7 +275,7 @@
                                 <p>
                                     You get
                                 </p>
-                                23443
+                                {% templatetag openvariable %} joinedFriendsData.prize {% templatetag closevariable %}
                                 <p>
                                     free Tokens
                                 </p>
@@ -297,7 +290,7 @@
                     that accept your request.
                 </div>
                 <div class="buttons">
-                    <div class="btn btn-green">
+                    <div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">
                         Invite more friends!
                     </div>
                 </div>
