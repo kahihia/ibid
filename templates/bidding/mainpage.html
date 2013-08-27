@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="{% static 'css/main.css' %}">
 		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
+        <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -20,7 +21,7 @@
 			preloadImage("{% static 'images/btn-bid-play-disabled.png' %}");
 			preloadImage("{% static 'images/help-img.png' %}");
 		</script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
 		<script src="{% static 'js/lodash.min.js' %}"></script>
 		<script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
@@ -76,7 +77,7 @@
 					xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
-				
+
 				angular.element($('.global-chat')).scope().chatPosition();
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
@@ -195,18 +196,16 @@
 			</div>
 
 			<!--friends invited popup-->
-			<div class="friends-invited-popup">
-				<div class="tooltip-info">
-					
-				<div class="kenny"><img src="{% static 'images/tooltip-info-kenny.png' %}">
+            <script id="template/notification.html" type="text/ng-template">
+			<div class="notification">
+				<div class="kenny">
+                    <img src="{% static 'images/tooltip-info-kenny.png' %}">
 				</div>
 				<div class="content">
-					<div class="txt">
-						The invitations have been sent!</br>Thank you!
-					</div>
+					<div class="txt">{% templatetag openvariable %}message{% templatetag closevariable %}</div>
 				</div>
 			</div>
-			</div>
+            </script>
 
 			<!-- Joined friends dialog -->
 			<div class="joined-friends-modal" ng-show="joinedFriendsData">
@@ -765,6 +764,8 @@
 				</div>
 			</div>
 		</div>
+
+        <div id="notifications" class="notifications-container"></div>
 
 		<!--welcome popup-->
 		{% if display_popup %}

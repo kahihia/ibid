@@ -31,5 +31,22 @@
                     return PUBNUB.unsubscribe({channel: channel});
                 }
             };
+        })
+        .factory('notification', function ($rootScope, $document, $templateCache, $compile, $timeout) {
+            return {
+                show: function (message) {
+                    // Get the template from $templateCache.
+                    var template = $templateCache.get('template/notification.html');
+                    // Create new scope for $compile.
+                    var scope = $rootScope.$new();
+                    scope.message = message;
+                    // Compile template and append to DOM.
+                    var el = $compile(template)(scope);
+                    $document.find('#notifications').append(el);
+                    $timeout(function () {
+                        el.remove();
+                    }, 10000);
+                }
+            };
         });
 }());

@@ -1,0 +1,184 @@
+.notification {
+    clear: both;
+
+    /* Setup animation. */
+    -webkit-animation-duration: 10s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-fill-mode: both;
+    -moz-animation-duration: 10s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease;
+    -moz-animation-fill-mode: both;
+    -o-animation-duration: 10s;
+    -o-animation-iteration-count: 1;
+    -o-animation-timing-function: ease;
+    -o-animation-fill-mode: both;
+    animation-duration: 10s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
+    animation-fill-mode: both;
+
+    /* Add animation to selector. */
+    -webkit-animation-name: notification;
+    -moz-animation-name: notification;
+    -o-animation-name: notification;
+    animation-name: notification;
+}
+.notification .kenny {
+	float: left;
+	position: relative;
+	z-index: 1;
+}
+.notification .content {
+	height: 68px;
+	width: 260px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 2px solid #3990b8;
+	float: left;
+	position: absolute;
+	margin: 50px 0px 0px 87px;
+	-moz-box-shadow: 0px 0px 45px #000;
+	-webkit-box-shadow: 0px 0px 45px #000;
+	box-shadow: 0px 0px 45px #000;
+	background-color: #fff;
+	padding: 0 15px 0 35px;
+}
+.notification .content .txt {
+	font-size: 12px;
+	color: #6c6c6b;
+	display: table-cell;
+	vertical-align: middle;
+	height: 68px;
+	font-weight: 700;
+}
+.notifications-container {
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+
+/* Setup notification animation keyframes. */
+@-webkit-keyframes notification {
+    0% {
+        opacity: 0;
+        -webkit-transform:  translateY(50px)
+    }
+    10% {
+        opacity: 1;
+        -webkit-transform:  translateY(0px)
+    }
+    90% {
+            opacity: 1;
+        -webkit-transform:  translateY(0px)
+    }
+    100% {
+            opacity: 0;
+        -webkit-transform:  translateY(-50px)
+    }
+}
+@-moz-keyframes notification {
+    0% {
+        opacity: 0;
+        -moz-transform:  translateY(50px)
+    }
+    10% {
+        opacity: 1;
+        -moz-transform:  translateY(0px)
+    }
+    90% {
+            opacity: 1;
+        -moz-transform:  translateY(0px)
+    }
+    100% {
+            opacity: 0;
+        -moz-transform:  translateY(-50px)
+    }
+}
+@-o-keyframes notification {
+    0% {
+        opacity: 0;
+        -o-transform:  translateY(50px)
+    }
+    10% {
+        opacity: 1;
+        -o-transform:  translateY(0px)
+    }
+    90% {
+            opacity: 1;
+        -o-transform:  translateY(0px)
+    }
+    100% {
+            opacity: 0;
+        -o-transform:  translateY(-50px)
+    }
+}
+@keyframes notification {
+    0% {
+        opacity: 0;
+        transform:  translateY(50px)
+    }
+    10% {
+        opacity: 1;
+        transform:  translateY(0px)
+    }
+    90% {
+            opacity: 1;
+        transform:  translateY(0px)
+    }
+    100% {
+            opacity: 0;
+        transform:  translateY(-50px)
+    }
+}
+
+/*.tooltip-action {
+	position: absolute;
+}
+.tooltip-action .kenny {
+	float: left;
+	position: absolute;
+	z-index: 10;
+}
+.tooltip-action .content {
+	height: 106px;
+	width: 420px;
+	-moz-border-radius: 10px;
+	-webkit-border-radius: 10px;
+	border-radius: 10px;
+	border: 2px solid #3990b8;
+	float: left;
+	position: absolute;
+	margin: 56px 0px 0px 87px;
+	-moz-box-shadow: 0px 0px 45px #000;
+	-webkit-box-shadow: 0px 0px 45px #000;
+	box-shadow: 0px 0px 45px #000;
+	background-color: #fff;
+	padding: 0 15px 0 0px;
+	text-align: center;
+}
+.tooltip-action .content .gray {
+	width: 65px;
+	background-color: #f5f5f5;
+	height: 100%;
+	float: left;
+	margin-right: 35px;
+}
+.tooltip-action .content .txt {
+	font-size: 12px;
+	color: #6c6c6b;
+	display: table-cell;
+	vertical-align: middle;
+	height: 77px;
+	font-weight: 700;
+	text-align: center;
+	width: 320px;
+}
+.tooltip-action .content .btn {
+	position: relative;
+	height: 20px;
+	top: -10px;
+	box-shadow: none;
+}*/
