@@ -53,15 +53,10 @@ def canvashome(request):
         del request.session['freeExtraTokens']
 
     display_popup = False
-    if not request.session.get("revisited"):
-        request.session["revisited"] = True
+    if not member.getSession('revisited'):
         display_popup = True
-
-    if request.COOKIES.get('dont_show_welcome_%s' %
-            request.user.facebook_id):
-        display_popup = False
+        member.setSession('revisited', True)
     
-
     response = render_response(request, 'bidding/mainpage.html',
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
