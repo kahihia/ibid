@@ -168,20 +168,6 @@ def promo(request):
     return render_response(request, 'bidding/promo.html')
 
 
-def faq(request):
-    if not request.user.is_authenticated():
-        return HttpResponseRedirect(reverse('bidding_anonym_home'))
-
-    member = request.user
-
-    if not request.session.get("revisited"):
-        request.session["revisited"] = True
-
-    response = render_response(request, 'bidding/ibidgames_faq.html',
-                               {'PUBNUB_PUB': settings.PUBNUB_PUB, 'PUBNUB_SUB': settings.PUBNUB_SUB,
-                                'facebook_user_id': member.facebook_id})
-    return response
-
 
 
 def history(request):

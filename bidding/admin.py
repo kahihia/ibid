@@ -5,6 +5,7 @@ from django.db.models import Count
 from bidding.forms import AuctionAdminForm
 from bidding.forms import ConfigKeyAdminForm
 from bidding.forms import ItemAdminForm
+from bidding.forms import MemberAdminForm
 from bidding.models import Auction
 from bidding.models import BidPackage
 from bidding.models import ConfigKey
