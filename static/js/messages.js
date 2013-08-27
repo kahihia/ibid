@@ -1,4 +1,4 @@
-function Event(event, data, sender, receiver, transport, timestamp, id) {
+function EventMessage(event, data, sender, receiver, transport, timestamp, id) {
     this.event = event;
     this.data = data;
     this.sender = sender;
@@ -8,23 +8,20 @@ function Event(event, data, sender, receiver, transport, timestamp, id) {
     this.id = id;
 };
 // constants for messages and events
-Event.prototype.TRANSPORT = new function () {
-    this.PUBNUB = 'pubnub';
-    this.REQUEST = 'request';
-    this.COMBINED = 'combined';
-}();
+EventMessage.TRANSPORT = {}
+EventMessage.TRANSPORT.PUBNUB = 'pubnub';
+EventMessage.TRANSPORT.REQUEST = 'request';
+EventMessage.TRANSPORT.COMBINED = 'combined';
 
-Event.prototype.SENDER = new function () {
-    this.CLIENT_FB = 'client-fb-';
-}();
+EventMessage.SENDER = {}
+EventMessage.SENDER.CLIENT_FB = 'client-fb-';
 
-Event.prototype.RECEIVER = new function () {
-    this.SERVER = 'server';
-}();
+EventMessage.RECEIVER = {}
+EventMessage.RECEIVER.SERVER = 'server';
 
-Event.prototype.EVENT = new function () {
-    this.BIDDING__INITIALIZE = 'bidding:initialize';
-    this.BIDDING__UPDATE_ACCESS_TOKEN = 'bidding:updateAccessToken';
-    this.BIDDING__SEND_STORED_WALL_POSTS = 'bidding:sendStoredWallPosts';
-}();
+EventMessage.EVENT = {}
+EventMessage.EVENT.BIDDING__INITIALIZE = 'bidding:initialize';
+EventMessage.EVENT.BIDDING__UPDATE_ACCESS_TOKEN = 'bidding:updateAccessToken';
+EventMessage.EVENT.BIDDING__SEND_STORED_WALL_POSTS = 'bidding:sendStoredWallPosts';
+
 
