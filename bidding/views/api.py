@@ -50,6 +50,13 @@ def getUserDetails(request):
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+def getAnalyticsKeys(request):
+    data = {u'keys':{
+                u'mixpanel': settings.MAXPANEL_KEY
+        }
+    }
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 def getAuctionsInitialization(request):
     member = request.user
@@ -561,6 +568,7 @@ API = {
     'claim': claim,
     'sendMessage': sendMessage,
     'getUserDetails': getUserDetails,
+    'getAnalyticsKeys': getAnalyticsKeys,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convertTokens': convertTokens,

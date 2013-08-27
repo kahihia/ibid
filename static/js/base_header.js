@@ -56,13 +56,15 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $scope.initialize = function () {
         //initialize analythics.js with mixpanel
         
-        analytics.initialize({
-           // 'Google Analytics' : 'UA-XXXXXX-XX',
-           'Mixpanel' : {
-            token  : 'baff1480b94c0f1acbf6fe1249ee35de',
-            people : true
-            },
-          //  'KISSmetrics'      : 'XXXXXXXXXX'
+        $http.post('/api/getAnalyticsKeys/').success(function (data){
+            analytics.initialize({
+                // 'Google Analytics' : 'UA-XXXXXX-XX',
+                'Mixpanel' : {
+                 token  : data.keys.mixpanel,
+                 people : true
+                 },
+               //  'KISSmetrics'      : 'XXXXXXXXXX'
+            });
         });
         
         //identify users

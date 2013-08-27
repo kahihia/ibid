@@ -297,3 +297,6 @@ TOKENS_TO_BIDS_RATE = 0.0001
 PAYPAL_RECEIVER_EMAIL = 'payment@ibidgames.com'
 
 AUCTION_MAX_TOKENS = 120;
+
+# Analytics keys
+MAXPANEL_KEY = ''
