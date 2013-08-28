@@ -262,7 +262,7 @@
                         <ul>
                             <div ng-repeat="user in joinedFriendsData.users">
                             <li>
-                            <img src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}" /> {% templatetag openvariable %} user.name {% templatetag closevariable %}
+                            <img ng-src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}" /> {% templatetag openvariable %} user.name {% templatetag closevariable %}
                             </li>
                             </div>
                         </ul>

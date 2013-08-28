@@ -247,15 +247,23 @@ def credits_callback(request):
             return HttpResponse()
     return HttpResponse('error')
     
+
 def fb_item_info(request, item_id):
     item = Item.objects.get(pk=item_id)
-    return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP, 'fb_app_id':settings.FACEBOOK_APP_ID})
+    data = {
+        'item': item,
+        'url_domain': settings.SITE_NAME,
+        'fb_app_id': settings.FACEBOOK_APP_ID,
+    }
+    return render_response(request, "fb_item_info.html", data)
+
 
 def bid_package_info(request,package_id):
     package  = BidPackage.objects.get(pk= package_id)
     
     return render_response(request, "bid_package_info.html", {'package': package,'url_domain':settings.SITE_NAME})
-    
+
+
 @csrf_exempt
 def deauthorized_callback(request):
     """ View for handling the deauthorization callback.
