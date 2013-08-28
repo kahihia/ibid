@@ -45,14 +45,6 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
     
-    //API request get user details
-    $http
-        .post('/api/getUserDetails/')
-        .success(function (data) {
-            $rootScope.user = data.user;
-            $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
-        });
-    
     $scope.initialize = function () {
         //initialize analythics.js with mixpanel
         
@@ -67,18 +59,19 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             });
         });
         
-        //identify users
+        // API request get user details
         $http.post('/api/getUserDetails/').success(function (data) {
+            // identify users
             analytics.identify(data.user.username, {
                 email: data.user.email,
                 name : data.user.first_name,
                 last_name : data.user.last_name,
                 fb_id : data.user.facebookId
             });
+            $rootScope.user = data.user;
+            $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
         });
     };
-
-    
     
     $rootScope.$on('reloadUserDataEvent', function () {
         $http

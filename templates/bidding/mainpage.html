@@ -2,9 +2,6 @@
 <!DOCTYPE html>
 <html ng-app="app">
 	<head>
-		
-		
-		
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
 		<title>iBidGames</title>
@@ -37,8 +34,7 @@
 		<script src="{% static 'js/messages.js' %}" ></script>
 		<script src="{% static 'js/global-chat.js' %}"></script>
 		<!--include analythics.js -->
-		
-		<script src="{% static 'js/analythics.min.js' %}"></script>
+		<script src="{% static 'js/analytics.min.js' %}"></script>
 		<script language="javascript">
             tutorialImages = {
                 slide0:  "{% static 'images/tutorial/0.png' %}",
@@ -62,7 +58,6 @@
 		<script src="{% static 'js/tutorial.js' %}" ></script>
 		<script src="{% static "js/app.js" %}" ></script>
     </head>
-
 	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
 
 		<div id="fb-root"></div>
@@ -88,7 +83,7 @@
 					js.src = "//connect.facebook.net/en_US/all.js";
 					fjs.parentNode.insertBefore(js, fjs);
 				}(document, 'script', 'facebook-jssdk'));
-        </script>
+	        </script>
 
 		<div id="main-wrapper">
 
