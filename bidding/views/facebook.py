@@ -216,36 +216,36 @@ def callback_status_update(request):
 @csrf_exempt
 def credits_callback(request):
     """ View for handling interaction with Facebook credits API. """
-    fb_req=request.body
-    logger.debug("Started FB payment callback: %s" % fb_req)
-    
-    payment = json.loads(fb_req)
-    for elems in payment['entry']:
-        url='https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials' % (settings.FACEBOOK_APP_ID,settings.FACEBOOK_APP_SECRET)
-        token=urlopen(url).read()
-        url='https://graph.facebook.com/%s/?%s'%(elems['id'],token)
-        pay_info=urlopen(url).read()
-        payment_info =json.loads(pay_info)
-        fid=payment_info['user']['id']
-        status='completed'
-        for it in payment_info['actions']:
-            if it['status']!='completed':
-                status ='not_completed'
-        if status=='completed':
-            member = Member.objects.get(facebook_id=fid)
-            for it in payment_info['items']:
-                id_prod=it['product'].split('/bid_package/')
-                package = BidPackage.objects.get(pk=id_prod[1])
-                order = FBOrderInfo.objects.create(package=package,
-                                               member=member,
-                                               fb_payment_id=payment_info['id']
-                )
-                member.bids_left += package.bids
-                member.save()
-                client.update_credits(member)
-                logger.debug("FB payment callback, order: %s" % order.id)
-            return HttpResponse()
-    return HttpResponse('error')
+    if request.method == 'POST':
+        fb_req=request.body
+        logger.debug("Started FB payment callback: %s" % fb_req)
+        payment = json.loads(fb_req)
+        for elems in payment['entry']:
+            url='https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials' % (settings.FACEBOOK_APP_ID,settings.FACEBOOK_APP_SECRET)
+            token=urlopen(url).read()
+            url='https://graph.facebook.com/%s/?%s'%(elems['id'],token)
+            pay_info=urlopen(url).read()
+            payment_info =json.loads(pay_info)
+            fid=payment_info['user']['id']
+            status='completed'
+            for it in payment_info['actions']:
+                if it['status']!='completed':
+                    status ='not_completed'
+            if status=='completed':
+                member = Member.objects.get(facebook_id=fid)
+                for it in payment_info['items']:
+                    id_prod=it['product'].split('/bid_package/')
+                    package = BidPackage.objects.get(pk=id_prod[1])
+                    order = FBOrderInfo.objects.create(package=package,
+                                                   member=member,
+                                                   fb_payment_id=payment_info['id']
+                    )
+                    member.bids_left += package.bids
+                    member.save()
+                    client.update_credits(member)
+                    logger.debug("FB payment callback, order: %s" % order.id)
+                return HttpResponse()
+    return HttpResponse(str(request.GET['hub.challenge']))
     
 
 def fb_item_info(request, item_id):
