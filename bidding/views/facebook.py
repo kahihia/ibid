@@ -249,7 +249,7 @@ def credits_callback(request):
     
 def fb_item_info(request, item_id):
     item = Item.objects.get(pk=item_id)
-    return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP})
+    return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP, 'fb_app_id':settings.FACEBOOK_APP_ID})
 
 def bid_package_info(request,package_id):
     package  = BidPackage.objects.get(pk= package_id)
