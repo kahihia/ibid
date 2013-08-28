@@ -133,6 +133,7 @@
 
                 <div class="gloss"></div>
                 <div class="title">Get credits</div>
+                 <div class="title title-shadow">Get credits</div>
                 <div class="content">
 
                     <div class="column-left">
@@ -252,8 +253,8 @@
                 </div>
 
                 <div class="gloss"></div>
-                <div class="title-small"><img src="{% static 'images/popup-title-newFriends.png' %}" />
-                </div>
+               <div class="title">New Friends</div>
+                 <div class="title title-shadow">New Friends</div>
                 <div class="content">
                     <div class="text-large-w">
                         Your friends accepted the invitation:
@@ -336,7 +337,8 @@
 
             <!-- Tokens won modal -->
             <div class="modal" ng-show="showWonTokensDialog" ng-cloak>
-                <div class="title">Tokens won!</div>
+                <div class="title">Tokens Won!</div>
+                 <div class="title title-shadow">Tokens Won!</div>
                 <div class="content">
                     <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>
                     <div class="item">
@@ -353,16 +355,19 @@
                     <p class="info text-small-w">When you have 100.000 Tokens you can change it for 10 credits<br>and play for real items!</p>
                 </div>
                 <div class="buttons">
-                    <div class="btn btn-green" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
-                    <div class="btn" ng-mousedown="closeWonAuctionDialogAndPlayForItems()">Play for real items</div>
+                    <div class="btn" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
+                    <div class="btn btn-red" ng-mousedown="closeWonAuctionDialogAndPlayForItems()">Play for real items</div>
                 </div>
-                <a class="btn-close" ng-mousedown="closeWonAuctionDialog()">x</a>
+               
                 <div class="gloss"></div>
+                <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+                <img class="prize" src="{% static 'images/prize-medium.png' %}">
             </div>
 
             <!-- Item won modal -->
             <div class="modal" ng-show="showWonItemDialog" ng-cloak>
-                <div class="title">Item won!</div>
+                <div class="title">Item Won!</div>
+                <div class="title title-shadow">Item Won!</div>
                 <div class="content">
                     <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>
                     <div class="item">
@@ -371,10 +376,10 @@
                     <p class="info text-small-w">Check your e-mail, you will receive an email with<br>all the details you need to get your prize.</p>
                 </div>
                 <div class="buttons">
-                    <div class="btn btn-green" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
+                    <div class="btn btn-red" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
                 </div>
 
-                <a class="btn-close" ng-mousedown="closeWonAuctionDialog()">×</a>
+                
                 <div class="gloss"></div>
                 <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
                 <img class="prize" src="{% static 'images/prize-medium.png' %}">
@@ -675,7 +680,7 @@
 							<div id="auction-bids">
 								<div ng-switch on="auction.status">
 									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBidding(auction)" ng-disabled="!auction.interface.joinAuctionEnabled">JOIN AUCTION</div>
-									<div id="btn-start-bid" class="btn btn-red btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
+									<div id="btn-start-bid" class="btn btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 								</div>
 							</div>
 							<div id="auction-btns">
