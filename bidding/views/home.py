@@ -36,8 +36,13 @@ def canvashome(request):
     if not request.user.is_authenticated() :
         #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
         fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
-        request.META['HTTP_REFERER']=fb_url
-        return render_response(request, 'fb_redirect.html', {'authorization_url': fb_url })
+        request.META['HTTP_REFERER'] = fb_url
+        data = {
+            'authorization_url': fb_url,
+            'app_url': settings.FACEBOOK_APP_URL,
+            'site_url': settings.SITE_NAME,
+        }
+        return render_response(request, 'fb_redirect.html', data)
         
         
     #TODO try catch to avoid ugly error when admin is logged
