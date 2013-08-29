@@ -44,6 +44,7 @@ def get_redirect_uri(request):
 
     return url + request_ids
 
+
 def fb_test_user(request):
     token = FacebookAuthorization.get_app_access_token()
     test_user = FacebookAuthorization.create_test_user(token, 'email')
@@ -93,6 +94,7 @@ def give_bids(request):
 
     member.save()
 
+
 def fb_check_like(request):
     member = request.user
     response = False
@@ -107,6 +109,7 @@ def fb_check_like(request):
     except Exception as e:
         raise
     return HttpResponse(json.dumps({'like':response,}))
+
 
 def fb_like(request):
     member = request.user
@@ -136,6 +139,7 @@ def fb_like(request):
             #if str(e).find('#200') != -1:
             raise
     return HttpResponse(request.method)
+
 
 def store_invitation(request):
     auction = get_auction_or_404(request)
