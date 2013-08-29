@@ -5,7 +5,8 @@ import time
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+
 
 from bidding import client
 from bidding.models import Auction
@@ -18,6 +19,9 @@ from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
 
+import logging
+
+logger = logging.getLogger('django')
 
 def api(request, method):
     """api calls go through this method"""
@@ -51,12 +55,15 @@ def getUserDetails(request):
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 def getAnalyticsKeys(request):
-    data = {u'keys':{
-                u'mixpanel': settings.MAXPANEL_KEY
-        }
-    }
-    return HttpResponse(json.dumps(data), content_type="application/json")
-
+    referer = request.META.get('HTTP_REFERER',None)
+    if referer:
+        if request.method == 'POST' and settings.SITE_NAME in referer:
+            data = {u'keys':{
+                        u'mixpanel': settings.MAXPANEL_KEY
+                }
+            }
+            return HttpResponse(json.dumps(data), content_type="application/json")
+    raise Http404
 
 def getAuctionsInitialization(request):
     member = request.user
