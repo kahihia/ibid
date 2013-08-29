@@ -17,7 +17,7 @@
 //     profileLink: ''
 // };
 
-function userDetailsCtrl($scope, $rootScope, $http) {
+function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     //initialization
     $rootScope.user = {};
@@ -38,7 +38,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
-    
+
     //API request get user details
     $http
         .post('/api/getUserDetails/')
@@ -93,6 +93,8 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
 
+
+
     $scope.closeWonAuctionDialog = function () {
         //request for perm if does not have it
         $scope.requestPermisionPublishActions();
@@ -105,6 +107,18 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         $scope.closeWonAuctionDialog();
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
     };
+
+    /**
+     * Shows notification after users invited.
+     *
+     * @param {object} event Event object.
+     */
+    var userInvitedHandler = function (event) {
+        $scope.$apply(function () {
+            notification.show('The invitations have been sent! Thank you!');
+        });
+    };
+    $scope.$on('user:invited', userInvitedHandler);
 
     $scope.showJoinedFriendsDialog = function (event, data) {
         $scope.joinedFriendsData = data;
@@ -141,16 +155,14 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $scope.sendRequestViaMultiFriendSelector = function() {
         FB.ui({method: 'apprequests',
             message: 'Come join me to play and win amazing deals at iBidGames!'
-        }, $scope.sendRequestViaMultiFriendSelectorCallback);
+        }, sendRequestViaMultiFriendSelectorCallback);
     };
 
-    $scope.sendRequestViaMultiFriendSelectorCallback = function(data) {
-        console.log(data);
-        if (data != null) {
-            //TODO: restore openPopupFrendsInvited with new tooltip look
-            //openPopupFrendsInvited();
-            //store invitations
-            $http.post('/api/inviteRequest/', {'invited': data.to})
+    var sendRequestViaMultiFriendSelectorCallback = function (data) {
+        if (data) {
+            // Store invitations sent.
+            $http.post('/api/inviteRequest/', {invited: data.to});
+            $scope.$emit('user:invited');
         }
     };
 
@@ -161,7 +173,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $scope.closeGetCredits = function() {
         $rootScope.$emit('closeGetCreditsPopover');
     };
-    
+
     $scope.buy_bids = function(member,package_id,site_name) {
         // calling the API ...
         var obj = {
@@ -172,9 +184,9 @@ function userDetailsCtrl($scope, $rootScope, $http) {
         $scope.subscribeToPaymentChannel(member)
         FB.ui(obj, getCredits_callback);
     };
-    
+
     var getCredits_callback = function(data) {};
-    
+
     $scope.subscribeToPaymentChannel = function(member) {
         $scope.subscribeToChannel({
             channel: $scope.channel + member,
@@ -190,7 +202,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
             }
         });
     };
-    
+
     $scope.subscribeToChannel = function (options) {
         _.defaults(options, {
             connect: function () {
@@ -237,7 +249,7 @@ function userDetailsCtrl($scope, $rootScope, $http) {
                 }else{
                 }});
     };
-    
+
     $scope.fb_like= function() {
 
         $scope.requestPermisionPublishActions();
@@ -304,14 +316,12 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     };
 
 
-    
+
 };
 
 
 jQuery(function () {
     jQuery('.buy-bids-popup').hide();
-    jQuery('.friends-invited-popup').hide();
-    jQuery('.close', '.friends-invited-popup').click(closePopupFriendsInvited);
 })
 
 var underlay = '.underlay';
@@ -361,21 +371,6 @@ var getCredits_callback = function (data) {
         return false;
     }
 };
-
-
-function openPopupFrendsInvited() {
-    showOverlay();
-    setTimeout(function () {
-        jQuery('.friends-invited-popup').show();
-        TweenLite.fromTo('.friends-invited-popup', 1, {left: '-800px'},{left: '200px', ease: Back.easeOut});
-    }, 300);
-}
-function closePopupFriendsInvited() {
-    hideOverlay();
-    TweenLite.to('.friends-invited-popup', 1, {left: '-800px', onComplete: function () {
-        jQuery('.friends-invited-popup').hide()
-    }})
-}
 
 var ovarlayCount = 0;
 function showOverlay(){
