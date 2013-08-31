@@ -469,7 +469,7 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-final-price">
+									<div class="auction-final-price" ib-transition-class="{'auction-final-price-change': auction.bidNumber}">
 										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %} </span>
 									</div>
 									<div id="auction-play">
@@ -529,7 +529,7 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-final-price">
+									<div class="auction-final-price">
 										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
 									</div>
 									<div id="auction-status-winner">
@@ -647,7 +647,7 @@
 							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
-							<div id="auction-retail-final-price">
+							<div class="auction-final-price">
 								Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
 							</div>
 							<div id="auction-status-winner">
