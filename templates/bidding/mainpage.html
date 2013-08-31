@@ -208,92 +208,35 @@
 			</div>
             </script>
 
-			<!-- Joined friends dialog -->
-			<!--div class="joined-friends-modal" ng-show="joinedFriendsData">
-				<div class="popup">
-					<div class="title">
-						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
-						<h1 ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><span ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'Your friend', 'other': 'Your friends'}"></span> accepted the invitation:</span>
-						<div ng-repeat="friend in joinedFriendsData.users">
-							<div>{% templatetag openvariable %}friend.name{% templatetag closevariable %}</div>
-						</div>
-						<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
-							<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsData.prize{% templatetag closevariable %} tokens!</span>
-						</div>
-						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
-					</div>
-				</div>
-			</div-->
-
-			<!-- Joined friends modal -->
-			<!-- <div class="joined-friends-modal" ng-show="joinedFriendsData">
-				<div class="popup">
-					<div class="title">
-						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
-						<h1 ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><span ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'Your friend', 'other': 'Your friends'}"></span> accepted the invitation:</span>
-						<div ng-repeat="friend in joinedFriendsData.users">
-							<div>{% templatetag openvariable %}friend.name{% templatetag closevariable %}</div>
-						</div>
-						<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
-							<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsData.prize{% templatetag closevariable %} tokens!</span>
-						</div>
-						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
-					</div>
-				</div>
-			</div> -->
-            <div class="modal" ng-show="joinedFriendsData" ng-cloak>
-                <div class="btn-close" ng-click="hideJoinedFriendsDialog()">
-                    x
-                </div>
-
+			<div class="modal" ng-show="joinedFriendsData" ng-cloak>
+                <div class="btn-close" ng-mousedown="hideJoinedFriendsDialog()">x</div>
                 <div class="gloss"></div>
-               <div class="title">New Friends</div>
-                 <div class="title title-shadow">New Friends</div>
+                <div class="title">New Friends</div>
+                <div class="title title-shadow">New Friends</div>
                 <div class="content">
-                    <div class="text-large-w">
-                        Your friends accepted the invitation:
-                    </div>
+                    <div class="text-large-w">Your friends accepted the invitation:</div>
                     <div class="friends-list text-small-w">
                         <ul>
-                            <div ng-repeat="user in joinedFriendsData.users">
-                            <li>
-                            <img ng-src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}" /> {% templatetag openvariable %} user.name {% templatetag closevariable %}
+                            <li ng-repeat="user in joinedFriendsData.users | limitTo:4">
+                                <img ng-src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}"> {% templatetag openvariable %} user.name {% templatetag closevariable %}
                             </li>
-                            </div>
                         </ul>
-                        <!--span class="text-small-w">and 40 friends more...</span-->
+                        <span class="text-small-w" ng-show="joinedFriendsData.users.length > 4">and {% templatetag openvariable %}joinedFriendsData.users.length - 4{% templatetag closevariable %} friends more...</span>
                     </div>
                     <div class="tokens-column">
                         <div class="tokens">
                             <span>= </span>
                             <div class="value">
-                                <p>
-                                    You get
-                                </p>
+                                <p>You get</p>
                                 {% templatetag openvariable %} joinedFriendsData.prize {% templatetag closevariable %}
-                                <p>
-                                    free Tokens
-                                </p>
+                                <p>free Tokens</p>
                             </div>
                         </div>
                     </div>
-
-                </div>
-                <div class="info text-small-w">
-                    <span>...............................................................................................</span>
-                    </br>You will receive 5000 Tokens for each friend</br>
-                    that accept your request.
+                    <p class="info text-small-w">You will receive 5000 Tokens for each friend<br>that accept your request.</p>
                 </div>
                 <div class="buttons">
-                    <div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">
-                        Invite more friends!
-                    </div>
+                    <div class="btn btn-green" ng-mousedown="joinedFriendsData = null; sendRequestViaMultiFriendSelector()">Invite more friends!</div>
                 </div>
                 <div class="bkg"></div>
             </div>
