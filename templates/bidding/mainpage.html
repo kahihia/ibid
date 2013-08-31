@@ -414,7 +414,7 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
 									</div>
 									<div id="auction-status">
 										<p>
@@ -450,7 +450,7 @@
 									</div>
 									<div id="auction-retail-price">
 										Retail price:
-										 ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										 {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
 									</div>
 									<div id="auction-play">
 										<div class="syncing">
@@ -470,7 +470,7 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-final-price">
-										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %} </span>
+										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %} </span>
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
@@ -500,7 +500,7 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
@@ -530,7 +530,7 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-final-price">
-										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
+										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
 									</div>
 									<div id="auction-status-winner">
 										<p>
@@ -608,7 +608,7 @@
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
 							<div id="auction-retail-price">
-								Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+								Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
                                 <p ng-show="auction.bidType == AUCTION_TYPE_TOKENS">Winner gets {% templatetag openvariable %}auction.retailPrice | number:0{% templatetag closevariable %} tokens</p>
 							</div>
 							<div id="auction-status">
@@ -648,7 +648,7 @@
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
 							<div id="auction-retail-final-price">
-								Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
+								Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
 							</div>
 							<div id="auction-status-winner">
 								<p>
