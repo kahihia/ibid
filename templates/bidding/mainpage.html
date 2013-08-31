@@ -71,7 +71,7 @@
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-					channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
+					channelUrl : '{{SITE_NAME_WOUT_BACKSLASH}}{% static 'channel.html' %}', // Channel File
 					status     : true, // check login status
 					cookie     : true, // enable cookies to allow the server to access the session
 					xfbml      : true  // parse XFBML
