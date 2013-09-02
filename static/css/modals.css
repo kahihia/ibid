@@ -57,6 +57,7 @@
 }
 .modal.modal-wide {
 	width: 750px;
+    margin-left: -386px;
 }
 .modal .kenny {
 	bottom: -60px;
