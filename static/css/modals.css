@@ -57,6 +57,7 @@
 }
 .modal.modal-wide {
 	width: 750px;
+    margin-left: -386px;
 }
 .modal .kenny {
 	bottom: -60px;
@@ -200,14 +201,10 @@
 		max-height: 150px;
 }
 .modal .info {
-	/*width: 100%;*/
-	margin: 29px auto 0 auto;
-	line-height: 15px;
-	font-weight: 600;
-	text-align: center;
-	/*bottom: 46px;
-	position: absolute;
-	display: block;*/
+    margin: 15px auto 0 auto;
+    line-height: 15px;
+    font-weight: 600;
+    text-align: center;
     display: inline-block;
     border-top: 1px dotted #939393;
     padding-top: 1em;
@@ -246,10 +243,10 @@
 	margin-right: 10px;
 }
 .modal .content .tokens-column {
-	height: 200px;
-	display: table-cell;
-	vertical-align: middle;
-	padding-top: 13px;
+    height: 200px;
+    display: table-cell;
+    vertical-align: middle;
+    padding-top: 35px;
 }
 .modal .content .column-left, .column-right {
 	float: left;
