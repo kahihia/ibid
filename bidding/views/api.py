@@ -54,17 +54,6 @@ def getUserDetails(request):
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 
-def getAnalyticsKeys(request):
-    referer = request.META.get('HTTP_REFERER',None)
-    if referer:
-        if request.method == 'POST' and settings.SITE_NAME in referer:
-            data = {u'keys':{
-                        u'mixpanel': settings.MAXPANEL_KEY
-                }
-            }
-            return HttpResponse(json.dumps(data), content_type="application/json")
-    raise Http404
-
 def getAuctionsInitialization(request):
     member = request.user
 
@@ -575,7 +564,6 @@ API = {
     'claim': claim,
     'sendMessage': sendMessage,
     'getUserDetails': getUserDetails,
-    'getAnalyticsKeys': getAnalyticsKeys,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convertTokens': convertTokens,

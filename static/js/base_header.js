@@ -45,20 +45,16 @@ function userDetailsCtrl($scope, $rootScope, $http) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
     
-    $scope.initialize = function () {
+    $scope.initialize = function (mixpanel_key) {
         //initialize analythics.js with mixpanel
-        
-        $http.post('/api/getAnalyticsKeys/').success(function (data){
-            analytics.initialize({
-                // 'Google Analytics' : 'UA-XXXXXX-XX',
-                'Mixpanel' : {
-                 token  : data.keys.mixpanel,
-                 people : true
-                 },
-               //  'KISSmetrics'      : 'XXXXXXXXXX'
-            });
+        analytics.initialize({
+            // 'Google Analytics' : 'UA-XXXXXX-XX',
+            'Mixpanel' : {
+             token  : mixpanel_key,
+             people : true
+             },
+           //  'KISSmetrics'      : 'XXXXXXXXXX'
         });
-        
         // API request get user details
         $http.post('/api/getUserDetails/').success(function (data) {
             // identify users
