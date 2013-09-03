@@ -32,7 +32,7 @@ def canvashome(request):
     if redirectTo:
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
-    
+
     if not request.user.is_authenticated() :
         #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
         fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
@@ -45,7 +45,6 @@ def canvashome(request):
         return render_response(request, 'fb_redirect.html', data)
         
         
-    #TODO try catch to avoid ugly error when admin is logged
     member = request.user
 
     #give free tokens from promo
@@ -53,7 +52,6 @@ def canvashome(request):
     if freeExtraTokens and not member.getSession('freeExtraTokens', None):
         member.tokens_left += freeExtraTokens
         member.setSession('freeExtraTokens', 'used')
-        print " ----------- member session", member.session
         member.save()
         del request.session['freeExtraTokens']
 
@@ -67,6 +65,7 @@ def canvashome(request):
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
                                 'PUBNUB_SUB': settings.PUBNUB_SUB,
                                 'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH,
+                                'SITE_NAME': settings.SITE_NAME,
                                 'display_popup': display_popup,
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
