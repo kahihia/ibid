@@ -45,7 +45,6 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	-webkit-font-smoothing: antialiased;
 	background-image: url("../images/bkg-body2.jpg");
-	padding-bottom: 30px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -332,6 +331,7 @@ body {
 #content-wrapper {
 	padding-bottom: 60px;
 	background-image: url("../images/bkg-content.jpg");
+    margin-bottom: 75px;
 }
 #content-wrapper .color-frame-none {
 	width: 100%;
