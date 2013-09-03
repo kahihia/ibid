@@ -9,6 +9,7 @@
 		<link rel="stylesheet" href="{% static 'css/main.css' %}">
 		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
+        <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -20,7 +21,7 @@
 			preloadImage("{% static 'images/btn-bid-play-disabled.png' %}");
 			preloadImage("{% static 'images/help-img.png' %}");
 		</script>
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
 		<script src="{% static 'js/lodash.min.js' %}"></script>
 		<script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
@@ -70,13 +71,13 @@
 			window.fbAsyncInit = function() {
 				FB.init({
 					appId : '{{ fb_app_id }}',
-					channelUrl : '//{{SITE_NAME}}{% static 'channel.html' %}', // Channel File
+					channelUrl : '{{SITE_NAME_WOUT_BACKSLASH}}{% static 'channel.html' %}', // Channel File
 					status     : true, // check login status
 					cookie     : true, // enable cookies to allow the server to access the session
 					xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
-				
+
 				angular.element($('.global-chat')).scope().chatPosition();
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
@@ -133,6 +134,7 @@
 
                 <div class="gloss"></div>
                 <div class="title">Get credits</div>
+                 <div class="title title-shadow">Get credits</div>
                 <div class="content">
 
                     <div class="column-left">
@@ -195,110 +197,52 @@
 			</div>
 
 			<!--friends invited popup-->
-			<div class="friends-invited-popup">
-				<div class="popup">
-					<div class="title">
-						<span class="close">×</span>
-						<h1>Friends invited!</h1> &nbsp;
-					</div>
-					<div class="info">
-						<span style="text-align:center ; font-size: 16px;">The invitations have been sent! Thank you!</span>
-					</div>
+            <script id="template/notification.html" type="text/ng-template">
+			<div class="notification">
+				<div class="kenny">
+                    <img src="{% static 'images/tooltip-info-kenny.png' %}">
+				</div>
+				<div class="content">
+					<div class="txt">{% templatetag openvariable %}message{% templatetag closevariable %}</div>
 				</div>
 			</div>
+            </script>
 
-			<!-- Joined friends dialog -->
-			<!--div class="joined-friends-modal" ng-show="joinedFriendsData">
-				<div class="popup">
-					<div class="title">
-						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
-						<h1 ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><span ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'Your friend', 'other': 'Your friends'}"></span> accepted the invitation:</span>
-						<div ng-repeat="friend in joinedFriendsData.users">
-							<div>{% templatetag openvariable %}friend.name{% templatetag closevariable %}</div>
-						</div>
-						<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
-							<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsData.prize{% templatetag closevariable %} tokens!</span>
-						</div>
-						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
-					</div>
-				</div>
-			</div-->
-
-			<!-- Joined friends modal -->
-			<!-- <div class="joined-friends-modal" ng-show="joinedFriendsData">
-				<div class="popup">
-					<div class="title">
-						<span class="close" ng-click="hideJoinedFriendsDialog()">×</span>
-						<h1 ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'New friend joined!', 'other': 'New friends joined!'}"></h1>
-					</div>
-					<div class="info">
-						<span style="color:#f36500; font-weight: 700; font-size: 16px;"><span ng-pluralize count="joinedFriendsData.users.length" when="{'one': 'Your friend', 'other': 'Your friends'}"></span> accepted the invitation:</span>
-						<div ng-repeat="friend in joinedFriendsData.users">
-							<div>{% templatetag openvariable %}friend.name{% templatetag closevariable %}</div>
-						</div>
-						<div style="border-top: 1px solid #e0e0e0;padding: 20px 0 10px 0;margin-top: 20px;">
-							<span style="color:#484848; font-weight: 700; font-size: 16px;">You won {% templatetag openvariable %}joinedFriendsData.prize{% templatetag closevariable %} tokens!</span>
-						</div>
-						<div class="btn-blue" ng-click="hideJoinedFriendsDialog(true)">INVITE MORE FRIENDS!</div>
-					</div>
-				</div>
-			</div> -->
-            <div class="modal" ng-show="joinedFriendsData" ng-cloak>
-                <div class="btn-close" ng-click="hideJoinedFriendsDialog()">
-                    x
-                </div>
-
+			<div class="modal" ng-show="joinedFriendsData" ng-cloak>
+                <div class="btn-close" ng-mousedown="hideJoinedFriendsDialog()">x</div>
                 <div class="gloss"></div>
-                <div class="title-small"><img src="{% static 'images/popup-title-newFriends.png' %}" />
-                </div>
+                <div class="title">New Friends</div>
+                <div class="title title-shadow">New Friends</div>
                 <div class="content">
-                    <div class="text-large-w">
-                        Your friends accepted the invitation:
-                    </div>
+                    <div class="text-large-w">Your friends accepted the invitation:</div>
                     <div class="friends-list text-small-w">
                         <ul>
-                            <div ng-repeat="user in joinedFriendsData.users">
-                            <li>
-                            <img src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}" /> {% templatetag openvariable %} user.name {% templatetag closevariable %}
+                            <li ng-repeat="user in joinedFriendsData.users | limitTo:4">
+                                <img ng-src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}"> {% templatetag openvariable %} user.name {% templatetag closevariable %}
                             </li>
-                            </div>
                         </ul>
-                        <!--span class="text-small-w">and 40 friends more...</span-->
+                        <span class="text-small-w" ng-show="joinedFriendsData.users.length > 4">and {% templatetag openvariable %}joinedFriendsData.users.length - 4{% templatetag closevariable %} friends more...</span>
                     </div>
                     <div class="tokens-column">
                         <div class="tokens">
                             <span>= </span>
                             <div class="value">
-                                <p>
-                                    You get
-                                </p>
+                                <p>You get</p>
                                 {% templatetag openvariable %} joinedFriendsData.prize {% templatetag closevariable %}
-                                <p>
-                                    free Tokens
-                                </p>
+                                <p>free Tokens</p>
                             </div>
                         </div>
                     </div>
-
-                </div>
-                <div class="info text-small-w">
-                    <span>...............................................................................................</span>
-                    </br>You will receive 5000 Tokens for each friend</br>
-                    that accept your request.
+                    <p class="info text-small-w">You will receive 5000 Tokens for each friend<br>that accept your request.</p>
                 </div>
                 <div class="buttons">
-                    <div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">
-                        Invite more friends!
-                    </div>
+                    <div class="btn btn-green" ng-mousedown="joinedFriendsData = null; sendRequestViaMultiFriendSelector()">Invite more friends!</div>
                 </div>
                 <div class="bkg"></div>
             </div>
 
 			<!--GLOBAL chat-->
-			<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled">
+			<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled" ng-cloak>
 				<a class="top" ng-click="chatGrowth()">
 					<div class="kenny">
 						<img src="{% static 'images/kenny-chat-img.png' %}">
@@ -336,7 +280,8 @@
 
             <!-- Tokens won modal -->
             <div class="modal" ng-show="showWonTokensDialog" ng-cloak>
-                <div class="title">Tokens won!</div>
+                <div class="title">Tokens Won!</div>
+                 <div class="title title-shadow">Tokens Won!</div>
                 <div class="content">
                     <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>
                     <div class="item">
@@ -353,16 +298,18 @@
                     <p class="info text-small-w">When you have 100.000 Tokens you can change it for 10 credits<br>and play for real items!</p>
                 </div>
                 <div class="buttons">
-                    <div class="btn btn-green" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
-                    <div class="btn" ng-mousedown="closeWonAuctionDialogAndPlayForItems()">Play for real items</div>
+                    <div class="btn" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
+                    <div class="btn btn-red" ng-mousedown="closeWonAuctionDialogAndPlayForItems()">Play for real items</div>
                 </div>
-                <a class="btn-close" ng-mousedown="closeWonAuctionDialog()">x</a>
                 <div class="gloss"></div>
+                <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+                <img class="prize" src="{% static 'images/prize-medium.png' %}">
             </div>
 
             <!-- Item won modal -->
             <div class="modal" ng-show="showWonItemDialog" ng-cloak>
-                <div class="title">Item won!</div>
+                <div class="title">Item Won!</div>
+                <div class="title title-shadow">Item Won!</div>
                 <div class="content">
                     <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>
                     <div class="item">
@@ -371,10 +318,8 @@
                     <p class="info text-small-w">Check your e-mail, you will receive an email with<br>all the details you need to get your prize.</p>
                 </div>
                 <div class="buttons">
-                    <div class="btn btn-green" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
+                    <div class="btn btn-red" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
                 </div>
-
-                <a class="btn-close" ng-mousedown="closeWonAuctionDialog()">×</a>
                 <div class="gloss"></div>
                 <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
                 <img class="prize" src="{% static 'images/prize-medium.png' %}">
@@ -469,11 +414,11 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
 									</div>
 									<div id="auction-status">
 										<p>
-											COMPLETION
+											RESERVE
 										</p>
 										{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 									</div>
@@ -505,7 +450,7 @@
 									</div>
 									<div id="auction-retail-price">
 										Retail price:
-										 ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										 {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
 									</div>
 									<div id="auction-play">
 										<div class="syncing">
@@ -524,8 +469,8 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-final-price">
-										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %} </span>
+									<div class="auction-final-price" ib-transition-class="{'auction-final-price-change': auction.bidNumber}">
+										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %} </span>
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
@@ -555,7 +500,7 @@
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+										Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
@@ -584,8 +529,8 @@
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 									</div>
-									<div id="auction-retail-final-price">
-										Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
+									<div class="auction-final-price">
+										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
 									</div>
 									<div id="auction-status-winner">
 										<p>
@@ -663,19 +608,19 @@
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
 							<div id="auction-retail-price">
-								Retail price: ${% templatetag openvariable %}auction.retailPrice{% templatetag closevariable %}
+								Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
                                 <p ng-show="auction.bidType == AUCTION_TYPE_TOKENS">Winner gets {% templatetag openvariable %}auction.retailPrice | number:0{% templatetag closevariable %} tokens</p>
 							</div>
 							<div id="auction-status">
 								<p>
-									COMPLETION
+									RESERVE
 								</p>
 								{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
 							</div>
 							<div id="auction-bids">
 								<div ng-switch on="auction.status">
 									<div id="btn-start-bid" class="btn btn-red" ng-switch-when="precap" ng-click="startBidding(auction)" ng-disabled="!auction.interface.joinAuctionEnabled">JOIN AUCTION</div>
-									<div id="btn-start-bid" class="btn btn-red btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
+									<div id="btn-start-bid" class="btn btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 								</div>
 							</div>
 							<div id="auction-btns">
@@ -702,8 +647,8 @@
 							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
 							</div>
-							<div id="auction-retail-final-price">
-								Price: <span>${% templatetag openvariable %}auction.bidNumber/100{% templatetag closevariable %}</span>
+							<div class="auction-final-price">
+								Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
 							</div>
 							<div id="auction-status-winner">
 								<p>
@@ -758,6 +703,8 @@
 				</div>
 			</div>
 		</div>
+
+        <div id="notifications" class="notifications-container"></div>
 
 		<!--welcome popup-->
 		{% if display_popup %}

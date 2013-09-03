@@ -16,6 +16,25 @@
                     );
                 }
             };
+        })
+        .directive('ibTransitionClass', function ($timeout) {
+            return {
+                link: function postLink (scope, element, attributes) {
+                    var oldVals;
+                    scope.$watch(angular.identity(attributes.ibTransitionClass), function () {
+                        angular.forEach(scope.$eval(attributes.ibTransitionClass), function (value, key) {
+                            if (!oldVals || !oldVals.hasOwnProperty(key) || !angular.equals(value, oldVals[key])) {
+                                element.removeClass(key);
+                                $timeout(function () {
+                                    element.addClass(key);
+                                });
+                            }
+                        });
+                        oldVals = angular.copy(attributes.ibTransitionClass);
+                    },
+                    true);
+                }
+            };
         });
         // .directive('modal', function () {
         //     return {
