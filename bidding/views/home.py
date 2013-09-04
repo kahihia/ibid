@@ -64,7 +64,7 @@ def canvashome(request):
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
                                 'PUBNUB_SUB': settings.PUBNUB_SUB,
-                                'MIXPANEL_KEY': settings.MAXPANEL_KEY,
+                                'MIXPANEL_KEY': settings.MIXPANEL_KEY,
                                 'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH,
                                 'SITE_NAME': settings.SITE_NAME,
                                 'display_popup': display_popup,
