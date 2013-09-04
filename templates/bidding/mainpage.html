@@ -367,8 +367,8 @@
 			<div id="content-wrapper" ng-controller="AuctionsPanelController">
 				<div id="menu-wrapper">
 					<div id="menu">
-						<div class="btn-tokens" ng-click="playForTokens()"></div>
-						<div class="btn-items" ng-click="playForItems()" ></div>
+						<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
+						<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
 						<div class="links">
 							<ul>
 								<li>
