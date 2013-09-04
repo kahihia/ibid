@@ -159,7 +159,7 @@
                                 <p>
                                     You have
                                 </p>
-                                {% templatetag openvariable %} user.tokens {% templatetag closevariable %}
+                                {$  user.tokens  $}
                                 <p>
                                     Tokens
                                 </p>
@@ -168,10 +168,10 @@
 
                         <div class="credits-btn btn btn-red" ng-click="convertChips()">
                             <p id="">
-                                {% templatetag openvariable %} convertTokens.credits {% templatetag closevariable %}
+                                {$  convertTokens.credits  $}
                             </p>
                             iBidCredits</br>
-                            for {% templatetag openvariable %} convertTokens.tokens {% templatetag closevariable %} Tokens
+                            for {$  convertTokens.tokens  $} Tokens
                         </div>
 
                     </div>
@@ -197,7 +197,7 @@
                     <img src="{% static 'images/tooltip-info-kenny.png' %}">
 				</div>
 				<div class="content">
-					<div class="txt">{% templatetag openvariable %}message{% templatetag closevariable %}</div>
+					<div class="txt">{$ message $}</div>
 				</div>
 			</div>
             </script>
@@ -212,17 +212,17 @@
                     <div class="friends-list text-small-w">
                         <ul>
                             <li ng-repeat="user in joinedFriendsData.users | limitTo:4">
-                                <img ng-src="{% templatetag openvariable %} user.pictureUrl {% templatetag closevariable %}"> {% templatetag openvariable %} user.name {% templatetag closevariable %}
+                                <img ng-src="{$  user.pictureUrl $}"> {$ user.name  $}
                             </li>
                         </ul>
-                        <span class="text-small-w" ng-show="joinedFriendsData.users.length > 4">and {% templatetag openvariable %}joinedFriendsData.users.length - 4{% templatetag closevariable %} friends more...</span>
+                        <span class="text-small-w" ng-show="joinedFriendsData.users.length > 4">and {$ joinedFriendsData.users.length - 4 $} friends more...</span>
                     </div>
                     <div class="tokens-column">
                         <div class="tokens">
                             <span>= </span>
                             <div class="value">
                                 <p>You get</p>
-                                {% templatetag openvariable %} joinedFriendsData.prize {% templatetag closevariable %}
+                                {$  joinedFriendsData.prize  $}
                                 <p>free Tokens</p>
                             </div>
                         </div>
@@ -253,11 +253,11 @@
 					<div class="chat-list" ib-autoscroll ng-model="messages">
 						<div class="line" ng-repeat="message in messages">
 							<div class="avatar">
-								<img ng-src="{% templatetag openvariable %}message.user.profileFotoLink{% templatetag closevariable %}" width="30" height="30">
+								<img ng-src="{$ message.user.profileFotoLink $}" width="30" height="30">
 							</div>
 							<div class="txt">
-								<p>{% templatetag openvariable %}message.user.displayName{% templatetag closevariable %}</p>
-								<span>{% templatetag openvariable %}message.text{% templatetag closevariable %}</span>
+								<p>{$ message.user.displayName $}</p>
+								<span>{$ message.text $}</span>
 							</div>
 						</div>
 					</div>
@@ -277,14 +277,14 @@
                 <div class="title">Tokens Won!</div>
                  <div class="title title-shadow">Tokens Won!</div>
                 <div class="content">
-                    <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>
+                    <p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span> <span class="item-name">You won {$wonAuction.itemName $}!</span></p>
                     <div class="item">
-                        <img ng-src="{% templatetag openvariable %}wonAuction.itemImage{% templatetag closevariable %}">
+                        <img ng-src="{$ wonAuction.itemImage $}">
                         <div class="tokens">
                             <span>= </span>
                             <div class="value">
                                 <p>You get</p>
-                                {% templatetag openvariable %}wonAuction.retailPrice | number:0{% templatetag closevariable %}
+                                {$ wonAuction.retailPrice | number:0 $}
                                 <p>free Tokens</p>
                             </div>
                         </div>
@@ -305,9 +305,9 @@
                 <div class="title">Item Won!</div>
                 <div class="title title-shadow">Item Won!</div>
                 <div class="content">
-                    <p class="winner">Congratulations <span class="winner-name">{% templatetag openvariable %}user.displayName{% templatetag closevariable %}</span> <span class="item-name">You won {% templatetag openvariable %}wonAuction.itemName{% templatetag closevariable %}!</span></p>
+                    <p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span> <span class="item-name">You won {$wonAuction.itemName $}!</span></p>
                     <div class="item">
-                        <img ng-src="{% templatetag openvariable %}wonAuction.itemImage{% templatetag closevariable %}">
+                        <img ng-src="{$ wonAuction.itemImage $}">
                     </div>
                     <p class="info text-small-w">Check your e-mail, you will receive an email with<br>all the details you need to get your prize.</p>
                 </div>
@@ -334,11 +334,11 @@
 
 				<div id="user-info">
 					<div class="avatar"><img
-						ng-src="{% templatetag openvariable %}user.profileFotoLink{% templatetag closevariable %}" width="50"
+						ng-src="{$ user.profileFotoLink $}" width="50"
 						height="50">
 					</div>
 					<div class="name">
-						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}
+						{$ user.displayName $}
 					</div>
 					<div class="menu">
 						<ul>
@@ -354,10 +354,10 @@
 						</ul>
 					</div>
 					<div class="tokens">
-						TOKENS: {% templatetag openvariable %}user.tokens{% templatetag closevariable %}
+						TOKENS: {$ user.tokens $}
 					</div>
 					<div class="credits">
-						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
+						CREDITS: {$ user.credits $}
 					</div>
 					<div class="btn-credits" ng-click="openGetCredits()"></div>
 				</div>
@@ -390,37 +390,37 @@
 				<div ng-class="{'color-frame-tokens': playFor == AUCTION_TYPE_TOKENS, 'color-frame-items': playFor == AUCTION_TYPE_CREDITS}"></div>
 				<div id="user-auctions">
 					<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
-						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}'s Upcoming Auctions
+						{$ user.displayName $}'s Upcoming Auctions
 					</div>
 
 					<div ng-repeat="auction in auctionList[playFor].mine">
 						<input type="hidden" class="auction-id"
-						value="{% templatetag openvariable %}auction.id{% templatetag closevariable %}"/>
+						value="{$ auction.id $}"/>
 
 						<div id="auction">
 							<div ng-switch on="auction.status">
 								<!-- TEMPLATE: precap -->
 								<div id="auction-top" ng-switch-when="precap">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
+										<img ng-src="{$ auction.itemImage $}">
 									</div>
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
-										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+										{$ auction.itemName $}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
+										Retail price: {$ auction.retailPrice | currency:'$' $}
 									</div>
 									<div id="auction-status">
 										<p>
 											RESERVE
 										</p>
-										{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
+										{$ auction.completion$}% / {$auction.bidders $} Bidders
 									</div>
 									<div id="auction-bids">
-										<p>PLACED {% templatetag openvariable %}auction.placed{% templatetag closevariable %} {% templatetag openvariable %}playFor | uppercase{% templatetag closevariable %}S</p>
+										<p>PLACED {$ auction.placed$} {$playFor | uppercase $}S</p>
 
 										<div id="auction-precap-bid">
-											<span>{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}</span> Bids
+											<span>{$ auction.bids/auction.bidPrice $}</span> Bids
 										</div>
 										<div id="btn-bid-less" class="btn btn-red btn-rem-bid" ng-click="remBids(auction)" ng-disabled="!auction.interface.remBidEnabled">-</div>
 										<div id="btn-bid-plus" class="btn btn-red btn-add-bid" ng-click="addBids(auction)" ng-disabled="!auction.interface.addBidEnabled">+</div>
@@ -437,14 +437,14 @@
 								<!-- TEMPLATE: waiting -->
 								<div id="auction-top" ng-switch-when="waiting">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
+										<img ng-src="{$ auction.itemImage $}">
 									</div>
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
-										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+										{$ auction.itemName $}
 									</div>
 									<div id="auction-retail-price">
 										Retail price:
-										 {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
+										 {$ auction.retailPrice | currency:'$' $}
 									</div>
 									<div id="auction-play">
 										<div class="syncing">
@@ -458,20 +458,20 @@
 								<!-- TEMPLATE: processing -->
 								<div id="auction-top" ng-switch-when="processing">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
+										<img ng-src="{$ auction.itemImage $}">
 									</div>
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
-										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+										{$ auction.itemName $}
 									</div>
 									<div class="auction-final-price" ib-transition-class="{'auction-final-price-change': auction.bidNumber}">
-										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %} </span>
+										Price: <span>{$ (auction.bidNumber / 100) | currency:'$' $} </span>
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
 											<p>
 												TIME LEFT
 											</p>
-											{% templatetag openvariable %}auction.timeleft{% templatetag closevariable %}
+											{$ auction.timeleft $}
 										</div>
 										<div id="btn-bid-play">
 											<a href="" ng-click="claim(auction)"> <div ng-class="{true:'bidEnabled', false:'bidDisabled'}[auction.interface.bidEnabled]"></div> </a>
@@ -480,7 +480,7 @@
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
+											{$ auction.bids/auction.bidPrice $}
 										</div>
 									</div>
 								</div>
@@ -488,13 +488,13 @@
 								<!-- TEMPLATE: pause -->
 								<div id="auction-top" ng-switch-when="pause">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
+										<img ng-src="{$ auction.itemImage $}">
 									</div>
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
-										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+										{$ auction.itemName $}
 									</div>
 									<div id="auction-retail-price">
-										Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
+										Retail price: {$ auction.retailPrice | currency:'$' $}
 									</div>
 									<div id="auction-play">
 										<div class="time-left">
@@ -510,7 +510,7 @@
 											<p>
 												BIDS LEFT
 											</p>
-											{% templatetag openvariable %}auction.bids/auction.bidPrice{% templatetag closevariable %}
+											{$ auction.bids/auction.bidPrice $}
 										</div>
 									</div>
 								</div>
@@ -518,19 +518,19 @@
 								<!-- TEMPLATE: waiting_payment -->
 								<div id="auction-top" ng-switch-when="waiting_payment">
 									<div class="img">
-										<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
+										<img ng-src="{$ auction.itemImage $}">
 									</div>
 									<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
-										{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+										{$ auction.itemName $}
 									</div>
 									<div class="auction-final-price">
-										Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
+										Price: <span>{$ (auction.bidNumber / 100) | currency:'$' $}</span>
 									</div>
 									<div id="auction-status-winner">
 										<p>
 											WINNER
 										</p>
-										<a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
+										<a href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$auction.winner.firstName $}</a>
 									</div>
 								</div>
 
@@ -562,11 +562,11 @@
 										<div class="chat-list" ib-autoscroll ng-model="auction.chatMessages">
 											<div class="line" ng-repeat="chatMessage in auction.chatMessages">
 												<div class="avatar">
-													<img ng-src="{% templatetag openvariable %}chatMessage.user.profileFotoLink{% templatetag closevariable %}" width="30" height="30">
+													<img ng-src="{$ chatMessage.user.profileFotoLink $}" width="30" height="30">
 												</div>
 												<div class="txt">
-													<p>{% templatetag openvariable %}chatMessage.user.displayName{% templatetag closevariable %}</p>
-													<span>{% templatetag openvariable %}chatMessage.text{% templatetag closevariable %}</span>
+													<p>{$ chatMessage.user.displayName $}</p>
+													<span>{$ chatMessage.text $}</span>
 												</div>
 											</div>
 										</div>
@@ -592,24 +592,24 @@
 
 					<div id="auction" ng-repeat="auction in auctionList[playFor].available">
 						<input type="hidden" class="auction-id"
-						value="{% templatetag openvariable %}auction.id{% templatetag closevariable %}"/>
+						value="{$ auction.id $}"/>
 
 						<div id="auction-top">
 							<div class="img">
-								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
+								<img ng-src="{$ auction.itemImage $}">
 							</div>
 							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
-								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+								{$ auction.itemName $}
 							</div>
 							<div id="auction-retail-price">
-								Retail price: {% templatetag openvariable %}auction.retailPrice | currency:'$'{% templatetag closevariable %}
-                                <p ng-show="auction.bidType == AUCTION_TYPE_TOKENS">Winner gets {% templatetag openvariable %}auction.retailPrice | number:0{% templatetag closevariable %} tokens</p>
+								Retail price: {$ auction.retailPrice | currency:'$' $}
+                                <p ng-show="auction.bidType == AUCTION_TYPE_TOKENS">Winner gets {$ auction.retailPrice | number:0 $} tokens</p>
 							</div>
 							<div id="auction-status">
 								<p>
 									RESERVE
 								</p>
-								{% templatetag openvariable %}auction.completion{% templatetag closevariable %}% / {% templatetag openvariable %}auction.bidders{% templatetag closevariable %} Bidders
+								{$ auction.completion$}% / {$auction.bidders $} Bidders
 							</div>
 							<div id="auction-bids">
 								<div ng-switch on="auction.status">
@@ -636,19 +636,19 @@
 					<div id="auction" ng-repeat="auction in auctionList[playFor].finished">
 						<div id="auction-top">
 							<div class="img">
-								<img ng-src="{% templatetag openvariable %}auction.itemImage{% templatetag closevariable %}">
+								<img ng-src="{$ auction.itemImage $}">
 							</div>
 							<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
-								{% templatetag openvariable %}auction.itemName{% templatetag closevariable %}
+								{$ auction.itemName $}
 							</div>
 							<div class="auction-final-price">
-								Price: <span>{% templatetag openvariable %}(auction.bidNumber / 100) | currency:'$'{% templatetag closevariable %}</span>
+								Price: <span>{$ (auction.bidNumber / 100) | currency:'$' $}</span>
 							</div>
 							<div id="auction-status-winner">
 								<p>
 									WINNER
 								</p>
-								<a href="http://facebook.com/{% templatetag openvariable %}auction.winner.facebookId{% templatetag closevariable %}" target="_blank">{% templatetag openvariable %}auction.winner.firstName{% templatetag closevariable %}</a>
+								<a href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$auction.winner.firstName $}</a>
 							</div>
 
 						</div>

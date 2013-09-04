@@ -1,5 +1,9 @@
 angular
     .module('app', ['app.directives', 'app.services'])
+    .config(function($interpolateProvider) {
+        $interpolateProvider.startSymbol('{$');
+        $interpolateProvider.endSymbol('$}');
+    })
     .run(function ($rootScope, $http) {
         // Declare basic variables.
         $rootScope.AUCTION_TYPE_CREDITS = 'credit';

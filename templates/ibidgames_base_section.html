@@ -47,10 +47,10 @@
 				</div>
 
                 <div id="user-info" ng-controller="userDetailsCtrl">
-					<div class="avatar"><img ng-src="{% templatetag openvariable %}user.profileFotoLink{% templatetag closevariable %}" width="50" height="50">
+					<div class="avatar"><img ng-src="{$ user.profileFotoLink $}" width="50" height="50">
 					</div>
 					<div class="name">
-						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}
+						{$ user.displayName $}
 					</div>
 					<div class="menu">
 						<ul>
@@ -66,10 +66,10 @@
 						</ul>
 					</div>
 					<div class="tokens">
-						TOKENS: {% templatetag openvariable %}user.tokens{% templatetag closevariable %}
+						TOKENS: {$ user.tokens $}
 					</div>
 					<div class="credits" style="">
-						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
+						CREDITS: {$ user.credits $}
 					</div>
 					<div class="btn-credits" style=""></div>
 				</div>
