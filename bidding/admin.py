@@ -1,6 +1,6 @@
-from django.db.models import Count
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.db.models import Count
 
 from bidding.forms import AuctionAdminForm
 from bidding.forms import ConfigKeyAdminForm
@@ -72,8 +72,6 @@ class AuctionAdmin(admin.ModelAdmin):
             'all': ('css/custom-theme/jquery-ui-1.8.6.custom.css',
                     'css/admin_fix.css',)
         }
-
-
 
 
 class PrePromotedAuctionAdmin(admin.ModelAdmin):
@@ -173,19 +171,6 @@ class ItemAdmin(admin.ModelAdmin):
               .annotate(lowest_price=Min('auction__won_price'))
               .annotate(last_won_date=Max('auction__won_date')))
         return qs
-
-
-# def bids_left(obj):
-#     return obj.get_bids_left()
-# bids_left.admin_order_field = 'bids_left'
-
-
-#def tokens_left(obj):
-#    return obj.get_tokens_left()
-
-
-#def bidsto_left(obj):
-#    return obj.bidsto_left
 
 
 def auctions_won(obj):

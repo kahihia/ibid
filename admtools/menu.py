@@ -4,7 +4,7 @@ from admin_tools.menu import items, Menu
 
 # to activate your custom menu add the following to your settings.py:
 #
-# ADMIN_TOOLS_MENU = 'yambidsite.menu.CustomMenu'
+# ADMIN_TOOLS_MENU = 'admtools.menu.CustomMenu'
 
 class CustomMenu(Menu):
     """

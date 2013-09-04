@@ -44,6 +44,7 @@ def get_redirect_uri(request):
 
     return url + request_ids
 
+
 def fb_test_user(request):
     token = FacebookAuthorization.get_app_access_token()
     test_user = FacebookAuthorization.create_test_user(token, 'email')
@@ -59,29 +60,6 @@ def fb_test_user(request):
     return HttpResponseRedirect(reverse('bidding_home'))
 
 
-def handle_invitations(request):
-    """ Deletes pending FB user requests, and redirects to the last one. """
-
-    request_ids = request.GET['request_ids'].split(',')
-
-    invitation = None
-    for request_id in request_ids:
-        try:
-            invitation = AuctionInvitation.objects.get(request_id=request_id)
-            invitation.delete_facebook_request(request.user)
-
-
-        except AuctionInvitation.DoesNotExist:
-            pass
-
-    if not invitation:
-        return HttpResponseRedirect(reverse('bidding_home'))
-
-    return HttpResponseRedirect(reverse('bidding_auction_detail', args=
-    (invitation.auction.item.slug,
-     invitation.auction.id)))
-
-
 def give_bids(request):
     member = request.user
 
@@ -92,6 +70,7 @@ def give_bids(request):
         member.tokens_left = 1000
 
     member.save()
+
 
 def fb_check_like(request):
     member = request.user
@@ -107,6 +86,7 @@ def fb_check_like(request):
     except Exception as e:
         raise
     return HttpResponse(json.dumps({'like':response,}))
+
 
 def fb_like(request):
     member = request.user
@@ -136,6 +116,7 @@ def fb_like(request):
             #if str(e).find('#200') != -1:
             raise
     return HttpResponse(request.method)
+
 
 def store_invitation(request):
     auction = get_auction_or_404(request)
@@ -171,91 +152,58 @@ def callback_get_items(request):
     return response
 
 
-def callback_status_update(request):
-    """ 
-    Constructs the response to settle the payment. If the signed_request is 
-    not validated, the payment is set as canceled.  
-    """
-
-    #checks that the request comes from Facebook
-    if FacebookAuthorization.parse_signed_data(request.POST['signed_request']):
-        details = json.loads(request.POST['order_details'])
-
-        #order_id = details['order_info']
-        #order = FBOrderInfo.objects.get(pk = order_id)
-        #package =
-        logger.debug(details)
-        logger.debug(request.POST)
-        order_id = int(details['items'][0]['item_id'])
-        order = FBOrderInfo.objects.get(pk=order_id)
-        package = order.package
-        logger.debug("Pacakge: %s" % package)
-        #package_id = int(details['items'][0]['item_id'])
-
-        member = Member.objects.get(facebook_id=details['buyer'])
-        member.bids_left += package.bids
-        member.save()
-        logger.debug("Member: %s" % member)
-
-        order.status = 'confirmed'
-        order.save()
-        logger.debug("Order: %s" % order)
-
-        return {'method': 'payments_status_update',
-                'content': {'status': 'settled',
-                            'order_id': request.POST['order_id']},
-        }
-    else:
-        # TODO: If the order is canceled we should mark it as cancelled internally too
-        return {'method': 'payments_status_update',
-                'content': {'status': 'canceled',
-                            'order_id': request.POST['order_id']},
-        }
-
 
 @csrf_exempt
 def credits_callback(request):
     """ View for handling interaction with Facebook credits API. """
-    fb_req=request.body
-    logger.debug("Started FB payment callback: %s" % fb_req)
+    if request.method == 'POST':
+        fb_req=request.body
+        logger.debug("Started FB payment callback: %s" % fb_req)
+        payment = json.loads(fb_req)
+        for elems in payment['entry']:
+            url='https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials' % (settings.FACEBOOK_APP_ID,settings.FACEBOOK_APP_SECRET)
+            token=urlopen(url).read()
+            url='https://graph.facebook.com/%s/?%s'%(elems['id'],token)
+            pay_info=urlopen(url).read()
+            payment_info =json.loads(pay_info)
+            fid=payment_info['user']['id']
+            status='completed'
+            for it in payment_info['actions']:
+                if it['status']!='completed':
+                    status ='not_completed'
+            if status=='completed':
+                member = Member.objects.get(facebook_id=fid)
+                for it in payment_info['items']:
+                    id_prod=it['product'].split('/bid_package/')
+                    package = BidPackage.objects.get(pk=id_prod[1])
+                    order = FBOrderInfo.objects.create(package=package,
+                                                   member=member,
+                                                   fb_payment_id=payment_info['id']
+                    )
+                    member.bids_left += package.bids
+                    member.save()
+                    client.update_credits(member)
+                    logger.debug("FB payment callback, order: %s" % order.id)
+                return HttpResponse()
+    return HttpResponse(str(request.GET['hub.challenge']))
     
-    payment = json.loads(fb_req)
-    for elems in payment['entry']:
-        url='https://graph.facebook.com/oauth/access_token?client_id=%s&client_secret=%s&grant_type=client_credentials' % (settings.FACEBOOK_APP_ID,settings.FACEBOOK_APP_SECRET)
-        token=urlopen(url).read()
-        url='https://graph.facebook.com/%s/?%s'%(elems['id'],token)
-        pay_info=urlopen(url).read()
-        payment_info =json.loads(pay_info)
-        fid=payment_info['user']['id']
-        status='completed'
-        for it in payment_info['actions']:
-            if it['status']!='completed':
-                status ='not_completed'
-        if status=='completed':
-            member = Member.objects.get(facebook_id=fid)
-            for it in payment_info['items']:
-                id_prod=it['product'].split('/bid_package/')
-                package = BidPackage.objects.get(pk=id_prod[1])
-                order = FBOrderInfo.objects.create(package=package,
-                                               member=member,
-                                               fb_payment_id=payment_info['id']
-                )
-                member.bids_left += package.bids
-                member.save()
-                client.update_credits(member)
-                logger.debug("FB payment callback, order: %s" % order.id)
-            return HttpResponse()
-    return HttpResponse('error')
-    
+
 def fb_item_info(request, item_id):
     item = Item.objects.get(pk=item_id)
-    return render_response(request, "fb_item_info.html", {'item':item, 'url_domain':settings.WEB_APP})
+    data = {
+        'item': item,
+        'url_domain': settings.SITE_NAME,
+        'fb_app_id': settings.FACEBOOK_APP_ID,
+    }
+    return render_response(request, "fb_item_info.html", data)
+
 
 def bid_package_info(request,package_id):
     package  = BidPackage.objects.get(pk= package_id)
     
     return render_response(request, "bid_package_info.html", {'package': package,'url_domain':settings.SITE_NAME})
-    
+
+
 @csrf_exempt
 def deauthorized_callback(request):
     """ View for handling the deauthorization callback.

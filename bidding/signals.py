@@ -2,21 +2,23 @@
 Signals and handlers for the aplication.
 '''
 
-from django.dispatch.dispatcher import receiver, Signal
-import uuid
-import threading
+from open_facebook.exceptions import PermissionException
+import json
 import logging
+import open_facebook
+import threading
+import uuid
+
+from django.conf import settings
+from django.core.mail import send_mass_mail
+from django.dispatch.dispatcher import receiver, Signal
+from django.template.loader import render_to_string
+
+import client
+
 
 logger = logging.getLogger('django')
 
-from django.template.loader import render_to_string
-from django.core.mail import send_mass_mail
-from open_facebook.exceptions import PermissionException
-from django.conf import settings
-import json
-
-import client
-import open_facebook
 
 auction_started_signal = Signal(providing_args=["auction"])
 auction_finished_signal = Signal(providing_args=["auction"])
@@ -135,6 +137,7 @@ def post_win_story(sender, **kwargs):
         except Exception as e:
             logger.exception(e)
 
+
 @receiver(auction_started_signal)
 def notify_bidders(sender, **kwargs):
     th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
@@ -151,14 +154,11 @@ def notify_bidders_thread(**kwargs):
         destination = '{facebook_id}/notifications'.format(facebook_id=member.facebook_id)
         response = of.set(destination, **args)
 
+
 def send_in_thread(signal, **kwargs):
     """ 
     Sends the given signal in a different thread, so it doesn't delay further
     actions.
     """
-    ## to disable thread uncomment this
-    #signal.send(**kwargs)
-
     th = threading.Thread(target=signal.send, kwargs=kwargs)
     th.start()
-
