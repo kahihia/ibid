@@ -44,15 +44,13 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
     
-    $scope.initialize = function (mixpanel_key) {
+    $scope.initialize = function (mixpanel_token) {
         //initialize analythics.js with mixpanel
         analytics.initialize({
-            // 'Google Analytics' : 'UA-XXXXXX-XX',
             'Mixpanel' : {
-             token  : mixpanel_key,
-             people : true
-             },
-           //  'KISSmetrics'      : 'XXXXXXXXXX'
+                token  : mixpanel_token,
+                people : true
+            },
         });
         // API request get user details
         $http.post('/api/getUserDetails/').success(function (data) {
