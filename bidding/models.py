@@ -606,10 +606,10 @@ class ConfigKey(models.Model):
     key = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
     description = models.TextField(null=True, blank=True)
-    value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='int')
+    value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='text')
 
     @staticmethod
-    def get( key,default=None):
+    def get( key,default=None,default_type=None, default_description=None):
         result = ConfigKey.objects.filter(key=key).all()
         if len(result):
             result = result[0]
@@ -629,7 +629,19 @@ class ConfigKey(models.Model):
             except:
                 return default
         else:
-            return default
+            new_config_key = ConfigKey.objects.create(key=key, value=default, description=default_description)
+            if default_type:
+                default_value_type = default_type
+            else:
+                default_value_type = type(default)
+            if default_value_type is int or default_value_type is long:
+                new_config_key.value_type = 'int'
+            elif default_value_type is bool:
+                new_config_key.value_type = 'boolean'
+            elif default_value_type is str:
+                new_config_key.value_type = 'text'
+            new_config_key.save()
+            return new_config_key.value
 
     def __unicode__(self):
         return self.key
