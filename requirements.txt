@@ -4,7 +4,7 @@ Django==1.5.1
 django-admin-tools==0.5.1
 django-braces==1.0.0
 django-extensions==1.1.1
-django-facebook==5.2.6
+-e git+https://github.com/tschellenbach/Django-facebook.git@df70e48f51b5881141cf9e4d776dadd5d1e837d9#egg=django-facebook
 django-paypal==0.1.2
 django-registration==0.8
 django-utils==0.0.2

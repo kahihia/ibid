@@ -1,7 +1,6 @@
 *.pyc
 .idea
 .swp
-lib
 src
 settings.py
 

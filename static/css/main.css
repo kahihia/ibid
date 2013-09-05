@@ -45,7 +45,6 @@ body {
 	font-family: 'Open Sans', sans-serif;
 	-webkit-font-smoothing: antialiased;
 	background-image: url("../images/bkg-body2.jpg");
-	padding-bottom: 30px;
 	-webkit-touch-callout: none;
 	-webkit-user-select: none;
 	-khtml-user-select: none;
@@ -269,35 +268,32 @@ body {
 	z-index: 10;
 	cursor: pointer;
 }
-#menu-wrapper #menu .btn-tokens:hover {
-	background-position: 0 0px;
-	opacity: 1;
-	cursor: pointer;
-}
-
 #menu-wrapper #menu .btn-items {
-	width: 177px;
-	height: 69px;
-	position: absolute;
-	margin: 0 0 0 160px;
-	background-image: url("../images/btn-playItems.png");
-	display: block;
-	background-repeat: no-repeat;
-	background-position: 0 14px;
-	opacity: 1;
-	-o-transition: .2s;
-	-ms-transition: .2s;
-	-moz-transition: .2s;
-	-webkit-transition: .2s;
-	transition: .2s;
-	cursor: pointer;
+    width: 177px;
+    height: 69px;
+    position: absolute;
+    margin: 0 0 0 160px;
+    background-image: url("../images/btn-playItems.png");
+    display: block;
+    background-repeat: no-repeat;
+    background-position: 0 14px;
+    opacity: 1;
+    -o-transition: .2s;
+    -ms-transition: .2s;
+    -moz-transition: .2s;
+    -webkit-transition: .2s;
+    transition: .2s;
+    cursor: pointer;
 }
-
-#menu-wrapper #menu .btn-items:hover {
+#menu-wrapper #menu .btn-tokens:hover,
+#menu-wrapper #menu .btn-tokens.active,
+#menu-wrapper #menu .btn-items:hover,
+#menu-wrapper #menu .btn-items.active {
 	background-position: 0 0px;
 	opacity: 1;
 	cursor: pointer;
 }
+
 #menu-wrapper #menu .links {
 	float: right;
 	margin: 30px 0 0 65px;
@@ -332,6 +328,7 @@ body {
 #content-wrapper {
 	padding-bottom: 60px;
 	background-image: url("../images/bkg-content.jpg");
+    margin-bottom: 75px;
 }
 #content-wrapper .color-frame-none {
 	width: 100%;
@@ -480,7 +477,7 @@ body {
 	text-align: center;
 
 }
-#auction-retail-final-price {
+.auction-final-price {
 	width: 233px;
 	float: left;
 	margin: 55px 0 0 143px;
@@ -498,7 +495,7 @@ body {
 	transition: .1s;
 
 }
-#auction-retail-final-price span {
+.auction-final-price span {
 	font-family: Digital;
 	font-weight: 600;
 	font-size: 22px;
@@ -510,21 +507,138 @@ body {
 	-webkit-transition: .1s;
 	transition: .1s;
 }
-
-#auction-retail-final-price:hover {
-	-moz-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-		-webkit-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-        -o-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-        -ms-transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-        transform: scale(1.7) rotate(0deg) translateX(0px) translateY(0px) skewX(0deg) skewY(0deg);
-	-o-transition: .1s;
-	-ms-transition: .1s;
-	-moz-transition: .1s;
-	-webkit-transition: .1s;
-	transition: .1s;
-	opacity: 0.5;
-
+/* Animation selector */
+.auction-final-price-change {
+    -webkit-animation-duration: .2s;
+    -webkit-animation-iteration-count: 1;
+    -webkit-animation-timing-function: ease;
+    -webkit-animation-fill-mode: both;
+    -moz-animation-duration: .2s;
+    -moz-animation-iteration-count: 1;
+    -moz-animation-timing-function: ease;
+    -moz-animation-fill-mode: both;
+    -o-animation-duration: .2s;
+    -o-animation-iteration-count: 1;
+    -o-animation-timing-function: ease;
+    -o-animation-fill-mode: both;
+    animation-duration: .2s;
+    animation-iteration-count: 1;
+    animation-timing-function: ease;
+    animation-fill-mode: both;
 }
+/* Animation keyframes */
+@-webkit-keyframes auction-final-price-change {
+    0% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+    50% {
+        -webkit-transform: scale(1.7);
+        -moz-transform: scale(1.7);
+        -ms-transform: scale(1.7);
+        -o-transform: scale(1.7);
+        transform: scale(1.7);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+}
+@-moz-keyframes auction-final-price-change {
+    0% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+    50% {
+        -webkit-transform: scale(1.7);
+        -moz-transform: scale(1.7);
+        -ms-transform: scale(1.7);
+        -o-transform: scale(1.7);
+        transform: scale(1.7);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+}
+@-o-keyframes auction-final-price-change {
+    0% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+    50% {
+        -webkit-transform: scale(1.7);
+        -moz-transform: scale(1.7);
+        -ms-transform: scale(1.7);
+        -o-transform: scale(1.7);
+        transform: scale(1.7);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+}
+@keyframes auction-final-price-change {
+    0% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+    50% {
+        -webkit-transform: scale(1.7);
+        -moz-transform: scale(1.7);
+        -ms-transform: scale(1.7);
+        -o-transform: scale(1.7);
+        transform: scale(1.7);
+    }
+    100% {
+        -webkit-transform: scale(1);
+        -moz-transform: scale(1);
+        -ms-transform: scale(1);
+        -o-transform: scale(1);
+        transform: scale(1);
+    }
+}
+/* Add animation to selector */
+.auction-final-price-change {
+    -webkit-animation-name: auction-final-price-change;
+    -moz-animation-name: auction-final-price-change;
+    -o-animation-name: auction-final-price-change;
+    animation-name: auction-final-price-change;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 #auction-retail-price p {
 	font-size:10px;
 }
@@ -1454,7 +1568,7 @@ opacity:0.8;
 
 }
 
-	
+
 
 
 #btn-invite-auction.disabled {

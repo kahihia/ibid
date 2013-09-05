@@ -5,7 +5,8 @@ import time
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
+
 
 from bidding import client
 from bidding.models import Auction
@@ -18,6 +19,9 @@ from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
 
+import logging
+
+logger = logging.getLogger('django')
 
 def api(request, method):
     """api calls go through this method"""
@@ -37,7 +41,11 @@ def getUserDetails(request):
                 u'profileFotoLink': member.display_picture(),
                 u'profileLink': member.facebook_profile_url,
                 u'credits': member.bids_left,
-                u'tokens': member.tokens_left
+                u'tokens': member.tokens_left,
+                u'username': member.username,
+                u'email': member.email,
+                u'first_name': member.first_name,
+                u'last_name': member.last_name
             },
             u'app':{
                 u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE
@@ -45,7 +53,6 @@ def getUserDetails(request):
         }
 
     return HttpResponse(json.dumps(data), content_type="application/json")
-
 
 def getAuctionsInitialization(request):
     member = request.user
@@ -155,7 +162,6 @@ def getAuctionsInitialization(request):
         tmp['auctioneerMessages'] = []
         tmp['chatMessages'] = []
 
-        #tmp['won_price'] = str(auct.won_price)
         auctions_bid_finished.append(tmp)
 
     for auct in tokens_auctions['my_auctions']:
@@ -256,8 +262,6 @@ def getAuctionsInitialization(request):
 
 def startBidding(request):
     """ The users commits bids before the auction starts. """
-
-    #auction_id = int(request.GET.get('id', int(request.POST.get('id', 0))))
 
     requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])

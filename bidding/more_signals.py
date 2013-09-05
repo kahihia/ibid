@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
+import logging
 
-from django.dispatch.dispatcher import Signal
 from django.db.models.signals import post_save
-
-import client
-
-from bidding.models import Auction, Invitation, ConfigKey
-import message.value_objects as vo
-import message.value_objects_factory as vo_factory
+from django.dispatch.dispatcher import Signal
+from django_facebook import signals
 from django_facebook.utils import get_user_model
 
-from django_facebook import signals
-import logging
+from bidding.models import Auction
+from bidding.models import ConfigKey
+from bidding.models import Invitation
+import client
+import message.value_objects as vo
+import message.value_objects_factory as vo_factory
+
 
 logger = logging.getLogger('django')
 
@@ -34,9 +35,6 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
     member.save()
     #was this user invited?
     userList = Invitation.objects.filter(invited_facebook_id=facebook_data['facebook_id'])
-
-    #rint eventFriendInvitationAccepted
-
     if len(userList):
         invited = userList[0]
         prize = ConfigKey.get('INVITE_FRIENDS_TOKEN_PRIZE', 1000)
