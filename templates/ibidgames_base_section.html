@@ -1,21 +1,31 @@
 {% load staticfiles %}
 <!DOCTYPE html>
 
-<html ng-app >
+<html ng-app="app" >
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 		<title>iBidGames</title>
 		<link rel="stylesheet" href="{% static 'css/main.css' %}">
-		<link rel="stylesheet" href="{% static 'css/popup.css' %}">
+		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
+		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
+		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
 		<!---->
 		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,500,600,700,800' rel='stylesheet' type='text/css'>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-        <script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
+        <script src="{% static 'js/lodash.min.js' %}"></script>
+	<script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
         <script src="{% static 'js/lib/jquery.center.js' %}"></script>
         <script src="{% static 'js/lib/TweenMax.min.js' %}"></script>
         <script src="{% static 'js/base_header.js' %}"></script>
-
+	<script src="{% static 'js/auctions.js' %}" ></script>
+	<script src="{% static 'js/services.js' %}"></script>
+	<script src="{% static 'js/directives.js' %}"></script>
+	<script src="{% static 'js/messages.js' %}" ></script>
+	<script src="{% static 'js/global-chat.js' %}"></script>
+	<script src="{% static "js/app.js" %}" ></script>
+	<!--include analythics.js -->
+	<script src="{% static 'js/analytics.min.js' %}"></script>
 	</head>
 
 	<body>
@@ -30,6 +40,11 @@
 					js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=148728218610989";
 					fjs.parentNode.insertBefore(js, fjs);
 				}(document, 'script', 'facebook-jssdk'));
+
+				angular.element(document).ready(function() {
+				  angular.bootstrap(document, ["app"]);
+				  hideOverlay();
+				});
 		</script>
 		<div id="main-wrapper">
 			<div  id="top-wrapper">
@@ -46,11 +61,11 @@
 					</div>
 				</div>
 
-                <div id="user-info" ng-controller="userDetailsCtrl">
-					<div class="avatar"><img ng-src="{% templatetag openvariable %}user.profileFotoLink{% templatetag closevariable %}" width="50" height="50">
+                <div id="user-info" ng-controller="userDetailsCtrl" ng-init="initialize('{{MIXPANEL_TOKEN}}')">
+					<div class="avatar"><img ng-src="{$ user.profileFotoLink $}" width="50" height="50">
 					</div>
 					<div class="name">
-						{% templatetag openvariable %}user.displayName{% templatetag closevariable %}
+						{$ user.displayName $}
 					</div>
 					<div class="menu">
 						<ul>
@@ -66,10 +81,10 @@
 						</ul>
 					</div>
 					<div class="tokens">
-						TOKENS: {% templatetag openvariable %}user.tokens{% templatetag closevariable %}
+						TOKENS: {$ user.tokens $}
 					</div>
 					<div class="credits" style="">
-						CREDITS: {% templatetag openvariable %}user.credits{% templatetag closevariable %}
+						CREDITS: {$ user.credits $}
 					</div>
 					<div class="btn-credits" style=""></div>
 				</div>
@@ -151,7 +166,6 @@
     </div>
 </div>
 
-
 <div id="overlay" style="position:absolute;
 		top:0;
 		left:0;
@@ -162,6 +176,8 @@
 		z-index:1000;
 		display:none;"></div>
 
+
+		
 	</body>
 
 </html>

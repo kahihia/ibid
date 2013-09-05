@@ -3,19 +3,10 @@ import os.path
 from django.conf import settings
 from django.conf.urls import patterns, url, include
 from django.contrib import admin
-from django.contrib.sitemaps import FlatPageSitemap
 from django.views.generic.base import RedirectView
-
-from bidding.sitemaps import AuctionSitemap
 
 
 admin.autodiscover()
-
-sitemaps = {
-    'auctions': AuctionSitemap,
-    'flatpages':FlatPageSitemap
-}
-
 
 urlpatterns = patterns('',
     (r'', include('bidding.urls')),
@@ -26,7 +17,6 @@ urlpatterns = patterns('',
     (r'^facebook/', include('django_facebook.urls')),
     (r'^accounts/', include('django_facebook.auth_urls')),
     url(r'^admin_tools/', include('admin_tools.urls')),
-    url(r'^sitemap.xml$', 'django.contrib.sitemaps.views.sitemap', {'sitemaps':sitemaps}, name="sitemap"),
 )
 
 urlpatterns += patterns('',

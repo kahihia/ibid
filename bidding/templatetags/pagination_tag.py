@@ -1,13 +1,13 @@
 import math
 
 from django import template
-from django.template import resolve_variable
-from django.template import Library, Node
 from django.db import connection
+from django.template import Library, Node
+from django.template import resolve_variable
 
-#from arkayne.arkayne.models import Page
 
 register = template.Library()
+
 
 class Pages:
   def __init__(self, view, page, pages, segment):
@@ -59,6 +59,7 @@ class Pages:
     if self.page < self.pages:
       self.next = self.page + 1
 
+
 class PaginationNode(Node):
   def __init__(self, view, objects_var, page_var, step, segment, variable):
     self.view = view
@@ -88,6 +89,7 @@ class PaginationNode(Node):
 
     return ''
 
+
 def paginate(parser, token):
   tokens = token.contents.split()
   if len(tokens) != 7:
@@ -95,4 +97,3 @@ def paginate(parser, token):
   return PaginationNode(tokens[1], tokens[2], tokens[3], tokens[4], tokens[5], tokens[6])
 
 register.tag('paginate', paginate)
-

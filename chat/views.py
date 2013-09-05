@@ -1,12 +1,15 @@
-from django.http import Http404, HttpResponse
-from chat.models import Message, ChatUser
 import json
-from django.shortcuts import get_object_or_404
+
 from django.contrib.auth.decorators import login_required
-from bidding.models import Auction
+from django.http import Http404, HttpResponse
+from django.shortcuts import get_object_or_404
 from django.utils.html import escape
 
 from bidding import client
+from bidding.models import Auction
+from chat.models import Message, ChatUser
+
+
 
 def get_chat_user(request):
     if not request.user.is_authenticated():
@@ -15,9 +18,11 @@ def get_chat_user(request):
     chat_user, _ = ChatUser.objects.get_or_create(user=request.user)
     return chat_user
 
+
 def get_auction(request):
     auction_id = request.POST.get('auction_id')
     return get_object_or_404(Auction, id=int(auction_id))
+
 
 def send_message(request):
     if request.POST:
@@ -40,7 +45,6 @@ def send_message(request):
 def do_send_message(message):
     """ Creates a message for the given action and user and sends it. """
     
-    #result = {'chat_message': escape(message.text),
     # We mark the message escape when getting it from user
     text = message.format_message()
     result = {'chat_message': text,
@@ -50,6 +54,7 @@ def do_send_message(message):
               'time':message.get_time(), 
               'avatar':message.user.picture()}
     send_stomp_message(json.dumps(['chat', result]), '/topic/auction/' )
+
 
 @login_required
 def user_is_online(request):

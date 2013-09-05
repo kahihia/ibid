@@ -1,10 +1,13 @@
 '''
 Functions to handle auctioneer messages on auction chat.
 '''
+
 from django.utils.safestring import mark_safe
+
+from bidding import client
 from chat.views import do_send_message
 from chat.models import AuctioneerPhrase, Message
-from bidding import client
+
 
 def create_auctioneer_message(auction, message):
     message = Message.objects.create(text=message, auction=auction)
@@ -26,10 +29,12 @@ def send_auctioneer_message(auction, message):
     db_msg = Message.objects.create(text=message, auction=auction)
     client.do_send_auctioneer_message(auction, db_msg)
 
+
 def member_joined_message(auction, member):
     text = AuctioneerPhrase.objects.get(key='joined').text
     message = text.format(user=member.display_name(), facebook_id=member.facebook_id)
     return create_auctioneer_message(auction, mark_safe(message))
+
 
 def member_claim_message(auction, member):
     if auction.bid_type == 'bid':
@@ -39,14 +44,17 @@ def member_claim_message(auction, member):
     message = text.format(user=member.display_name(), price=auction.price(), facebook_id=member.facebook_id)
     return create_auctioneer_message(auction, mark_safe(message))
 
+
 def member_left_message(auction, member):
     text = AuctioneerPhrase.objects.get(key='left').text
     message = text.format(user=member.display_name(), facebook_id=member.facebook_id)
     return create_auctioneer_message(auction, mark_safe(message))
 
+
 def precap_finished_message(auction):
     text = AuctioneerPhrase.objects.get(key='precap').text
     send_auctioneer_message(auction, text)
+
 
 def threshold_message(auction, number):
     if number == 1:
@@ -62,6 +70,7 @@ def threshold_message(auction, number):
     text = AuctioneerPhrase.objects.get(key='threshold').text
     message = text.format(perc=perc, secs=secs)
     send_auctioneer_message(auction, message)
+
 
 def auction_finished_message(auction):
     if auction.winner:
@@ -114,5 +123,3 @@ def initialize_phrases():
         phrase.description = "Displayed when the auction finishes.\
                             {user} is replaced by the username."
         phrase.save()
-
-#initialize_phrases()

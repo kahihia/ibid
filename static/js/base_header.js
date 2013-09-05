@@ -26,6 +26,11 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $rootScope.user.profileLink = '';
     $rootScope.user.tokens = 0;
     $rootScope.user.credits = 0;
+    $rootScope.user.username = '';
+    $rootScope.user.first_name = '';
+    $rootScope.user.last_name = '';
+    $rootScope.user.facebook_id = '';
+    $rootScope.user.email = '';
 
     $rootScope.convertTokens = {}
     //TODO: get this value on "app initialization" event
@@ -38,15 +43,29 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
-
-    //API request get user details
-    $http
-        .post('/api/getUserDetails/')
-        .success(function (data) {
+    
+    $scope.initialize = function (mixpanel_token) {
+        //initialize analythics.js with mixpanel
+        analytics.initialize({
+            'Mixpanel' : {
+                token  : mixpanel_token,
+                people : true
+            },
+        });
+        // API request get user details
+        $http.post('/api/getUserDetails/').success(function (data) {
+            // identify users
+            analytics.identify(data.user.username, {
+                email: data.user.email,
+                name : data.user.first_name,
+                last_name : data.user.last_name,
+                fb_id : data.user.facebookId
+            });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
         });
-
+    };
+    
     $rootScope.$on('reloadUserDataEvent', function () {
         $http
             .post('/api/getUserDetails/')
@@ -176,11 +195,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     $scope.buy_bids = function(member,package_id,site_name) {
         // calling the API ...
+        
+        analytics.track('buy bids');
         var obj = {
             method: 'pay',
             action: 'purchaseitem',
             product: site_name+'bid_package/'+package_id,
         };
+        
         $scope.subscribeToPaymentChannel(member)
         FB.ui(obj, getCredits_callback);
     };
