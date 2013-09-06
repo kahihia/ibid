@@ -11,7 +11,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Adding field 'FBOrderInfo.date'
         db.add_column(u'bidding_fborderinfo', 'date',
-                      self.gf('django.db.models.fields.DateTimeField')(autoauto_now_add=True, blank=True),
+                      self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True),
                       keep_default=False)
         
     def backwards(self, orm):
