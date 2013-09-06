@@ -582,7 +582,8 @@ class FBOrderInfo(AuditedModel):
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
     fb_payment_id = models.BigIntegerField(blank=True, null=True) #this field should be unique
-
+    date = models.DateTimeField(auto_now_add=True)
+    
     def __unicode__(self):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
 
