@@ -72,6 +72,10 @@
 				FB.Canvas.setAutoGrow();
 				FB.Canvas.setDoneLoading(
 					function (result) {
+						// welcome popup
+						{% if display_popup %}
+							initTutorial();
+						{% endif %}
 						angular.element($('.global-chat')).scope().chatPosition();
 						angular.element($('#base_header')).append($('#uvTab'));
 						angular.element($('#uvTab')).scope().uvTabPosition();
@@ -709,16 +713,6 @@
 		</div>
 		
         <div id="notifications" class="notifications-container"></div>
-
-		<!--welcome popup-->
-		{% if display_popup %}
-		<script type="text/javascript">
-			jQuery(document).ready(function() {
-				initTutorial();
-			})
-		</script>
-		{% endif %}
-
 	</body>
 
 </html>
