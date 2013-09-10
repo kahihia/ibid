@@ -71,7 +71,8 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
             bidEnabled: true,
             addBidEnabled: $scope.isUserAbleToAddBidToAuction(auction),
             remBidEnabled: true,
-            joinAuctionEnabled: true
+            joinAuctionEnabled: true,
+            can_bid: true
         };
         // Initialize default values.
         if (_.isUndefined(auction.chatMessage)) {
@@ -132,7 +133,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);
                             break;
                         case 'someoneClaimed':
-                            if (message.data.lastClaimer !== $rootScope.user.displayName) {
+                            if (message.data.lastClaimer !== $rootScope.user.displayName && auction.interface.can_bid) {
                                 auction.interface.bidEnabled = true;
                             }
                             auction.timeleft = message.data.timeleft;
@@ -344,6 +345,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                     console.log('Bid on auction %s succeeded', auction.id);
                     auction.bids -= auction.bidPrice;
                     $rootScope.$emit('reloadUserDataEvent');
+                    auction.interface.can_bid = ((response.placed_amount - response.used_amount) > 0);
                 });
         }
     };
