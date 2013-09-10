@@ -32,10 +32,16 @@ def finish_auction(auction, bid_number):
     if auction.status == 'processing' and bid_number == auction.getBidNumber(): 
         auction.finish()
         if auction.always_alive:
-            auction_copy = Auction.objects.create(item=auction.item, bid_type=auction.bid_type,
-                                                  always_alive=auction.always_alive,
+            auction_copy = Auction.objects.create(item=auction.item,
+                                                  bid_type=auction.bid_type,
                                                   precap_bids=auction.precap_bids,
-                                                  minimum_precap=auction.minimum_precap)
+                                                  minimum_precap=auction.minimum_precap,
+                                                  is_active=auction.is_active,
+                                                  always_alive=auction.always_alive,
+                                                  bidding_time=auction.saved_time,
+                                                  threshold1=auction.threshold1,
+                                                  threshold2=auction.threshold2,
+                                                  threshold3=auction.threshold3)
             auction_copy.save()
     else:
         auction.save()
@@ -320,7 +326,7 @@ class PausedAuctinoDelegate(StateAuctionDelegate):
         """ Resumes the auction. """
 
         self.auction.status = 'processing'
-        self.auction.saved_time = self.auction.bidding_time
+        #self.auction.saved_time = self.auction.bidding_time
         self.auction.save()
 
         #fixme ugly
