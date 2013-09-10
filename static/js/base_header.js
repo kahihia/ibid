@@ -337,7 +337,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }, {scope: 'publish_actions'});
     };
 
-
+    $scope.uvTabPosition=function () {
+        FB.Canvas.getPageInfo(function(pageInfo){
+            var num1 = parseInt(pageInfo.scrollTop);
+            var num2 = parseInt(pageInfo.clientHeight);
+            $('#uvTab').animate({top: ((num2/2)+num1) }, 0);
+            setTimeout($scope.uvTabPosition, 100);
+        });
+    };
 
 };
 
