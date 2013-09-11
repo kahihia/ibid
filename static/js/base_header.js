@@ -341,7 +341,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         FB.Canvas.getPageInfo(function(pageInfo){
             var num1 = parseInt(pageInfo.scrollTop);
             var num2 = parseInt(pageInfo.clientHeight);
-            $('#uvTab').animate({top: ((num2/2)+num1) }, 0);
+            angular.element($('#uvTab')).animate({top: ((num2/2)+num1) }, 0);
+            angular.element($('#uvTab')).css({ zIndex: "1000" });
             setTimeout($scope.uvTabPosition, 100);
         });
     };
