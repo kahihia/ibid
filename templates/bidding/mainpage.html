@@ -74,6 +74,7 @@
 					function (result) {
 						// welcome popup
 						{% if display_popup %}
+							angular.element($('#uvTab')).css({ zIndex: "1000" });
 							initTutorial();
 						{% endif %}
 						angular.element($('.global-chat')).scope().chatPosition();
