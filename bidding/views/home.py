@@ -41,6 +41,8 @@ def canvashome(request):
             'authorization_url': fb_url,
             'app_url': settings.FACEBOOK_APP_URL,
             'site_url': settings.SITE_NAME,
+            'share_title': ConfigKey.get('SHARE_APP_TITLE', 'iBidGames'),
+            'share_description': ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
         }
         return render_response(request, 'fb_redirect.html', data)
         
