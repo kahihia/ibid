@@ -18,6 +18,7 @@ from bidding.models import Auction
 from bidding.models import ConvertHistory
 from bidding.models import Member
 from bidding.models import BidPackage
+from bidding.models import ConfigKey
 
 
 logger = logging.getLogger('django')
@@ -76,6 +77,11 @@ def canvashome(request):
                                 'packages': BidPackage.objects.all(),
                                 'inCanvas':False})
     return response
+
+def canvasapp(request):
+    print "settings.FACEBOOK_APP_URL"
+    print settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    return HttpResponseRedirect(str(settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)))
 
 
 def standalone(request):

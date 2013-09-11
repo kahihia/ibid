@@ -8,6 +8,7 @@ from bidding.views.home import CurrencyHistory
 urlpatterns = patterns('bidding.views.home',
                        url(r'^$', 'canvashome', name='bidding_anonym_home'),
                        url(r'^canvashome/$', 'canvashome', name='canvashome'),
+                       url(r'^canvasapp/$', 'canvasapp', name='canvasapp'),
                        url(r'^home/$', 'canvashome', name='bidding_home'),
                        url(r'^fb/$', 'canvashome', name='fb_auth'),
                        url(r'^examples/404/$', 'example_404', name='example_404'),
