@@ -59,7 +59,6 @@
 		<script src="{% static "js/app.js" %}" ></script>
     </head>
 	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
-
 		<div id="fb-root"></div>
 		<script>
 			window.fbAsyncInit = function() {
@@ -71,8 +70,13 @@
 					xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
-
-				angular.element($('.global-chat')).scope().chatPosition();
+				FB.Canvas.setDoneLoading(
+					function (result) {
+						angular.element($('.global-chat')).scope().chatPosition();
+						angular.element($('#base_header')).append($('#uvTab'));
+						angular.element($('#uvTab')).scope().uvTabPosition();
+					}
+				);
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
 					if (d.getElementById(id)) {
@@ -703,7 +707,7 @@
 				</div>
 			</div>
 		</div>
-
+		
         <div id="notifications" class="notifications-container"></div>
 
 		<!--welcome popup-->
