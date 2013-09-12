@@ -3,8 +3,8 @@
 <html ng-app="app">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta property="og:type" content="Game" /> 
-		<meta property="og:url" content="{{ app_url }}" /> 
+		<meta property="og:type" content="Game" />
+		<meta property="og:url" content="{{ app_url }}" />
 		<meta property="og:title" content="{{ share_title }}" />
 		<meta property="og:site_name" content="{{ site_url }}" />
 		<meta property="og:description" content="{{ share_description }}" />
@@ -36,6 +36,8 @@
 		<script src="{% static 'js/auctions.js' %}" ></script>
 		<script src="{% static 'js/services.js' %}"></script>
 		<script src="{% static 'js/directives.js' %}"></script>
+        <script src="{% static 'js/providers.js' %}"></script>
+        <script src="{% static 'js/config.js' %}"></script>
 		<script src="{% static 'js/messages.js' %}" ></script>
 		<script src="{% static 'js/global-chat.js' %}"></script>
 		<!--include analythics.js -->
@@ -718,7 +720,7 @@
 				</div>
 			</div>
 		</div>
-		
+
         <div id="notifications" class="notifications-container"></div>
 	</body>
 
