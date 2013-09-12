@@ -34,7 +34,7 @@ def canvashome(request):
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
 
-    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames'),
+    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
 
     if not request.user.is_authenticated() :
@@ -139,7 +139,7 @@ def standalone(request):
     if not settings.DEBUG:
         js_error_tracker = js_error_tracker[0]
 
-    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames'),
+    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
 
     response = render_response(request, 'bidding/mainpage.html',
