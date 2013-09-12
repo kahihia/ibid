@@ -20,6 +20,11 @@
 function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     //initialization
+    $rootScope.app = {};
+    $rootScope.app.tokenValueInCredits = 0;
+    $rootScope.app.applink = 'http://3jfi.localtunnel.com/';
+    $rootScope.app.apppicture = "http://3jfi.localtunnel.com/static/images/200x200-Fblogo.png";
+
     $rootScope.user = {};
     $rootScope.user.displayName = '';
     $rootScope.user.profileFotoLink = '';
@@ -168,9 +173,13 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         //this is not longer used, because works weird.
         FB.ui({
             method: 'feed',
-            link: 'https://apps.facebook.com/ibidgames/'
+            link: $rootScope.app.applink,
+            picture: $rootScope.app.apppicture
+
             //link: 'http://localhost:8000/canvasapp/'
         });
+        console.log("------------xx-------------");
+        console.log($rootScope.app.apppicture);
     };
 
     $scope.sendRequestViaMultiFriendSelector = function() {

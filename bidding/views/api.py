@@ -48,7 +48,9 @@ def getUserDetails(request):
                 u'last_name': member.last_name
             },
             u'app':{
-                u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE
+                u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE,
+                u'applink': settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
+                u'apppicture': settings.SITE_NAME + "static/images/400x400-Fblogo.png"
             }
         }
 
@@ -561,6 +563,7 @@ API = {
     'claim': claim,
     'sendMessage': sendMessage,
     'getUserDetails': getUserDetails,
+    'getConfig': getConfig,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convertTokens': convertTokens,
