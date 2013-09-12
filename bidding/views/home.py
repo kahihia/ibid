@@ -43,7 +43,7 @@ def canvashome(request):
         request.META['HTTP_REFERER'] = fb_url
         data = {
             'authorization_url': fb_url,
-            'app_url': settings.FACEBOOK_APP_URL,
+            'app_url': fb_url,
             'site_url': settings.SITE_NAME,
             'share_title': share_title,
             'share_description': share_description,
@@ -79,7 +79,7 @@ def canvashome(request):
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
-                                'app_url': settings.FACEBOOK_APP_URL,
+                                'app_url': fb_url,
                                 'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
                                 'share_description': share_description,
@@ -141,6 +141,7 @@ def standalone(request):
     if not settings.DEBUG:
         js_error_tracker = js_error_tracker[0]
 
+    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
     share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
 
@@ -154,7 +155,7 @@ def standalone(request):
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
-                                'app_url': settings.FACEBOOK_APP_URL,
+                                'app_url': fb_url,
                                 'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
                                 'share_description': share_description,
