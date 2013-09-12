@@ -79,6 +79,8 @@ def canvashome(request):
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
+                                'app_url': settings.FACEBOOK_APP_URL,
+                                'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
                                 'share_description': share_description,
                                 'inCanvas':False})
@@ -152,6 +154,8 @@ def standalone(request):
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
+                                'app_url': settings.FACEBOOK_APP_URL,
+                                'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
                                 'share_description': share_description,
                                 'inCanvas':False})
