@@ -34,6 +34,9 @@ def canvashome(request):
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
 
+    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames'),
+    share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
+
     if not request.user.is_authenticated() :
         #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
         fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
@@ -42,8 +45,8 @@ def canvashome(request):
             'authorization_url': fb_url,
             'app_url': settings.FACEBOOK_APP_URL,
             'site_url': settings.SITE_NAME,
-            'share_title': ConfigKey.get('SHARE_APP_TITLE', 'iBidGames'),
-            'share_description': ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
+            'share_title': share_title,
+            'share_description': share_description,
         }
         return render_response(request, 'fb_redirect.html', data)
         
@@ -76,6 +79,8 @@ def canvashome(request):
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
+                                'share_title': share_title,
+                                'share_description': share_description,
                                 'inCanvas':False})
     return response
 
@@ -134,6 +139,9 @@ def standalone(request):
     if not settings.DEBUG:
         js_error_tracker = js_error_tracker[0]
 
+    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames'),
+    share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
+
     response = render_response(request, 'bidding/mainpage.html',
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
@@ -144,6 +152,8 @@ def standalone(request):
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
+                                'share_title': share_title,
+                                'share_description': share_description,
                                 'inCanvas':False})
 
     return response
