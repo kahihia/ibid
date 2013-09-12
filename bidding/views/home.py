@@ -43,7 +43,7 @@ def canvashome(request):
         request.META['HTTP_REFERER'] = fb_url
         data = {
             'authorization_url': fb_url,
-            'app_url': fb_url,
+            'app_url': settings.SITE_NAME,
             'site_url': settings.SITE_NAME,
             'share_title': share_title,
             'share_description': share_description,
@@ -79,7 +79,7 @@ def canvashome(request):
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
-                                'app_url': fb_url,
+                                'app_url': settings.SITE_NAME,
                                 'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
                                 'share_description': share_description,
@@ -155,7 +155,7 @@ def standalone(request):
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
-                                'app_url': fb_url,
+                                'app_url': settings.SITE_NAME,
                                 'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
                                 'share_description': share_description,
