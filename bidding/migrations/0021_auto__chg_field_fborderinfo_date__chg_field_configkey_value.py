@@ -6,17 +6,22 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
-    
 
     def forwards(self, orm):
-        # Adding field 'FBOrderInfo.date'
-        db.add_column(u'bidding_fborderinfo', 'date',
-                      self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True, null=True),
-                      keep_default=False)
-        
+
+        # Changing field 'FBOrderInfo.date'
+        db.alter_column(u'bidding_fborderinfo', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True))
+
+        # Changing field 'ConfigKey.value'
+        db.alter_column(u'bidding_configkey', 'value', self.gf('django.db.models.fields.CharField')(max_length=300))
+
     def backwards(self, orm):
-        # Deleting field 'FBOrderInfo.date'
-        db.delete_column(u'bidding_fborderinfo', 'date')
+
+        # Changing field 'FBOrderInfo.date'
+        db.alter_column(u'bidding_fborderinfo', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True))
+
+        # Changing field 'ConfigKey.value'
+        db.alter_column(u'bidding_configkey', 'value', self.gf('django.db.models.fields.CharField')(max_length=100))
 
     models = {
         u'auth.group': {
@@ -93,8 +98,8 @@ class Migration(SchemaMigration):
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'key': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'value': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'value_type': ('django.db.models.fields.CharField', [], {'default': "'int'", 'max_length': '10'})
+            'value': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
+            'value_type': ('django.db.models.fields.CharField', [], {'default': "'text'", 'max_length': '10'})
         },
         u'bidding.converthistory': {
             'Meta': {'object_name': 'ConvertHistory'},
@@ -109,7 +114,7 @@ class Migration(SchemaMigration):
         },
         u'bidding.fborderinfo': {
             'Meta': {'object_name': 'FBOrderInfo'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True', 'null': 'True'}),
+            'date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
             'fb_payment_id': ('django.db.models.fields.BigIntegerField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),

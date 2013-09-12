@@ -165,9 +165,11 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     $scope.shareOnTimeline = function () {
+        //this is not longer used, because works weird.
         FB.ui({
             method: 'feed',
             link: 'https://apps.facebook.com/ibidgames/'
+            //link: 'http://localhost:8000/canvasapp/'
         });
     };
 
