@@ -34,12 +34,12 @@ def canvashome(request):
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
 
+    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
     share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
 
     if not request.user.is_authenticated() :
         #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
-        fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
         request.META['HTTP_REFERER'] = fb_url
         data = {
             'authorization_url': fb_url,
