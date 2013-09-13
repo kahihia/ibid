@@ -82,8 +82,7 @@
 							initTutorial();
 						{% endif %}
 						angular.element($('.global-chat')).scope().chatPosition();
-						angular.element($('#base_header')).append($('#uvTab'));
-						angular.element($('#uvTab')).scope().uvTabPosition();
+						angular.element($('#base_header')).scope().uvTabPosition();
 					}
 				);
 			}; ( function(d, s, id) {
