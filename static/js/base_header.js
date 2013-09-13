@@ -165,11 +165,9 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     $scope.shareOnTimeline = function () {
-        //this is not longer used, because works weird.
         FB.ui({
             method: 'feed',
             link: 'https://apps.facebook.com/ibidgames/'
-            //link: 'http://localhost:8000/canvasapp/'
         });
     };
 
@@ -345,6 +343,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                 var num1 = parseInt(pageInfo.scrollTop);
                 var num2 = parseInt(pageInfo.clientHeight);
                 angular.element($('#uvTab')).animate({top: ((num2/2)+num1) }, 0);
+                angular.element($('#uvw-dialog-uv-1')).animate({top: ((num2/2)+num1) }, 0);                
                 angular.element($('#uvTab')).css({ zIndex: "1000" });
             });
         }finally{
