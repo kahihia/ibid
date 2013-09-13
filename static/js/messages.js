@@ -22,6 +22,6 @@ EventMessage.RECEIVER.SERVER = 'server';
 EventMessage.EVENT = {}
 EventMessage.EVENT.BIDDING__INITIALIZE = 'bidding:initialize';
 EventMessage.EVENT.BIDDING__UPDATE_ACCESS_TOKEN = 'bidding:updateAccessToken';
-EventMessage.EVENT.BIDDING__SEND_STORED_WALL_POSTS = 'bidding:sendStoredWallPosts';
+EventMessage.EVENT.BIDDING__SEND_WALL_POSTS = 'bidding:sendWallPosts';
 
 

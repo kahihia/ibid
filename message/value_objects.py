@@ -127,6 +127,7 @@ class Event(ValueObject):
         MAIN__LOAD_AUCTIONS =               'main:loadAuctions'
         MAIN__FRIEND_INVITATION_ACCEPTED =  'user:friendJoined'
         MAIN__OPEN_GLOBAL_CHAT =            'main:openGlobalChat'
+        MAIN__POST_STORY_TO_WALL =          'main:postStoryToWall'
 
 class EventList(list):
     def __init__(self, *args):
