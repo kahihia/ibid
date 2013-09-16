@@ -18,6 +18,7 @@ from bidding.models import Auction
 from bidding.models import ConvertHistory
 from bidding.models import Member
 from bidding.models import BidPackage
+from bidding.models import ConfigKey
 
 
 logger = logging.getLogger('django')
@@ -33,14 +34,19 @@ def canvashome(request):
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
 
+    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
+    share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
+
     if not request.user.is_authenticated() :
         #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
-        fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
         request.META['HTTP_REFERER'] = fb_url
         data = {
             'authorization_url': fb_url,
-            'app_url': settings.FACEBOOK_APP_URL,
+            'app_url': fb_url,
             'site_url': settings.SITE_NAME,
+            'share_title': share_title,
+            'share_description': share_description,
         }
         return render_response(request, 'fb_redirect.html', data)
         
@@ -64,6 +70,7 @@ def canvashome(request):
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
                                 'PUBNUB_SUB': settings.PUBNUB_SUB,
+                                'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
                                 'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN,
                                 'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH,
                                 'SITE_NAME': settings.SITE_NAME,
@@ -72,8 +79,17 @@ def canvashome(request):
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
+                                'app_url': fb_url,
+                                'site_url': settings.SITE_NAME,
+                                'share_title': share_title,
+                                'share_description': share_description,
                                 'inCanvas':False})
     return response
+
+def canvasapp(request):
+    print "settings.FACEBOOK_APP_URL"
+    print settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    return HttpResponseRedirect(str(settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)))
 
 
 def standalone(request):
@@ -125,6 +141,10 @@ def standalone(request):
     if not settings.DEBUG:
         js_error_tracker = js_error_tracker[0]
 
+    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
+    share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
+
     response = render_response(request, 'bidding/mainpage.html',
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
@@ -135,6 +155,10 @@ def standalone(request):
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
+                                'app_url': fb_url,
+                                'site_url': settings.SITE_NAME,
+                                'share_title': share_title,
+                                'share_description': share_description,
                                 'inCanvas':False})
 
     return response

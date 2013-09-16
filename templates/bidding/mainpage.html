@@ -3,6 +3,11 @@
 <html ng-app="app">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta property="og:type" content="Game" /> 
+		<meta property="og:url" content="{{ app_url }}" /> 
+		<meta property="og:title" content="{{ share_title }}" />
+		<meta property="og:site_name" content="{{ site_url }}" />
+		<meta property="og:description" content="{{ share_description }}" />
 
 		<title>iBidGames</title>
 
@@ -59,7 +64,6 @@
 		<script src="{% static "js/app.js" %}" ></script>
     </head>
 	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
-
 		<div id="fb-root"></div>
 		<script>
 			window.fbAsyncInit = function() {
@@ -71,8 +75,16 @@
 					xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
-
-				angular.element($('.global-chat')).scope().chatPosition();
+				FB.Canvas.setDoneLoading(
+					function (result) {
+						// welcome popup
+						{% if display_popup %}
+							initTutorial();
+						{% endif %}
+						angular.element($('.global-chat')).scope().chatPosition();
+						angular.element($('#base_header')).scope().uvTabPosition();
+					}
+				);
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];
 					if (d.getElementById(id)) {
@@ -325,7 +337,9 @@
 					<div class="buttons">
 						<div class="button invite" ng-click="sendRequestViaMultiFriendSelector()"></div>
 						<div class="button like" ng-init="fb_check_like()" ng-click="requestPermisionPublishActions('LIKE')"></div>
-						<div class="button share" ng-click="shareOnTimeline()"></div>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ FACEBOOK_APP_URL }}" target="_blank"> <div class="button share"></div> </a>
+                        <!-- this is a modal share, but it is weird -->
+                        <!--div class="button share" ng-click="shareOnTimeline()"></div-->
 					</div>
 					<div class="logo">
 						<img src="{% static 'images/logo.png' %}" width="293" height="105">
@@ -703,18 +717,8 @@
 				</div>
 			</div>
 		</div>
-
+		
         <div id="notifications" class="notifications-container"></div>
-
-		<!--welcome popup-->
-		{% if display_popup %}
-		<script type="text/javascript">
-			jQuery(document).ready(function() {
-				initTutorial();
-			})
-		</script>
-		{% endif %}
-
 	</body>
 
 </html>

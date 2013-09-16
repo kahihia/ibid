@@ -352,7 +352,19 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }, {scope: 'publish_actions'});
     };
 
-
+    $scope.uvTabPosition=function () {
+        try{    
+            FB.Canvas.getPageInfo(function(pageInfo){
+                var num1 = parseInt(pageInfo.scrollTop);
+                var num2 = parseInt(pageInfo.clientHeight);
+                angular.element($('#uvTab')).animate({top: ((num2/2)+num1) }, 0);
+                angular.element($('#uvw-dialog-uv-1')).animate({top: ((num2/2)+num1) }, 0);                
+                angular.element($('#uvTab')).css({ zIndex: "1000" });
+            });
+        }finally{
+            setTimeout($scope.uvTabPosition, 100);
+        };
+    };
 
 };
 
