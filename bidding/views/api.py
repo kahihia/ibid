@@ -18,10 +18,7 @@ from bidding.models import FBOrderInfo
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
-
-import logging
-
-logger = logging.getLogger('django')
+from bidding.views.facebook import post_story as fb_post_story
 
 def api(request, method):
     """api calls go through this method"""
@@ -183,7 +180,7 @@ def getAuctionsInitialization(request):
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
-
+        
         tmp['auctioneerMessages'] = []
         for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
@@ -257,6 +254,7 @@ def getAuctionsInitialization(request):
     data['credit']['finished'] = auctions_bid_finished
     data['credit']['mine'] = auctions_bid_my
 
+
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -314,7 +312,9 @@ def startBidding(request):
     tmp['bids'] = member.auction_bids_left(auct)
     tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
     tmp['bidders'] = auct.bidders.count()
-
+    tmp['itemId'] = auct.item.id
+    tmp['won_price'] = 0
+    
     tmp['auctioneerMessages'] = []
     for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
         w = {
@@ -551,6 +551,9 @@ def globalMessage(request):
         return HttpResponse('{"success":true}', content_type="application/json")
 
     return HttpResponse('{"success":false}', content_type="application/json")
+
+def post_story(auction, member):
+    fb_post_story(auction, member)
 
 
 API = {

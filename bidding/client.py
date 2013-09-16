@@ -158,7 +158,8 @@ def auctionFinish(auction):
     tmp['winner'] = {'firstName': auction.winner.first_name if auction.winner else 'Nobody has bid!',
                      'displayName': auction.winner.display_name() if auction.winner else 'Nobody',
                      'facebookId': auction.winner.facebook_id if auction.winner else ''}
-
+    tmp['won_price'] = str(auction.won_price)
+    
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
