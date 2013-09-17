@@ -4,7 +4,11 @@
 from datetime import datetime
 
 from django.http import HttpResponse
+from django.conf import settings
+from django_facebook.utils import get_user_model
+import logging
 
+from bidding.views.api import post_story
 from bidding.models import Auction, ConfigKey
 from chat.models import Message
 from models import EventLog
@@ -12,6 +16,7 @@ from models import EventLog
 import message.value_objects as vo
 import message.value_objects_factory as vo_factory
 
+logger = logging.getLogger('django')
 
 def message_listener(request):
     """api calls go through this method"""
@@ -196,16 +201,31 @@ class bidding(object):
         return []
 
     @staticmethod
-    def sendStoredWallPosts(request, data):
-        user = request.user
+    def sendWallPosts(request, data):
+        auction = data['auction']
+        member = get_user_model().objects.get(facebook_id=auction['winner']['facebookId'])
+        
+        eventList = vo.EventList()
 
-        wallPost = user.getSession('wallPost')
+        #################################
+        ##  event post story to wall   ##
+        #################################
 
-        if wallPost:
-            try:
-                user.post_win_story(**wallPost)
-            except Exception as e:
-                print e
+        event = vo.Event()
+        event['event'] = vo.Event.EVENT.MAIN__POST_STORY_TO_WALL
+        event['data'] = ''
+        event['sender'] = vo.Event.SENDER.SERVER
+        event['receiver'] = vo.Event.RECEIVER.CLIENT_FB + str(member.facebook_id)
+        event['transport'] = vo.Event.TRANSPORT.REQUEST
+        event['timestamp'] = datetime.now()
+        event['id'] = None
 
-        return []
+        try:
+            post_story(auction, member)
+            event['data'] = 'success'
+        except Exception as e:
+            event['data'] = str(e)
+        
+        eventList.append(event)
+        return eventList
 

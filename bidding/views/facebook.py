@@ -117,6 +117,16 @@ def fb_like(request):
             raise
     return HttpResponse(request.method)
 
+def post_story(auction, member):
+    url = u'{site}fb_item/{item}'.format(site=settings.SITE_NAME, item=auction['itemId'])
+    if auction['bidType'] == 'token':
+        info_message = u"{user} has won a virtual item playing for tokens. If {user} had played for items he/she could have purchased it for {price} dollars!"
+    if auction['bidType'] == 'bid':
+        info_message = u"{user} can purchase {item} for {price} dollars!"
+    args = {u'product': url,
+            u'info_message': info_message.format(user=auction['winner']['displayName'], item=auction['itemName'], price=str(auction['won_price']))}
+    member.post_win_story(**args)
+
 
 def store_invitation(request):
     auction = get_auction_or_404(request)
