@@ -138,7 +138,7 @@ class RegistrationForm(forms.Form):
                                 max_length=30,
                                 label=_("Username"),
                                 error_messages={'invalid': _("This value may contain only letters, numbers and @/./+/-/_ characters.")})
-    email = forms.EmailField(label=_("E-mail"))
+    email = forms.EmailField(label=_("E-mail"),required=False)
     password1 = forms.CharField(widget=forms.PasswordInput,
                                 label=_("Password"))
     password2 = forms.CharField(widget=forms.PasswordInput,
