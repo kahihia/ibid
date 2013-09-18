@@ -2,13 +2,12 @@
 Signals and handlers for the aplication.
 '''
 
-from open_facebook.exceptions import PermissionException
 import json
 import logging
-import open_facebook
 import threading
 import uuid
 
+from open_facebook import OpenFacebook, FacebookAuthorization 
 from django.conf import settings
 from django.core.mail import send_mass_mail
 from django.dispatch.dispatcher import receiver, Signal
@@ -22,6 +21,7 @@ logger = logging.getLogger('django')
 
 auction_started_signal = Signal(providing_args=["auction"])
 auction_finished_signal = Signal(providing_args=["auction"])
+precap_finishing_signal = Signal(providing_args=["auction"])
 precap_finished_signal = Signal(providing_args=["auction"])
 
 task_auction_start = Signal(providing_args=["auction"])
@@ -116,20 +116,29 @@ def send_start_email(sender, **kwargs):
 
 @receiver(auction_started_signal)
 def notify_bidders(sender, **kwargs):
+    kwargs['signal'] = 'auction_started'
+    th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
+    th.start()
+
+@receiver(precap_finishing_signal)
+def notify_bidders(sender, **kwargs):
+    kwargs['signal'] = 'precap_finishing'
     th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
     th.start()
 
 def notify_bidders_thread(**kwargs):
     auction = kwargs['auction']
-    text = u'The auction for a {item} has started. Hurry and go win it!.'.format(item=auction.item.name)
+    text = ''
+    if kwargs['signal'] == 'auction_started':
+        text = u'The auction for a {item} has started. Hurry and go win it!.'.format(item=auction.item.name)
+    if kwargs['signal'] == 'precap_finishing':
+        text = u'The auction for a {item} is about to start. Go play for it!.'.format(item=auction.item.name)
     for member in auction.bidders.all():
-        of = open_facebook.OpenFacebook(member.access_token)
+        of = OpenFacebook(member.access_token)
         args = {'template': text,
-            'access_token': open_facebook.FacebookAuthorization.get_app_access_token()}
-        logger.debug("Notification - ARGS: %s" % args)
+            'access_token': FacebookAuthorization.get_app_access_token()}
         destination = '{facebook_id}/notifications'.format(facebook_id=member.facebook_id)
         response = of.set(destination, **args)
-
 
 def send_in_thread(signal, **kwargs):
     """ 

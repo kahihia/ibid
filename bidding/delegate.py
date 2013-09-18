@@ -9,8 +9,14 @@ import time
 logger = logging.getLogger('django')
 
 from bidding import client
-from bidding.signals import auction_started_signal, auction_finished_signal, send_in_thread, precap_finished_signal
-from bidding.signals import task_auction_start, task_auction_pause
+from bidding.signals import auction_finished_signal
+from bidding.signals import auction_started_signal
+from bidding.signals import precap_finished_signal
+from bidding.signals import precap_finishing_signal
+from bidding.signals import send_in_thread
+from bidding.signals import task_auction_pause
+from bidding.signals import task_auction_start
+
 
 def start_auction(auction):
     #refresh the current database auction status
@@ -95,12 +101,16 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
         """
         return member.get_bids(self.auction.bid_type) + member.get_placed_amount(self.auction) >= amount
 
-    def completion(self):
+    def completion(self, n=0):
         """ Returns a completion percentaje (0-100 integer) of the precap. """
+        percentaje = int((self.auction.placed_bids() * 100) / self.auction.precap_bids)
+        if n != 0:
+            """ Returns percentaje without n bids """
+            bids = self.auction.placed_bids() - (n * self.auction.minimum_precap)
+            percentaje = int((bids * 100) / self.auction.precap_bids)
+        return percentaje
 
-        return int((self.auction.placed_bids() * 100) / self.auction.precap_bids)
-
-    def place_precap_bid(self, member, amount):
+    def place_precap_bid(self, member, amount, update_type = 'add'):
         """ 
         The member commits an amount precap bid to the auction and saves its 
         state. 
@@ -114,7 +124,20 @@ class PrecapAuctionDelegate(StateAuctionDelegate):
             self.auction.bidders.add(member)
 
         member.precap_bids(self.auction, amount)
+        if update_type == 'add':
+            from bidding.models import ConfigKey
 
+            if self.auction.bid_type == 'bid':
+                notification_percentage = ConfigKey.get('NOTIFICATION_CREDIT_PERCENTAGE', 90)
+            elif self.auction.bid_type == 'token':
+                notification_percentage = ConfigKey.get('NOTIFICATION_TOKEN_PERCENTAGE', 90)
+            else:
+                notification_percentage = 0
+
+            previous_finishing = self.auction.completion(1) < notification_percentage
+            if self.auction.completion() >= notification_percentage > 0 and previous_finishing == True:
+                send_in_thread(precap_finishing_signal, sender=self, auction=self.auction)
+            
         #TODO two users can enter here because status is not yet changed
         if not self.auction._precap_bids_needed():
             self.auction.finish_precap()

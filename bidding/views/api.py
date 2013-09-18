@@ -398,7 +398,7 @@ def remBids(request):
     amount = member.auction_bids_left(auction) - amount
 
     if auction.can_precap(member, amount):
-        auction.place_precap_bid(member, amount)
+        auction.place_precap_bid(member, amount, 'remove')
 
         client.updatePrecap(auction)
 
