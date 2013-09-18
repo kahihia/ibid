@@ -36,7 +36,7 @@ class ChatUser(models.Model):
     current site root.
     """
     
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
+    user = models.ForeignKey(Member)
     
     def picture(self):
         """ Returns the chat avatar. """

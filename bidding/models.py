@@ -322,7 +322,7 @@ class Auction(AbstractAuction):
 
     #winner info
     won_date = models.DateTimeField(null=True, blank=True)
-    winner = models.ForeignKey(settings.AUTH_USER_MODEL,related_name='autcions', blank=True, null=True)
+    winner = models.ForeignKey(Member,related_name='autcions', blank=True, null=True)
     won_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     #scheduling options
