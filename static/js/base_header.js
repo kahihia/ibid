@@ -22,10 +22,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     //initialization
     $rootScope.app = {};
     $rootScope.app.tokenValueInCredits = 0;
-    $rootScope.app.applink = 'https://localhost:8000';
-    $rootScope.app.apppicture = "http://localhost:8000/static/images/400x400-Fblogo.png";
-    //$rootScope.app.applink = 'https://apps.facebook.com/ibidgames';
-    //$rootScope.app.apppicture = "https://apps.facebook.ibidgames.com/static/images/400x400-Fblogo.png";
+    $rootScope.app.applink = 'https://apps.facebook.com/ibidgames';
+    $rootScope.app.apppicture = "https://apps.facebook.ibidgames.com/static/images/400x400-Fblogo.png";
 
     $rootScope.user = {};
     $rootScope.user.displayName = '';
@@ -180,8 +178,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
             //link: 'http://localhost:8000/canvasapp/'
         });
-        console.log("------------xx-------------");
-        console.log($rootScope.app.apppicture);
     };
 
     $scope.sendRequestViaMultiFriendSelector = function() {

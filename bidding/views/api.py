@@ -563,7 +563,6 @@ API = {
     'claim': claim,
     'sendMessage': sendMessage,
     'getUserDetails': getUserDetails,
-    'getConfig': getConfig,
     'stopBidding': stopBidding,
     'reportAnError': reportAnError,
     'convertTokens': convertTokens,
