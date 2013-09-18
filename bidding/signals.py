@@ -112,31 +112,7 @@ def send_start_email(sender, **kwargs):
         data_tuples.append((subject, message, settings.DEFAULT_FROM_EMAIL, [mail]))
 
     send_mass_mail(data_tuples)
-
-
-@receiver(auction_finished_signal)
-def post_win_story(sender, **kwargs):
-    auction = kwargs['auction']
-    if auction.winner:
-        member = auction.winner
-        url = '{site}fb_item/{item}'.format(site=settings.SITE_NAME, item=str(auction.item.id))
-        if auction.bid_type == 'token':
-            info_message = '{user} has won this virtual item playing for tokens. If {user} had played for items he/she could have purchased it for {price} dollars!'
-        if auction.bid_type == 'bid':
-            info_message = '{user} can purchase {item} for {price} dollars!'
-        args = {'product': url,
-                'info_message': info_message.format(user=str(member), item=str(auction.item.name), price=str(auction.won_price)),}
-        try:
-            member.post_win_story(**args)
-        except PermissionException:
-            print "User forbid story post"
-            member.delSession('wallPost')
-            #save the wallpost to user session
-            member.setSession('wallPost', args)
-            #TODO: request wallpost permission
-        except Exception as e:
-            logger.exception(e)
-
+    
 
 @receiver(auction_started_signal)
 def notify_bidders(sender, **kwargs):

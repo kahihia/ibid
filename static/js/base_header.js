@@ -121,8 +121,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     $scope.closeWonAuctionDialog = function () {
         //request for perm if does not have it
-        $scope.requestPermisionPublishActions();
-
+        $scope.requestPermisionPublishActions('STORY');
         $scope.showWonTokensDialog = null;
         $scope.showWonItemDialog = null;
     };
@@ -170,13 +169,10 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     $scope.shareOnTimeline = function () {
-        //this is not longer used, because works weird.
         FB.ui({
             method: 'feed',
             link: $rootScope.app.applink,
             picture: $rootScope.app.apppicture
-
-            //link: 'http://localhost:8000/canvasapp/'
         });
     };
 
@@ -280,10 +276,20 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                 }else{
                 }});
     };
-
+    
+    
+    $scope.fb_story= function() {
+        var events = [];
+        events.push(new EventMessage(EventMessage.EVENT.BIDDING__SEND_WALL_POSTS, {auction:$scope.wonAuction}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+        $http
+            .get('/action/', {params: {events: angular.toJson(events)}})
+            .then(function (response) {
+                console.log(response);
+            }); 
+    };
+    
+    
     $scope.fb_like= function() {
-
-        $scope.requestPermisionPublishActions();
 
         $http
         .post('/fb_like/')
@@ -321,38 +327,49 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         );
 
     };
-    $scope.requestPermisionPublishActions = function () {
+    $scope.requestPermisionPublishActions = function (method) {
         FB.login(function (response) {
-
-                //TODO: call api method to send the wall post
-                var events = []
-                if(response.authResponse){
-                    events.push(new EventMessage(EventMessage.EVENT.BIDDING__UPDATE_ACCESS_TOKEN, {accessToken: response.authResponse.accessToken}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null));
-                }
-                events.push(new EventMessage(EventMessage.EVENT.BIDDING__SEND_STORED_WALL_POSTS, {}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null));
-
-                // begin dispatcher
-                console.log({events: angular.toJson(events)});
-                $http
-                    .get('/action/', {params: {events: angular.toJson(events)}})
-                    .then(function (response) {
-                        //listener - TRANSPORT request
-                        _.forEach(response.data, function (message) {
-                            $rootScope.$broadcast(message.event, message.data);
-                        });
+            var events = []
+            events.push(new EventMessage(EventMessage.EVENT.BIDDING__UPDATE_ACCESS_TOKEN, {accessToken: response.authResponse.accessToken}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null));
+            // begin dispatcher
+            console.log({events: angular.toJson(events)});
+            $http
+                .get('/action/', {params: {events: angular.toJson(events)}})
+                .then(function (response) {
+                    //listener - TRANSPORT request
+                    _.forEach(response.data, function (message) {
+                        $rootScope.$broadcast(message.event, message.data);
                     });
-                // end dispatcher
-
+                });
+            // end dispatcher
+            
+            if (response.authResponse) {
+                switch (method) {
+                    
+                    case 'LIKE':
+                        $scope.fb_like();
+                        break;                 
+                   
+                    case 'STORY':
+                        $scope.fb_story();
+                        break;
+                }
+            }
         }, {scope: 'publish_actions'});
     };
 
     $scope.uvTabPosition=function () {
-        FB.Canvas.getPageInfo(function(pageInfo){
-            var num1 = parseInt(pageInfo.scrollTop);
-            var num2 = parseInt(pageInfo.clientHeight);
-            $('#uvTab').animate({top: ((num2/2)+num1) }, 0);
+        try{    
+            FB.Canvas.getPageInfo(function(pageInfo){
+                var num1 = parseInt(pageInfo.scrollTop);
+                var num2 = parseInt(pageInfo.clientHeight);
+                angular.element($('#uvTab')).animate({top: ((num2/2)+num1) }, 0);
+                angular.element($('#uvw-dialog-uv-1')).animate({top: ((num2/2)+num1) }, 0);                
+                angular.element($('#uvTab')).css({ zIndex: "1000" });
+            });
+        }finally{
             setTimeout($scope.uvTabPosition, 100);
-        });
+        };
     };
 
 };

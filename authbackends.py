@@ -16,8 +16,10 @@ logger = logging.getLogger('django')
 class YambidRegistration(object):
    
     def register(self, request, **kwargs):
-        username, email, password = kwargs['username'], kwargs['email'], kwargs['password1']
+        if 'email' not in kwargs or not kwargs['email'] :
+            kwargs['email']= '%s@facebook.com' % kwargs['username']
         
+        username,email,password = kwargs['username'],kwargs['email'], kwargs['password1']
         new_user = Member.objects.create_user(username, email, password)
         new_user.is_active = True
         new_user.save()

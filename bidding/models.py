@@ -206,10 +206,9 @@ class Member(AbstractUser, FacebookModel):
 
     def post_win_story(self, **args):
         # Posts a story when winning an item in an auction.
-        logger.debug("ARGS: %s" % args)
         of = open_facebook.OpenFacebook(self.access_token)
         response = of.set('me/{app}:win'.format(app=settings.FACEBOOK_APP_NAME),**args)
-        logger.debug("Response: %s" % response)    
+            
 
     def fb_check_like(self):
         ''' Checks if user likes the app in facebook '''

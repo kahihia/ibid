@@ -3,8 +3,8 @@
 <html ng-app="app">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta property="og:type" content="Game" /> 
-		<meta property="og:url" content="{{ app_url }}" /> 
+		<meta property="og:type" content="Game" />
+		<meta property="og:url" content="{{ app_url }}" />
 		<meta property="og:title" content="{{ share_title }}" />
 		<meta property="og:image" content="{{SITE_NAME_WOUT_BACKSLASH}}{% static "images/200x200-Fblogo.png" %}" />
 		<meta property="og:site_name" content="{{ site_url }}" />
@@ -37,6 +37,8 @@
 		<script src="{% static 'js/auctions.js' %}" ></script>
 		<script src="{% static 'js/services.js' %}"></script>
 		<script src="{% static 'js/directives.js' %}"></script>
+        <script src="{% static 'js/providers.js' %}"></script>
+        <script src="{% static 'js/config.js' %}"></script>
 		<script src="{% static 'js/messages.js' %}" ></script>
 		<script src="{% static 'js/global-chat.js' %}"></script>
 		<!--include analythics.js -->
@@ -83,8 +85,7 @@
 							initTutorial();
 						{% endif %}
 						angular.element($('.global-chat')).scope().chatPosition();
-						angular.element($('#base_header')).append($('#uvTab'));
-						angular.element($('#uvTab')).scope().uvTabPosition();
+						angular.element($('#base_header')).scope().uvTabPosition();
 					}
 				);
 			}; ( function(d, s, id) {
@@ -338,8 +339,7 @@
 
 					<div class="buttons">
 						<div class="button invite" ng-click="sendRequestViaMultiFriendSelector()"></div>
-						<div class="button like" ng-init="fb_check_like()" ng-click="fb_like()"></div>
-                        <!--a href="https://www.facebook.com/sharer/sharer.php?u={{ FACEBOOK_APP_URL }}" target="_blank"> <div class="button share"></div> </a-->
+						<div class="button like" ng-init="fb_check_like()" ng-click="requestPermisionPublishActions('LIKE')"></div>
                         <!-- this is a modal share, but it is weird -->
                         <div class="button share" ng-click="shareOnTimeline()"></div>
 					</div>
@@ -719,7 +719,7 @@
 				</div>
 			</div>
 		</div>
-		
+
         <div id="notifications" class="notifications-container"></div>
 	</body>
 
