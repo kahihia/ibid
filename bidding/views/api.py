@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
 import json
+import logging
 import time
+
+logger = logging.getLogger('django')
 
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, Http404
-
 
 from bidding import client
 from bidding.models import Auction
@@ -18,10 +20,8 @@ from bidding.models import FBOrderInfo
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
+from lib.utils import get_static_url
 
-import logging
-
-logger = logging.getLogger('django')
 
 def api(request, method):
     """api calls go through this method"""
@@ -34,6 +34,7 @@ def api(request, method):
 
 def getUserDetails(request):
     member = request.user
+
 
     data = {u'user':{
                 u'displayName': member.display_name(),
@@ -50,7 +51,7 @@ def getUserDetails(request):
             u'app':{
                 u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE,
                 u'applink': settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
-                u'apppicture': settings.SITE_NAME + "static/images/400x400-Fblogo.png"
+                u'apppicture': get_static_url('images/400x400-Fblogo.png'),
             }
         }
 
