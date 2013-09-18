@@ -604,7 +604,7 @@ CONFIG_KEY_TYPES = (('text' , 'text'),
 
 class ConfigKey(models.Model):
     key = models.CharField(max_length=100)
-    value = models.CharField(max_length=300)
+    value = models.TextField()
     description = models.TextField(null=True, blank=True)
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='text')
 

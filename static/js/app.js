@@ -1,5 +1,5 @@
 angular
-    .module('app', ['app.directives', 'app.services'])
+    .module('app', ['app.config', 'app.directives', 'app.services'])
     .config(function($interpolateProvider) {
         $interpolateProvider.startSymbol('{$');
         $interpolateProvider.endSymbol('$}');

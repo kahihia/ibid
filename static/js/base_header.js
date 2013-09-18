@@ -20,6 +20,11 @@
 function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     //initialization
+    $rootScope.app = {};
+    $rootScope.app.tokenValueInCredits = 0;
+    $rootScope.app.applink = 'https://apps.facebook.com/ibidgames';
+    $rootScope.app.apppicture = "https://apps.facebook.ibidgames.com/static/images/400x400-Fblogo.png";
+
     $rootScope.user = {};
     $rootScope.user.displayName = '';
     $rootScope.user.profileFotoLink = '';
@@ -166,7 +171,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.shareOnTimeline = function () {
         FB.ui({
             method: 'feed',
-            link: 'https://apps.facebook.com/ibidgames/'
+            link: $rootScope.app.applink,
+            picture: $rootScope.app.apppicture
         });
     };
 
