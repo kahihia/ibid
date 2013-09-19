@@ -2,4 +2,4 @@
  {"pk": 2, "model": "bidding.configkey", "fields": {"value": "34", "key": "AUCTION_MAX_TOKENS", "value_type":"int"}},
  {"pk": 3, "model": "bidding.configkey", "fields": {"value": "no", "key": "OPEN_GLOBAL_CHAT", "value_type":"boolean"}},
  {"pk": 4, "model": "bidding.configkey", "fields": {"value": "90", "key": "NOTIFICATION_TOKEN_PERCENTAGE", "value_type":"int"}},
- {"pk": 5, "model": "bidding.configkey", "fields": {"value": "90", "key": "NOTIFICATION_CREDIT_PERCENTAGE", "value_type":"int"}},]
+ {"pk": 5, "model": "bidding.configkey", "fields": {"value": "90", "key": "NOTIFICATION_CREDIT_PERCENTAGE", "value_type":"int"}}]
