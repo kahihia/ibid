@@ -159,6 +159,7 @@ INSTALLED_APPS = (
     # Needed by django facebook
     'django_facebook',
     'django.contrib.staticfiles',
+    'apps.main',
 )
 
 
