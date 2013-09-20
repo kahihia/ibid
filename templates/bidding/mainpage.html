@@ -533,6 +533,7 @@
 
 								<!-- TEMPLATE: waiting_payment -->
 								<div id="auction-top" ng-switch-when="waiting_payment">
+                                    <div class="btn-close" ng-mousedown="closeAuction(auction)">×</div>
 									<div class="img">
 										<img ng-src="{$ auction.itemImage $}">
 									</div>
