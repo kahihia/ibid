@@ -58,6 +58,14 @@ def getUserDetails(request):
 
     return HttpResponse(json.dumps(data), content_type="application/json")
 
+def getTemplateContext(request):
+    data = {
+        u'PUBNUB_PUB': settings.PUBNUB_PUB,
+        u'PUBNUB_SUB': settings.PUBNUB_SUB
+    }
+    
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
 def getAuctionsInitialization(request):
     member = request.user
 
@@ -577,4 +585,5 @@ API = {
     'inviteRequest': inviteRequest,
     'add_credits': add_credits,
     'globalMessage': globalMessage,
+    'getTemplateContext' : getTemplateContext,
 }

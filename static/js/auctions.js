@@ -521,7 +521,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-
     $scope.initializeAuctions();
 };
 
@@ -540,23 +539,6 @@ function isDict(p) {
         return false;
     }
 }
-
-function getCurrentDateTime(){
-    //to parse in python
-    //>>> time.strptime("2013-05-25 02:04:09.2", '%Y-%m-%d %H:%M:%S.%f')
-
-    var currentdate = new Date();
-    var datetime = currentdate.getFullYear() + "-"
-                    + (currentdate.getMonth()+1)  + "-"
-                    + currentdate.getDate() + " "
-                    + currentdate.getHours() + ":"
-                    + currentdate.getMinutes() + ":"
-                    + currentdate.getSeconds() + "."
-                    + currentdate.getMilliseconds()
-    return datetime;
-}
-
-
 
 jQuery(function(){
     showOverlay();

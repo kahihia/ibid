@@ -1,6 +1,31 @@
 {% extends "ibidgames_base_section.html" %}
 
 {% block contentheader %}{{ flatpage.title }}{% endblock %}
+
+{% block menu_wrapper %}
+	<div id="menu-wrapper">
+		<div id="menu">
+			<a class="btn-tokens" ng-href="/canvashome?auction_type=token"></a>
+			<a class="btn-items" ng-href="/canvashome?auction_type=credit"></a>
+			<div class="links">
+				<ul>
+					<li>
+						<a href="" id="interactiveTutotialBtn">Tutorial</a>
+					</li>
+					&nbsp; &nbsp;|&nbsp; &nbsp;
+					<li>
+						<a href="/faq/">FAQS</a>
+					</li>
+					&nbsp; &nbsp;|&nbsp; &nbsp;
+					<li>
+						<a href="/winners/">Winners</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+
 {% block graywindowcontent %}
 {{ flatpage.content }}
 {% endblock %}

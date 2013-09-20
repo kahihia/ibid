@@ -69,6 +69,11 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
         });
+        
+        $http.post('/api/getTemplateContext/').success(function (data) {
+            $rootScope.PUBNUB_PUB = data.PUBNUB_PUB;
+            $rootScope.PUBNUB_SUB = data.PUBNUB_SUB;
+        });
     };
     
     $rootScope.$on('reloadUserDataEvent', function () {

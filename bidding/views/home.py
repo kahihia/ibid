@@ -65,7 +65,10 @@ def canvashome(request):
     if not member.getSession('revisited'):
         display_popup = True
         member.setSession('revisited', True)
-    
+    try:
+        auction_type = request.GET['auction_type']
+    except Exception:
+        auction_type = 'token'
     response = render_response(request, 'bidding/mainpage.html',
                                {'fb_app_id': settings.FACEBOOK_APP_ID,
                                 'PUBNUB_PUB': settings.PUBNUB_PUB,
@@ -79,6 +82,7 @@ def canvashome(request):
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
                                 'packages': BidPackage.objects.all(),
+                                'auction_type': auction_type,
                                 'app_url': fb_url,
                                 'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
@@ -165,6 +169,10 @@ def standalone(request):
 
 
 def winners(request, page):
+    member = request.user
+    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
+    share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
     auctions = (Auction.objects.filter(is_active=True, winner__isnull=False)
                                .annotate(current_price=Count('bid'))
                                .select_related('item', 'winner')
@@ -172,7 +180,26 @@ def winners(request, page):
     for auction in auctions:
         auction.winner_member = Member.objects.filter(id=auction.winner.id)[0]
     #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
-    return render_response(request, 'bidding/ibidgames_winners.html',{'auctions': auctions, 'current_page': page})
+    return render_response(request, 'bidding/ibidgames_winners.html',
+                           {'fb_app_id': settings.FACEBOOK_APP_ID,
+                                'PUBNUB_PUB': settings.PUBNUB_PUB,
+                                'PUBNUB_SUB': settings.PUBNUB_SUB,
+                                'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
+                                'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN,
+                                'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH,
+                                'SITE_NAME': settings.SITE_NAME,
+                                'display_popup': False,
+                                'facebook_user_id': member.facebook_id,
+                                'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
+                                'member': member,
+                                'packages': BidPackage.objects.all(),
+                                'app_url': fb_url,
+                                'site_url': settings.SITE_NAME,
+                                'share_title': share_title,
+                                'share_description': share_description,
+                                'inCanvas':False,
+                                'auctions': auctions,
+                                'current_page': page})
 
 
 @csrf_exempt
