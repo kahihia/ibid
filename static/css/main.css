@@ -55,7 +55,7 @@ body {
 }
 
 #main-wrapper {
-	width: 860px;
+	width: 770px;
 	background-image: url("../images/bkg-top.jpg");
 	margin: 0 auto;
 	border-left: 1px solid #000;
@@ -79,7 +79,7 @@ body {
 
 #top .buttons {
 	position: absolute;
-	width: 860px;
+	width: 770px;
 	margin-top: 58px;
 	overflow: hidden;
 }
@@ -1696,7 +1696,7 @@ opacity:0.8;
 /* ---------------------------------------- GLOBAL KENNY CHAT*/
 
 .global-chat {
-	width: 860px;
+	width: 770px;
 
 	/*max-height: 300px;*/
 	position: fixed;
@@ -1740,7 +1740,7 @@ opacity:0.8;
 .global-chat .top .bkg {
 	background-color: #415e9b;
 	height: 38px;
-	width: 860px;
+	width: 770px;
 	position: absolute;
 	bottom: 0px;
 	z-index: 1;
