@@ -433,6 +433,11 @@ body {
 	height: 93px;
 	margin: 10px auto 0 auto;
 }
+#auction-top .btn-close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+}
 #auction-top .img {
 
 	float: left;
