@@ -70,7 +70,7 @@
 		<div id="fb-root"></div>
 		<script>
 			window.fbAsyncInit = function() {
-				angular.element('body').scope().initialize('{{MIXPANEL_TOKEN}}');
+				angular.element('body').scope().initialize();
 				FB.init({
 					channelUrl : '{{SITE_NAME_WOUT_BACKSLASH}}{% static 'channel.html' %}', // Channel File
 					status     : true, // check login status
@@ -78,15 +78,14 @@
 					xfbml      : true  // parse XFBML
 				});
 				FB.Canvas.setAutoGrow();
-				FB.Canvas.setDoneLoading(
-					function (result) {
-						// welcome popup
-						{% if display_popup %}
-							initTutorial();
-						{% endif %}
-						angular.element($('.global-chat')).scope().chatPosition();
-						angular.element($('#base_header')).scope().uvTabPosition();
-					}
+				angular.element(document).ready(function() {
+					// welcome popup
+					{% if display_popup %}
+						initTutorial();
+					{% endif %}
+					angular.element('.global-chat').scope().chatPosition();
+					angular.element('#base_header').scope().uvTabPosition();
+				}
 				);
 			}; ( function(d, s, id) {
 					var js, fjs = d.getElementsByTagName(s)[0];

@@ -62,7 +62,8 @@ def getTemplateContext(request):
     data = {
         u'PUBNUB_PUB': settings.PUBNUB_PUB,
         u'PUBNUB_SUB': settings.PUBNUB_SUB,
-        u'fb_app_id': settings.FACEBOOK_APP_ID
+        u'fb_app_id': settings.FACEBOOK_APP_ID,
+        u'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN
     }
     
     return HttpResponse(json.dumps(data), content_type="application/json")

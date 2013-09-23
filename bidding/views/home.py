@@ -71,7 +71,6 @@ def canvashome(request):
         auction_type = 'token'
     response = render_response(request, 'bidding/mainpage.html',
                                {'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
-                                'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN,
                                 'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH,
                                 'SITE_NAME': settings.SITE_NAME,
                                 'display_popup': display_popup,
@@ -176,7 +175,6 @@ def winners(request, page):
     #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
     return render_response(request, 'bidding/ibidgames_winners.html',
                            {    'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
-                                'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN,
                                 'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH,
                                 'SITE_NAME': settings.SITE_NAME,
                                 'display_popup': False,

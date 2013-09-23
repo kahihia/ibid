@@ -49,11 +49,20 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
     
-    $rootScope.initialize = function (mixpanel_token) {
+    $rootScope.initialize = function () {
+        $http.post('/api/getTemplateContext/').success(function (data) {
+            $rootScope.PUBNUB_PUB = data.PUBNUB_PUB;
+            $rootScope.PUBNUB_SUB = data.PUBNUB_SUB;
+            $rootScope.MIXPANEL_TOKEN = data.MIXPANEL_TOKEN;
+            FB.init({
+                    appId : data.fb_app_id
+            });
+        });
+        
         //initialize analythics.js with mixpanel
         analytics.initialize({
             'Mixpanel' : {
-                token  : mixpanel_token,
+                token  : $rootScope.MIXPANEL_TOKEN,
                 people : true
             },
         });
@@ -68,14 +77,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
-        });
-        
-        $http.post('/api/getTemplateContext/').success(function (data) {
-            $rootScope.PUBNUB_PUB = data.PUBNUB_PUB;
-            $rootScope.PUBNUB_SUB = data.PUBNUB_SUB;
-            FB.init({
-                    appId : data.fb_app_id
-            });
         });
     };
     
