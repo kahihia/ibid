@@ -49,7 +49,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
     
-    $scope.initialize = function (mixpanel_token) {
+    $rootScope.initialize = function (mixpanel_token) {
         //initialize analythics.js with mixpanel
         analytics.initialize({
             'Mixpanel' : {
@@ -73,6 +73,9 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $http.post('/api/getTemplateContext/').success(function (data) {
             $rootScope.PUBNUB_PUB = data.PUBNUB_PUB;
             $rootScope.PUBNUB_SUB = data.PUBNUB_SUB;
+            FB.init({
+                    appId : data.fb_app_id
+            });
         });
     };
     

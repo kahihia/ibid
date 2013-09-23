@@ -66,12 +66,12 @@
 		<script src="{% static 'js/tutorial.js' %}" ></script>
 		<script src="{% static "js/app.js" %}" ></script>
 	</head>
-	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
+	<body {% if inCanvas %} style="overflow: hidden" {% endif %}  ng-controller="userDetailsCtrl">
 		<div id="fb-root"></div>
 		<script>
 			window.fbAsyncInit = function() {
+				angular.element('body').scope().initialize('{{MIXPANEL_TOKEN}}');
 				FB.init({
-					appId : '{{ fb_app_id }}',
 					channelUrl : '{{SITE_NAME_WOUT_BACKSLASH}}{% static 'channel.html' %}', // Channel File
 					status     : true, // check login status
 					cookie     : true, // enable cookies to allow the server to access the session
@@ -98,7 +98,7 @@
 					js.src = "//connect.facebook.net/en_US/all.js";
 					fjs.parentNode.insertBefore(js, fjs);
 				}(document, 'script', 'facebook-jssdk'));
-	        </script>
+		</script>
 		<script>
 			function getCurrentDateTime(){
 				//to parse in python
@@ -117,7 +117,7 @@
 		</script>
 
 		<div id="main-wrapper">
-			<div id="base_header" ng-controller="userDetailsCtrl" ng-init="initialize('{{MIXPANEL_TOKEN}}')">
+			<div id="base_header" ng-controller="userDetailsCtrl">
 				<!--tutorial widget-->
 				<div id="tooltip-help" style="position:absolute;top:200px;left:300px;z-index:1002; float:left;display:none;">
 					<div class="img">

@@ -61,7 +61,8 @@ def getUserDetails(request):
 def getTemplateContext(request):
     data = {
         u'PUBNUB_PUB': settings.PUBNUB_PUB,
-        u'PUBNUB_SUB': settings.PUBNUB_SUB
+        u'PUBNUB_SUB': settings.PUBNUB_SUB,
+        u'fb_app_id': settings.FACEBOOK_APP_ID
     }
     
     return HttpResponse(json.dumps(data), content_type="application/json")
