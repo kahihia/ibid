@@ -147,3 +147,18 @@ def send_in_thread(signal, **kwargs):
     """
     th = threading.Thread(target=signal.send, kwargs=kwargs)
     th.start()
+
+
+@receiver(auction_finished_signal)
+def send_app_notification(sender, **kwargs):
+    
+    from apps.main.models import Notification
+    auction = kwargs['auction']
+    for bidder in auction.bidders.all():
+        
+        bid=bidder.bid_set.get(auction=auction)
+        logger.debug(bid.left()==bid.placed_amount)
+        if bid.left()==bid.placed_amount:           
+            Notification.objects.create(to=bidder, n_from=None, n_type='FinishedAuction', message='')
+            
+  
