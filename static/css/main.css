@@ -419,7 +419,7 @@ body {
 /*-------------------------------------------------------IFRAME TOKENS */
 
 #auction {
-	width: 791px;
+	width: 770px;
 	height: 100%;
 	margin: 0px auto 0 auto;
 }
@@ -429,7 +429,7 @@ body {
 	position: relative;
 	/*z-index: 100;*/
 	background-image: url("../images/bkg-auction.png");
-	width: 791px;
+	width: 750px;
 	height: 93px;
 	margin: 10px auto 0 auto;
 }
