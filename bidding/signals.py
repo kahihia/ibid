@@ -14,7 +14,6 @@ from django.dispatch.dispatcher import receiver, Signal
 from django.template.loader import render_to_string
 
 import client
-from apps.main.models import Notification
 
 
 logger = logging.getLogger('django')
@@ -155,6 +154,7 @@ def send_in_thread(signal, **kwargs):
 
 @receiver(auction_finished_signal)
 def send_app_notification(sender, **kwargs):
+    from apps.main.models import Notification
     auction = kwargs['auction']
     for bidder in auction.bidders.all():
         bid = bidder.bid_set.get(auction=auction)
