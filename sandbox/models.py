@@ -7,8 +7,10 @@ from bidding.models import Member
 
 class Notification(models.Model):
     to = models.ForeignKey(Member)
-    date = models.DateTimeField(auto_now_add=True)
     message = models.TextField()
+    status = models.CharField(max_length=20)
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
 
 
 class AuditedModel(models.Model):
