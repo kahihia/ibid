@@ -387,6 +387,15 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     }
 
+    /**
+     * Method to move an auction from mine to finished.
+     *
+     * @param {object} auction Auction to move.
+     */
+    $scope.closeAuction = function (auction) {
+        $scope.moveAuction(auction, 'mine', 'finished');
+    };
+
     //getLocalAuctionsAll
     $scope.getLocalAuctionAll = function () {
         var auctions = [];

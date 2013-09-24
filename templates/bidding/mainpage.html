@@ -1,6 +1,16 @@
 {% extends "ibidgames_base_section.html" %}	
 {% load staticfiles %}
 
+{% block meta %}
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta property="og:type" content="Game" />
+	<meta property="og:url" content="{{ app_url }}" />
+	<meta property="og:title" content="{{ share_title }}" />
+	<meta property="og:image" content="{{SITE_NAME_WOUT_BACKSLASH}}{% static "images/200x200-Fblogo.png" %}" />
+	<meta property="og:site_name" content="{{ site_url }}" />
+	<meta property="og:description" content="{{ share_description }}" />
+{% endblock %}
+	
 {% block base_header %}
 	<!-- Tokens won modal -->
 	<div class="modal" ng-show="showWonTokensDialog" ng-cloak>
@@ -51,9 +61,8 @@
 {% endblock %}
 
 {% block menu_wrapper %}
-	<div id="menu-wrapper" ng-controller="AuctionsPanelController"
-				{% if auction_type == 'token' %} ng-init="playForTokens()" {% endif %}
-				{% if auction_type == 'credit' %} ng-init="playForItems()" {% endif %}>
+	<div id="menu-wrapper" {% if auction_type == 'token' %} ng-init="playForTokens()" {% endif %}
+						{% if auction_type == 'credit' %} ng-init="playForItems()" {% endif %}>
 		<div id="menu">
 			<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
 			<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
@@ -104,10 +113,10 @@
 							<p>
 								RESERVE
 							</p>
-							{$ auction.completion$}% / {$auction.bidders $} Bidders
+							{$ auction.completion $}% / {$ auction.bidders $} Bidders
 						</div>
 						<div id="auction-bids">
-							<p>PLACED {$ auction.placed$} {$playFor | uppercase $}S</p>
+							<p>PLACED {$ auction.placed $} {$ playFor | uppercase $}S</p>
 
 							<div id="auction-precap-bid">
 								<span>{$ auction.bids/auction.bidPrice $}</span> Bids

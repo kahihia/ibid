@@ -1,14 +1,10 @@
 {% load staticfiles %}
+{% load bidding_tags %}
+
 <!DOCTYPE html>
 <html ng-app="app">
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta property="og:type" content="Game" />
-		<meta property="og:url" content="{{ app_url }}" />
-		<meta property="og:title" content="{{ share_title }}" />
-		<meta property="og:image" content="{{SITE_NAME_WOUT_BACKSLASH}}{% static "images/200x200-Fblogo.png" %}" />
-		<meta property="og:site_name" content="{{ site_url }}" />
-		<meta property="og:description" content="{{ share_description }}" />
+		{% block meta %}{% endblock %}
 
 		<title>iBidGames</title>
 
@@ -165,8 +161,9 @@
 								Buy credits and get more chance to win auctions!
 							    </p>
 							</div>
+							{% get_packages as packages %}
 							{% for package in packages %}
-							<div class="credits-btn btn btn-red" ng-click="buy_bids({{user.id}},{{ package.id }},'{{SITE_NAME}}')">
+							<div class="credits-btn btn btn-red" ng-click="buy_bids({{user.id}},{{ package.id }})">
 							    {{ package.description|safe }}
 							</div>
 							{% endfor %}
@@ -364,7 +361,7 @@
 		  tab_inverted: false
 		}]);
 		</script>
-		<div id="pubnub" sub-key="{$ PUBNUB_SUB $}" origin="pubsub.pubnub.com"></div>
+		<div id="pubnub" sub-key="{% get_pubnub_sub %}" origin="pubsub.pubnub.com"></div>
 		<script src="https://cdn.pubnub.com/pubnub-3.5.3.min.js"></script>
 		<div id="overlay" style="position:fixed;
 			top:0;

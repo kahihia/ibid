@@ -51,9 +51,10 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     
     $rootScope.initialize = function () {
         $http.post('/api/getTemplateContext/').success(function (data) {
-            $rootScope.PUBNUB_PUB = data.PUBNUB_PUB;
-            $rootScope.PUBNUB_SUB = data.PUBNUB_SUB;
+            //$rootScope.PUBNUB_PUB = data.PUBNUB_PUB;
+            //$rootScope.PUBNUB_SUB = data.PUBNUB_SUB;
             $rootScope.MIXPANEL_TOKEN = data.MIXPANEL_TOKEN;
+            $rootScope.SITE_NAME = data.SITE_NAME;
             FB.init({
                     appId : data.fb_app_id
             });
@@ -207,14 +208,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-    $scope.buy_bids = function(member,package_id,site_name) {
+    $scope.buy_bids = function(member,package_id) {
         // calling the API ...
         
         analytics.track('buy bids');
         var obj = {
             method: 'pay',
             action: 'purchaseitem',
-            product: site_name+'bid_package/'+package_id,
+            product: $rootScope.SITE_NAME+'bid_package/'+package_id,
         };
         
         $scope.subscribeToPaymentChannel(member)
@@ -399,42 +400,6 @@ function closePopupLike() {
         jQuery('.like-popup').hide()
     }})
 }
-
-
-function buy_bids(url, package_id) {
-    var order_info = -1;
-
-    jQuery.post(url, {'package_id': package_id},
-        function (data) {
-            if (data.order_info != undefined) {
-                if (data.order_info >= 0) {
-
-                    // calling the API ...
-                    var obj = {
-                        method: 'pay',
-                        order_info: data.order_info,
-                        purchase_type: 'item',
-                        dev_purchase_params: {
-                            'oscif': true
-                        }
-                    };
-                    console.log(obj);
-
-                    FB.ui(obj, getCredits_callback);
-                }
-            }
-        }, 'json');
-}
-
-var getCredits_callback = function (data) {
-    if (data['order_id']) {
-        refresh_user_bids();
-        return true;
-    } else {
-        // handle errors here
-        return false;
-    }
-};
 
 var ovarlayCount = 0;
 function showOverlay(){

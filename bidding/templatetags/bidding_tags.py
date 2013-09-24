@@ -1,7 +1,8 @@
 from datetime import datetime
 from django import template
 from django.utils.safestring import mark_safe
-
+from bidding.models import BidPackage
+from django.conf import settings
 
 register = template.Library()
 
@@ -48,3 +49,11 @@ def user_bids(user, auction):
         return member.auction_bids_left(auction)
     
     return 0
+
+@register.assignment_tag
+def get_packages():
+    return BidPackage.objects.all()
+
+@register.simple_tag
+def get_pubnub_sub():
+    return settings.PUBNUB_SUB
