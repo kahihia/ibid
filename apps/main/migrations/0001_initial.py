@@ -11,12 +11,13 @@ class Migration(SchemaMigration):
         # Adding model 'Notification'
         db.create_table(u'main_notification', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('To', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bidding.Member'])),
-            ('From', self.gf('django.db.models.fields.related.ForeignKey')(related_name='notifications', null=True, to=orm['bidding.Member'])),
-            ('Type', self.gf('django.db.models.fields.CharField')(default='text', max_length=10)),
-            ('Message', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('Created', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
-            ('Read', self.gf('django.db.models.fields.DateTimeField')(default=None, null=True)),
+            ('to', self.gf('django.db.models.fields.related.ForeignKey')(related_name='notifications_recieved', to=orm['bidding.Member'])),
+            ('n_from', self.gf('django.db.models.fields.related.ForeignKey')(related_name='notifications_sent', null=True, to=orm['bidding.Member'])),
+            ('n_type', self.gf('django.db.models.fields.CharField')(default='text', max_length=25)),
+            ('message', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
+            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('updated', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
+            ('status', self.gf('django.db.models.fields.CharField')(default='Unread', max_length=20)),
         ))
         db.send_create_signal(u'main', ['Notification'])
 
@@ -82,14 +83,15 @@ class Migration(SchemaMigration):
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
         u'main.notification': {
-            'Created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'From': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notifications'", 'null': 'True', 'to': u"orm['bidding.Member']"}),
-            'Message': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'Meta': {'object_name': 'Notification'},
-            'Read': ('django.db.models.fields.DateTimeField', [], {'default': 'None', 'null': 'True'}),
-            'To': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
-            'Type': ('django.db.models.fields.CharField', [], {'default': "'text'", 'max_length': '10'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'})
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'message': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
+            'n_from': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notifications_sent'", 'null': 'True', 'to': u"orm['bidding.Member']"}),
+            'n_type': ('django.db.models.fields.CharField', [], {'default': "'text'", 'max_length': '25'}),
+            'status': ('django.db.models.fields.CharField', [], {'default': "'Unread'", 'max_length': '20'}),
+            'to': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'notifications_recieved'", 'to': u"orm['bidding.Member']"}),
+            'updated': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         }
     }
 
