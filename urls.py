@@ -30,3 +30,6 @@ if settings.DEBUG:
         (r'^media/(?P<path>.*)$', 'serve', {'document_root': os.path.join(settings.PROJECT_PATH, 'media')}),
 
     )
+
+if 'sandbox' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('', (r'', include('sandbox.urls')))

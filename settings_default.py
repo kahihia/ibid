@@ -292,3 +292,6 @@ AUCTION_MAX_TOKENS = 120;
 
 # Analytics keys
 MIXPANEL_TOKEN = ''
+
+# Tastypie settings (API)
+TASTYPIE_DEFAULT_FORMATS = ['json']
