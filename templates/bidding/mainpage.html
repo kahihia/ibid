@@ -113,10 +113,10 @@
 							<p>
 								RESERVE
 							</p>
-							{$ auction.completion $}% / {$ auction.bidders $} Bidders
+							{$ auction.completion$}% / {$auction.bidders $} Bidders
 						</div>
 						<div id="auction-bids">
-							<p>PLACED {$ auction.placed $} {$ playFor | uppercase $}S</p>
+							<p>PLACED {$ auction.placed$} {$playFor | uppercase $}S</p>
 
 							<div id="auction-precap-bid">
 								<span>{$ auction.bids/auction.bidPrice $}</span> Bids
@@ -124,12 +124,14 @@
 							<div id="btn-bid-less" class="btn btn-red btn-rem-bid" ng-click="remBids(auction)" ng-disabled="!auction.interface.remBidEnabled">-</div>
 							<div id="btn-bid-plus" class="btn btn-red btn-add-bid" ng-click="addBids(auction)" ng-disabled="!auction.interface.addBidEnabled">+</div>
 						</div>
-						<div id="auction-btns">
+						
+						<!--<div id="auction-btns">
 							<div id="btn-invite-auction" class="disabled"><img src="{% static 'images/btn-invite-auction-disabled.png' %}" width="36" height="42">
 							</div>
 							<div id="btn-chat-auction" class="disabled"><img src="{% static 'images/btn-chat-auction-disabled.png' %}" width="36" height="43">
 							</div>
-						</div>
+						</div>-->
+
 					</div>
 
 					<!-- TEMPLATE: waiting -->
@@ -148,7 +150,9 @@
 							<div class="syncing">
 								SYNCING...
 							</div>
+
 						</div>
+
 					</div>
 
 					<!-- TEMPLATE: processing -->
@@ -213,6 +217,7 @@
 
 					<!-- TEMPLATE: waiting_payment -->
 					<div id="auction-top" ng-switch-when="waiting_payment">
+						<div class="btn-close" ng-mousedown="closeAuction(auction)">×</div>
 						<div class="img">
 							<img ng-src="{$ auction.itemImage $}">
 						</div>
@@ -229,9 +234,11 @@
 							<a href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$auction.winner.firstName $}</a>
 						</div>
 					</div>
+
 				</div>
 
 				<div id="auction-content">
+
 					<div id="auction-auctioneer">
 						<div class="img">
 							<img src="{% static 'images/auctioneer.jpg' %}" height="109" width="106">
@@ -247,6 +254,7 @@
 							</div>
 							<div id="btn-acutioneer-down"></div>
 						</div>
+
 					</div>
 
 					<div id="auction-chat">
@@ -310,14 +318,14 @@
 						<div id="btn-start-bid" class="btn btn-longtext" ng-switch-default disabled>ALREADY STARTED</div>
 					</div>
 				</div>
-				<div id="auction-btns">
+				<!--<div id="auction-btns">
 					<div id="btn-invite-auction"><img src="{% static 'images/btn-invite-auction.png' %}" width="36"
 						height="42">
 					</div>
 					<div id="btn-chat-auction"><img src="{% static 'images/btn-chat-auction.png' %}" width="36"
 						height="43">
 					</div>
-				</div>
+				</div>-->
 			</div>
 		</div>
 	</div>
