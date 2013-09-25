@@ -3,7 +3,7 @@
 import time
 import re
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from decimal import Decimal
 
 import open_facebook
@@ -16,7 +16,7 @@ from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
 from django_facebook.models import FacebookModel
-from bidding.delegate import state_delegates
+#from bidding.delegate import state_delegates
 from audit.models import AuditedModel
 from urllib2 import urlopen
 from sorl.thumbnail import get_thumbnail
@@ -25,6 +25,20 @@ import logging
 logger = logging.getLogger('django')
 
 re_bids = re.compile("(\d+)")
+
+
+
+from threading import Timer
+from bidding import client
+
+
+from bidding.signals import auction_finished_signal
+from bidding.signals import auction_started_signal
+from bidding.signals import precap_finished_signal
+from bidding.signals import precap_finishing_signal
+from bidding.signals import send_in_thread
+from bidding.signals import task_auction_pause
+from bidding.signals import task_auction_start
 
 AUCTION_STATUS_CHOICES = (
     ('precap', 'Pre-Capitalization'),
@@ -345,25 +359,9 @@ class Auction(AbstractAuction):
     class Meta:
         ordering = ['-id']
 
-    def _state_delegate(self):
-        return state_delegates[self.status](self)
-
-    def __getattr__(self, name):
-        """ Tries to forward non resolved calls to the delegate objects. """
-        logger.debug("Name: %s" % name)
-        sd = self._state_delegate()
-        if hasattr(sd, name):
-            return getattr(sd, name)
-
-        if hasattr(super(Auction, self), '__getattr__'):
-            return super(Auction, self).__getattr__(name)
-        else:
-            raise AttributeError
-
-
     def placed_bids(self):
         """ Returns the amount of bids commited in precap. """
-        return self.auction.bid_set.aggregate(Sum('placed_amount'))['placed_amount__sum'] or 0
+        return self.bid_set.aggregate(Sum('placed_amount'))['placed_amount__sum'] or 0
 
     def used_bids(self):
         """ Returns the amount of precap bids already used in the auction. """
@@ -389,6 +387,315 @@ class Auction(AbstractAuction):
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
 
+    def start_auction(self):
+        #refresh the current database auction status
+       
+        bid_number = 0
+        if self.status == 'waiting':
+            self.start()
+        elif self.status == 'pause':
+            self.resume()
+        self.finish_auction_delayed(self.bidding_time)
+    
+    def start(self):
+        logger.debug(self.status)
+        if self.status == 'waiting':
+            logger.debug('entra if start')
+            """ Starts the auction and saves the model. """
+            self.status = 'processing'
+            client.auctionActive(self)
+            logger.debug('manda pubnub')
+            self.saved_time = self.bidding_time
+            self.save()
+            logger.debug('MANDA SEÑAL')
+            send_in_thread(auction_started_signal, sender=self, auction=self)
+        
+
+    def finish_auction(self, bid_number):
+        #refresh the current database auction status
+        if self.status == 'processing' and bid_number == self.getBidNumber(): 
+            self.finish()
+            if self.always_alive:
+                auction_copy = Auction.objects.create(item=self.item,
+                                                      bid_type=self.bid_type,
+                                                      precap_bids=self.precap_bids,
+                                                      minimum_precap=self.minimum_precap,
+                                                      is_active=self.is_active,
+                                                      always_alive=self.always_alive,
+                                                      bidding_time=self.saved_time,
+                                                      threshold1=self.threshold1,
+                                                      threshold2=self.threshold2,
+                                                      threshold3=self.threshold3)
+                auction_copy.save()
+        else:
+            auction.save()
+
+    def start_auction_delayed(self, delay):
+        t = Timer(delay, self.start_auction)
+        t.start()
+    
+    def finish_auction_delayed(self, delay):
+        kwargs = {'bid_number': self.getBidNumber()}
+        t = Timer(delay, self.finish_auction, kwargs=kwargs)
+        t.start()
+
+    def get_last_bidder(self):
+        """ 
+        Returns the username of the last member that placed a bid on this 
+        auction. 
+        """
+        qs = self.bid_set.order_by('-unixtime')
+
+        if not qs or not qs[0].used_amount > 0:
+            return None
+
+        return qs[0].bidder
+        
+    def get_latest_bid(self):
+        """
+        Returns the most recent bid of the auction.
+        """
+        bid_query = self.bid_set.order_by('-unixtime')
+        return bid_query[0] if bid_query else None
+    
+    def can_precap(self, member, amount):
+        """ 
+        Returns True if the member can place the specified amount of precap
+        bids in this auction.
+        """
+        if self.status == 'precap':
+            return member.get_bids(self.bid_type) + member.get_placed_amount(self) >= amount
+        elif self.status == 'waiting':
+            return (member.get_bids(self.bid_type) >= amount
+                and not self.has_joined(member))
+        return None
+    
+    def completion(self, n=0):
+        """ Returns a completion percentaje (0-100 integer) of the precap. """
+        if self.status == 'precap':
+            percentaje = int((self.placed_bids() * 100) / self.precap_bids)
+            if n != 0:
+                """ Returns percentaje without n bids """
+                bids = self.placed_bids() - (n * self.minimum_precap)
+                percentaje = int((bids * 100) / self.precap_bids)
+            return percentaje
+        return None
+    
+    
+    def get_time_left(self):
+        if self.status == 'waiting':
+            start_time = Decimal("%f" % time.mktime(
+                self.start_date.timetuple()))
+            return float(start_time) - time.time()
+        elif self.status == 'processing':
+            bid = self.get_latest_bid()
+            if bid:
+                if bid.used_amount == 0:
+                    #if its the first bid, the base is the start date
+                    start_time = Decimal("%f" % time.mktime(
+                        self.start_date.timetuple()))
+                else:
+                    start_time = bid.unixtime
+                time_left = (float(self.bidding_time)
+                                 - time.time() + float(start_time))
+                return round(time_left) if time_left > 0 else 0
+        return None
+    
+    #def _state_delegate(self):
+    #    return state_delegates[self.status](self)
+    #
+    #def __getattr__(self, name):
+    #    """ Tries to forward non resolved calls to the delegate objects. """
+    #    logger.debug("Name: %s" % name)
+    #    sd = self._state_delegate()
+    #    if hasattr(sd, name):
+    #        return getattr(sd, name)
+    #
+    #    if hasattr(super(Auction, self), '__getattr__'):
+    #        return super(Auction, self).__getattr__(name)
+    #    else:
+    #        raise AttributeError
+    
+    
+    def _precap_bids_needed(self):
+            """ 
+            Returns the amount of bids needed before the precap is finished. 
+            """
+            needed = self.precap_bids - self.placed_bids()
+            return needed if needed > 0 else 0
+    
+    
+    def can_bid(self, member):
+        """
+        Returns True if the member has commited bids left to use on the 
+        auction, and its not the last bidder. 
+        """
+        logger.debug(self.get_last_bidder())
+        if self.get_last_bidder() == member:
+            return False
+        
+        
+        return member.auction_bids_left(self)
+  
+    def place_precap_bid(self, member, amount, update_type = 'add'):
+        if self.status == 'precap':
+            """ 
+            The member commits an amount precap bid to the auction and saves its 
+            state. 
+            Checks if the auction precap should be finished.
+            Returns True if the member just joined the auction.
+            """
+            joining = not self.has_joined(member)
+            if joining:
+                self.bidders.add(member)
+            member.precap_bids(self, amount)
+            if update_type == 'add':
+                if self.bid_type == 'bid':
+                    notification_percentage = ConfigKey.get('NOTIFICATION_CREDIT_PERCENTAGE', 90)
+                elif self.bid_type == 'token':
+                    notification_percentage = ConfigKey.get('NOTIFICATION_TOKEN_PERCENTAGE', 90)
+                else:
+                    notification_percentage = 0
+                previous_finishing = self.completion(1) < notification_percentage
+                if self.completion() >= notification_percentage > 0 and previous_finishing == True:
+                    send_in_thread(precap_finishing_signal, sender=self, auction=self)
+                
+            #TODO two users can enter here because status is not yet changed
+            if not self._precap_bids_needed():
+                self.finish_precap()
+            return joining
+        
+        elif self.status == 'waiting':
+            """ 
+            The member joins the auction. No validations are made (can_precap 
+            is assumed to be True).
+            """
+            self.bidders.add(member)
+            member.precap_bids(self, amount)
+            return True
+        
+    def leave_auction(self, member):
+        """ Returns all the bids commited to the auction by the member. """
+
+        self.bidders.remove(member)
+        member.leave_auction(self)
+        
+    
+    def _check_preload_auctions(self):
+        """ 
+        Checks the amount of upcoming auctions, and runs a fixture in case 
+        there are not enough. 
+        """
+        upcoming = Auction.objects.filter(bid_type=self.bid_type,
+                                          is_active=True, status__in='precap').count()
+
+        for fixture in AuctionFixture.objects.filter(
+                bid_type=self.bid_type,
+                automatic=True):
+            if fixture.threshold > upcoming:
+                fixture.make_auctions()
+    
+    def finish_precap(self):
+        """
+        Changes the status to Waiting, sets the auction start date and saves
+        it.
+        """
+        self.status = 'waiting'
+        self.start_date = datetime.now() + timedelta(seconds=5)
+        self.save()
+        
+        from chat import auctioneer
+        
+        auctioneer.precap_finished_message(self)
+        client.auctionAwait(self)
+        self.start_auction_delayed(5.0)
+        send_in_thread(precap_finished_signal, sender=self, auction=self)
+    
+    def finish(self):
+        """ Marks the auction as finished, sets the winner and win time. """
+        logger.debug("Entering finish")
+    
+        bidder = self.get_last_bidder()
+        self.winner = bidder if bidder else None
+        self.won_price = self.price()
+        self.status = 'waiting_payment'
+        self.won_date = datetime.now()
+        self.save()
+        logger.debug("Ended auction saved")
+    
+        from chat import auctioneer
+        
+        auctioneer.auction_finished_message(self)
+        client.auctionFinish(self)
+        send_in_thread(auction_finished_signal, sender=self, auction=self)
+        logger.debug("Sent signal")
+        
+    def _check_thresholds(self):
+        """ 
+        Checks if a threshold has been reached, and modifies the bidding time
+        accordingly. If a threshold is reached True is returned.        
+        """
+        current_bids = self.used_bids()
+        limt_bids = int(self.placed_bids() * 0.25)
+    
+        while limt_bids % self.minimum_precap <> 0:
+            limt_bids -= 1
+        
+        from chat import auctioneer
+        
+        if self.threshold1 and current_bids == limt_bids:
+            self.bidding_time = self.threshold1
+            auctioneer.threshold_message(auction=self, number=1)
+            return True
+        if self.threshold2 and current_bids == 2 * limt_bids:
+            self.bidding_time = self.threshold2
+            auctioneer.threshold_message(auction=self, number=2)
+            return True
+        if self.threshold3 and current_bids == 3 * limt_bids:
+            self.bidding_time = self.threshold3
+            auctioneer.threshold_message(auction=self, number=3)
+            return True
+        return False
+    
+    def bid(self, member, bidNumber):
+        """ 
+        Uses one of the member's commited bids in the auction.
+        """
+        bid = self.bid_set.get(bidder=member)
+        bid.used_amount += self.minimum_precap
+        bid_time = time.time()
+        bid.unixtime = Decimal("%f" % bid_time)
+        bid.save()
+        if self._check_thresholds():
+            self.pause()
+            self.start_auction_delayed(self.bidding_time)
+        else:
+            self.finish_auction_delayed(self.bidding_time)
+    
+        return True
+    
+    def pause(self):
+        """ pauses the auction. """
+        self.status = 'pause'
+        self.save()
+        client.auctionPause(self)
+        start_auction_delayed(self, 10.0)
+        send_in_thread(task_auction_pause, sender=self, auction=self)
+        
+    def resume(self):
+        """ Resumes the auction. """
+    
+        self.status = 'processing'
+        #self.saved_time = self.bidding_time
+        self.save()
+    
+        #fixme ugly
+        bid = self.get_latest_bid()
+        now = time.time()
+        bid.unixtime = Decimal("%f" % now)
+        bid.save()
+    
+        client.auctionResume(self)
 
 class PrePromotedAuction(AbstractAuction):
     bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
@@ -430,7 +737,7 @@ class PrePromotedAuction(AbstractAuction):
 
     def placed_bids(self):
         """ Returns the amount of bids commited in precap. """
-        return self.auction.bid_set.aggregate(Sum('placed_amount')
+        return self.bid_set.aggregate(Sum('placed_amount')
         )['placed_amount__sum'] or 0
 
     def used_bids(self):

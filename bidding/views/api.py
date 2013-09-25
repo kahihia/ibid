@@ -441,7 +441,7 @@ def claim(request):
     member = request.user
 
     tmp = {}
-
+    logger.debug(auction.status)
     if auction.status == 'processing' and auction.can_bid(member):
 
         if auction.used_bids() / auction.minimum_precap == bidNumber:
@@ -460,11 +460,14 @@ def claim(request):
                 tmp["success"] = True
             else:
                 #else ignore! because the claim is old, based on a previous timer.
+                logger.debug('1')
                 tmp["success"] = False
         else:
             #else ignore! because the claim is old, based on a previous timer.
+            logger.debug('2')
             tmp["success"] = False
     else:
+        logger.debug('3')
         tmp["success"] = False
 
     return HttpResponse(json.dumps(tmp), content_type="application/json")
