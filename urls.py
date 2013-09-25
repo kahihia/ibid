@@ -9,6 +9,7 @@ from django.views.generic.base import RedirectView
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    (r'', include('apps.main.urls')),
     (r'', include('bidding.urls')),
     (r'', include('message.urls')),
     (r'^chat/', include('chat.urls')),
@@ -30,3 +31,6 @@ if settings.DEBUG:
         (r'^media/(?P<path>.*)$', 'serve', {'document_root': os.path.join(settings.PROJECT_PATH, 'media')}),
 
     )
+
+if 'sandbox' in settings.INSTALLED_APPS:
+    urlpatterns += patterns('', (r'^sandbox/', include('sandbox.urls')))
