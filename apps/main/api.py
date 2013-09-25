@@ -33,12 +33,22 @@ class UserNotificationsAuthorization(Authorization):
         raise Unauthorized("Sorry, no deletes.")
 
 
+class DummyAuthorization(Authorization):
+    def read_list(self, object_list, bundle): return object_list
+    def read_detail(self, object_list, bundle): return True
+    def create_list(self, object_list, bundle): return object_list
+    def create_detail(self, object_list, bundle): return True
+    def update_list(self, object_list, bundle): return object_list
+    def update_detail(self, object_list, bundle): return True
+    def delete_list(self, object_list, bundle): return object_list
+    def delete_detail(self, object_list, bundle): return True
+
+
 class NotificationResource(ModelResource):
     class Meta:
         resource_name = 'notification'
-        allowed_methods = ['get']
-        #list_allowed_methods = ['get]
-        #detail_allowed_methods = ['get', 'put', 'patch']
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get', 'put', 'patch']
         authorization = UserNotificationsAuthorization()
         queryset = Notification.objects.order_by('created')
         filtering = {
