@@ -120,11 +120,13 @@ def notify_bidders(sender, **kwargs):
     th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
     th.start()
 
+
 @receiver(precap_finishing_signal)
 def notify_bidders(sender, **kwargs):
     kwargs['signal'] = 'precap_finishing'
     th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
     th.start()
+
 
 def notify_bidders_thread(**kwargs):
     auction = kwargs['auction']
@@ -140,6 +142,7 @@ def notify_bidders_thread(**kwargs):
         destination = '{facebook_id}/notifications'.format(facebook_id=member.facebook_id)
         response = of.set(destination, **args)
 
+
 def send_in_thread(signal, **kwargs):
     """ 
     Sends the given signal in a different thread, so it doesn't delay further
@@ -147,3 +150,13 @@ def send_in_thread(signal, **kwargs):
     """
     th = threading.Thread(target=signal.send, kwargs=kwargs)
     th.start()
+
+
+@receiver(auction_finished_signal)
+def send_app_notification(sender, **kwargs):
+    from apps.main.models import Notification
+    auction = kwargs['auction']
+    for bidder in auction.bidders.all():
+        bid = bidder.bid_set.get(auction=auction)
+        if bid.left() == bid.placed_amount:           
+            Notification.objects.create(recipient=bidder, sender=None, notification_type='FinishedAuction', message='')
