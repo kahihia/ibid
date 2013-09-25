@@ -1,19 +1,18 @@
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL
 
-from bidding.models import Member
-from sandbox.models import Notification
+from apps.main.models import Notification
 
 
 class UserNotificationsAuthorization(Authorization):
     def read_list(self, object_list, bundle):
-        return object_list.filter(to=bundle.request.user)
+        return object_list.filter(recipient=bundle.request.user)
 
     def read_detail(self, object_list, bundle):
         if bundle.request.path.endswith('schema/'):
             return True
-        return bundle.obj.to == bundle.request.user
+        return bundle.obj.recipient == bundle.request.user
 
     def create_list(self, object_list, bundle):
         raise Unauthorized("Sorry, no creates.")
@@ -36,9 +35,12 @@ class UserNotificationsAuthorization(Authorization):
 
 class NotificationResource(ModelResource):
     class Meta:
+        resource_name = 'notification'
         allowed_methods = ['get']
         #list_allowed_methods = ['get]
         #detail_allowed_methods = ['get', 'put', 'patch']
         authorization = UserNotificationsAuthorization()
-        queryset = Notification.objects.exclude(status='Read').order_by('created')
-        resource_name = 'notification'
+        queryset = Notification.objects.order_by('created')
+        filtering = {
+            'status': ALL,
+        }
