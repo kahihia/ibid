@@ -3,6 +3,7 @@
 import time
 import re
 import json
+import threading
 from datetime import datetime, timedelta
 from decimal import Decimal
 
@@ -16,7 +17,6 @@ from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
 from django_facebook.models import FacebookModel
-#from bidding.delegate import state_delegates
 from audit.models import AuditedModel
 from urllib2 import urlopen
 from sorl.thumbnail import get_thumbnail
@@ -26,19 +26,16 @@ logger = logging.getLogger('django')
 
 re_bids = re.compile("(\d+)")
 
-
-
-from threading import Timer
 from bidding import client
-
-
+from chat import auctioneer
 from bidding.signals import auction_finished_signal
 from bidding.signals import auction_started_signal
 from bidding.signals import precap_finished_signal
 from bidding.signals import precap_finishing_signal
-from bidding.signals import send_in_thread
 from bidding.signals import task_auction_pause
 from bidding.signals import task_auction_start
+from bidding.signals import auction_threshold_signal
+from bidding.signals import send_in_thread
 
 AUCTION_STATUS_CHOICES = (
     ('precap', 'Pre-Capitalization'),
@@ -217,7 +214,12 @@ class Member(AbstractUser, FacebookModel):
         #return get_thumbnail(of.my_image_url(size='square'), '50x50').url
         #return of.my_image_url(size='square')
         return "https://graph.facebook.com/%s/picture" % self.facebook_id
-
+    
+    def can_chat(self, auction_id):
+        """ Returns True if the user can chat in the given auction. """
+        auction = Auction.objects.get(id=auction_id)
+        return not self.remove_from_chat and auction.has_joined(self)
+    
     def post_win_story(self, **args):
         # Posts a story when winning an item in an auction.
         of = open_facebook.OpenFacebook(self.access_token)
@@ -395,20 +397,16 @@ class Auction(AbstractAuction):
             self.start()
         elif self.status == 'pause':
             self.resume()
-        self.finish_auction_delayed(self.bidding_time)
+        self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
     
     def start(self):
-        logger.debug(self.status)
         if self.status == 'waiting':
-            logger.debug('entra if start')
             """ Starts the auction and saves the model. """
             self.status = 'processing'
             client.auctionActive(self)
-            logger.debug('manda pubnub')
             self.saved_time = self.bidding_time
             self.save()
-            logger.debug('MANDA SEÑAL')
-            send_in_thread(auction_started_signal, sender=self, auction=self)
+            send_in_thread(auction_started_signal, sender=self)
         
 
     def finish_auction(self, bid_number):
@@ -428,15 +426,15 @@ class Auction(AbstractAuction):
                                                       threshold3=self.threshold3)
                 auction_copy.save()
         else:
-            auction.save()
+            self.save()
 
     def start_auction_delayed(self, delay):
-        t = Timer(delay, self.start_auction)
+        t = threading.Timer(delay, self.start_auction)
         t.start()
     
-    def finish_auction_delayed(self, delay):
-        kwargs = {'bid_number': self.getBidNumber()}
-        t = Timer(delay, self.finish_auction, kwargs=kwargs)
+    def finish_auction_delayed(self, bid_number, delay):
+        kwargs = {'bid_number': bid_number}
+        t = threading.Timer(delay, self.finish_auction, kwargs=kwargs)
         t.start()
 
     def get_last_bidder(self):
@@ -501,22 +499,6 @@ class Auction(AbstractAuction):
                 return round(time_left) if time_left > 0 else 0
         return None
     
-    #def _state_delegate(self):
-    #    return state_delegates[self.status](self)
-    #
-    #def __getattr__(self, name):
-    #    """ Tries to forward non resolved calls to the delegate objects. """
-    #    logger.debug("Name: %s" % name)
-    #    sd = self._state_delegate()
-    #    if hasattr(sd, name):
-    #        return getattr(sd, name)
-    #
-    #    if hasattr(super(Auction, self), '__getattr__'):
-    #        return super(Auction, self).__getattr__(name)
-    #    else:
-    #        raise AttributeError
-    
-    
     def _precap_bids_needed(self):
             """ 
             Returns the amount of bids needed before the precap is finished. 
@@ -558,7 +540,7 @@ class Auction(AbstractAuction):
                     notification_percentage = 0
                 previous_finishing = self.completion(1) < notification_percentage
                 if self.completion() >= notification_percentage > 0 and previous_finishing == True:
-                    send_in_thread(precap_finishing_signal, sender=self, auction=self)
+                    send_in_thread(precap_finishing_signal, sender=self)
                 
             #TODO two users can enter here because status is not yet changed
             if not self._precap_bids_needed():
@@ -604,12 +586,10 @@ class Auction(AbstractAuction):
         self.start_date = datetime.now() + timedelta(seconds=5)
         self.save()
         
-        from chat import auctioneer
-        
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
         self.start_auction_delayed(5.0)
-        send_in_thread(precap_finished_signal, sender=self, auction=self)
+        send_in_thread(precap_finished_signal, sender=self)
     
     def finish(self):
         """ Marks the auction as finished, sets the winner and win time. """
@@ -622,12 +602,9 @@ class Auction(AbstractAuction):
         self.won_date = datetime.now()
         self.save()
         logger.debug("Ended auction saved")
-    
-        from chat import auctioneer
-        
         auctioneer.auction_finished_message(self)
         client.auctionFinish(self)
-        send_in_thread(auction_finished_signal, sender=self, auction=self)
+        send_in_thread(auction_finished_signal, sender=self)
         logger.debug("Sent signal")
         
     def _check_thresholds(self):
@@ -640,8 +617,6 @@ class Auction(AbstractAuction):
     
         while limt_bids % self.minimum_precap <> 0:
             limt_bids -= 1
-        
-        from chat import auctioneer
         
         if self.threshold1 and current_bids == limt_bids:
             self.bidding_time = self.threshold1
@@ -670,7 +645,7 @@ class Auction(AbstractAuction):
             self.pause()
             self.start_auction_delayed(self.bidding_time)
         else:
-            self.finish_auction_delayed(self.bidding_time)
+            self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
     
         return True
     
@@ -679,8 +654,8 @@ class Auction(AbstractAuction):
         self.status = 'pause'
         self.save()
         client.auctionPause(self)
-        start_auction_delayed(self, 10.0)
-        send_in_thread(task_auction_pause, sender=self, auction=self)
+        self.start_auction_delayed(10.0)
+        send_in_thread(task_auction_pause, sender=self)
         
     def resume(self):
         """ Resumes the auction. """
@@ -697,73 +672,73 @@ class Auction(AbstractAuction):
     
         client.auctionResume(self)
 
-class PrePromotedAuction(AbstractAuction):
-    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
-    status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap')
-    bidding_time = models.IntegerField(default=10)
-    saved_time = models.IntegerField(default=0, blank=True, null=True)
-
-    #treshold
-    threshold1 = models.IntegerField('25% Threshold',
-                                     help_text='Bidding time after using 25% of commited bids. Will be ignored if blank.',
-                                     null=True, blank=True, default=12)
-    threshold2 = models.IntegerField('50% Threshold',
-                                     help_text='Bidding time after using 50% of commited bids. Will be ignored if blank.',
-                                     null=True, blank=True, default=8)
-    threshold3 = models.IntegerField('75% Threshold',
-                                     help_text='Bidding time after using 75% of commited bids. Will be ignored if blank.',
-                                     null=True, blank=True, default=5)
-
-    is_active = models.BooleanField(default=True)
-
-    class Meta:
-        ordering = ['-id']
-
-    def _state_delegate(self):
-        return state_delegates[self.status](self)
-
-    def __getattr__(self, name):
-        """ Tries to forward non resolved calls to the delegate objects. """
-        logger.debug("Name: %s" % name)
-        sd = self._state_delegate()
-        if hasattr(sd, name):
-            return getattr(sd, name)
-
-        if hasattr(super(PrePromotedAuction, self), '__getattr__'):
-            return super(PrePromotedAuction, self).__getattr__(name)
-        else:
-            raise AttributeError
-
-
-    def placed_bids(self):
-        """ Returns the amount of bids commited in precap. """
-        return self.bid_set.aggregate(Sum('placed_amount')
-        )['placed_amount__sum'] or 0
-
-    def used_bids(self):
-        """ Returns the amount of precap bids already used in the auction. """
-        return self.bid_set.aggregate(Sum('used_amount')
-        )['used_amount__sum'] or 0
-
-    def price(self):
-        """ Returns the current price of the auction. """
-
-        dollars = float(self.used_bids()) / 100
-        return Decimal('%.2f' % dollars)
-
-    def has_joined(self, member):
-        """ Returns True if the member has joined the auction. """
-
-        return member in self.bidders.all()
-
-    def bidder_mails(self):
-        """ Returns a list of mails of members that have joined this auction. """
-
-        return self.bidders.values_list('user__email', flat=True)
-
-    def __unicode__(self):
-        return u'%s - %s' % (self.item.name, self.get_status_display())
-
+#class PrePromotedAuction(AbstractAuction):
+#    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
+#    status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap')
+#    bidding_time = models.IntegerField(default=10)
+#    saved_time = models.IntegerField(default=0, blank=True, null=True)
+#
+#    #treshold
+#    threshold1 = models.IntegerField('25% Threshold',
+#                                     help_text='Bidding time after using 25% of commited bids. Will be ignored if blank.',
+#                                     null=True, blank=True, default=12)
+#    threshold2 = models.IntegerField('50% Threshold',
+#                                     help_text='Bidding time after using 50% of commited bids. Will be ignored if blank.',
+#                                     null=True, blank=True, default=8)
+#    threshold3 = models.IntegerField('75% Threshold',
+#                                     help_text='Bidding time after using 75% of commited bids. Will be ignored if blank.',
+#                                     null=True, blank=True, default=5)
+#
+#    is_active = models.BooleanField(default=True)
+#
+#    class Meta:
+#        ordering = ['-id']
+#
+#    def _state_delegate(self):
+#        return state_delegates[self.status](self)
+#
+#    def __getattr__(self, name):
+#        """ Tries to forward non resolved calls to the delegate objects. """
+#        logger.debug("Name: %s" % name)
+#        sd = self._state_delegate()
+#        if hasattr(sd, name):
+#            return getattr(sd, name)
+#
+#        if hasattr(super(PrePromotedAuction, self), '__getattr__'):
+#            return super(PrePromotedAuction, self).__getattr__(name)
+#        else:
+#            raise AttributeError
+#
+#
+#    def placed_bids(self):
+#        """ Returns the amount of bids commited in precap. """
+#        return self.bid_set.aggregate(Sum('placed_amount')
+#        )['placed_amount__sum'] or 0
+#
+#    def used_bids(self):
+#        """ Returns the amount of precap bids already used in the auction. """
+#        return self.bid_set.aggregate(Sum('used_amount')
+#        )['used_amount__sum'] or 0
+#
+#    def price(self):
+#        """ Returns the current price of the auction. """
+#
+#        dollars = float(self.used_bids()) / 100
+#        return Decimal('%.2f' % dollars)
+#
+#    def has_joined(self, member):
+#        """ Returns True if the member has joined the auction. """
+#
+#        return member in self.bidders.all()
+#
+#    def bidder_mails(self):
+#        """ Returns a list of mails of members that have joined this auction. """
+#
+#        return self.bidders.values_list('user__email', flat=True)
+#
+#    def __unicode__(self):
+#        return u'%s - %s' % (self.item.name, self.get_status_display())
+#
 
 class PromotedAuction(Auction):
     promoter = models.ForeignKey(Member, blank=False, null=False, related_name="promoter_user")
@@ -952,3 +927,4 @@ class ConfigKey(models.Model):
 
     def __unicode__(self):
         return self.key
+
