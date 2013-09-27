@@ -104,7 +104,7 @@ class Message(models.Model):
 
 
 class AuctioneerPhrase(models.Model):
-    key = models.CharField(max_length=20)
+    key = models.CharField(max_length=20,unique=True)
     text = models.TextField(blank=True, null=True)
     description = models.TextField(blank=True, null=True)
     
