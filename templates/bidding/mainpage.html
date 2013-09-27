@@ -16,6 +16,7 @@
 		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
         <link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+        <link rel="stylesheet" href="{% static 'css/messages.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -206,17 +207,6 @@
 			</div>
 
 			<!--friends invited popup-->
-            <script id="template/notification.html" type="text/ng-template">
-			<div class="notification">
-				<div class="kenny">
-                    <img src="{% static 'images/tooltip-info-kenny.png' %}">
-				</div>
-				<div class="content">
-					<div class="txt">{$ message $}</div>
-				</div>
-			</div>
-            </script>
-
 			<div class="modal" ng-show="joinedFriendsData" ng-cloak>
                 <div class="btn-close" ng-mousedown="hideJoinedFriendsDialog()">x</div>
                 <div class="gloss"></div>
@@ -332,6 +322,64 @@
                 <div class="gloss"></div>
                 <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
                 <img class="prize" src="{% static 'images/prize-medium.png' %}">
+            </div>
+
+            <!-- Messages modal -->
+            <div class="modal modal-wide">
+                <div class="title">Your messages</div>
+                <div class="title title-shadow">Your messages</div>
+                <div class="content">
+                    <ul>
+                        <li class="message">
+                            <div class="message-content">
+                                <div class="message-content-title">You got a gift</div>
+                                <div class="message-content-body">You got <span class="tokens-text">10.000 tokens</span> from Martino and 4 other friends.<br>Do you want to send a gift back?</div>
+                            </div>
+                            <div class="message-actions">
+                                <div class="btn btn-green">Accept</div>
+                                <div class="btn-close">x</div>
+                            </div>
+                            <div class="message-users">
+                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+                            </div>
+                        </li>
+                        <li class="message">
+                            <div class="message-content">
+                                <div class="message-content-title">Help Daniel</div>
+                                <div class="message-content-body">Daniel is out of <span class="tokens-text">tokens</span>!<br>Send him a <span class="tokens-text">Tokens</span> gift.</div>
+                            </div>
+                            <div class="message-actions">
+                                <div class="btn btn-green">Send</div>
+                                <div class="btn-close">x</div>
+                            </div>
+                            <div class="message-users">
+                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+                            </div>
+                        </li>
+                        <li class="message">
+                            <div class="message-content">
+                                <div class="message-content-title">You have an invitation</div>
+                                <div class="message-content-body">Daniel and 4 more sent you an invitation to join a private auction.</div>
+                            </div>
+                            <div class="message-actions">
+                                <div class="btn btn-green">Join</div>
+                                <div class="btn-close">x</div>
+                            </div>
+                            <div class="message-users">
+                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="buttons">
+                    <div class="btn">Close</div>
+                </div>
+                <div class="gloss"></div>
+                <div class="btn-close">x</div>
             </div>
 
 			<div id="top-wrapper">
@@ -720,7 +768,18 @@
 			</div>
 		</div>
 
+        <!-- Notifications -->
         <div id="notifications" class="notifications-container"></div>
+        <script id="template/notification.html" type="text/ng-template">
+        <div class="notification">
+            <div class="kenny">
+                <img src="{% static 'images/tooltip-info-kenny.png' %}">
+            </div>
+            <div class="content">
+                <div class="txt">{$ message $}</div>
+            </div>
+        </div>
+        </script>
 	</body>
 
 </html>
