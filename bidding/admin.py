@@ -16,7 +16,7 @@ from bidding.models import ItemImage
 from bidding.models import Member
 from bidding.models import PrePromotedAuction
 from bidding.models import PromotedAuction
-
+from actions import export_as_csv_action
 
 class BidAdmiA(admin.ModelAdmin):
     list_display = ('auction', 'bidder', 'unixtime')
@@ -188,7 +188,9 @@ class MemberUserAdmin(UserAdmin):
 
     form = MemberAdminForm
     readonly_fields = ('first_name', 'last_name', 'email',)
-
+    
+    actions = [export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email'])]
+    
     list_display = ('username',
                     'first_name',
                     'last_name',
@@ -205,7 +207,7 @@ class MemberUserAdmin(UserAdmin):
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
         ('Bidding', {'fields': ('bids_left', 'tokens_left', 'bidsto_left', 'remove_from_chat')}),
         )
-
+    
 
 class ConfigKeyAdmin(admin.ModelAdmin):
     form = ConfigKeyAdminForm
