@@ -56,8 +56,8 @@
   filter: alpha(opacity=50);
 }
 .modal.modal-wide {
-	width: 750px;
-    margin-left: -386px;
+	width: 720px;
+    margin-left: -377px;
 }
 .modal .kenny {
 	bottom: -60px;
@@ -250,7 +250,7 @@
 }
 .modal .content .column-left, .column-right {
 	float: left;
-	width: 375px;
+	width: 370px;
 	height: 317px;
 }
 .modal .content .column-dot {
