@@ -8,8 +8,8 @@ from django.db import models
 from django.conf import settings
 from django.contrib import auth
 
-from bidding.models import Auction, Member
-
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.contenttypes import generic
 
 CHATROOM_STATUS_CHOICES = (
      ('created', 'Created'),
@@ -35,27 +35,26 @@ class ChatUser(models.Model):
     Avatar should be an absolute URL, or URL relative to the 
     current site root.
     """
-    
-    user = models.ForeignKey(Member)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
     
     def picture(self):
         """ Returns the chat avatar. """
-        return self.user.display_picture()
+        return self.content_object.display_picture()
         
     def display_name(self):
-        return self.user.display_name()
+        return self.content_object.display_name()
     
     def user_link(self):
-        return self.user.facebook_profile_url
+        return self.content_object.facebook_profile_url
 
     def __unicode__(self):
         return self.display_name()
 
-    def can_chat(self, auction):
+    def can_chat(self, auction_id):
         """ Returns True if the user can chat in the given auction. """
-        member = self.user
-        
-        return not member.remove_from_chat and auction.has_joined(member)
+        return self.content_object.can_chat(auction_id)
 
 
 class AuctioneerProxy(object):
@@ -76,7 +75,9 @@ class Message(models.Model):
     _user = models.ForeignKey(ChatUser, verbose_name='user', blank=True, null=True)
     text = models.TextField()
     created = models.DateTimeField(default=datetime.now)
-    auction = models.ForeignKey(Auction)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
 
     def get_time(self):
         """ Returns time when message was created in the readable form. """
@@ -90,12 +91,13 @@ class Message(models.Model):
         self._user = user
 
     def format_message(self):
-        m = re.search("member:(\d+)", self.text)
-        if m:
-            member = Member.objects.get(pk=m.group(1))
-            text = self.text.replace(m.group(0), "member")
-            return text.format(member = member.display_linked_facebook_profile())
-        return self.text
+     from bidding.models import  Member
+     m = re.search("member:(\d+)", self.text)
+     if m:
+         member = Member.objects.get(pk=m.group(1))
+         text = self.text.replace(m.group(0), "member")
+         return text.format(member = member.display_linked_facebook_profile())
+     return self.text
         
     user = property(get_user, set_user)
     

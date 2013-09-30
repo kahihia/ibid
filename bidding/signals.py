@@ -15,17 +15,15 @@ from django.template.loader import render_to_string
 
 import client
 
+auction_threshold_signal = Signal(providing_args=["number"])
+auction_started_signal = Signal()
+auction_finished_signal = Signal()
+precap_finishing_signal = Signal()
+precap_finished_signal = Signal()
+task_auction_start = Signal()
+task_auction_pause = Signal()
 
 logger = logging.getLogger('django')
-
-
-auction_started_signal = Signal(providing_args=["auction"])
-auction_finished_signal = Signal(providing_args=["auction"])
-precap_finishing_signal = Signal(providing_args=["auction"])
-precap_finished_signal = Signal(providing_args=["auction"])
-
-task_auction_start = Signal(providing_args=["auction"])
-task_auction_pause = Signal(providing_args=["auction"])
 
 
 @receiver(auction_finished_signal)
@@ -34,7 +32,7 @@ def send_win_email(sender, **kwargs):
         client.send_pubnub_message(json.dumps({'method': 'log', 'params': 'SERVER: auction_finished_signal'}),
                                    '/topic/main/')
         logger.debug("Sending mail")
-        auction = kwargs['auction']
+        auction = sender
         user = auction.winner
 
         if user and auction.bid_type == 'bid':
@@ -69,7 +67,7 @@ def send_win_email(sender, **kwargs):
 
 @receiver(auction_finished_signal)
 def make_auction_invoice(sender, **kwargs):
-    auction = kwargs['auction']
+    auction = sender
     client.send_pubnub_message(json.dumps({'method': 'log', 'params': 'SERVER: auction_finished_signal'}),
                                '/topic/main/')
 
@@ -96,7 +94,7 @@ def make_auction_invoice(sender, **kwargs):
 def send_start_email(sender, **kwargs):
     client.send_pubnub_message(json.dumps({'method': 'log', 'params': 'SERVER: precap_finished_signal'}),
                                '/topic/main/')
-    auction = kwargs['auction']
+    auction = sender
 
     user_mails = auction.bidder_mails()
 
@@ -115,13 +113,15 @@ def send_start_email(sender, **kwargs):
     
 
 @receiver(auction_started_signal)
-def notify_bidders(sender, **kwargs):
+def notify_bidders_started(sender, **kwargs):
+    kwargs['auction'] = sender
     kwargs['signal'] = 'auction_started'
     th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
     th.start()
 
 @receiver(precap_finishing_signal)
-def notify_bidders(sender, **kwargs):
+def notify_bidders_starting(sender, **kwargs):
+    kwargs['auction'] = sender
     kwargs['signal'] = 'precap_finishing'
     th = threading.Thread(target=notify_bidders_thread, kwargs=kwargs)
     th.start()
@@ -145,5 +145,7 @@ def send_in_thread(signal, **kwargs):
     Sends the given signal in a different thread, so it doesn't delay further
     actions.
     """
+    logger.debug(kwargs)
     th = threading.Thread(target=signal.send, kwargs=kwargs)
     th.start()
+    
