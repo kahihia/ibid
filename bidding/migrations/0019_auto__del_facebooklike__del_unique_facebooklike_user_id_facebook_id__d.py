@@ -19,10 +19,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'FacebookUser'
         db.delete_table(u'bidding_facebookuser')
-
-        #Adding field 'FBOrderInfo.fb_payment_id'
-        db.add_column(u'bidding_fborderinfo', 'fb_payment_id', self.gf('django.db.models.fields.BigIntegerField')(null=True, blank=True), keep_default=False)
-         
+        
+        # Deleting field 'Auction.winner_aux'
+        db.delete_column(u'bidding_auction', 'winner_aux_id')
 
     def backwards(self, orm):
         # Adding model 'FacebookLike'
@@ -51,11 +50,11 @@ class Migration(SchemaMigration):
 
         # Adding unique constraint on 'FacebookUser', fields ['user_id', 'facebook_id']
         db.create_unique(u'bidding_facebookuser', ['user_id', 'facebook_id'])
-
-
-        # Changing field 'Auction.winner'
-        db.alter_column(u'bidding_auction', 'winner_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['bidding.Member']))
-
+        
+        # Adding field 'Auction.winner_aux'
+        db.add_column(u'bidding_auction', 'winner_aux',
+                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, null=True, to=orm['bidding.Member']))
+        
     models = {
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -103,7 +102,7 @@ class Migration(SchemaMigration):
             'threshold1': ('django.db.models.fields.IntegerField', [], {'default': '7', 'null': 'True', 'blank': 'True'}),
             'threshold2': ('django.db.models.fields.IntegerField', [], {'default': '5', 'null': 'True', 'blank': 'True'}),
             'threshold3': ('django.db.models.fields.IntegerField', [], {'default': '3', 'null': 'True', 'blank': 'True'}),
-            'winner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'autcions'", 'null': 'True', 'to': u"orm['auth.User']"}),
+            'winner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'autcions'", 'null': 'True', 'to': u"orm['bidding.Member']"}),
             'won_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'won_price': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '10', 'decimal_places': '2', 'blank': 'True'})
         },

@@ -12,62 +12,62 @@ class Migration(SchemaMigration):
         db.add_column(u'bidding_member', 'password',
                       self.gf('django.db.models.fields.CharField')(default=datetime.time(20, 55, 58, 996860), max_length=128),
                       keep_default=False)
-
+        
         # Adding field 'Member.last_login'
         db.add_column(u'bidding_member', 'last_login',
                       self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now),
                       keep_default=False)
-
+        
         # Adding field 'Member.is_superuser'
         db.add_column(u'bidding_member', 'is_superuser',
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
-
+        
         # Adding field 'Member.username'
         db.add_column(u'bidding_member', 'username',
                       self.gf('django.db.models.fields.CharField')(default=datetime.time(20, 56, 10, 700897), unique=False, max_length=254),
                       keep_default=False)
-
+        
         # Adding field 'Member.first_name'
         db.add_column(u'bidding_member', 'first_name',
                       self.gf('django.db.models.fields.CharField')(default='', max_length=30, blank=True),
                       keep_default=False)
-
+        
         # Adding field 'Member.last_name'
         db.add_column(u'bidding_member', 'last_name',
                       self.gf('django.db.models.fields.CharField')(default='', max_length=30, blank=True),
                       keep_default=False)
-
+        
         # Adding field 'Member.email'
         db.add_column(u'bidding_member', 'email',
                       self.gf('django.db.models.fields.EmailField')(default='', max_length=75, blank=True),
                       keep_default=False)
-
+        
         # Adding field 'Member.is_staff'
         db.add_column(u'bidding_member', 'is_staff',
                       self.gf('django.db.models.fields.BooleanField')(default=False),
                       keep_default=False)
-
+        
         # Adding field 'Member.is_active'
         db.add_column(u'bidding_member', 'is_active',
                       self.gf('django.db.models.fields.BooleanField')(default=True),
                       keep_default=False)
-
+        
         # Adding field 'Member.date_joined'
         db.add_column(u'bidding_member', 'date_joined',
                       self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now),
                       keep_default=False)
-
+        
         # Adding field 'Member.gender'
         db.add_column(u'bidding_member', 'gender',
                       self.gf('django.db.models.fields.CharField')(max_length=1, null=True, blank=True),
                       keep_default=False)
-
+        
         # Adding field 'Member.facebook_open_graph'
         db.add_column(u'bidding_member', 'facebook_open_graph',
                       self.gf('django.db.models.fields.NullBooleanField')(null=True, blank=True),
                       keep_default=False)
-
+        
         # Adding M2M table for field groups on 'Member'
         db.create_table(u'bidding_member_groups', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -75,7 +75,7 @@ class Migration(SchemaMigration):
             ('group', models.ForeignKey(orm[u'auth.group'], null=False))
         ))
         db.create_unique(u'bidding_member_groups', ['member_id', 'group_id'])
-
+        
         # Adding M2M table for field user_permissions on 'Member'
         db.create_table(u'bidding_member_user_permissions', (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
@@ -83,102 +83,109 @@ class Migration(SchemaMigration):
             ('permission', models.ForeignKey(orm[u'auth.permission'], null=False))
         ))
         db.create_unique(u'bidding_member_user_permissions', ['member_id', 'permission_id'])
-
-
+        
+        
         # Changing field 'Member.access_token'
         db.alter_column(u'bidding_member', 'access_token', self.gf('django.db.models.fields.TextField')(null=True))
-
+        
         # Changing field 'Member.raw_data'
         db.alter_column(u'bidding_member', 'raw_data', self.gf('django.db.models.fields.TextField')(null=True))
-
+        
         # Changing field 'Member.facebook_name'
         db.alter_column(u'bidding_member', 'facebook_name', self.gf('django.db.models.fields.CharField')(max_length=255, null=True))
-
+        
         # Changing field 'Member.about_me'
         db.alter_column(u'bidding_member', 'about_me', self.gf('django.db.models.fields.TextField')(null=True))
-
+        
         # Changing field 'Member.blog_url'
         db.alter_column(u'bidding_member', 'blog_url', self.gf('django.db.models.fields.TextField')(null=True))
-
+        
         # Changing field 'Member.facebook_profile_url'
         db.alter_column(u'bidding_member', 'facebook_profile_url', self.gf('django.db.models.fields.TextField')(null=True))
-
+        
         # Changing field 'Member.website_url'
         db.alter_column(u'bidding_member', 'website_url', self.gf('django.db.models.fields.TextField')(null=True))
+        
         # Adding field 'FBOrderInfo.fb_payment_id'
-        #db.add_column(u'bidding_fborderinfo', 'fb_payment_id',
-        #              self.gf('django.db.models.fields.BigIntegerField')(null=True, blank=True),
-        #              keep_default=False)
-
-
+        db.add_column(u'bidding_fborderinfo', 'fb_payment_id',
+                      self.gf('django.db.models.fields.BigIntegerField')(null=True, blank=True),
+                      keep_default=False)
+        
+        # Adding field 'Auction.winner_aux'
+        db.add_column(u'bidding_auction', 'winner_aux',
+                      self.gf('django.db.models.fields.related.ForeignKey')(blank=True, null=True, to=orm['bidding.Member']))
+        
     def backwards(self, orm):
         # Deleting field 'Member.password'
         db.delete_column(u'bidding_member', 'password')
-
+        
         # Deleting field 'Member.last_login'
         db.delete_column(u'bidding_member', 'last_login')
-
+        
         # Deleting field 'Member.is_superuser'
         db.delete_column(u'bidding_member', 'is_superuser')
-
+        
         # Deleting field 'Member.username'
         db.delete_column(u'bidding_member', 'username')
-
+        
         # Deleting field 'Member.first_name'
         db.delete_column(u'bidding_member', 'first_name')
-
+        
         # Deleting field 'Member.last_name'
         db.delete_column(u'bidding_member', 'last_name')
-
+        
         # Deleting field 'Member.email'
         db.delete_column(u'bidding_member', 'email')
-
+        
         # Deleting field 'Member.is_staff'
         db.delete_column(u'bidding_member', 'is_staff')
-
+        
         # Deleting field 'Member.is_active'
         db.delete_column(u'bidding_member', 'is_active')
-
+        
         # Deleting field 'Member.date_joined'
         db.delete_column(u'bidding_member', 'date_joined')
-
+        
         # Deleting field 'Member.gender'
         db.delete_column(u'bidding_member', 'gender')
-
+        
         # Deleting field 'Member.facebook_open_graph'
         db.delete_column(u'bidding_member', 'facebook_open_graph')
-
+        
         # Removing M2M table for field groups on 'Member'
         db.delete_table('bidding_member_groups')
-
+        
         # Removing M2M table for field user_permissions on 'Member'
         db.delete_table('bidding_member_user_permissions')
-
-
+        
+        
         # Changing field 'Member.access_token'
         db.alter_column(u'bidding_member', 'access_token', self.gf('django.db.models.fields.TextField')(default=''))
-
+        
         # Changing field 'Member.raw_data'
         db.alter_column(u'bidding_member', 'raw_data', self.gf('django.db.models.fields.TextField')(default=''))
-
+        
         # Changing field 'Member.facebook_name'
         db.alter_column(u'bidding_member', 'facebook_name', self.gf('django.db.models.fields.CharField')(default='', max_length=255))
-
+        
         # Changing field 'Member.about_me'
         db.alter_column(u'bidding_member', 'about_me', self.gf('django.db.models.fields.TextField')(default=''))
-
+        
         # Changing field 'Member.blog_url'
         db.alter_column(u'bidding_member', 'blog_url', self.gf('django.db.models.fields.TextField')(default=''))
-
+        
         # Changing field 'Member.facebook_profile_url'
         db.alter_column(u'bidding_member', 'facebook_profile_url', self.gf('django.db.models.fields.TextField')(default=''))
-
+        
         # Changing field 'Member.website_url'
         db.alter_column(u'bidding_member', 'website_url', self.gf('django.db.models.fields.TextField')(default=''))
+        
         # Deleting field 'FBOrderInfo.fb_payment_id'
         db.delete_column(u'bidding_fborderinfo', 'fb_payment_id')
-
-
+                
+        # Deleting field 'Auction.winner_aux'
+        db.delete_column(u'bidding_auction', 'winner_aux_id')
+        
     models = {
         u'auth.group': {
             'Meta': {'object_name': 'Group'},

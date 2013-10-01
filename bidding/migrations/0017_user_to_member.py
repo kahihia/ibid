@@ -21,8 +21,23 @@ class Migration(DataMigration):
             member.date_joined=member.user.date_joined
             member.is_active=member.user.is_active
             member.save()
+        
+        for auction in orm['bidding.Auction'].objects.all():
+            if auction.winner:
+                member = orm['bidding.Member'].objects.filter(user=auction.winner)[0]
+                auction.winner_aux = member
+                auction.save()
+        
     def backwards(self, orm):
         "Write your backwards methods here."
+        # Changing field 'Auction.winner'
+        db.alter_column(u'bidding_auction', 'winner_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
+        
+        for auction in orm['bidding.Auction'].objects.all():
+            if auction.winner_aux:
+                user = orm['auth.User'].objects.filter(id=auction.winner_aux.user.id)[0]
+                auction.winner = user
+                auction.save()
 
     models = {
         u'auth.group': {
@@ -72,6 +87,7 @@ class Migration(DataMigration):
             'threshold2': ('django.db.models.fields.IntegerField', [], {'default': '5', 'null': 'True', 'blank': 'True'}),
             'threshold3': ('django.db.models.fields.IntegerField', [], {'default': '3', 'null': 'True', 'blank': 'True'}),
             'winner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'autcions'", 'null': 'True', 'to': u"orm['auth.User']"}),
+            'winner_aux': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'autcions'", 'null': 'True', 'to': u"orm['bidding.Member']"}),
             'won_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'won_price': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '10', 'decimal_places': '2', 'blank': 'True'})
         },
@@ -210,7 +226,7 @@ class Migration(DataMigration):
             'tokens_left': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'user': ('django.db.models.fields.related.ForeignKey', [], {'default': '0', 'to': u"orm['auth.User']"}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'}),
+            'username': ('django.db.models.fields.CharField', [], {'unique': 'False', 'max_length': '254'}),
             'website_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         u'bidding.prepromotedauction': {

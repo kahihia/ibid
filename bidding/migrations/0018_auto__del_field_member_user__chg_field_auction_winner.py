@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import copy
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -10,23 +11,71 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         # Deleting field 'Member.user'
         db.delete_column(u'bidding_member', 'user_id')
-
-
+        
+        # Deleting model 'User'
+        db.delete_table(u'auth_user')
+        
         # Changing field 'Auction.winner'
         db.alter_column(u'bidding_auction', 'winner_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['bidding.Member']))
         
-         # Changing field 'Member.username'
-        db.alter_column(u'bidding_member', 'username', self.gf('django.db.models.fields.CharField')(default=datetime.time(20, 56, 10, 700897), unique=True, max_length=254))
+        if not db.dry_run:
+            for auction in orm['bidding.Auction'].objects.all():
+                if auction.winner_aux:
+                    auction.winner = auction.winner_aux
+                    auction.save()
+        
     def backwards(self, orm):
-        # Adding field 'Member.user'
+         # Adding field 'Member.user'
         db.add_column(u'bidding_member', 'user',
-                      self.gf('django.db.models.fields.related.ForeignKey')(default=0, to=orm['auth.User']),
+                      self.gf('django.db.models.fields.related.ForeignKey')(to=orm['auth.User']),
                       keep_default=False)
-
-
-        # Changing field 'Auction.winner'
-        db.alter_column(u'bidding_auction', 'winner_id', self.gf('django.db.models.fields.related.ForeignKey')(null=True, to=orm['auth.User']))
-
+        
+        # Adding model 'User'
+        db.create_table(u'auth_user', (
+            #('groups', self.gf('django.db.models.fields.related.ManyToManyField')(to=orm['auth.Group'],
+            #        symmetrical=False, blank=True)),
+            #('user_permissions', self.gf('django.db.models.fields.related.ManyToManyField')(to=orm['auth.Permission'],
+            #        symmetrical=False, blank=True)),
+            ('last_login', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('date_joined', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now)),
+            ('email', self.gf('django.db.models.fields.EmailField')(default='', max_length=75, blank=True)),
+            ('password', self.gf('django.db.models.fields.CharField')(default=datetime.time(20, 55, 58, 996860), max_length=128)),
+            ('is_superuser', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('username', self.gf('django.db.models.fields.CharField')(default=datetime.time(20, 56, 10, 700897), unique=False, max_length=254)),
+            ('first_name', self.gf('django.db.models.fields.CharField')(default='', max_length=30, blank=True)),
+            ('last_name', self.gf('django.db.models.fields.CharField')(default='', max_length=30, blank=True)),
+            ('is_staff', self.gf('django.db.models.fields.BooleanField')(default=False)),
+            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+        ))
+        db.send_create_signal(u'auth', ['User'])
+        
+        if not db.dry_run:
+            for member in orm['bidding.Member'].objects.all():
+                user_aux = orm['auth.User'].objects.create(
+                                                            username=member.username,
+                                                            password=member.password,
+                                                            email=member.email,
+                                                            is_superuser=member.is_superuser,
+                                                            is_staff=member.is_staff,
+                                                            last_login=member.last_login,
+                                                            first_name=member.first_name,
+                                                            last_name=member.last_name,
+                                                            date_joined=member.date_joined,
+                                                            is_active=member.is_active,
+                                                            )
+                user_to_delete = copy.copy(user_aux)
+                user_aux.id = member.id
+                user_to_delete.delete()
+                user_aux.save()
+                member.user_id = member.id
+                member.save()
+                
+            for auction in orm['bidding.Auction'].objects.all():
+                if auction.winner:
+                    auction.winner_aux = orm['bidding.Member'].objects.filter(id = auction.winner.id)[0]
+                    auction.save()
+                
     models = {
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
@@ -40,6 +89,22 @@ class Migration(SchemaMigration):
             'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
+        },
+        u'auth.user': {
+            'Meta': {'object_name': 'User'},
+            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
+            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
+            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
+            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
+            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
+            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
         },
         u'bidding.auction': {
             'Meta': {'ordering': "['-id']", 'object_name': 'Auction'},
@@ -59,6 +124,7 @@ class Migration(SchemaMigration):
             'threshold2': ('django.db.models.fields.IntegerField', [], {'default': '5', 'null': 'True', 'blank': 'True'}),
             'threshold3': ('django.db.models.fields.IntegerField', [], {'default': '3', 'null': 'True', 'blank': 'True'}),
             'winner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'autcions'", 'null': 'True', 'to': u"orm['bidding.Member']"}),
+            'winner_aux': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'autcions'", 'null': 'True', 'to': u"orm['bidding.Member']"}),
             'won_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'won_price': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '10', 'decimal_places': '2', 'blank': 'True'})
         },
@@ -196,7 +262,7 @@ class Migration(SchemaMigration):
             'session': ('django.db.models.fields.TextField', [], {'default': "'{}'"}),
             'tokens_left': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': u"orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'}),
+            'username': ('django.db.models.fields.CharField', [], {'unique': 'False', 'max_length': '254'}),
             'website_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
         u'bidding.prepromotedauction': {
