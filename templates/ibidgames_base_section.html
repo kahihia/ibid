@@ -8,7 +8,8 @@
 
 		<title>iBidGames</title>
 
-		<link rel="stylesheet" href="{% static 'css/main.css' %}">
+		<link rel="stylesheet" href="{% static 'css/joyride-2.1.css' %}">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
 		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
 		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
@@ -25,10 +26,13 @@
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-		<script src="{% static 'js/lodash.min.js' %}"></script>
-		<script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
-		<script src="{% static 'js/lib/jquery.center.js' %}"></script>
-		<script src="{% static 'js/lib/TweenMax.min.js' %}"></script>
+		<script src="{% static 'js/vendor/lodash.min.js' %}"></script>
+        <script src="{% static 'js/vendor/modernizr.custom.js' %}"></script>
+		<script src="{% static 'js/vendor/jquery.json-2.2.min.js' %}"></script>
+		<script src="{% static 'js/vendor/jquery.center.js' %}"></script>
+        <script src="{% static 'js/vendor/jquery.cookie.js' %}"></script>
+        <script src="{% static 'js/vendor/jquery.joyride-2.1.js' %}"></script>
+		<script src="{% static 'js/vendor/TweenMax.min.js' %}"></script>
 		<script src="{% static 'js/base_header.js' %}"></script>
 		<script src="{% static 'js/auctions.js' %}" ></script>
 		<script src="{% static 'js/services.js' %}"></script>
@@ -37,8 +41,8 @@
 		<script src="{% static 'js/config.js' %}"></script>
 		<script src="{% static 'js/messages.js' %}" ></script>
 		<script src="{% static 'js/global-chat.js' %}"></script>
-		<!--include analythics.js -->
-		<script src="{% static 'js/analytics.min.js' %}"></script>
+        <script src="{% static 'js/misc.js' %}"></script>
+		<script src="{% static 'js/vendor/analytics.min.js' %}"></script>
 		<script language="javascript">
 			tutorialImages = {
 			    slide0:  "{% static 'images/tutorial/0.png' %}",
@@ -75,10 +79,6 @@
 				});
 				FB.Canvas.setAutoGrow();
 				angular.element(document).ready(function() {
-					// welcome popup
-					{% if display_popup %}
-						initTutorial();
-					{% endif %}
 					angular.element('.global-chat').scope().chatPosition();
 					angular.element('#base_header').scope().uvTabPosition();
 				}
@@ -98,7 +98,7 @@
 			function getCurrentDateTime(){
 				//to parse in python
 				//>>> time.strptime("2013-05-25 02:04:09.2", '%Y-%m-%d %H:%M:%S.%f')
-			    
+
 				var currentdate = new Date();
 				var datetime = currentdate.getFullYear() + "-"
 						+ (currentdate.getMonth()+1)  + "-"
@@ -176,7 +176,7 @@
 							    10.000 Tokens = 1 Credits
 							</p>
 						    </div>
-						    
+
 						    <div class="tokens">
 							<div class="value">
 							    <p>
@@ -188,7 +188,7 @@
 							    </p>
 							</div>
 						    </div>
-			    
+
 						    <div class="credits-btn btn btn-red" ng-click="convertChips()">
 							<p id="">
 							    {$  convertTokens.credits  $}
@@ -287,7 +287,7 @@
 						<div class="enter-text">Press Enter to send</div>
 					</div>
 				</div>
-	
+
 
 				{% block base_header %}{% endblock %}
 				<div id="top-wrapper">
@@ -323,7 +323,7 @@
 								</li>
 							</ul>
 						</div>
-						<div class="tokens">
+						<div id="user-tokens" class="tokens">
 							TOKENS: {$ user.tokens $}
 						</div>
 						<div class="credits">
@@ -344,6 +344,17 @@
 				{% endblock %}
 			</div>
 		</div>
+
+        <!-- Interactive tour steps -->
+        <ol id="tour-steps">
+            <li>Welcome message.</li>
+            <li data-id="user-tokens">This is how many tokens and credits you have.</li>
+            <li data-class="btn-items">You can play for tokens or for real items. Use these tabs to navigate between the two.</li>
+            <li data-class="btn-join-auction">Click the "Join Auction" button on the item you want to bid on. Bidding starts when completion is at 100%.</li>
+            <li data-button="Done">You're ready to start!</li>
+        </ol>
+
+
 		<!-- UserVoice JavaScript SDK (only needed once on a page) -->
 		<script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/CwlQxZUfc9pf9e0cZtYubQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
 		<!-- A tab to launch the Classic Widget -->
