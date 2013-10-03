@@ -13,6 +13,7 @@
 		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
 		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+        <link rel="stylesheet" href="{% static 'css/interactive-tour.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -346,12 +347,22 @@
 		</div>
 
         <!-- Interactive tour steps -->
-        <ol id="tour-steps">
-            <li>Welcome message.</li>
-            <li data-id="user-tokens">This is how many tokens and credits you have.</li>
-            <li data-class="btn-items">You can play for tokens or for real items. Use these tabs to navigate between the two.</li>
-            <li data-class="btn-join-auction">Click the "Join Auction" button on the item you want to bid on. Bidding starts when completion is at 100%.</li>
-            <li data-button="Done">You're ready to start!</li>
+        <ol id="tour-steps" class="joyride-steps">
+            <li>
+                <p>Welcome to iBidGames!</p>
+            </li>
+            <li data-id="user-tokens">
+                <p>This is how many tokens and credits you have.</p>
+            </li>
+            <li data-class="btn-items">
+                <p>You can play for tokens or for real items. Use these tabs to navigate between the two.</p>
+            </li>
+            <li data-class="btn-join-auction">
+                <p>Click the "Join Auction" button on the item you want to bid on. Bidding starts when completion is at 100%.</p>
+            </li>
+            <li data-button="Done!">
+                <p>You're ready to start!</p>
+            </li>
         </ol>
 
 

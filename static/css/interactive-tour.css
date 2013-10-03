@@ -1,0 +1,40 @@
+.joyride-steps {
+    display: none;
+}
+.joyride-tip-guide {
+	width: 420px;
+	min-height: 112px;
+	background: white;
+	color: #6c6c6b;
+	border: 2px solid #3990b8;
+	-webkit-border-radius: 10px;
+	        border-radius: 10px;
+}
+.joyride-tip-guide,
+.joyride-tip-guide p {
+	font-family: inherit;
+	font-size: 12px;
+	font-weight: bold;
+}
+.joyride-tip-guide .joyride-close-tip {
+	color: #6c6c6b !important;
+	font-size: 16px;
+}
+.joyride-tip-guide .joyride-kenny {
+	position: absolute;
+	top: -58px;
+	left: -106px;
+}
+.joyride-tip-guide span.joyride-nub.top,
+.joyride-tip-guide span.joyride-nub.bottom {
+    border-color: #3990b8;
+}
+.joyride-tip-guide span.joyride-nub:after {
+
+}
+.joyride-content-wrapper {
+	padding: 17px 35px 20px 95px;
+}
+.joyride-tip-guide .joyride-next-tip {
+    margin-left: 0;
+}
