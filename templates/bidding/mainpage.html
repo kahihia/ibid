@@ -325,10 +325,33 @@
             </div>
 
             <!-- Messages modal -->
-            <div class="modal modal-wide">
+            <div class="modal modal-wide" ng-show="showMessages" ng-cloak>
                 <div class="title">Your messages</div>
                 <div class="title title-shadow">Your messages</div>
                 <div class="content">
+			<div ng-repeat="message in messageList">
+				<div ng-switch on="message['notification_type']" ng-init=messageJsonParse(message)>
+					<!-- TEMPLATE: precap -->
+					<div id="message-top" ng-switch-when="FinishedAuction">
+						<li class="message" id="message-{$ message['id'] $}">
+							<div class="message-content">
+								<div class="message-content-title">You missed an auction</div>
+								<div class="message-content-body">While you were away the auction for {$ message['message'].itemName $} was played.<br>
+								<a class="tokens-text" href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$ message['message'].winner['firstName'] $}</a>
+								won it for ${$ message['message'].won_price $}.</div>
+							</div>
+							<div class="message-actions">
+								<div class="btn btn-green" ng-click="readMessage(message)">Accept</div>
+								<div class="btn-close" ng-click="readMessage(message)">x</div>
+							</div>
+							<div class="message-users">
+								<img class="avatar" ng-src="{$ message['message']['itemImage'] $}">
+							</div>
+						</li>
+					</div>
+				</div>
+			</div>
+<!--				
                     <ul>
                         <li class="message">
                             <div class="message-content">
@@ -374,12 +397,13 @@
                             </div>
                         </li>
                     </ul>
+-->
                 </div>
                 <div class="buttons">
-                    <div class="btn">Close</div>
+                    <div class="btn" ng-click="closeMessagesScreen()">Close</div>
                 </div>
                 <div class="gloss"></div>
-                <div class="btn-close">x</div>
+                <div class="btn-close" ng-click="closeMessagesScreen()">x</div>
             </div>
 
 			<div id="top-wrapper">

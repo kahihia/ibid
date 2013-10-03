@@ -68,7 +68,17 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
+            $scope.initialMessages = data.messages;
         });
+        // API request get user notifications
+        $http.get('/api/v1/notification/', params={'format':'json'}).success(function (notifications) {
+            $scope.messageList = notifications.objects;
+            $scope.showMessages = true;
+        });
+    };
+    
+    $scope.messageJsonParse = function (message) {
+        message['message'] = angular.fromJson(message['message']);    
     };
     
     $rootScope.$on('reloadUserDataEvent', function () {
@@ -371,7 +381,22 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             setTimeout($scope.uvTabPosition, 100);
         };
     };
-
+    
+    $scope.closeMessagesScreen = function () {
+        $scope.showMessages = false;
+    };
+    
+    $scope.readMessage = function (message) {
+        data = {};
+        objects=[{'message_id':message['id']}];
+        data['objects'] = objects;
+        $http.
+            put('/api/v1/notification/readMessage', data).success(function(data) {
+                if (data) {
+                    angular.element('#message-'+message['id']).remove();
+                }
+        });
+    };
 };
 
 
