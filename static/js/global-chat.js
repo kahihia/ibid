@@ -25,11 +25,11 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 		// Subscribe to open global chat event.
 		$rootScope.$on('main:openGlobalChat', function (event, data) {
 			$scope.isGlobalChatEnabled = true;
-            //expand or keep it down.
-            console.log(data);
-            if(data.open){
-                $scope.chatGrowth();
-            };
+			//expand or keep it down.
+			console.log(data);
+			if(data.open){
+			    $scope.chatGrowth();
+			};
 			// Subscribe to global chat communication channel.
 			pubSub.subscribe({
 				channel: channel,
@@ -52,6 +52,10 @@ function GlobalChatCtrl ($scope, $rootScope, $http, pubSub) {
 		$scope.message = null;
 	};
 
+	$rootScope.$on('InitializeGlobalChat', function (event, data) {
+			$scope.chatPosition();
+		});
+	
 	$scope.chatPosition=function () {
 		FB.Canvas.getPageInfo(function(pageInfo){
 			var num1 = parseInt(pageInfo.scrollTop) -  parseInt(pageInfo.offsetTop);

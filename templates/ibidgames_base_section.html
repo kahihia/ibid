@@ -62,37 +62,15 @@
 		<script src="{% static 'js/tutorial.js' %}" ></script>
 		<script src="{% static "js/app.js" %}" ></script>
 	</head>
-	<body {% if inCanvas %} style="overflow: hidden" {% endif %}  ng-controller="userDetailsCtrl">
+	<body {% if inCanvas %} style="overflow: hidden" {% endif %} >
 		<div id="fb-root"></div>
 		<script>
-			window.fbAsyncInit = function() {
-				angular.element('body').scope().initialize();
-				FB.init({
-					channelUrl : '{{SITE_NAME_WOUT_BACKSLASH}}{% static 'channel.html' %}', // Channel File
-					status     : true, // check login status
-					cookie     : true, // enable cookies to allow the server to access the session
-					xfbml      : true  // parse XFBML
-				});
-				FB.Canvas.setAutoGrow();
-				angular.element(document).ready(function() {
-					// welcome popup
-					{% if display_popup %}
-						initTutorial();
-					{% endif %}
-					angular.element('.global-chat').scope().chatPosition();
-					angular.element('#base_header').scope().uvTabPosition();
-				}
-				);
-			}; ( function(d, s, id) {
-					var js, fjs = d.getElementsByTagName(s)[0];
-					if (d.getElementById(id)) {
-						return;
-					}
-					js = d.createElement(s);
-					js.id = id;
-					js.src = "//connect.facebook.net/en_US/all.js";
-					fjs.parentNode.insertBefore(js, fjs);
-				}(document, 'script', 'facebook-jssdk'));
+			angular.element(document).ready(function() {
+				// welcome popup
+				{% if display_popup %}
+					initTutorial();
+				{% endif %}
+			});
 		</script>
 		<script>
 			function getCurrentDateTime(){
