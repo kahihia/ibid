@@ -391,7 +391,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         objects=[{'message_id':message['id']}];
         data['objects'] = objects;
         $http.
-            put('/api/v1/notification/readMessage', data).success(function(data) {
+            put(message['resource_uri'], data).success(function(data) {
                 if (data) {
                     angular.element('#message-'+message['id']).remove();
                 }

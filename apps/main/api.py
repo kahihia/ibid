@@ -1,8 +1,11 @@
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
 from tastypie.resources import ModelResource, ALL
+from tastypie import fields
 from datetime import datetime
 from apps.main.models import Notification
+from bidding.models import Member
+
 import json
 import logging
 logger = logging.getLogger('django')
@@ -23,15 +26,14 @@ class UserNotificationsAuthorization(Authorization):
         raise Unauthorized("Sorry, no creates.")
 
     def update_list(self, object_list, bundle):
-        data = json.loads(bundle.request.body)
-        #message_to_read = object_list.filter(id=data['objects'][0]['message']['id'])[0]
-        #if message_to_read.recipient == bundle.request.user:
-        #    message_to_read.status = 'Read'
-        #    message_to_read.updated = datetime.now()
-        return object_list.filter(id=data['objects'][0]['message_id'])
+        logger.debug('UPDATE_list')
+        logger.debug(bundle.data)
+        return object_list.filter(id=bundle.data['objects'])
     
     def update_detail(self, object_list, bundle):
-        return bundle.obj.recipient == bundle.request.user
+        logger.debug('UPDATE_detail')
+        logger.debug(bundle.data)
+        return True
 
     def delete_list(self, object_list, bundle):
         raise Unauthorized("Sorry, no deletes.")
@@ -50,8 +52,16 @@ class DummyAuthorization(Authorization):
     def delete_list(self, object_list, bundle): return object_list
     def delete_detail(self, object_list, bundle): return True
 
+class MemberResource(ModelResource):
+    class Meta:
+        queryset = Member.objects.all()
+        resource_name = 'member'
+        excludes = ['email', 'password', 'is_superuser']
 
 class NotificationResource(ModelResource):
+    
+    recipient = fields.ForeignKey(MemberResource, 'recipient')
+    
     class Meta:
         resource_name = 'notification'
         list_allowed_methods = ['get', 'put']
@@ -61,6 +71,12 @@ class NotificationResource(ModelResource):
         filtering = {
             'status': ALL,
         }
+        
+    def hydrate(self, bundle):
+        bundle.obj = bundle.data['objects'][0]
+        logger.debug(bundle.obj)
+        return bundle
     
     def readMessage():
+        logger.debug("ZAPALLO")
         return True
