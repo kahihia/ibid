@@ -4,8 +4,9 @@
 src
 settings.py
 
-venv
+/venv
 public_static
+/media/
 
 deploy.sh
 nohup.out
