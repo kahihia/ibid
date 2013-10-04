@@ -8,7 +8,6 @@ from bidding import client
 from chat.models import Message, ChatUser
 
 from django.contrib.contenttypes.models import ContentType
-auction_type_id=ContentType.objects.filter(name='auction').all()[0]
 
 def get_chat_user(request):
     if not request.user.is_authenticated():
@@ -33,6 +32,7 @@ def send_message(request):
         auction = get_auction(request)
 
         if user.can_chat(auction):
+            auction_type_id=ContentType.objects.filter(name='auction').all()[0]
             db_msg = Message.objects.create(text=message, user=user,
                                              content_type=auction_type_id, object_id=auction)
             
