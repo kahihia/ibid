@@ -9,9 +9,8 @@ from bidding import client
 from chat.views import do_send_message
 from chat.models import AuctioneerPhrase, Message
 
-auction_type_id=ContentType.objects.filter(name='auction').all()[0]
-
 def create_auctioneer_message(auction, message):
+    auction_type_id=ContentType.objects.filter(name='auction').all()[0]
     message = Message.objects.create(text=message, content_type=auction_type_id, object_id=auction.id)
 
     text = message.format_message()
@@ -28,6 +27,7 @@ def create_auctioneer_message(auction, message):
 
 
 def send_auctioneer_message(auction, message):
+    auction_type_id=ContentType.objects.filter(name='auction').all()[0]
     db_msg = Message.objects.create(text=message, content_type=auction_type_id, object_id=auction.id)
     client.do_send_auctioneer_message(auction, db_msg)
 
