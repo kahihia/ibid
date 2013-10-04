@@ -32,10 +32,13 @@
 			<p class="info text-small-w">When you have 100.000 Tokens you can change it for 10 credits<br>and play for real items!</p>
 		</div>
 		<div class="buttons">
-			<div class="btn" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
+			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div> </br></br>
 			<div class="btn btn-red" ng-mousedown="closeWonAuctionDialogAndPlayForItems()">Play for real items</div>
 		</div>
 		<div class="gloss"></div>
+		<div class="btn-close" ng-mousedown="closeWonAuctionDialog()">
+                    x
+                </div>
 		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
 		<img class="prize" src="{% static 'images/prize-medium.png' %}">
 	</div>
@@ -52,9 +55,12 @@
 		<p class="info text-small-w">Check your e-mail, you will receive an email with<br>all the details you need to get your prize.</p>
 	    </div>
 	    <div class="buttons">
-		<div class="btn btn-red" ng-mousedown="closeWonAuctionDialog()">Continue bidding</div>
+		<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
 	    </div>
 	    <div class="gloss"></div>
+	    <div class="btn-close" ng-mousedown="closeWonAuctionDialog()">
+                    x
+                </div>
 	    <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
 	    <img class="prize" src="{% static 'images/prize-medium.png' %}">
 	</div>
