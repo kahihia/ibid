@@ -71,9 +71,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             $scope.initialMessages = data.messages;
         });
         // API request get user notifications
-        $http.get('/api/v1/notification/', params={'format':'json'}).success(function (notifications) {
+        $http.get('/api/v1/notification/', {'status':'Unread'}).success(function (notifications) {
             $scope.messageList = notifications.objects;
-            $scope.showMessages = true;
+            if ($scope.messageList.length > 0) {
+                $scope.showMessages = true;
+            }
+            else {
+                $scope.showMessages = false;
+            }
         });
     };
     
@@ -386,9 +391,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $scope.showMessages = false;
     };
     
+    $scope.closeMessage = function (message) {
+        angular.element('#message-'+message['id']).remove();
+    };
+    
     $scope.readMessage = function (message) {
         data = {};
-        objects=[{'message_id':message['id']}];
+        message['status'] = 'Read';
+        objects=[{'message':message}];
         data['objects'] = objects;
         $http.
             put(message['resource_uri'], data).success(function(data) {

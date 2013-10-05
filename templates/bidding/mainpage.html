@@ -333,7 +333,7 @@
 				<div ng-switch on="message['notification_type']" ng-init=messageJsonParse(message)>
 					<!-- TEMPLATE: precap -->
 					<div id="message-top" ng-switch-when="FinishedAuction">
-						<li class="message" id="message-{$ message['id'] $}">
+						<div class="message" id="message-{$ message['id'] $}">
 							<div class="message-content">
 								<div class="message-content-title">You missed an auction</div>
 								<div class="message-content-body">While you were away the auction for {$ message['message'].itemName $} was played.<br>
@@ -342,12 +342,12 @@
 							</div>
 							<div class="message-actions">
 								<div class="btn btn-green" ng-click="readMessage(message)">Accept</div>
-								<div class="btn-close" ng-click="readMessage(message)">x</div>
+								<div class="btn-close" ng-click="closeMessage(message)">x</div>
 							</div>
 							<div class="message-users">
 								<img class="avatar" ng-src="{$ message['message']['itemImage'] $}">
 							</div>
-						</li>
+						</div>
 					</div>
 				</div>
 			</div>
