@@ -35,7 +35,37 @@
                     true);
                 }
             };
-        });
+        })
+        .directive('ibTour', ['$rootScope', function ($rootScope) {
+            var defaults = {
+                autoStart: true,
+                scroll: false,
+                template: {
+                    link: '<a href="#close" class="joyride-close-tip">×</a>',
+                    button: '<a href="#" class="joyride-next-tip btn"></a>',
+                    wrapper: '<div class="joyride-content-wrapper" role="dialog"><img class="joyride-kenny" src="/static/images/tooltip-action-kenny.png" alt=""></div>'
+                }
+            };
+
+            return {
+                restrict: 'A',
+                link: function postLink (scope, element, attrs) {
+                    var opts = _.extend({}, defaults, {
+                        postRideCallback: function () {
+                            element.joyride('destroy');
+                        }
+                    });
+                    if (attrs.ibTourTriggerEvent) {
+                        $rootScope.$on(attrs.ibTourTriggerEvent, function () {
+                            element.joyride(opts);
+                        });
+                    }
+                    else {
+                        element.joyride(opts);
+                    }
+                }
+            };
+        }]);
         // .directive('modal', function () {
         //     return {
         //         replace: true,

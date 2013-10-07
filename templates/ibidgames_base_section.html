@@ -42,7 +42,6 @@
 		<script src="{% static 'js/config.js' %}"></script>
 		<script src="{% static 'js/messages.js' %}" ></script>
 		<script src="{% static 'js/global-chat.js' %}"></script>
-        <script src="{% static 'js/misc.js' %}"></script>
 		<script src="{% static 'js/vendor/analytics.min.js' %}"></script>
 		<script language="javascript">
 			tutorialImages = {
@@ -292,7 +291,7 @@
 				<div id="top-wrapper">
 					<div id="top">
 						<div class="buttons">
-							<div class="button invite" ng-click="sendRequestViaMultiFriendSelector()"></div>
+							<div class="button invite btn-invite-friends" ng-click="sendRequestViaMultiFriendSelector()"></div>
 							<div class="button like" ng-init="fb_check_like()" ng-click="requestPermisionPublishActions('LIKE')"></div>
 							<!-- this is a modal share, but it is weird -->
 							<div class="button share" ng-click="shareOnTimeline()"></div>
@@ -345,7 +344,7 @@
 		</div>
 
         <!-- Interactive tour steps -->
-        <ol id="tour-steps" class="joyRideTipContent">
+        <ol ib-tour class="joyRideTipContent">
             <li>
                 <p>Welcome to iBidGames!</p>
             </li>
@@ -362,6 +361,18 @@
                 <p>You're ready to start!</p>
             </li>
         </ol>
+        <ol ib-tour ib-tour-trigger-event="joinAuction" class="joyRideTipContent">
+            <li data-id="auction-bids" data-options="tipLocation:top; tipAdjustmentY:-70">
+                <p>You can press the plus and minus buttons to add or remove bids from this auction. You can also take all your bids back to leave this auction. Bids cost you tokens if you're playing for tokens, or credits if you're playing for real items.</p>
+            </li>
+            <li data-id="auctioneer-message" data-options="tipLocation:top">
+                <p>This is the messages window. Here you can see who has joined the auction and chat with them. You can also click on their name to go to their Facebook profile page.</p>
+            </li>
+            <li data-class="btn-invite-friends" data-button="Okay!">
+                <p>You can help start the auction faster by inviting your friends. You will also receive 5000 tokens for each friend that joins!</p>
+            </li>
+        </ol>
+
 
 		<!-- UserVoice JavaScript SDK (only needed once on a page) -->
 		<script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/CwlQxZUfc9pf9e0cZtYubQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>

@@ -207,6 +207,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 $scope.moveAuction(auction, 'available', 'mine');
                 // Reload user data to refresh tokens/credits.
                 $rootScope.$emit('reloadUserDataEvent');
+                $scope.$emit('joinAuction');
             });
     };
 
