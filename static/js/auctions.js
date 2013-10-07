@@ -510,6 +510,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             if (tutorialActive && tutorialAuctionId === auction.id) {
                                 $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent3');}, 500);
                             }
+                            // Emit event after minimal timeout to be
+                            // sure bid button is already displayed.
+                            // This is specially for the interactive
+                            // tour. Consider moving the timeout onto
+                            // it?
+                            $timeout(function () {
+                                $scope.$emit('auctionStart');
+                            },50);
                             break;
                         case 'waiting_payment':
                             $scope.$emit('auction:finished', auction);
