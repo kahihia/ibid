@@ -116,6 +116,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     $scope.playForItems = function () {
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+        $scope.$emit('showItemAuctions');
     }
 
     $scope.subscribeToAuctionChannel = function (auction) {
