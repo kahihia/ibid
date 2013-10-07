@@ -115,6 +115,7 @@ class bidding(object):
         auctions = []
 
         for auct in allAuctions:
+            logger.debug(str(auct))
             auction = vo_factory.create_voAction(auct, member)
 
             if auction['mine'] and auction['status'] == 'processing':

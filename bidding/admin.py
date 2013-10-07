@@ -14,9 +14,9 @@ from bidding.models import FBOrderInfo
 from bidding.models import Item
 from bidding.models import ItemImage
 from bidding.models import Member
-from bidding.models import PrePromotedAuction
+#from bidding.models import PrePromotedAuction
 from bidding.models import PromotedAuction
-
+from actions import export_as_csv_action
 
 class BidAdmiA(admin.ModelAdmin):
     list_display = ('auction', 'bidder', 'unixtime')
@@ -63,51 +63,51 @@ class AuctionAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            'js/jquery-1.7.min.js',
-            'js/jquery-ui-1.8.6.custom.min.js',
-            'js/combo_box.js',
-            'js/auction_admin.js')
+            'admin/js/jquery-1.7.min.js',
+            'admin/js/jquery-ui-1.8.6.custom.min.js',
+            'admin/js/combo_box.js',
+            'admin/js/auction_admin.js')
 
         css = {
-            'all': ('css/custom-theme/jquery-ui-1.8.6.custom.css',
-                    'css/admin_fix.css',)
+            'all': ('admin/css/custom-theme/jquery-ui-1.8.6.custom.css',
+                    'admin/css/admin_fix.css',)
         }
 
 
-class PrePromotedAuctionAdmin(admin.ModelAdmin):
-    form = AuctionAdminForm
-    list_display = ('item',
-                    'bid_type',
-                    'status',
-                    'is_active',)
-    list_filter = ('is_active', 'status')
-    fieldsets = (
-        (None, {
-            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active')
-        }),
-        ('Bidding time', {
-            'fields': ('bidding_time', 'threshold1', 'threshold2', 'threshold3',)
-        }),
-        ('Don\'t change', {
-            'classes': ('collapse',),
-            'fields': ('status',
-                       'saved_time',
-            )
-        }),
-    )
-
-    class Media:
-        js = (
-            'js/jquery-1.7.min.js',
-            'js/jquery-ui-1.8.6.custom.min.js',
-            'js/combo_box.js',
-            'js/auction_admin.js')
-
-        css = {
-            'all': ('css/custom-theme/jquery-ui-1.8.6.custom.css',
-                    'css/admin_fix.css',)
-        }
-
+#class PrePromotedAuctionAdmin(admin.ModelAdmin):
+#    form = AuctionAdminForm
+#    list_display = ('item',
+#                    'bid_type',
+#                    'status',
+#                    'is_active',)
+#    list_filter = ('is_active', 'status')
+#    fieldsets = (
+#        (None, {
+#            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active')
+#        }),
+#        ('Bidding time', {
+#            'fields': ('bidding_time', 'threshold1', 'threshold2', 'threshold3',)
+#        }),
+#        ('Don\'t change', {
+#            'classes': ('collapse',),
+#            'fields': ('status',
+#                       'saved_time',
+#            )
+#        }),
+#    )
+#
+#    class Media:
+#        js = (
+#            'js/jquery-1.7.min.js',
+#            'js/jquery-ui-1.8.6.custom.min.js',
+#            'js/combo_box.js',
+#            'js/auction_admin.js')
+#
+#        css = {
+#            'all': ('css/custom-theme/jquery-ui-1.8.6.custom.css',
+#                    'css/admin_fix.css',)
+#        }
+#
 
 class PromotedAuctionAdmin(admin.ModelAdmin):
     pass
@@ -189,6 +189,8 @@ class MemberUserAdmin(UserAdmin):
     form = MemberAdminForm
     readonly_fields = ('first_name', 'last_name', 'email',)
 
+    actions = [export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email'])]
+
     list_display = ('username',
                     'first_name',
                     'last_name',
@@ -209,7 +211,7 @@ class MemberUserAdmin(UserAdmin):
 
 class ConfigKeyAdmin(admin.ModelAdmin):
     form = ConfigKeyAdminForm
-    
+
     list_display = ('key',
                     'value',
                     'description',
@@ -223,5 +225,5 @@ admin.site.register(ConvertHistory)
 admin.site.register(FBOrderInfo)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Member, MemberUserAdmin)
-admin.site.register(PrePromotedAuction, PrePromotedAuctionAdmin)
+#admin.site.register(PrePromotedAuction, PrePromotedAuctionAdmin)
 admin.site.register(PromotedAuction, PromotedAuctionAdmin)

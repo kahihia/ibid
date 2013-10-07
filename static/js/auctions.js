@@ -38,7 +38,6 @@ var gameState = {pubnubMessages:[]};
  $scope.bidders = 43;
  };*/
 
-//var auctionList = {"tokens": {"available": [{"completion": 0, "status": "precap", "tokens_or_bids_in_it": 0, "bid_type": "token", "itemImage": "http://apps.facebook.com/interactivebids/media/cache/7a/a4/7aa4be77b318539465c35622b532be4d.jpg", "title": "WII", "minimum_precap": 56, "img_url": "http://apps.facebook.com/interactivebids/media/cache/7a/a4/7aa4be77b318539465c35622b532be4d.jpg", "retailPrice": "249.99", "bids": 9999, "bidders_count": 0, "placed": 9999, "itemName": "WII", "bids_left": 0, "bidders": 0, "retail_price": "249.99", "chat_enabled": false, "id": 6}, {"completion":0,"status":"precap","tokens_or_bids_in_it":0,"bid_type":"token","itemImage":"http://apps.facebook.com/interactivebids/media/cache/7a/a4/7aa4be77b318539465c35622b532be4d.jpg","title":"WII","minimum_precap":56,"img_url":"http://apps.facebook.com/interactivebids/media/cache/7a/a4/7aa4be77b318539465c35622b532be4d.jpg","retailPrice":"249.99","bids":9999,"bidders_count":0,"placed":9999,"itemName":"WII","bids_left":0,"bidders":0,"retail_price":"249.99","chat_enabled":false,"id":6}], "finished": [], "mine": []}, "credits": {"available": [], "finished": [], "mine": []}}
 
 function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
@@ -191,11 +190,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 // User can't bid on this auction.
                 if (!data.success) {
                     if (data.motive === 'NO_ENOUGH_CREDITS') {
-                        //opens the "get credits" popup
+                        // TODO: Show tip using a service.
                         $rootScope.$emit('openGetCreditsPopover');
                     }
                     else if (data.motive === 'NO_ENOUGH_TOKENS') {
-                        console.log('not enough tokens')
+                        // TODO: Show tip using a service.
+                        console.log('not enough tokens');
                     }
                     auction.interface.joinAuctionEnabled = true;
                     return;
@@ -387,6 +387,15 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
 
     }
 
+    /**
+     * Method to move an auction from mine to finished.
+     *
+     * @param {object} auction Auction to move.
+     */
+    $scope.closeAuction = function (auction) {
+        $scope.moveAuction(auction, 'mine', 'finished');
+    };
+
     //getLocalAuctionsAll
     $scope.getLocalAuctionAll = function () {
         var auctions = [];
@@ -521,7 +530,6 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-
     $scope.initializeAuctions();
 };
 
@@ -540,23 +548,6 @@ function isDict(p) {
         return false;
     }
 }
-
-function getCurrentDateTime(){
-    //to parse in python
-    //>>> time.strptime("2013-05-25 02:04:09.2", '%Y-%m-%d %H:%M:%S.%f')
-
-    var currentdate = new Date();
-    var datetime = currentdate.getFullYear() + "-"
-                    + (currentdate.getMonth()+1)  + "-"
-                    + currentdate.getDate() + " "
-                    + currentdate.getHours() + ":"
-                    + currentdate.getMinutes() + ":"
-                    + currentdate.getSeconds() + "."
-                    + currentdate.getMilliseconds()
-    return datetime;
-}
-
-
 
 jQuery(function(){
     showOverlay();

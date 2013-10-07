@@ -2,26 +2,27 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.http import Http404, HttpResponse
-from django.shortcuts import get_object_or_404
 from django.utils.html import escape
 
 from bidding import client
-from bidding.models import Auction
 from chat.models import Message, ChatUser
 
-
+from django.contrib.contenttypes.models import ContentType
 
 def get_chat_user(request):
     if not request.user.is_authenticated():
         raise Http404
     
-    chat_user, _ = ChatUser.objects.get_or_create(user=request.user)
+    chat_user, _ = ChatUser.objects.get_or_create(object_id=request.user.id)
     return chat_user
 
 
 def get_auction(request):
     auction_id = request.POST.get('auction_id')
-    return get_object_or_404(Auction, id=int(auction_id))
+    if auction_id:
+        return auction_id
+    else:
+        raise Http404
 
 
 def send_message(request):
@@ -31,8 +32,9 @@ def send_message(request):
         auction = get_auction(request)
 
         if user.can_chat(auction):
+            auction_type_id=ContentType.objects.filter(name='auction').all()[0]
             db_msg = Message.objects.create(text=message, user=user,
-                                             auction=auction)
+                                             content_type=auction_type_id, object_id=auction)
             
             #do_send_message(db_msg)
             client.do_send_chat_message(auction,db_msg)

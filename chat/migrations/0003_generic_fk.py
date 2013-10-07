@@ -1,27 +1,21 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
-
-
-class Migration(SchemaMigration):
+from django.contrib.contenttypes.models import ContentType
+class Migration(DataMigration):
 
     def forwards(self, orm):
-
-        # Changing field 'FBOrderInfo.date'
-        db.alter_column(u'bidding_fborderinfo', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, null=True))
-
-        # Changing field 'ConfigKey.value'
-        db.alter_column(u'bidding_configkey', 'value', self.gf('django.db.models.fields.CharField')(max_length=300))
-
+        "Write your forwards methods here."
+        # Note: Remember to use orm['appname.ModelName'] rather than "from appname.models..."
+        auction_type_id=ContentType.objects.filter(name='auction').all()[0]    
+        for message in orm['chat.Message'].objects.all():
+            message.object_id=message.auction
+            message.content_type_id=auction_type_id
+            message.save()
     def backwards(self, orm):
-
-        # Changing field 'FBOrderInfo.date'
-        db.alter_column(u'bidding_fborderinfo', 'date', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, null=True))
-
-        # Changing field 'ConfigKey.value'
-        db.alter_column(u'bidding_configkey', 'value', self.gf('django.db.models.fields.CharField')(max_length=100))
+        "Write your backwards methods here."
 
     models = {
         u'auth.group': {
@@ -58,76 +52,6 @@ class Migration(SchemaMigration):
             'won_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'won_price': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '10', 'decimal_places': '2', 'blank': 'True'})
         },
-        u'bidding.auctioninvitation': {
-            'Meta': {'object_name': 'AuctionInvitation'},
-            'auction': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Auction']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'inviter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
-            'request_id': ('django.db.models.fields.BigIntegerField', [], {})
-        },
-        u'bidding.auctioninvoice': {
-            'Meta': {'object_name': 'AuctionInvoice'},
-            'auction': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Auction']"}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
-            'payment': ('django.db.models.fields.CharField', [], {'default': "'direct'", 'max_length': '55'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'created'", 'max_length': '55'}),
-            'uid': ('django.db.models.fields.CharField', [], {'max_length': '40', 'db_index': 'True'})
-        },
-        u'bidding.bid': {
-            'Meta': {'unique_together': "(('auction', 'bidder'),)", 'object_name': 'Bid'},
-            'auction': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Auction']"}),
-            'bidder': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'placed_amount': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'unixtime': ('django.db.models.fields.DecimalField', [], {'max_digits': '17', 'decimal_places': '5', 'db_index': 'True'}),
-            'used_amount': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        u'bidding.bidpackage': {
-            'Meta': {'object_name': 'BidPackage'},
-            'bids': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'description': ('django.db.models.fields.TextField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
-            'price': ('django.db.models.fields.IntegerField', [], {}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '55'})
-        },
-        u'bidding.configkey': {
-            'Meta': {'object_name': 'ConfigKey'},
-            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'key': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'value': ('django.db.models.fields.CharField', [], {'max_length': '300'}),
-            'value_type': ('django.db.models.fields.CharField', [], {'default': "'text'", 'max_length': '10'})
-        },
-        u'bidding.converthistory': {
-            'Meta': {'object_name': 'ConvertHistory'},
-            'bids_amount': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True'}),
-            'date': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
-            'tokens_amount': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True'}),
-            'total_bids': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'total_bidsto': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
-            'total_tokens': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        u'bidding.fborderinfo': {
-            'Meta': {'object_name': 'FBOrderInfo'},
-            'date': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'null': 'True', 'blank': 'True'}),
-            'fb_payment_id': ('django.db.models.fields.BigIntegerField', [], {'null': 'True', 'blank': 'True'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
-            'package': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.BidPackage']"}),
-            'status': ('django.db.models.fields.CharField', [], {'max_length': '25'})
-        },
-        u'bidding.invitation': {
-            'Meta': {'object_name': 'Invitation'},
-            'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'invited_facebook_id': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'inviter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"})
-        },
         u'bidding.item': {
             'Meta': {'object_name': 'Item'},
             'category': ('django.db.models.fields.CharField', [], {'max_length': '5', 'null': 'True', 'blank': 'True'}),
@@ -138,12 +62,6 @@ class Migration(SchemaMigration):
             'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'}),
             'specification': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'total_price': ('django.db.models.fields.DecimalField', [], {'null': 'True', 'max_digits': '10', 'decimal_places': '2', 'blank': 'True'})
-        },
-        u'bidding.itemimage': {
-            'Meta': {'object_name': 'ItemImage'},
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100'}),
-            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"})
         },
         u'bidding.member': {
             'Meta': {'object_name': 'Member'},
@@ -179,25 +97,29 @@ class Migration(SchemaMigration):
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'}),
             'website_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
-        u'bidding.prepromotedauction': {
-            'Meta': {'ordering': "['-id']", 'object_name': 'PrePromotedAuction'},
-            'bid_type': ('django.db.models.fields.CharField', [], {'default': "'bid'", 'max_length': '5'}),
-            'bidding_time': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
+        u'chat.auctioneerphrase': {
+            'Meta': {'object_name': 'AuctioneerPhrase'},
+            'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
-            'precap_bids': ('django.db.models.fields.IntegerField', [], {}),
-            'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'precap'", 'max_length': '15'}),
-            'threshold1': ('django.db.models.fields.IntegerField', [], {'default': '12', 'null': 'True', 'blank': 'True'}),
-            'threshold2': ('django.db.models.fields.IntegerField', [], {'default': '8', 'null': 'True', 'blank': 'True'}),
-            'threshold3': ('django.db.models.fields.IntegerField', [], {'default': '5', 'null': 'True', 'blank': 'True'})
+            'key': ('django.db.models.fields.CharField', [], {'max_length': '20'}),
+            'text': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
-        u'bidding.promotedauction': {
-            'Meta': {'ordering': "['-id']", 'object_name': 'PromotedAuction', '_ormbases': [u'bidding.Auction']},
-            u'auction_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['bidding.Auction']", 'unique': 'True', 'primary_key': 'True'}),
-            'promoter': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'promoter_user'", 'to': u"orm['bidding.Member']"})
+        u'chat.chatuser': {
+            'Meta': {'object_name': 'ChatUser'},
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"})
+        },
+        u'chat.message': {
+            'Meta': {'object_name': 'Message'},
+            '_user': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['chat.ChatUser']", 'null': 'True', 'blank': 'True'}),
+            'auction': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Auction']"}),
+            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['contenttypes.ContentType']"}),
+            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'object_id': ('django.db.models.fields.PositiveIntegerField', [], {}),
+            'text': ('django.db.models.fields.TextField', [], {})
         },
         u'contenttypes.contenttype': {
             'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
@@ -208,4 +130,5 @@ class Migration(SchemaMigration):
         }
     }
 
-    complete_apps = ['bidding']
+    complete_apps = ['chat']
+    symmetrical = True

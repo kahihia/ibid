@@ -49,54 +49,29 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
     
-    $scope.initialize = function (mixpanel_token) {
-        //initialize analythics.js with mixpanel
-        analytics.initialize({
-            'Mixpanel' : {
-                token  : mixpanel_token,
-                people : true
-            },
-        });
-        // API request get user details
-        $http.post('/api/getUserDetails/').success(function (data) {
-            // identify users
-            analytics.identify(data.user.username, {
-                email: data.user.email,
-                name : data.user.first_name,
-                last_name : data.user.last_name,
-                fb_id : data.user.facebookId
-            });
-            $rootScope.user = data.user;
-            $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
-            $scope.initialMessages = data.messages;
-        });
-        // API request get user notifications
-        $http.get('/api/v1/notification/', {'status':'Unread'}).success(function (notifications) {
-            $scope.messageList = notifications.objects;
-            if ($scope.messageList.length > 0) {
-                $scope.showMessages = true;
-            }
-            else {
-                $scope.showMessages = false;
-            }
-        });
-    };
-    
-    $scope.messageJsonParse = function (message) {
-        message['message'] = angular.fromJson(message['message']);    
-    };
-    
     $rootScope.$on('reloadUserDataEvent', function () {
         $http
             .post('/api/getUserDetails/')
             .success(function (data) {
                 $scope.user.tokens = data.user.tokens;
                 $scope.user.credits = data.user.credits;
-
                 $rootScope.convertTokens.credits = parseInt($rootScope.user.tokens*$rootScope.convertTokens.tokenValueInCredits);
                 $rootScope.convertTokens.tokens = $rootScope.convertTokens.credits/$rootScope.convertTokens.tokenValueInCredits;
             });
+
+        // API request get user notifications
+        $http
+            .get('/api/v1/notification/', {'status':'Unread'})
+            .success(function (notifications) {
+                $scope.messageList = notifications.objects;
+                if ($scope.messageList.length > 0) {
+                    $scope.showMessages = true;
+                } else {
+                    $scope.showMessages = false;
+                }
+            });
     });
+
     $rootScope.$on('openGetCreditsPopover', function () {
         // showOverlay();
         // setTimeout(function () {
@@ -110,6 +85,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.convertTokens.tokens = $rootScope.convertTokens.credits/$rootScope.convertTokens.tokenValueInCredits;
 
     });
+
     $rootScope.$on('closeGetCreditsPopover', function () {
 //        hideOverlay();
 //        TweenLite.to('.buy-bids-popup', 1, {left: '-800px', onComplete: function () {
@@ -117,6 +93,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 //        }})
         $scope.showBuyCreditsModal = false;
     });
+    
     $rootScope.$on('auction:finished', function (event, auction) {
         // If current user won, show win modal.
         if (auction.winner.facebookId !== $scope.user.facebookId) {
@@ -131,6 +108,11 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
+
+    
+    $scope.messageJsonParse = function (message) {
+        message['message'] = angular.fromJson(message['message']);    
+    };
 
 
 
@@ -213,14 +195,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-    $scope.buy_bids = function(member,package_id,site_name) {
+    $scope.buy_bids = function(member,package_id) {
         // calling the API ...
         
         analytics.track('buy bids');
         var obj = {
             method: 'pay',
             action: 'purchaseitem',
-            product: site_name+'bid_package/'+package_id,
+            product: $rootScope.SITE_NAME+'bid_package/'+package_id,
         };
         
         $scope.subscribeToPaymentChannel(member)
@@ -373,6 +355,10 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }, {scope: 'publish_actions'});
     };
 
+    $rootScope.$on('InitializeUvTabPosition',  function (event, data) {
+        $scope.uvTabPosition();
+    });
+    
     $scope.uvTabPosition=function () {
         try{    
             FB.Canvas.getPageInfo(function(pageInfo){
@@ -425,42 +411,6 @@ function closePopupLike() {
         jQuery('.like-popup').hide()
     }})
 }
-
-
-function buy_bids(url, package_id) {
-    var order_info = -1;
-
-    jQuery.post(url, {'package_id': package_id},
-        function (data) {
-            if (data.order_info != undefined) {
-                if (data.order_info >= 0) {
-
-                    // calling the API ...
-                    var obj = {
-                        method: 'pay',
-                        order_info: data.order_info,
-                        purchase_type: 'item',
-                        dev_purchase_params: {
-                            'oscif': true
-                        }
-                    };
-                    console.log(obj);
-
-                    FB.ui(obj, getCredits_callback);
-                }
-            }
-        }, 'json');
-}
-
-var getCredits_callback = function (data) {
-    if (data['order_id']) {
-        refresh_user_bids();
-        return true;
-    } else {
-        // handle errors here
-        return false;
-    }
-};
 
 var ovarlayCount = 0;
 function showOverlay(){

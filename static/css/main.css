@@ -419,7 +419,7 @@ body {
 /*-------------------------------------------------------IFRAME TOKENS */
 
 #auction {
-	width: 791px;
+	width: 770px;
 	height: 100%;
 	margin: 0px auto 0 auto;
 }
@@ -429,9 +429,14 @@ body {
 	position: relative;
 	/*z-index: 100;*/
 	background-image: url("../images/bkg-auction.png");
-	width: 791px;
+	width: 750px;
 	height: 93px;
 	margin: 10px auto 0 auto;
+}
+#auction-top .btn-close {
+    position: absolute;
+    top: -8px;
+    right: -8px;
 }
 #auction-top .img {
 
@@ -662,7 +667,7 @@ body {
 #auction-bids {
 	width: 166px;
 	float: left;
-	margin: 24px 0 0 581px;
+	margin: 24px 0 0 575px;
 	position: absolute;
 	color: #484848;
 	font-size: 16px;
@@ -671,7 +676,7 @@ body {
 }
 
 #auction-status-winner {
-	width: 397px;
+	width: 360px;
 	float: left;
 	background-color: #fff;
 	margin: 17px 0 0 389px;
@@ -913,8 +918,8 @@ body {
 }
 
 #auction-content {
-	margin: -7px auto 0 5px;
-	width: 782px;
+	margin: -7px auto 0 auto;
+	width: 748px;
 	box-shadow: 0 0 16px #000;
 	background-color: #f8f8f8;
 	border-radius: 3px;
@@ -939,7 +944,7 @@ body {
 }
 #auctioneer-message {
 	float: right;
-	width: 615px;
+	width: 585px;
 	height: 52px;
 	padding: 25px 18px 12px 29px;
 	font-size: 13px;
@@ -982,7 +987,7 @@ body {
 	position: absolute;
 }
 #auction-chat {
-	width: 782px;
+	width: 100%;
 	margin: 0 auto 0 auto;
 	min-height: 90px;
 }
@@ -1119,15 +1124,15 @@ body {
 
 #auction-play {
 	background-image: url("../images/bkg-auction-play.png");
-	width: 404px;
+	width: 369px;
 	height: 89px;
 	float: left;
-	margin: 2px 0 0 386px;
+	margin: 2px 0 0 383px;
 	position: absolute;
 }
 
 #auction-play .time-left {
-	width: 150px;
+	width: 130px;
 	float: left;
 	margin: 17px 0 0 0;
 	color: #f3ec27;
@@ -1145,7 +1150,7 @@ body {
 	margin-left: 10px;
 }
 #auction-play .bids-left {
-	width: 150px;
+	width: 130px;
 	float: left;
 	margin: 17px 0 0 0;
 	color: #fc5555;

@@ -9,6 +9,7 @@ logger = logging.getLogger('django')
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse, Http404
+from django.contrib.contenttypes.models import ContentType
 
 from bidding import client
 from bidding.models import Auction
@@ -23,6 +24,7 @@ from chat.models import ChatUser
 from chat.models import Message
 from lib.utils import get_static_url
 
+auction_type_id=ContentType.objects.filter(name='auction').all()[0]
 
 def api(request, method):
     """api calls go through this method"""
@@ -56,6 +58,18 @@ def getUserDetails(request):
             }
         }
 
+    return HttpResponse(json.dumps(data), content_type="application/json")
+
+def getTemplateContext(request):
+    data = {
+        u'PUBNUB_PUB': settings.PUBNUB_PUB,
+        u'PUBNUB_SUB': settings.PUBNUB_SUB,
+        u'FB_APP_ID': settings.FACEBOOK_APP_ID,
+        u'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN,
+        u'SITE_NAME': settings.SITE_NAME,
+        u'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH 
+    }
+    
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 def getAuctionsInitialization(request):
@@ -189,7 +203,7 @@ def getAuctionsInitialization(request):
         tmp['bidders'] = auct.bidders.count()
         
         tmp['auctioneerMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
+        for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
                 'text': mm.format_message(),
                 'date': mm.get_time(),
@@ -198,7 +212,7 @@ def getAuctionsInitialization(request):
             tmp['auctioneerMessages'].append(w)
 
         tmp['chatMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
+        for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
                  'user': {'displayName': mm.get_user().display_name(),
@@ -230,7 +244,7 @@ def getAuctionsInitialization(request):
         tmp['bidders'] = auct.bidders.count()
 
         tmp['auctioneerMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
+        for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
                 'text': mm.format_message(),
                 'date': mm.get_time(),
@@ -239,7 +253,7 @@ def getAuctionsInitialization(request):
             tmp['auctioneerMessages'].append(w)
 
         tmp['chatMessages'] = []
-        for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
+        for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=False).order_by('-created')[:10]:
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
                  'user': {'displayName': mm.get_user().display_name(),
@@ -323,7 +337,7 @@ def startBidding(request):
     tmp['won_price'] = 0
     
     tmp['auctioneerMessages'] = []
-    for mm in Message.objects.filter(auction=auct).filter(_user__isnull=True).order_by('-created')[:10]:
+    for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=True).order_by('-created')[:10]:
         w = {
             'text': mm.format_message(),
             'date': mm.get_time(),
@@ -332,7 +346,7 @@ def startBidding(request):
         tmp['auctioneerMessages'].append(w)
 
     tmp['chatMessages'] = []
-    for mm in Message.objects.filter(auction=auct).filter(_user__isnull=False).order_by('-created')[:10]:
+    for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=False).order_by('-created')[:10]:
         w = {'text': mm.format_message(),
              'date': mm.get_time(),
              'user': {'displayName': mm.get_user().display_name(),
@@ -441,7 +455,6 @@ def claim(request):
     member = request.user
 
     tmp = {}
-
     if auction.status == 'processing' and auction.can_bid(member):
 
         if auction.used_bids() / auction.minimum_precap == bidNumber:
@@ -511,10 +524,11 @@ def sendMessage(request):
         auction = Auction.objects.get(id=auction_id)
 
         text = request.GET.get('text', requPOST['text'])
-        user = ChatUser.objects.get_or_create(user=request.user)[0]
+        user_type_id=ContentType.objects.filter(name='user').all()[0] 
+        user = ChatUser.objects.get_or_create(object_id=request.user.id, content_type=user_type_id)[0]
 
-        if user.can_chat(auction):
-            db_msg = Message.objects.create(text=text, user=user, auction=auction)
+        if user.can_chat(auction.id):
+            db_msg = Message.objects.create(text=text, user=user, content_type=auction_type_id, object_id=auction.id)
 
             #do_send_message(db_msg)
             client.do_send_chat_message(auction, db_msg)
@@ -577,4 +591,5 @@ API = {
     'inviteRequest': inviteRequest,
     'add_credits': add_credits,
     'globalMessage': globalMessage,
+    'getTemplateContext' : getTemplateContext,
 }
