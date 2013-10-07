@@ -226,8 +226,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         if (! auction.interface.addBidEnabled) {
             return;
         }
-        // If user is not able to add bids, do nothing.
+        // If user is not able to add bids, emit failure event and
+        // return.
         if (! $scope.isUserAbleToAddBidToAuction(auction)) {
+            var event = auction.bidType === $scope.AUCTION_TYPE_TOKENS ? 'addTokensBidFailed' : 'addCreditsBidFailed';
+            console.log('addBids() -- isUserAbleToAddBidToAuction: false -- emit event: %s', event);
+            $scope.$emit(event);
             return;
         }
         // Disable add/rem bid buttons.
@@ -240,12 +244,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 console.log('addBids()', rdata);
                 // If the bid can't be added, do corresponding action.
                 if (rdata.success === false) {
+                    console.log('addBids() -- server responded: failed -- motive: %s', rdata.motive);
                     if (rdata.motive === 'NO_ENOUGH_CREDITS'){
-                        // Show the "get credits" modal.
-                        $rootScope.$emit('openGetCreditsPopover');
+                        // Emit event for failure.
+                        $scope.$emit('addCreditsBidFailed');
                     }
                     else if (rdata.motive === 'NO_ENOUGH_TOKENS'){
-                        console.log('Not enough tokens');
+                        // Emit event for failure.
+                        $scope.$emit('addTokensBidFailed');
                     }else if (rdata.motive === 'AUCTION_MAX_TOKENS_REACHED') {
                         console.log('Amount commited exceeds maximum for user in an auction');
                         // Re-enable add/rem bid buttons.

@@ -55,6 +55,15 @@
                             element.joyride('destroy');
                         }
                     });
+                    if (attrs.ibTourButtonTriggers) {
+                        _.extend(opts, {
+                            postStepCallback: function () {
+                                scope.$apply(function (scope) {
+                                    scope.$emit(attrs.ibTourButtonTriggers);
+                                });
+                            }
+                        });
+                    }
                     if (attrs.ibTourTriggerEvent) {
                         $rootScope.$on(attrs.ibTourTriggerEvent, function () {
                             element.joyride(opts);

@@ -377,9 +377,14 @@
                 <p>Get credits to play for real items. You can exchange tokens for credits or buy them.</p>
             </li>
         </ol>
-        <ol ib-tour ib-tour-trigger-event="auctionStart" class="joyRideTipContent">
-            <li data-id="btn-bid-play" data-options="tipLocation:top; tipAdjustmentX:5;" data-button="Okay!">
-                <p>The BID button allows you to place bids. Also in this area you can see how many bids you have left, and how much time there is left to bid on the item. The last person to bid when the timer runs out, wins!</p>
+        <ol ib-tour ib-tour-trigger-event="addTokensBidFailed" class="joyRideTipContent">
+            <li data-class="btn-add-bid" data-options="tipLocation:top; tipAdjustmentX:-25;" data-button="Okay!">
+                <p>You need more tokens to add more bids to this auction. You can ask your friends for help and they can send you a tokens gift!</p>
+            </li>
+        </ol>
+        <ol ib-tour ib-tour-trigger-event="addCreditsBidFailed" ib-tour-button-triggers="openGetCreditsPopover" class="joyRideTipContent">
+            <li data-class="btn-add-bid" data-options="tipLocation:top; tipAdjustmentX:-25;" data-button="Get credits">
+                <p>You need more credits to add more bids to this auction. Click on the "GET CREDITS" button to buy them or play for tokens and exchange them for credits.</p>
             </li>
         </ol>
         <ol ib-tour ib-tour-trigger-event="auction:finished" class="joyRideTipContent">
