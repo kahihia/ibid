@@ -158,5 +158,13 @@ def send_app_notification(sender, **kwargs):
     auction = kwargs['auction']
     for bidder in auction.bidders.all():
         bid = bidder.bid_set.get(auction=auction)
-        if bid.left() == bid.placed_amount:           
-            Notification.objects.create(recipient=bidder, sender=None, notification_type='FinishedAuction', message='')
+        if bid.left() == bid.placed_amount:
+            tmp = {}
+            tmp['itemName'] = auction.item.name
+            tmp['itemImage'] = auction.item.get_thumbnail(size="107x72")
+            if auction.winner:
+                tmp['winner'] = {'firstName': auction.winner.first_name,
+                             'displayName': auction.winner.display_name(),
+                             'facebookId': auction.winner.facebook_id}
+            tmp['won_price'] = str(auction.won_price)
+            Notification.objects.create(recipient=bidder, sender=None, notification_type='FinishedAuction', message=json.dumps(tmp))

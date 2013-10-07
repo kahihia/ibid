@@ -68,7 +68,22 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
+            $scope.initialMessages = data.messages;
         });
+        // API request get user notifications
+        $http.get('/api/v1/notification/', {'status':'Unread'}).success(function (notifications) {
+            $scope.messageList = notifications.objects;
+            if ($scope.messageList.length > 0) {
+                $scope.showMessages = true;
+            }
+            else {
+                $scope.showMessages = false;
+            }
+        });
+    };
+    
+    $scope.messageJsonParse = function (message) {
+        message['message'] = angular.fromJson(message['message']);    
     };
     
     $rootScope.$on('reloadUserDataEvent', function () {
@@ -371,7 +386,27 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             setTimeout($scope.uvTabPosition, 100);
         };
     };
-
+    
+    $scope.closeMessagesScreen = function () {
+        $scope.showMessages = false;
+    };
+    
+    $scope.closeMessage = function (message) {
+        angular.element('#message-'+message['id']).remove();
+    };
+    
+    $scope.readMessage = function (message) {
+        data = {};
+        message['status'] = 'Read';
+        objects=[{'message':message}];
+        data['objects'] = objects;
+        $http.
+            put(message['resource_uri'], data).success(function(data) {
+                if (data) {
+                    angular.element('#message-'+message['id']).remove();
+                }
+        });
+    };
 };
 
 
