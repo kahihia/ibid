@@ -36,9 +36,12 @@
                 }
             };
         })
-        .directive('ibTour', ['$rootScope', function ($rootScope) {
+        .directive('ibTour', ['$rootScope', '$window', function ($rootScope, $window) {
+            console.log($window);
+
             var defaults = {
                 autoStart: true,
+                cookieMonster: true,
                 scroll: false,
                 template: {
                     link: '<a href="#close" class="joyride-close-tip">×</a>',
@@ -55,6 +58,17 @@
                             element.joyride('destroy');
                         }
                     });
+                    if (attrs.ibTourCookie && attrs.ibTourCookie === false) {
+                        console.log('no cookie!!');
+                        _.extend(opts, {cookieMonster: false});
+                    }
+                    else if ($.cookie(attrs.id) === 'ridden') {
+                        console.log('ridden!!!');
+                        return;
+                    }
+                    else {
+                        _.extend(opts, {cookieName: attrs.id});
+                    }
                     if (attrs.ibTourButtonTriggers) {
                         _.extend(opts, {
                             postStepCallback: function () {
