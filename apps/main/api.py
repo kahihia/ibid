@@ -1,8 +1,6 @@
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
 from tastypie.resources import ModelResource, ALL
-from tastypie.utils import trailing_slash
-from tastypie import fields
 
 from apps.main.models import Notification
 from bidding.models import Member
@@ -11,7 +9,6 @@ from django_facebook.connect import connect_user
 from django_facebook.exceptions import MissingPermissionsError
 import open_facebook
 
-from django.conf.urls import url
 from django.conf import settings
 
 from datetime import datetime
@@ -76,8 +73,7 @@ class NotificationResource(ModelResource):
 
 class UserDataAuthorization(Authorization):
     def read_list(self, object_list, bundle):
-        
-        return object_list.filter(id=bundle.request.user.id)
+        raise Unauthorized("Sorry, no lists.")
     def read_detail(self, object_list, bundle):
         return True
     def create_list(self, object_list, bundle):
@@ -100,18 +96,10 @@ class UserByFBTokenResource(ModelResource):
         detail_allowed_methods = ['get']
         authorization = UserDataAuthorization()
         queryset = Member.objects.all()
-        detail_uri_name = 'token'
+        detail_uri_name = 'access_token'
         include_resource_uri = False
-        
-    def prepend_urls(self):
-        """
-        A hook for adding your own URLs or matching before the default URLs.
-        """
-        return [
-            url(r"^(?P<resource_name>%s)/(?P<%s>.*?)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_detail"),
-        ]
-    
-    def get_object_list(self, request):
+
+    def obj_get(self, bundle, **kwargs):
         """
         A hook to allow making returning the list of available objects.
 
@@ -120,21 +108,32 @@ class UserByFBTokenResource(ModelResource):
         ``ModelResource`` includes a full working version specific to Django's
         ``Models``.
         """
-        access_token = request.path
-        access_token = access_token.replace('/api/v1/user/byFBToken/', '')
-        of = open_facebook.OpenFacebook(access_token)
+
+        access_token = kwargs['access_token']
         db_user = Member.objects.none()
         try:
             try:
                 graph = self.check_permissions(access_token)
+                of = open_facebook.OpenFacebook(access_token)
                 facebook_user = of.get('me/',)
-                connect_user(request, access_token)
-                db_user = Member.objects.filter(facebook_id=facebook_user['id'])
+                connect_user(bundle.request, access_token)
+                db_user = Member.objects.filter(facebook_id=facebook_user['id'])[0]
             except Exception as e:
-                request.META['error'] = str(e)
+                bundle.request.META['error'] = str(e)
         except open_facebook.exceptions.OAuthException as e:
-            request.META['error'] = str(e)
+            bundle.request.META['error'] = str(e)
         return db_user
+    
+    def full_dehydrate(self, bundle, for_list=False):
+        """
+        Given a bundle with an object instance, extract the information from it
+        to populate the resource.
+        """
+        
+        if bundle.obj:
+           bundle = super(UserByFBTokenResource, self).full_dehydrate(bundle)
+        return bundle
+    
     
     def check_permissions(self, access_token):
         graph = open_facebook.OpenFacebook(access_token)
@@ -147,20 +146,21 @@ class UserByFBTokenResource(ModelResource):
             raise MissingPermissionsError(error_format % permissions_string)
         return graph
 
-    def alter_list_data_to_serialize(self, request, data):
+    def alter_detail_data_to_serialize(self, request, data):
         """
-        A hook to alter list data just before it gets serialized & sent to the user.
+        A hook to alter detail data just before it gets serialized & sent to the user.
 
         Useful for restructuring/renaming aspects of the what's going to be
         sent.
 
-        Should accommodate for a list of objects, generally also including
-        meta data.
+        Should accommodate for receiving a single bundle of data.
         """
         try:
             if request.META['error']:
-                data['error'] = request.META['error']
-        except Exception:
-            data['error'] = 'none'
+                error ={}
+                error['ERROR'] = request.META['error']
+                data.data = error
+        except Exception as e:
+            pass
         return data
     
