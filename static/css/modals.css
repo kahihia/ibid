@@ -56,8 +56,8 @@
   filter: alpha(opacity=50);
 }
 .modal.modal-wide {
-	width: 750px;
-    margin-left: -386px;
+	width: 720px;
+    margin-left: -377px;
 }
 .modal .kenny {
 	bottom: -60px;
