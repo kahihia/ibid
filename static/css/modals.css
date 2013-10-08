@@ -137,12 +137,11 @@
 	display: block;
 }
 .modal .content {
-    box-sizing: border-box;
-    position: absolute;
-    width: 97%;
-    padding: 50px 40px;
     text-align: center;
     line-height: 24px;
+    margin-top: 39px;
+    position: absolute;
+    width: 100%;
 }
 .modal .content .winner {
     font-size: 18px;
