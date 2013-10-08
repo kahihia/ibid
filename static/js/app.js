@@ -38,7 +38,8 @@ angular
                     js.src = "//connect.facebook.net/en_US/all.js";
                     fjs.parentNode.insertBefore(js, fjs);
                 }(document, 'script', 'facebook-jssdk'));
-        });       
+        });
+            
         //initialize analythics.js with mixpanel
         analytics.initialize({
             'Mixpanel' : {
@@ -58,6 +59,18 @@ angular
             });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
+        });
+        
+        // API request get user notifications
+        $http
+            .get('/api/v1/notification/')
+            .success(function (notifications) {
+                $rootScope.messageList = notifications.objects;
+                if ($rootScope.messageList.length > 0) {
+                    $rootScope.showMessages = true;
+                } else {
+                    $rootScope.showMessages = false;
+                }
         });
         
         // dispatcher

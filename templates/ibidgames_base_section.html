@@ -60,7 +60,7 @@
 			    }
 		</script>
 		<script src="{% static 'js/tutorial.js' %}" ></script>
-		<script src="{% static "js/app.js" %}" ></script>
+		<script src="{% static 'js/app.js' %}" ></script>
 	</head>
 	<body {% if inCanvas %} style="overflow: hidden" {% endif %} >
 		<div id="fb-root"></div>
@@ -178,8 +178,8 @@
 					</div>
 
 					<div class="buttons">
-		<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
-	    </div>
+					<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
+				</div>
 					<div class="bkg"></div>
 				</div>
 
@@ -226,7 +226,7 @@
 					</div>
 					<div class="bkg"></div>
 				</div>
-
+				
 				<!--GLOBAL chat-->
 				<div class="global-chat" ng-class="{'open': isGlobalChatOpen}" ng-controller="GlobalChatCtrl" ng-init="initialize()" ng-show="isGlobalChatEnabled" ng-cloak>
 					<a class="top" ng-click="chatGrowth()">

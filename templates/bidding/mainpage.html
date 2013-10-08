@@ -9,9 +9,94 @@
 	<meta property="og:image" content="{{SITE_NAME_WOUT_BACKSLASH}}{% static "images/200x200-Fblogo.png" %}" />
 	<meta property="og:site_name" content="{{ site_url }}" />
 	<meta property="og:description" content="{{ share_description }}" />
+	<link rel="stylesheet" href="{% static 'css/messages.css' %}">
 {% endblock %}
 
 {% block base_header %}
+	<!-- Messages modal -->
+	<div class="modal modal-wide" ng-show="showMessages" ng-cloak>
+		<div class="title">Your messages</div>
+		<div class="title title-shadow">Your messages</div>
+		<div class="content">
+			<div ng-repeat="message in messageList">
+				<div ng-switch on="message['notification_type']" ng-init=messageJsonParse(message)>
+					<!-- TEMPLATE: FinishedAuction -->
+					<div id="message-top" ng-switch-when="FinishedAuction">
+						<div class="message" id="message-{$ message['id'] $}">
+							<div class="message-content">
+								<div class="message-content-title">You missed an auction</div>
+								<div class="message-content-body">While you were away the auction for {$ message['message'].itemName $} was played.<br>
+									<a class="tokens-text" href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$ message['message'].winner['firstName'] $}</a>
+									won it for ${$ message['message'].won_price $}.
+								</div>
+							</div>
+							<div class="message-actions">
+								<div class="btn btn-green" ng-click="readMessage(message)">Accept</div>
+								<div class="btn-close" ng-click="closeMessage(message)">x</div>
+							</div>
+							<div class="message-users">
+								<img class="avatar" ng-src="{$ message['message']['itemImage'] $}">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--				
+				<ul>
+				    <li class="message">
+					<div class="message-content">
+					    <div class="message-content-title">You got a gift</div>
+					    <div class="message-content-body">You got <span class="tokens-text">10.000 tokens</span> from Martino and 4 other friends.<br>Do you want to send a gift back?</div>
+					</div>
+					<div class="message-actions">
+					    <div class="btn btn-green">Accept</div>
+					    <div class="btn-close">x</div>
+					</div>
+					<div class="message-users">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					</div>
+				    </li>
+				    <li class="message">
+					<div class="message-content">
+					    <div class="message-content-title">Help Daniel</div>
+					    <div class="message-content-body">Daniel is out of <span class="tokens-text">tokens</span>!<br>Send him a <span class="tokens-text">Tokens</span> gift.</div>
+					</div>
+					<div class="message-actions">
+					    <div class="btn btn-green">Send</div>
+					    <div class="btn-close">x</div>
+					</div>
+					<div class="message-users">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					</div>
+				    </li>
+				    <li class="message">
+					<div class="message-content">
+					    <div class="message-content-title">You have an invitation</div>
+					    <div class="message-content-body">Daniel and 4 more sent you an invitation to join a private auction.</div>
+					</div>
+					<div class="message-actions">
+					    <div class="btn btn-green">Join</div>
+					    <div class="btn-close">x</div>
+					</div>
+					<div class="message-users">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					</div>
+				    </li>
+				</ul>
+			-->
+				
+		</div>
+		<div class="buttons">
+			<div class="btn" ng-click="closeMessagesScreen()">Close</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-click="closeMessagesScreen()">x</div>
+	</div>
+
 	<!-- Tokens won modal -->
 	<div class="modal" ng-show="showWonTokensDialog" ng-cloak>
 		<div class="title">Tokens Won!</div>
@@ -97,7 +182,6 @@
 		<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 			{$ user.displayName $}'s Upcoming Auctions
 		</div>
-
 		<div ng-repeat="auction in auctionList[playFor].mine">
 			<input type="hidden" class="auction-id"
 			value="{$ auction.id $}"/>
@@ -130,89 +214,6 @@
 							<div id="btn-bid-less" class="btn btn-red btn-rem-bid" ng-click="remBids(auction)" ng-disabled="!auction.interface.remBidEnabled">-</div>
 							<div id="btn-bid-plus" class="btn btn-red btn-add-bid" ng-click="addBids(auction)" ng-disabled="!auction.interface.addBidEnabled">+</div>
 						</div>
-
-            <!-- Messages modal -->
-            <div class="modal modal-wide" ng-show="showMessages" ng-cloak>
-                <div class="title">Your messages</div>
-                <div class="title title-shadow">Your messages</div>
-                <div class="content">
-			<div ng-repeat="message in messageList">
-				<div ng-switch on="message['notification_type']" ng-init=messageJsonParse(message)>
-					<!-- TEMPLATE: precap -->
-					<div id="message-top" ng-switch-when="FinishedAuction">
-						<div class="message" id="message-{$ message['id'] $}">
-							<div class="message-content">
-								<div class="message-content-title">You missed an auction</div>
-								<div class="message-content-body">While you were away the auction for {$ message['message'].itemName $} was played.<br>
-								<a class="tokens-text" href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$ message['message'].winner['firstName'] $}</a>
-								won it for ${$ message['message'].won_price $}.</div>
-							</div>
-							<div class="message-actions">
-								<div class="btn btn-green" ng-click="readMessage(message)">Accept</div>
-								<div class="btn-close" ng-click="closeMessage(message)">x</div>
-							</div>
-							<div class="message-users">
-								<img class="avatar" ng-src="{$ message['message']['itemImage'] $}">
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-<!--				
-                    <ul>
-                        <li class="message">
-                            <div class="message-content">
-                                <div class="message-content-title">You got a gift</div>
-                                <div class="message-content-body">You got <span class="tokens-text">10.000 tokens</span> from Martino and 4 other friends.<br>Do you want to send a gift back?</div>
-                            </div>
-                            <div class="message-actions">
-                                <div class="btn btn-green">Accept</div>
-                                <div class="btn-close">x</div>
-                            </div>
-                            <div class="message-users">
-                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
-                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
-                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
-                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
-                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
-                            </div>
-                        </li>
-                        <li class="message">
-                            <div class="message-content">
-                                <div class="message-content-title">Help Daniel</div>
-                                <div class="message-content-body">Daniel is out of <span class="tokens-text">tokens</span>!<br>Send him a <span class="tokens-text">Tokens</span> gift.</div>
-                            </div>
-                            <div class="message-actions">
-                                <div class="btn btn-green">Send</div>
-                                <div class="btn-close">x</div>
-                            </div>
-                            <div class="message-users">
-                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
-                            </div>
-                        </li>
-                        <li class="message">
-                            <div class="message-content">
-                                <div class="message-content-title">You have an invitation</div>
-                                <div class="message-content-body">Daniel and 4 more sent you an invitation to join a private auction.</div>
-                            </div>
-                            <div class="message-actions">
-                                <div class="btn btn-green">Join</div>
-                                <div class="btn-close">x</div>
-                            </div>
-                            <div class="message-users">
-                                <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
-                            </div>
-                        </li>
-                    </ul>
--->
-                </div>
-                <div class="buttons">
-                    <div class="btn" ng-click="closeMessagesScreen()">Close</div>
-                </div>
-                <div class="gloss"></div>
-                <div class="btn-close" ng-click="closeMessagesScreen()">x</div>
-            </div>
-
 						<!--<div id="auction-btns">
 							<div id="btn-invite-auction" class="disabled"><img src="{% static 'images/btn-invite-auction-disabled.png' %}" width="36" height="42">
 							</div>
@@ -326,7 +327,6 @@
 				</div>
 
 				<div id="auction-content">
-
 					<div id="auction-auctioneer">
 						<div class="img">
 							<img src="{% static 'images/auctioneer.jpg' %}" height="109" width="106">
@@ -342,9 +342,7 @@
 							</div>
 							<div id="btn-acutioneer-down"></div>
 						</div>
-
 					</div>
-
 					<div id="auction-chat">
 						<div class="chat-title">Live chat</div>
 						<div class="chat-container">
@@ -378,7 +376,6 @@
 		<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
 			Other Upcoming Auctions
 		</div>
-
 		<div id="auction" ng-repeat="auction in auctionList[playFor].available">
 			<input type="hidden" class="auction-id"
 			value="{$ auction.id $}"/>
@@ -438,9 +435,9 @@
 					</p>
 					<a href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$auction.winner.firstName $}</a>
 				</div>
-
 			</div>
 		</div>
+	</div>	
 
         <!-- Notifications -->
         <div id="notifications" class="notifications-container"></div>

@@ -58,18 +58,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                 $rootScope.convertTokens.credits = parseInt($rootScope.user.tokens*$rootScope.convertTokens.tokenValueInCredits);
                 $rootScope.convertTokens.tokens = $rootScope.convertTokens.credits/$rootScope.convertTokens.tokenValueInCredits;
             });
-
-        // API request get user notifications
-        $http
-            .get('/api/v1/notification/', {'status':'Unread'})
-            .success(function (notifications) {
-                $scope.messageList = notifications.objects;
-                if ($scope.messageList.length > 0) {
-                    $scope.showMessages = true;
-                } else {
-                    $scope.showMessages = false;
-                }
-            });
     });
 
     $rootScope.$on('openGetCreditsPopover', function () {
@@ -108,13 +96,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
-
-    
-    $scope.messageJsonParse = function (message) {
-        message['message'] = angular.fromJson(message['message']);    
-    };
-
-
 
     $scope.closeWonAuctionDialog = function () {
         //request for perm if does not have it
@@ -372,9 +353,17 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             setTimeout($scope.uvTabPosition, 100);
         };
     };
+
+    $scope.messageJsonParse = function (message) {
+        console.log(angular.fromJson(message['message']));
+        message['message'] = angular.fromJson(message['message']);
+        if (message['message'].winner === undefined){
+            message['message'].winner = {'firstName' : 'Nobody'};
+        };
+    };
     
     $scope.closeMessagesScreen = function () {
-        $scope.showMessages = false;
+        $rootScope.showMessages = false;
     };
     
     $scope.closeMessage = function (message) {

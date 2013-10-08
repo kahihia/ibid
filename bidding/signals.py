@@ -152,7 +152,6 @@ def send_in_thread(signal, **kwargs):
     th = threading.Thread(target=signal.send, kwargs=kwargs)
     th.start()
 
-
 @receiver(auction_finished_signal)
 def send_app_notification(sender, **kwargs):
     from apps.main.models import Notification
@@ -161,8 +160,9 @@ def send_app_notification(sender, **kwargs):
         tmp = {}
         tmp['itemName'] = auction.item.name
         tmp['itemImage'] = auction.item.get_thumbnail(size="107x72")
-        tmp['winner'] = {'firstName': auction.winner.first_name,
-                         'displayName': auction.winner.display_name(),
-                         'facebookId': auction.winner.facebook_id}
+        if auction.winner:
+            tmp['winner'] = {'firstName': auction.winner.first_name,
+                             'displayName': auction.winner.display_name(),
+                             'facebookId': auction.winner.facebook_id}
         tmp['won_price'] = str(auction.won_price)
         Notification.objects.create(recipient=bid.bidder, sender=None, notification_type='FinishedAuction', message=json.dumps(tmp))
