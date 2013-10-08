@@ -93,7 +93,7 @@ class UserDataAuthorization(Authorization):
     def delete_detail(self, object_list, bundle):
         raise Unauthorized("Sorry, no deletes.")
     
-class LoginByFBTokenResource(ModelResource):
+class UserByFBTokenResource(ModelResource):
     class Meta:
         resource_name = 'user/byFBToken'
         list_allowed_methods = ['get']
@@ -163,3 +163,4 @@ class LoginByFBTokenResource(ModelResource):
         except Exception:
             data['error'] = 'none'
         return data
+    
