@@ -1,8 +1,8 @@
 from django.contrib import admin
 
-from models import Audit
-from models import Item
-from models import User
+from apps.sandbox.models import Audit
+from apps.sandbox.models import Item
+from apps.sandbox.models import User
 
 
 admin.site.register(Audit)
