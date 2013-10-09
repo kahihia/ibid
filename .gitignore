@@ -3,6 +3,6 @@
 *.db
 settings.py
 
-/venv
+/venv*
 public_static
 /media/

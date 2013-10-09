@@ -153,8 +153,6 @@ INSTALLED_APPS = (
     'admin_tools.dashboard',
     'paypal.standard.ipn',
     'sorl.thumbnail',
-    'django_extensions',
-    # Needed by django facebook
     'django_facebook',
     'django.contrib.staticfiles',
     'apps.audit',
