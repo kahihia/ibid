@@ -155,7 +155,6 @@ INSTALLED_APPS = (
     'paypal.standard.ipn',
     'sorl.thumbnail',
     'django_extensions',
-    'cumulus',
     # Needed by django facebook
     'django_facebook',
     'django.contrib.staticfiles',
