@@ -129,7 +129,7 @@
 
             settings.$document.on('click.joyride', '.joyride-close-tip', function (e) {
               e.preventDefault();
-              methods.end();
+              methods.end(true /* isAborted */);
             });
 
             settings.$window.bind('resize.joyride', function (e) {
@@ -487,7 +487,7 @@
                 left: settings.$target.offset().left + leftAdjustment});
 
               if (/right/i.test(settings.tipSettings.nubPosition)) {
-                settings.$next_tip.css('left', settings.$target.offset().left - settings.$next_tip.outerWidth() + settings.$target.outerWidth());
+                settings.$next_tip.css('left', settings.$target.offset().left - settings.$next_tip.outerWidth() + settings.$target.outerWidth() + leftAdjustment);
               }
 
               methods.nub_position($nub, settings.tipSettings.nubPosition, 'top');
@@ -497,6 +497,10 @@
               settings.$next_tip.css({
                 top: (settings.$target.offset().top - settings.$next_tip.outerHeight() - nub_height + topAdjustment),
                 left: settings.$target.offset().left + leftAdjustment});
+
+              if (/right/i.test(settings.tipSettings.nubPosition)) {
+                settings.$next_tip.css('left', settings.$target.offset().left - settings.$next_tip.outerWidth() + settings.$target.outerWidth() + leftAdjustment);
+              }
 
               methods.nub_position($nub, settings.tipSettings.nubPosition, 'bottom');
 
@@ -823,7 +827,8 @@
         }
       },
 
-      end : function () {
+      end : function (isAborted) {
+        isAborted = isAborted || false;
         if (settings.cookieMonster) {
           $.cookie(settings.cookieName, 'ridden', { expires: 365, domain: settings.cookieDomain, path: settings.cookiePath });
         }
@@ -842,8 +847,8 @@
           settings.$current_tip.hide();
         }
         if (settings.$li) {
-          settings.postStepCallback(settings.$li.index(), settings.$current_tip);
-          settings.postRideCallback(settings.$li.index(), settings.$current_tip);
+          settings.postStepCallback(settings.$li.index(), settings.$current_tip, isAborted);
+          settings.postRideCallback(settings.$li.index(), settings.$current_tip, isAborted);
         }
         $('.joyride-modal-bg').hide();
       },
@@ -885,7 +890,7 @@
               // Escape key.
               event.keyCode === 27 ) {
             event.preventDefault();
-            methods.end();
+            methods.end(true /* isAborted */);
             return;
           }
 

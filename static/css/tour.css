@@ -22,14 +22,18 @@
   top: -58px;
   left: -106px;
 }
+.joyride-tip-guide span.joyride-nub.top-right,
 .joyride-tip-guide span.joyride-nub.top {
   border-bottom-color: #3990b8 !important;
 }
-.joyride-tip-guide span.joyride-nub.bottom {
+.joyride-tip-guide span.joyride-nub.bottom,
+.joyride-tip-guide span.joyride-nub.bottom-right {
   border-top-color: #3990b8 !important;
 }
 .joyride-tip-guide span.joyride-nub.top:after,
-.joyride-tip-guide span.joyride-nub.bottom:after {
+.joyride-tip-guide span.joyride-nub.top-right:after,
+.joyride-tip-guide span.joyride-nub.bottom:after,
+.joyride-tip-guide span.joyride-nub.bottom-right:after {
   content: '';
   display: block;
   position: absolute;
@@ -39,7 +43,8 @@
   border: solid 11px;
   border-color: white;
 }
-.joyride-tip-guide span.joyride-nub.top:after {
+.joyride-tip-guide span.joyride-nub.top:after,
+.joyride-tip-guide span.joyride-nub.top-right:after {
   /*
   IE7/IE8 Don't support rgba so we set the fallback
   border color here. However, IE7/IE8 are also buggy
@@ -54,8 +59,8 @@
   top: 3px;
   bottom: none;
 }
-
-.joyride-tip-guide span.joyride-nub.bottom:after {
+.joyride-tip-guide span.joyride-nub.bottom:after,
+.joyride-tip-guide span.joyride-nub.bottom-right:after {
   /*
   IE7/IE8 Don't support rgba so we set the fallback
   border color here. However, IE7/IE8 are also buggy

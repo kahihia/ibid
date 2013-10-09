@@ -37,7 +37,11 @@
             };
         })
         .directive('ibTour', ['$rootScope', '$window', function ($rootScope, $window) {
-            console.log($window);
+            // WARNING:
+            // This is awkward but this directive needs the currently
+            // commited version of jquery.joyride-2.1.js because it
+            // has been edited to have one or two features needed for
+            // this implementation. So don't replace/update it.
 
             var defaults = {
                 autoStart: true,
@@ -55,35 +59,63 @@
                 link: function postLink (scope, element, attrs) {
                     var opts = _.extend({}, defaults, {
                         postRideCallback: function () {
+                            // Destroy tour after ending it to avoid
+                            // some problems.
                             element.joyride('destroy');
                         }
                     });
-                    if (attrs.ibTourCookie && attrs.ibTourCookie === false) {
-                        console.log('no cookie!!');
+
+                    // If has attribute ib-tour-cookie="false",
+                    // doesn't writes cookie so that tip can be
+                    // displayed everytime.
+                    if (attrs.ibTourCookie && attrs.ibTourCookie === 'false') {
                         _.extend(opts, {cookieMonster: false});
                     }
+                    // Else, check if cookie is already there, if it
+                    // is, do nothing.
                     else if ($.cookie(attrs.id) === 'ridden') {
-                        console.log('ridden!!!');
                         return;
                     }
+                    // Else, set cookie name to the id of the tour.
                     else {
                         _.extend(opts, {cookieName: attrs.id});
                     }
-                    if (attrs.ibTourButtonTriggers) {
+
+                    // If has a ib-tour-button-fires-event attribute,
+                    // bind postStepCallback event handler to fire an
+                    // event when clicking the tip button.
+                    if (attrs.ibTourButtonFiresEvent) {
                         _.extend(opts, {
-                            postStepCallback: function () {
-                                scope.$apply(function (scope) {
-                                    scope.$emit(attrs.ibTourButtonTriggers);
-                                });
+                            postStepCallback: function (i, tipEl, isAborted) {
+                                if (!isAborted) {
+                                    // Only if tour is not aborted.
+                                    scope.$emit(attrs.ibTourButtonFiresEvent);
+                                    // Trigger digest cycle if not
+                                    // in one currently.
+                                    if (!scope.$$phase) {
+                                        scope.$apply();
+                                    }
+                                }
                             }
                         });
                     }
-                    if (attrs.ibTourTriggerEvent) {
-                        $rootScope.$on(attrs.ibTourTriggerEvent, function () {
+
+                    // If has a ib-tour-trigger-on-event attribute,
+                    // activates when that event is fired.
+                    if (attrs.ibTourTriggerOnEvent) {
+                        var unBindEvent = $rootScope.$on(attrs.ibTourTriggerOnEvent, function () {
+                            // Check cookies to see if tip was already
+                            // displayed. If it was, unbind this event
+                            // handler and return.
+                            if ($.cookie(attrs.id) === 'ridden') {
+                                unBindEvent();
+                                return;
+                            }
                             element.joyride(opts);
                         });
                     }
                     else {
+                        // Normal plugin activation.
                         element.joyride(opts);
                     }
                 }
