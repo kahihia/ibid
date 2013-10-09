@@ -324,7 +324,7 @@
 						<div id="user-tokens" class="tokens">
 							TOKENS: {$ user.tokens $}
 						</div>
-						<div class="credits">
+						<div id="user-credits" class="credits">
 							CREDITS: {$ user.credits $}
 						</div>
 						<div class="btn-credits" ng-click="openGetCredits()"></div>
@@ -348,13 +348,13 @@
             <li>
                 <p>Welcome to iBidGames!</p>
             </li>
-            <li data-id="user-tokens" data-options="tipAdjustmentX:3; tipAdjustmentY:3;">
+            <li data-id="user-credits" data-options="nubPosition:top-right; tipAdjustmentX:-26;">
                 <p>This is how many tokens and credits you have.</p>
             </li>
             <li data-class="btn-tokens">
                 <p>You can play for tokens or for real items. Use these tabs to navigate between the two.</p>
             </li>
-            <li data-class="btn-join-auction" data-options="tipLocation:top">
+            <li data-class="btn-join-auction" data-options="tipLocation:top; nubPosition:bottom-right;">
                 <p>Click the "Join Auction" button on the item you want to bid on. Bidding starts when completion is at 100%.</p>
             </li>
             <li data-button="Okay!">
@@ -373,7 +373,7 @@
             </li>
         </ol>
         <ol id="tour--play-for-items" ib-tour ib-tour-trigger-on-event="showItemAuctions" class="joyRideTipContent">
-            <li data-class="btn-credits" data-options="nubPosition:top-right; tipAdjustmentX:13; tipAdjustmentY:-10;" data-button="Okay!">
+            <li data-class="btn-credits" data-options="nubPosition:top-right; tipAdjustmentX:14; tipAdjustmentY:-10;" data-button="Okay!">
                 <p>Get credits to play for real items. You can exchange tokens for credits or buy them.</p>
             </li>
         </ol>
@@ -393,7 +393,7 @@
             </li>
         </ol>
         <ol id="tour--auction-finished" ib-tour ib-tour-trigger-on-event="auction:finished" class="joyRideTipContent">
-            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:-5; tipAdjustmentY:18;" data-button="Okay!">
+            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:-5; tipAdjustmentY:19;" data-button="Okay!">
                 <p>This tells you the winner of the auction. You can also click on his name to view his Facebook profile page.</p>
             </li>
         </ol>

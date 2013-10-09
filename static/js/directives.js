@@ -111,6 +111,7 @@
                                 unBindEvent();
                                 return;
                             }
+                            element.joyride('destroy');
                             element.joyride(opts);
                         });
                     }
