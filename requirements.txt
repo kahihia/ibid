@@ -16,3 +16,4 @@ python-mimeparse==0.1.4
 # Other
 gunicorn
 MySQL-python==1.2.4
+newrelic
