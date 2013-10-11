@@ -3,14 +3,15 @@ Functions to handle auctioneer messages on auction chat.
 '''
 
 from django.utils.safestring import mark_safe
+from django.contrib.contenttypes.models import ContentType
 
 from bidding import client
 from chat.views import do_send_message
 from chat.models import AuctioneerPhrase, Message
 
-
 def create_auctioneer_message(auction, message):
-    message = Message.objects.create(text=message, auction=auction)
+    auction_type_id=ContentType.objects.filter(name='auction').all()[0]
+    message = Message.objects.create(text=message, content_type=auction_type_id, object_id=auction.id)
 
     text = message.format_message()
 
@@ -26,7 +27,8 @@ def create_auctioneer_message(auction, message):
 
 
 def send_auctioneer_message(auction, message):
-    db_msg = Message.objects.create(text=message, auction=auction)
+    auction_type_id=ContentType.objects.filter(name='auction').all()[0]
+    db_msg = Message.objects.create(text=message, content_type=auction_type_id, object_id=auction.id)
     client.do_send_auctioneer_message(auction, db_msg)
 
 

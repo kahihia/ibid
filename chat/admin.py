@@ -20,16 +20,16 @@ class MessageAdminForm(forms.ModelForm):
 
 class MessageAdmin(admin.ModelAdmin):
     form = MessageAdminForm
-    list_display = ('auction', 'user', 'created', 'text')
-    fields = ('auction', 'user', 'text', 'created')
-    raw_id_fields = ('auction',)
+    list_display = ('content_type', 'user', 'created', 'text')
+    fields = ('content_type', 'user', 'text', 'created')
+    raw_id_fields = ('content_type',)
     readonly_fields = ('user',)
     
 admin.site.register(Message, MessageAdmin)
 
 
 class ChatUserAdmin(admin.ModelAdmin):
-    list_display = ('user', ) 
+    list_display = ('content_type', ) 
 
 
 class AuctioneerPhraseAdmin(admin.ModelAdmin):

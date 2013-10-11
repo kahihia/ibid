@@ -65,20 +65,18 @@ def canvashome(request):
     if not member.getSession('revisited'):
         display_popup = True
         member.setSession('revisited', True)
-    
+    try:
+        auction_type = request.GET['auction_type']
+    except Exception:
+        auction_type = 'token'
     response = render_response(request, 'bidding/mainpage.html',
-                               {'fb_app_id': settings.FACEBOOK_APP_ID,
-                                'PUBNUB_PUB': settings.PUBNUB_PUB,
-                                'PUBNUB_SUB': settings.PUBNUB_SUB,
-                                'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
-                                'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN,
+                               {'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
                                 'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH,
-                                'SITE_NAME': settings.SITE_NAME,
                                 'display_popup': display_popup,
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
-                                'packages': BidPackage.objects.all(),
+                                'auction_type': auction_type,
                                 'app_url': fb_url,
                                 'site_url': settings.SITE_NAME,
                                 'share_title': share_title,
@@ -146,14 +144,10 @@ def standalone(request):
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
 
     response = render_response(request, 'bidding/mainpage.html',
-                               {'fb_app_id': settings.FACEBOOK_APP_ID,
-                                'PUBNUB_PUB': settings.PUBNUB_PUB,
-                                'PUBNUB_SUB': settings.PUBNUB_SUB,
-                                'display_popup': display_popup,
+                               {'display_popup': display_popup,
                                 'facebook_user_id': member.facebook_id,
                                 'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
                                 'member': member,
-                                'packages': BidPackage.objects.all(),
                                 'js_error_tracker': js_error_tracker,
                                 'app_url': fb_url,
                                 'site_url': settings.SITE_NAME,
@@ -165,6 +159,7 @@ def standalone(request):
 
 
 def winners(request, page):
+    member = request.user
     auctions = (Auction.objects.filter(is_active=True, winner__isnull=False)
                                .annotate(current_price=Count('bid'))
                                .select_related('item', 'winner')
@@ -172,7 +167,15 @@ def winners(request, page):
     for auction in auctions:
         auction.winner_member = Member.objects.filter(id=auction.winner.id)[0]
     #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
-    return render_response(request, 'bidding/ibidgames_winners.html',{'auctions': auctions, 'current_page': page})
+    return render_response(request, 'bidding/ibidgames_winners.html',
+                           {    'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
+                                'display_popup': False,
+                                'facebook_user_id': member.facebook_id,
+                                'tosintro': FlatPage.objects.filter(title="tacintro")[0].content,
+                                'member': member,
+                                'inCanvas':False,
+                                'auctions': auctions,
+                                'current_page': page})
 
 
 @csrf_exempt
