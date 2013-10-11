@@ -274,7 +274,7 @@ PUBNUB_SECRET = ''
 # Application Urls
 SITE_NAME = "https://apps.facebook.ibidgames.com/"
 SITE_NAME_WOUT_BACKSLASH = "https://apps.facebook.ibidgames.com"
-IMAGES_SITE = SITE_NAME
+IMAGES_SITE = SITE_NAME_WOUT_BACKSLASH
 
 
 # App Settings
