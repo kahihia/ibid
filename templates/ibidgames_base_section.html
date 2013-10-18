@@ -34,16 +34,16 @@
         <script src="{% static 'js/vendor/jquery.cookie.js' %}"></script>
         <script src="{% static 'js/vendor/jquery.joyride-2.1.js' %}"></script>
 		<script src="{% static 'js/vendor/TweenMax.min.js' %}"></script>
-		<script src="{% static 'js/base_header.js' %}"></script>
-		<script src="{% static 'js/auctions.js' %}" ></script>
-		<script src="{% static 'js/services.js' %}"></script>
-		<script src="{% static 'js/directives.js' %}"></script>
-		<script src="{% static 'js/providers.js' %}"></script>
-		<script src="{% static 'js/config.js' %}"></script>
-		<script src="{% static 'js/messages.js' %}" ></script>
-		<script src="{% static 'js/global-chat.js' %}"></script>
 		<script src="{% static 'js/vendor/analytics.min.js' %}"></script>
-		<script language="javascript">
+        <script src="{% static 'js/base_header.js' %}"></script>
+        <script src="{% static 'js/auctions.js' %}" ></script>
+        <script src="{% static 'js/services.js' %}"></script>
+        <script src="{% static 'js/directives.js' %}"></script>
+        <script src="{% static 'js/providers.js' %}"></script>
+        <script src="{% static 'js/config.js' %}"></script>
+        <script src="{% static 'js/messages.js' %}" ></script>
+        <script src="{% static 'js/global-chat.js' %}"></script>
+		<script>
 			tutorialImages = {
 			    slide0:  "{% static 'images/tutorial/0.png' %}",
 			    slide1:  "{% static 'images/tutorial/1.png' %}",
@@ -370,12 +370,12 @@
             </li>
         </ol>
         <ol id="tour--auction-started" ib-tour ib-tour-trigger-on-event="auctionStart" class="joyRideTipContent">
-            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:-8;" data-button="Okay!">
+            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:4;" data-button="Okay!">
                 <p>The BID button allows you to place bids. Also in this area you can see how many bids you have left, and how much time there is left to bid on the item. The last person to bid when the timer runs out, wins!</p>
             </li>
         </ol>
         <ol id="tour--auction-finished" ib-tour ib-tour-trigger-on-event="auction:finished" class="joyRideTipContent">
-            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:-5; tipAdjustmentY:19;" data-button="Okay!">
+            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:13; tipAdjustmentY:19;" data-button="Okay!">
                 <p>This tells you the winner of the auction. You can also click on his name to view his Facebook profile page.</p>
             </li>
         </ol>
