@@ -1,15 +1,8 @@
-*.pyc
-.idea
-.swp
-src
+*.py[co]
+*.swp
+*.db
 settings.py
 
-venv
+/venv*
 public_static
-
-deploy.sh
-nohup.out
-
-!static/js/lib
-!static/css/blueprint/src
-
+/media/

@@ -136,6 +136,9 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             if (message.data.lastClaimer !== $rootScope.user.displayName && auction.interface.can_bid) {
                                 auction.interface.bidEnabled = true;
                             }
+                            else if (message.data.lastClaimer == $rootScope.user.displayName) {
+                                auction.interface.isWinning = true;
+                            }
                             auction.timeleft = message.data.timeleft;
                             auction.bidNumber = message.data.bidNumber;
                             $scope.startCounter(auction.id);
@@ -191,11 +194,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                 // User can't bid on this auction.
                 if (!data.success) {
                     if (data.motive === 'NO_ENOUGH_CREDITS') {
-                        //opens the "get credits" popup
+                        // TODO: Show tip using a service.
                         $rootScope.$emit('openGetCreditsPopover');
                     }
                     else if (data.motive === 'NO_ENOUGH_TOKENS') {
-                        console.log('not enough tokens')
+                        // TODO: Show tip using a service.
+                        console.log('not enough tokens');
                     }
                     auction.interface.joinAuctionEnabled = true;
                     return;

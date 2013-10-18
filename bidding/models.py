@@ -17,7 +17,6 @@ from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
 from django_facebook.models import FacebookModel
-from audit.models import AuditedModel
 from urllib2 import urlopen
 from sorl.thumbnail import get_thumbnail
 
@@ -26,6 +25,7 @@ logger = logging.getLogger('django')
 
 re_bids = re.compile("(\d+)")
 
+from apps.audit.models import AuditedModel
 from bidding import client
 from chat import auctioneer
 from bidding.signals import auction_finished_signal
@@ -36,6 +36,7 @@ from bidding.signals import task_auction_pause
 from bidding.signals import task_auction_start
 from bidding.signals import auction_threshold_signal
 from bidding.signals import send_in_thread
+
 
 AUCTION_STATUS_CHOICES = (
     ('precap', 'Pre-Capitalization'),

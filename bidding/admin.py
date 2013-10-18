@@ -63,14 +63,14 @@ class AuctionAdmin(admin.ModelAdmin):
 
     class Media:
         js = (
-            'js/jquery-1.7.min.js',
-            'js/jquery-ui-1.8.6.custom.min.js',
-            'js/combo_box.js',
-            'js/auction_admin.js')
+            'admin/js/jquery-1.7.min.js',
+            'admin/js/jquery-ui-1.8.6.custom.min.js',
+            'admin/js/combo_box.js',
+            'admin/js/auction_admin.js')
 
         css = {
-            'all': ('css/custom-theme/jquery-ui-1.8.6.custom.css',
-                    'css/admin_fix.css',)
+            'all': ('admin/css/custom-theme/jquery-ui-1.8.6.custom.css',
+                    'admin/css/admin_fix.css',)
         }
 
 
@@ -188,9 +188,9 @@ class MemberUserAdmin(UserAdmin):
 
     form = MemberAdminForm
     readonly_fields = ('first_name', 'last_name', 'email',)
-    
+
     actions = [export_as_csv_action("CSV Export", fields=['first_name', 'last_name', 'email'])]
-    
+
     list_display = ('username',
                     'first_name',
                     'last_name',
@@ -207,11 +207,11 @@ class MemberUserAdmin(UserAdmin):
         ('Personal info', {'fields': ('first_name', 'last_name', 'email')}),
         ('Bidding', {'fields': ('bids_left', 'tokens_left', 'bidsto_left', 'remove_from_chat')}),
         )
-    
+
 
 class ConfigKeyAdmin(admin.ModelAdmin):
     form = ConfigKeyAdminForm
-    
+
     list_display = ('key',
                     'value',
                     'description',

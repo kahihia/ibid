@@ -146,7 +146,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'bidding',
     'south',
-    'audit',
     'chat',
     'message',
     'admin_tools.theming',
@@ -154,11 +153,9 @@ INSTALLED_APPS = (
     'admin_tools.dashboard',
     'paypal.standard.ipn',
     'sorl.thumbnail',
-    'django_extensions',
-    'cumulus',
-    # Needed by django facebook
     'django_facebook',
     'django.contrib.staticfiles',
+    'apps.audit',
     'apps.main',
 )
 
@@ -247,8 +244,8 @@ CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
 
 
-ADMIN_TOOLS_MENU = 'admtools.menu.CustomMenu'
-ADMIN_TOOLS_INDEX_DASHBOARD = 'admtools.dashboard.CustomIndexDashboard'
+ADMIN_TOOLS_MENU = 'lib.admtools.menu.CustomMenu'
+ADMIN_TOOLS_INDEX_DASHBOARD = 'lib.admtools.dashboard.CustomIndexDashboard'
 
 
 # Facebook settings
@@ -277,7 +274,7 @@ PUBNUB_SECRET = ''
 # Application Urls
 SITE_NAME = "https://apps.facebook.ibidgames.com/"
 SITE_NAME_WOUT_BACKSLASH = "https://apps.facebook.ibidgames.com"
-IMAGES_SITE = SITE_NAME
+IMAGES_SITE = SITE_NAME_WOUT_BACKSLASH
 
 
 # App Settings

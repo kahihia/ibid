@@ -180,8 +180,10 @@
 								{$ auction.timeleft $}
 							</div>
 							<div id="btn-bid-play">
-								<a href="" ng-click="claim(auction)"> <div ng-class="{true:'bidEnabled', false:'bidDisabled'}[auction.interface.bidEnabled]"></div> </a>
-							</div>
+                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" ng-click="claim(auction)" ng-disabled="!auction.interface.bidEnabled">
+                                    <span class="auction__bid-button__text" data-text="BID">BID</span>
+                                </button>
+                            </div>
 							<div class="bids-left">
 								<p>
 									BIDS LEFT

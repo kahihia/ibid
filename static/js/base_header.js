@@ -49,38 +49,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
 
-    $rootScope.initialize = function () {
-        $http.post('/api/getTemplateContext/').success(function (data) {
-            //$rootScope.PUBNUB_PUB = data.PUBNUB_PUB;
-            //$rootScope.PUBNUB_SUB = data.PUBNUB_SUB;
-            $rootScope.MIXPANEL_TOKEN = data.MIXPANEL_TOKEN;
-            $rootScope.SITE_NAME = data.SITE_NAME;
-            FB.init({
-                    appId : data.fb_app_id
-            });
-        });
-
-        //initialize analythics.js with mixpanel
-        analytics.initialize({
-            'Mixpanel' : {
-                token  : $rootScope.MIXPANEL_TOKEN,
-                people : true
-            },
-        });
-        // API request get user details
-        $http.post('/api/getUserDetails/').success(function (data) {
-            // identify users
-            analytics.identify(data.user.username, {
-                email: data.user.email,
-                name : data.user.first_name,
-                last_name : data.user.last_name,
-                fb_id : data.user.facebookId
-            });
-            $rootScope.user = data.user;
-            $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
-        });
-    };
-
     $rootScope.$on('reloadUserDataEvent', function () {
         $http
             .post('/api/getUserDetails/')
@@ -112,6 +80,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 //        }})
         $scope.showBuyCreditsModal = false;
     });
+
     $rootScope.$on('auction:finished', function (event, auction) {
         // If current user won, show win modal.
         if (auction.winner.facebookId !== $scope.user.facebookId) {
@@ -367,6 +336,10 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             }
         }, {scope: 'publish_actions'});
     };
+
+    $rootScope.$on('InitializeUvTabPosition',  function (event, data) {
+        $scope.uvTabPosition();
+    });
 
     $scope.uvTabPosition = function () {
         try {
