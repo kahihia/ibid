@@ -1,0 +1,83 @@
+.joyride-tip-guide {
+  width: 420px;
+  min-height: 112px;
+  background: white;
+  color: #6c6c6b;
+  border: 2px solid #3990b8;
+  -webkit-border-radius: 10px;
+          border-radius: 10px;
+}
+.joyride-tip-guide,
+.joyride-tip-guide p {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: bold;
+}
+.joyride-tip-guide .joyride-close-tip {
+  color: #6c6c6b !important;
+  font-size: 16px;
+}
+.joyride-tip-guide .joyride-kenny {
+  position: absolute;
+  top: -58px;
+  left: -106px;
+}
+.joyride-tip-guide span.joyride-nub.top-right,
+.joyride-tip-guide span.joyride-nub.top {
+  border-bottom-color: #3990b8 !important;
+}
+.joyride-tip-guide span.joyride-nub.bottom,
+.joyride-tip-guide span.joyride-nub.bottom-right {
+  border-top-color: #3990b8 !important;
+}
+.joyride-tip-guide span.joyride-nub.top:after,
+.joyride-tip-guide span.joyride-nub.top-right:after,
+.joyride-tip-guide span.joyride-nub.bottom:after,
+.joyride-tip-guide span.joyride-nub.bottom-right:after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: -11px;
+  width: 0;
+  height: 0;
+  border: solid 11px;
+  border-color: white;
+}
+.joyride-tip-guide span.joyride-nub.top:after,
+.joyride-tip-guide span.joyride-nub.top-right:after {
+  /*
+  IE7/IE8 Don't support rgba so we set the fallback
+  border color here. However, IE7/IE8 are also buggy
+  in that the fallback color doesn't work for
+  border-bottom-color so here we set the border-color
+  and override the top,left,right colors below.
+  */
+  border-top-color: transparent !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  border-top-width: 0;
+  top: 3px;
+  bottom: none;
+}
+.joyride-tip-guide span.joyride-nub.bottom:after,
+.joyride-tip-guide span.joyride-nub.bottom-right:after {
+  /*
+  IE7/IE8 Don't support rgba so we set the fallback
+  border color here. However, IE7/IE8 are also buggy
+  in that the fallback color doesn't work for
+  border-top-color so here we set the border-color
+  and override the bottom,left,right colors below.
+  */
+  border-bottom-color: transparent !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+  border-bottom-width: 0;
+  bottom: 3px;
+  bottom: none;
+}
+.joyride-content-wrapper {
+  padding: 17px 35px 20px 95px;
+}
+.joyride-tip-guide .joyride-next-tip {
+    margin-left: 0;
+}
