@@ -1,4 +1,4 @@
-{% extends "ibidgames_base_section.html" %}	
+{% extends "ibidgames_base_section.html" %}
 {% load staticfiles %}
 
 {% block meta %}
@@ -10,7 +10,7 @@
 	<meta property="og:site_name" content="{{ site_url }}" />
 	<meta property="og:description" content="{{ share_description }}" />
 {% endblock %}
-	
+
 {% block base_header %}
 	<!-- Tokens won modal -->
 	<div class="modal" ng-show="showWonTokensDialog" ng-cloak>
@@ -88,7 +88,7 @@
 				</ul>
 			</div>
 		</div>
-	</div>	
+	</div>
 {% endblock %}
 
 {% block content_wrapper %}
@@ -130,7 +130,7 @@
 							<div id="btn-bid-less" class="btn btn-red btn-rem-bid" ng-click="remBids(auction)" ng-disabled="!auction.interface.remBidEnabled">-</div>
 							<div id="btn-bid-plus" class="btn btn-red btn-add-bid" ng-click="addBids(auction)" ng-disabled="!auction.interface.addBidEnabled">+</div>
 						</div>
-						
+
 						<!--<div id="auction-btns">
 							<div id="btn-invite-auction" class="disabled"><img src="{% static 'images/btn-invite-auction-disabled.png' %}" width="36" height="42">
 							</div>
@@ -180,8 +180,10 @@
 								{$ auction.timeleft $}
 							</div>
 							<div id="btn-bid-play">
-								<a href="" ng-click="claim(auction)"> <div ng-class="{true:'bidEnabled', false:'bidDisabled'}[auction.interface.bidEnabled]"></div> </a>
-							</div>
+                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" ng-click="claim(auction)" ng-disabled="!auction.interface.bidEnabled">
+                                    <span class="auction__bid-button__text" data-text="BID">BID</span>
+                                </button>
+                            </div>
 							<div class="bids-left">
 								<p>
 									BIDS LEFT
