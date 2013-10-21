@@ -8,7 +8,7 @@ logger = logging.getLogger('django')
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.contrib.contenttypes.models import ContentType
 
 from bidding import client
@@ -24,7 +24,9 @@ from chat.models import ChatUser
 from chat.models import Message
 from lib.utils import get_static_url
 
-auction_type_id=ContentType.objects.filter(name='auction').all()[0]
+
+auction_type_id = ContentType.objects.filter(name='auction').all()[0]
+
 
 def api(request, method):
     """api calls go through this method"""
@@ -524,7 +526,7 @@ def sendMessage(request):
         auction = Auction.objects.get(id=auction_id)
 
         text = request.GET.get('text', requPOST['text'])
-        user_type_id=ContentType.objects.filter(name='user').all()[0] 
+        user_type_id = ContentType.objects.get(name='user')
         user = ChatUser.objects.get_or_create(object_id=request.user.id, content_type=user_type_id)[0]
 
         if user.can_chat(auction.id):
