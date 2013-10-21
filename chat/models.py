@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
-import uuid
 import re
 
 from django.db import models
 from django.conf import settings
-from django.contrib import auth
-
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+
 
 CHATROOM_STATUS_CHOICES = (
      ('created', 'Created'),
@@ -17,14 +15,6 @@ CHATROOM_STATUS_CHOICES = (
      ('declined', 'Declined'),
      ('closed', 'Closed'),
 )
-
-
-def get_uuid():
-    """
-    Returns new UUID as string,
-    made to use as a default in model fields
-    """
-    return str(uuid.uuid4())
 
 
 class ChatUser(models.Model):
