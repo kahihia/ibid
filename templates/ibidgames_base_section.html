@@ -8,10 +8,12 @@
 
 		<title>iBidGames</title>
 
-		<link rel="stylesheet" href="{% static 'css/main.css' %}">
+		<link rel="stylesheet" href="{% static 'css/joyride-2.1.css' %}">
+        <link rel="stylesheet" href="{% static 'css/main.css' %}">
 		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
 		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
+        <link rel="stylesheet" href="{% static 'css/tour.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -25,21 +27,23 @@
 		</script>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.6/angular.min.js"></script>
-		<script src="{% static 'js/lodash.min.js' %}"></script>
-		<script src="{% static 'js/lib/jquery.json-2.2.min.js' %}"></script>
-		<script src="{% static 'js/lib/jquery.center.js' %}"></script>
-		<script src="{% static 'js/lib/TweenMax.min.js' %}"></script>
-		<script src="{% static 'js/base_header.js' %}"></script>
-		<script src="{% static 'js/auctions.js' %}" ></script>
-		<script src="{% static 'js/services.js' %}"></script>
-		<script src="{% static 'js/directives.js' %}"></script>
-		<script src="{% static 'js/providers.js' %}"></script>
-		<script src="{% static 'js/config.js' %}"></script>
-		<script src="{% static 'js/messages.js' %}" ></script>
-		<script src="{% static 'js/global-chat.js' %}"></script>
-		<!--include analythics.js -->
-		<script src="{% static 'js/analytics.min.js' %}"></script>
-		<script language="javascript">
+		<script src="{% static 'js/vendor/lodash.min.js' %}"></script>
+        <script src="{% static 'js/vendor/modernizr.custom.js' %}"></script>
+		<script src="{% static 'js/vendor/jquery.json-2.2.min.js' %}"></script>
+		<script src="{% static 'js/vendor/jquery.center.js' %}"></script>
+        <script src="{% static 'js/vendor/jquery.cookie.js' %}"></script>
+        <script src="{% static 'js/vendor/jquery.joyride-2.1.js' %}"></script>
+		<script src="{% static 'js/vendor/TweenMax.min.js' %}"></script>
+		<script src="{% static 'js/vendor/analytics.min.js' %}"></script>
+        <script src="{% static 'js/base_header.js' %}"></script>
+        <script src="{% static 'js/auctions.js' %}" ></script>
+        <script src="{% static 'js/services.js' %}"></script>
+        <script src="{% static 'js/directives.js' %}"></script>
+        <script src="{% static 'js/providers.js' %}"></script>
+        <script src="{% static 'js/config.js' %}"></script>
+        <script src="{% static 'js/messages.js' %}" ></script>
+        <script src="{% static 'js/global-chat.js' %}"></script>
+		<script>
 			tutorialImages = {
 			    slide0:  "{% static 'images/tutorial/0.png' %}",
 			    slide1:  "{% static 'images/tutorial/1.png' %}",
@@ -62,21 +66,21 @@
 		<script src="{% static 'js/tutorial.js' %}" ></script>
 		<script src="{% static 'js/app.js' %}" ></script>
 	</head>
-	<body {% if inCanvas %} style="overflow: hidden" {% endif %} >
+	<body {% if inCanvas %} style="overflow: hidden" {% endif %}>
 		<div id="fb-root"></div>
 		<script>
 			angular.element(document).ready(function() {
-				// welcome popup
-				{% if display_popup %}
-					initTutorial();
-				{% endif %}
-			});
+                // Tutorial
+                {% if display_popup %}
+                    initTutorial();
+                {% endif %}
+            });
 		</script>
 		<script>
 			function getCurrentDateTime(){
 				//to parse in python
 				//>>> time.strptime("2013-05-25 02:04:09.2", '%Y-%m-%d %H:%M:%S.%f')
-			    
+
 				var currentdate = new Date();
 				var datetime = currentdate.getFullYear() + "-"
 						+ (currentdate.getMonth()+1)  + "-"
@@ -154,7 +158,7 @@
 							    10.000 Tokens = 1 Credits
 							</p>
 						    </div>
-						    
+
 						    <div class="tokens">
 							<div class="value">
 							    <p>
@@ -166,7 +170,7 @@
 							    </p>
 							</div>
 						    </div>
-			    
+
 						    <div class="credits-btn btn btn-red" ng-click="convertChips()">
 							<p id="">
 							    {$  convertTokens.credits  $}
@@ -263,13 +267,13 @@
 						<div class="enter-text">Press Enter to send</div>
 					</div>
 				</div>
-	
+
 
 				{% block base_header %}{% endblock %}
 				<div id="top-wrapper">
 					<div id="top">
 						<div class="buttons">
-							<div class="button invite" ng-click="sendRequestViaMultiFriendSelector()"></div>
+							<div class="button invite btn-invite-friends" ng-click="sendRequestViaMultiFriendSelector()"></div>
 							<div class="button like" ng-init="fb_check_like()" ng-click="requestPermisionPublishActions('LIKE')"></div>
 							<!-- this is a modal share, but it is weird -->
 							<div class="button share" ng-click="shareOnTimeline()"></div>
@@ -299,10 +303,10 @@
 								</li>
 							</ul>
 						</div>
-						<div class="tokens">
+						<div id="user-tokens" class="tokens">
 							TOKENS: {$ user.tokens $}
 						</div>
-						<div class="credits">
+						<div id="user-credits" class="credits">
 							CREDITS: {$ user.credits $}
 						</div>
 						<div class="btn-credits" ng-click="openGetCredits()"></div>
@@ -320,6 +324,63 @@
 				{% endblock %}
 			</div>
 		</div>
+
+        <!-- Interactive tour steps -->
+        <ol id="tour--initial" ib-tour class="joyRideTipContent">
+            <li>
+                <p>Welcome to iBidGames!</p>
+            </li>
+            <li data-id="user-credits" data-options="nubPosition:top-right; tipAdjustmentX:-26;">
+                <p>This is how many tokens and credits you have.</p>
+            </li>
+            <li data-class="btn-tokens">
+                <p>You can play for tokens or for real items. Use these tabs to navigate between the two.</p>
+            </li>
+            <li data-class="btn-join-auction" data-options="tipLocation:top; nubPosition:bottom-right;">
+                <p>Click the "Join Auction" button on the item you want to bid on. Bidding starts when completion is at 100%.</p>
+            </li>
+            <li data-button="Okay!">
+                <p>You're ready to start!</p>
+            </li>
+        </ol>
+        <ol id="tour--join-auction" ib-tour ib-tour-trigger-on-event="joinAuction" class="joyRideTipContent">
+            <li data-id="auction-bids" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:-1; tipAdjustmentY:-35;">
+                <p>You can press the plus and minus buttons to add or remove bids from this auction. You can also take all your bids back to leave this auction. Bids cost you tokens if you're playing for tokens, or credits if you're playing for real items.</p>
+            </li>
+            <li data-id="auctioneer-message" data-options="tipLocation:top">
+                <p>This is the messages window. Here you can see who has joined the auction and chat with them. You can also click on their name to go to their Facebook profile page.</p>
+            </li>
+            <li data-class="btn-invite-friends" data-options="nubPosition:top-right" data-button="Okay!">
+                <p>You can help start the auction faster by inviting your friends. You will also receive 5000 tokens for each friend that joins!</p>
+            </li>
+        </ol>
+        <ol id="tour--play-for-items" ib-tour ib-tour-trigger-on-event="showItemAuctions" class="joyRideTipContent">
+            <li data-class="btn-credits" data-options="nubPosition:top-right; tipAdjustmentX:14; tipAdjustmentY:-10;" data-button="Okay!">
+                <p>Get credits to play for real items. You can exchange tokens for credits or buy them.</p>
+            </li>
+        </ol>
+        <ol ib-tour ib-tour-trigger-on-event="addTokensBidFailed" ib-tour-cookie="false" class="joyRideTipContent">
+            <li data-class="btn-add-bid" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:31;" data-button="Okay!">
+                <p>You need more tokens to add more bids to this auction. You can ask your friends for help and they can send you a tokens gift!</p>
+            </li>
+        </ol>
+        <ol ib-tour ib-tour-trigger-on-event="addCreditsBidFailed" ib-tour-cookie="false" ib-tour-button-fires-event="openGetCreditsPopover" class="joyRideTipContent">
+            <li data-class="btn-add-bid" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:31;" data-button="Get credits">
+                <p>You need more credits to add more bids to this auction. Click on the "GET CREDITS" button to buy them or play for tokens and exchange them for credits.</p>
+            </li>
+        </ol>
+        <ol id="tour--auction-started" ib-tour ib-tour-trigger-on-event="auctionStart" class="joyRideTipContent">
+            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:4;" data-button="Okay!">
+                <p>The BID button allows you to place bids. Also in this area you can see how many bids you have left, and how much time there is left to bid on the item. The last person to bid when the timer runs out, wins!</p>
+            </li>
+        </ol>
+        <ol id="tour--auction-finished" ib-tour ib-tour-trigger-on-event="auction:finished" class="joyRideTipContent">
+            <li data-id="btn-bid-play" data-options="tipLocation:top; nubPosition:bottom-right; tipAdjustmentX:13; tipAdjustmentY:19;" data-button="Okay!">
+                <p>This tells you the winner of the auction. You can also click on his name to view his Facebook profile page.</p>
+            </li>
+        </ol>
+
+
 		<!-- UserVoice JavaScript SDK (only needed once on a page) -->
 		<script>(function(){var uv=document.createElement('script');uv.type='text/javascript';uv.async=true;uv.src='//widget.uservoice.com/CwlQxZUfc9pf9e0cZtYubQ.js';var s=document.getElementsByTagName('script')[0];s.parentNode.insertBefore(uv,s)})()</script>
 		<!-- A tab to launch the Classic Widget -->

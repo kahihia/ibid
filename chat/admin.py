@@ -1,6 +1,7 @@
 from django.contrib import admin
-from chat.models import Message, AuctioneerPhrase
 from django import forms
+
+from chat.models import Message, AuctioneerPhrase
 from chat.views import do_send_message
 
 
@@ -25,8 +26,6 @@ class MessageAdmin(admin.ModelAdmin):
     raw_id_fields = ('content_type',)
     readonly_fields = ('user',)
     
-admin.site.register(Message, MessageAdmin)
-
 
 class ChatUserAdmin(admin.ModelAdmin):
     list_display = ('content_type', ) 
@@ -35,4 +34,6 @@ class ChatUserAdmin(admin.ModelAdmin):
 class AuctioneerPhraseAdmin(admin.ModelAdmin):
     list_display = ('key', 'description')
 
+
 admin.site.register(AuctioneerPhrase, AuctioneerPhraseAdmin)
+admin.site.register(Message, MessageAdmin)

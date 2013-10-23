@@ -48,7 +48,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
-    
+
     $rootScope.$on('reloadUserDataEvent', function () {
         $http
             .post('/api/getUserDetails/')
@@ -81,7 +81,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 //        }})
         $scope.showBuyCreditsModal = false;
     });
-    
+
     $rootScope.$on('auction:finished', function (event, auction) {
         // If current user won, show win modal.
         if (auction.winner.facebookId !== $scope.user.facebookId) {
@@ -178,14 +178,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     $scope.buy_bids = function(member,package_id) {
         // calling the API ...
-        
+
         analytics.track('buy bids');
         var obj = {
             method: 'pay',
             action: 'purchaseitem',
             product: $rootScope.SITE_NAME+'bid_package/'+package_id,
         };
-        
+
         $scope.subscribeToPaymentChannel(member)
         FB.ui(obj, getCredits_callback);
     };
@@ -254,8 +254,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                 }else{
                 }});
     };
-    
-    
+
+
     $scope.fb_story= function() {
         var events = [];
         events.push(new EventMessage(EventMessage.EVENT.BIDDING__SEND_WALL_POSTS, {auction:$scope.wonAuction}, EventMessage.SENDER.CLIENT_FB, EventMessage.RECEIVER.SERVER, EventMessage.TRANSPORT.REQUEST, getCurrentDateTime(), null));
@@ -263,10 +263,10 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             .get('/action/', {params: {events: angular.toJson(events)}})
             .then(function (response) {
                 console.log(response);
-            }); 
+            });
     };
-    
-    
+
+
     $scope.fb_like= function() {
 
         $http
@@ -320,14 +320,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                     });
                 });
             // end dispatcher
-            
+
             if (response.authResponse) {
                 switch (method) {
-                    
+
                     case 'LIKE':
                         $scope.fb_like();
-                        break;                 
-                   
+                        break;
+
                     case 'STORY':
                         $scope.fb_story();
                         break;
@@ -339,19 +339,29 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $rootScope.$on('InitializeUvTabPosition',  function (event, data) {
         $scope.uvTabPosition();
     });
-    
-    $scope.uvTabPosition=function () {
-        try{    
-            FB.Canvas.getPageInfo(function(pageInfo){
-                var num1 = parseInt(pageInfo.scrollTop);
-                var num2 = parseInt(pageInfo.clientHeight);
-                angular.element($('#uvTab')).animate({top: ((num2/2)+num1) }, 0);
-                angular.element($('#uvw-dialog-uv-1')).animate({top: ((num2/2)+num1) }, 0);                
-                angular.element($('#uvTab')).css({ zIndex: "1000" });
+
+    $scope.uvTabPosition = function () {
+        try {
+            FB.Canvas.getPageInfo(function (pageInfo) {
+                var scrollTop = parseInt(pageInfo.scrollTop);
+                var clientHeight = parseInt(pageInfo.clientHeight);
+
+                angular.element('#uvTab').animate({top: (clientHeight / 2) + scrollTop}, 0);
+                angular.element('#uvw-dialog-uv-1').animate({top: (clientHeight / 2) + scrollTop}, 0);
+                angular.element('#uvTab').css({zIndex: '1000'});
+
+                // If tour is showing a modal tip, fix it's position
+                // on canvas.
+                if (!!angular.element('.joyride-modal-bg:visible').length) {
+                    var $tip = angular.element('.joyride-tip-guide:visible');
+                    $tip.animate({top: (clientHeight / 2) - ($tip.height() / 2)}, 0);
+                    FB.Canvas.scrollTo(0, 0);
+                }
             });
-        }finally{
+        }
+        finally {
             setTimeout($scope.uvTabPosition, 100);
-        };
+        }
     };
 
     $scope.messageJsonParse = function (message) {
