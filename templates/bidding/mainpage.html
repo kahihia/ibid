@@ -180,7 +180,7 @@
 								{$ auction.timeleft $}
 							</div>
 							<div id="btn-bid-play">
-                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" ng-click="claim(auction)" ng-disabled="!auction.interface.bidEnabled">
+                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" ng-mousedown="claim(auction)" ng-disabled="!auction.interface.bidEnabled">
                                     <span class="auction__bid-button__text" data-text="BID">BID</span>
                                 </button>
                             </div>
@@ -211,9 +211,11 @@
 								</p>
 								PAUSED
 							</div>
-							<div id="btn-bid-play">
-								<a href="#"><img src="{% static 'images/btn-bid-play-disabled.png' %}" width="94" height="94"></a>
-							</div>
+                            <div id="btn-bid-play">
+                                <button class="auction__bid-button" disabled>
+                                    <span class="auction__bid-button__text" data-text="BID">BID</span>
+                                </button>
+                            </div>
 							<div class="bids-left">
 								<p>
 									BIDS LEFT
