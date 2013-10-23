@@ -49,7 +49,10 @@ def getUserDetails(request):
                 u'username': member.username,
                 u'email': member.email,
                 u'first_name': member.first_name,
-                u'last_name': member.last_name
+                u'last_name': member.last_name,
+                u'won_auctions': Auction.objects.filter(winner=member).all().count(),
+                u'actual_auctions': member.auction_set.exclude(status='waiting_payment').exclude(status='paid').all().count()
+                
             },
             u'app':{
                 u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE,
