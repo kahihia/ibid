@@ -75,7 +75,10 @@
 			<div class="links">
 				<ul>
 					<li>
-						<a href=""><img src="{% static 'images/invite-menu.png' %}">&nbsp;Invite Friends</a>
+						<a href ng-click="sendRequestViaMultiFriendSelector()">
+                          <img src="{% static 'images/invite-menu.png' %}">
+                          &nbsp;Invite Friends
+                        </a>
 					</li>
 					&nbsp; &nbsp;|&nbsp; &nbsp;
 					<li>
