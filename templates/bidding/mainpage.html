@@ -212,7 +212,7 @@
 								PAUSED
 							</div>
                             <div id="btn-bid-play">
-                                <button class="auction__bid-button" disabled>
+                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" disabled>
                                     <span class="auction__bid-button__text" data-text="BID">BID</span>
                                 </button>
                             </div>

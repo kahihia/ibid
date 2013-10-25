@@ -134,11 +134,13 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);
                             break;
                         case 'someoneClaimed':
-                            if (message.data.lastClaimer !== $rootScope.user.displayName && auction.interface.can_bid) {
-                                auction.interface.bidEnabled = true;
+                            if (message.data.lastClaimer !== $rootScope.user.displayName) {
                                 auction.interface.isWinning = false;
+                                if (auction.interface.can_bid) {
+                                    auction.interface.bidEnabled = true;
+                                }
                             }
-                            else if (message.data.lastClaimer == $rootScope.user.displayName) {
+                            else if (message.data.lastClaimer === $rootScope.user.displayName) {
                                 auction.interface.isWinning = true;
                             }
                             auction.timeleft = message.data.timeleft;
