@@ -136,6 +136,9 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             if (message.data.lastClaimer !== $rootScope.user.displayName && auction.interface.can_bid) {
                                 auction.interface.bidEnabled = true;
                             }
+                            else if (message.data.lastClaimer == $rootScope.user.displayName) {
+                                auction.interface.isWinning = true;
+                            }
                             auction.timeleft = message.data.timeleft;
                             auction.bidNumber = message.data.bidNumber;
                             $scope.startCounter(auction.id);
