@@ -1,9 +1,9 @@
 from tastypie.authorization import Authorization,ReadOnlyAuthorization
 from tastypie.exceptions import Unauthorized
-from tastypie.resources import ModelResource, ALL
-
+from tastypie.resources import ModelResource, ALL,Resource
+from tastypie.utils import trailing_slash
 from apps.main.models import Notification
-from bidding.models import Member, Auction, Item,ConvertHistory,BidPackage
+from bidding.models import Member, Auction, Item,ConvertHistory,BidPackage,ConfigKey
 
 from chat.models import Message
 
@@ -17,15 +17,19 @@ from datetime import datetime
 import json
 from tastypie import fields
 import logging
-
+from bidding import client
+from chat import auctioneer
 log= logging.getLogger('django')
+from datetime import datetime
 
 
 #AUTHORIZATION
 class UserNotificationsAuthorization(ReadOnlyAuthorization):
     def read_list(self, object_list, bundle):
-        return object_list.filter(recipient=bundle.request.user, status='Unread')
-
+        if ConfigKey.get('NOTIFICATIONS_ENABLED', False):
+            return object_list.filter(recipient=bundle.request.user, status='Unread')
+        raise Unauthorized("Notifications disabled")
+        
     def read_detail(self, object_list, bundle):
         if bundle.request.path.endswith('schema/'):
             return True
@@ -216,7 +220,7 @@ class AuctionResource(ModelResource):
 
     class Meta:
         queryset = Auction.objects.all()
-        resource_name = 'auctions'
+        resource_name = 'auction'
         authorization = AuctionAuthorization()
         excludes = ['is_active']
         
@@ -255,9 +259,10 @@ class AuctionResource(ModelResource):
         credit_auctions_wout_winner=[]
     
         for obj in to_be_serialized[self._meta.collection_name]:
-            finished = False
+            finished = ['paid' ,'waiting_payment']
             try:
-                int(request.META['REQUEST_URI'].split('/')[-1])
+                member_id = int(request.META['REQUEST_URI'].split('/')[-1])
+                member=Member.objects.get(id=member_id)
             except:
                 finished = obj.status != 'precap'
                     
@@ -269,7 +274,7 @@ class AuctionResource(ModelResource):
                     else:
                         token_auctions_wout_winner.append(self.full_dehydrate_finished(request, bundle, for_list=True))
                 else:
-                    token_available_list.append(self.full_dehydrate_available(request, bundle, for_list=True))
+                    token_available_list.append(self.full_dehydrate_available(request, bundle, member,for_list=True))
                 
             if obj.bid_type=='bid':
                 if obj.is_active==True and finished:
@@ -278,7 +283,7 @@ class AuctionResource(ModelResource):
                     else:
                         credit_auctions_wout_winner.append(self.full_dehydrate_finished(request, bundle, for_list=True))
                 else:
-                    credit_available_list.append(self.full_dehydrate_availabe(request, bundle, for_list=True))
+                    credit_available_list.append(self.full_dehydrate_availabe(request, bundle, member,for_list=True))
             
         return_dict['token']['finished'] = token_finished_list
         return_dict['token']['available'] = token_available_list
@@ -307,36 +312,32 @@ class AuctionResource(ModelResource):
     def apply_sorting(self, obj_list, options=None):
         return obj_list.order_by('-status', 'won_date')
     
-    def full_dehydrate_available(self, request, bundle, for_list=False):
+    def full_dehydrate_available(self, request, bundle, member,for_list=False):
         bundle = super(AuctionResource, self).full_dehydrate(bundle)
         bundle.data['completion'] = bundle.obj.completion()
         bundle.data['bidders'] = bundle.obj.bidders.count()
-        try:
-            member_id = int(request.META['REQUEST_URI'].split('/')[-1])
-            member=Member.objects.get(id=member_id)
-            bundle.data['placed'] = member.auction_bids_left(bundle.obj)
-            bundle.data['bidNumber'] = bundle.obj.used_bids() / bundle.obj.minimum_precap
-            bundle.data['auctioneerMessages'] = []
-            for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=True).order_by('-created')[:10]:
-                w = {
-                    'text': mm.format_message(),
-                    'date': mm.get_time(),
-                    'auctionId': bundle.obj.id
-                }
-                bundle.data['auctioneerMessages'].append(w)
-        
-            bundle.data['chatMessages'] = []
-            for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=False).order_by('-created')[:10]:
-                w = {'text': mm.format_message(),
-                     'date': mm.get_time(),
-                     'user': {'displayName': mm.get_user().display_name(),
-                              'profileFotoLink': mm.get_user().picture(),
-                              'profileLink': mm.user.user_link()},
-                     'auctionId': bundle.obj.id
-                }
-                bundle.data['chatMessages'].insert(0, w)
-        except Exception:
-            bundle.data['placed']= 0    
+        bundle.data['placed'] = member.auction_bids_left(bundle.obj)
+        bundle.data['bidNumber'] = bundle.obj.used_bids() / bundle.obj.minimum_precap
+        bundle.data['auctioneerMessages'] = []
+        for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=True).order_by('-created')[:10]:
+            w = {
+                'text': mm.format_message(),
+                'date': mm.get_time(),
+                'auctionId': bundle.obj.id
+            }
+            bundle.data['auctioneerMessages'].append(w)
+    
+        bundle.data['chatMessages'] = []
+        for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=False).order_by('-created')[:10]:
+            w = {'text': mm.format_message(),
+                 'date': mm.get_time(),
+                 'user': {'displayName': mm.get_user().display_name(),
+                          'profileFotoLink': mm.get_user().picture(),
+                          'profileLink': mm.user.user_link()},
+                 'auctionId': bundle.obj.id
+            }
+            bundle.data['chatMessages'].insert(0, w)
+          
         return bundle
     
     def full_dehydrate_finished(self, request, bundle, for_list=False):
@@ -345,7 +346,10 @@ class AuctionResource(ModelResource):
         bundle.data['placed']= 0
         bundle.data['auctioneerMessages'] = []
         bundle.data['chatMessages'] = []
+        format = '%d-%m-%Y' # Or whatever your date format is
+        bundle.data['won_date']=bundle.obj.won_date.strftime('%d/%m/%Y')
         return bundle
+    
     
     
 class BidPackageResource(ModelResource):
@@ -356,4 +360,5 @@ class BidPackageResource(ModelResource):
         authorization = ReadOnlyAuthorization()
         include_resource_uri = False   
 
-    
+
+
