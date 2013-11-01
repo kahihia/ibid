@@ -296,15 +296,27 @@ class Member(AbstractUser, FacebookModel):
         return self.username
 
 
+class Category(models.Model):
+    
+    name = models.CharField(max_length=55)
+    description = models.TextField()
+    image = models.ImageField(upload_to='item_category/', blank=True, null=True)
+   
+    
+    def __unicode__(self):
+        return self.name
+
+    def get_thumbnail(self, size='107x72'):
+        return settings.IMAGES_SITE + get_thumbnail(self.image.name, size).url
+
 class Item(AuditedModel):
-    name = models.CharField(max_length=255)
-    category = models.CharField(max_length=5, choices=ITEM_CATEGORY_CHOICES, blank=True, null=True)
+    name = models.CharField(max_length=255)  
     slug = models.SlugField(unique=True, help_text='Used to identify the item, should be unique')
     retail_price = models.DecimalField(max_digits=10, decimal_places=2)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     description = models.TextField()
     specification = models.TextField(blank=True, null=True)
-
+    categories = models.ManyToManyField(Category,related_name="items",blank=True, null=True)
     name.alphabetic_filter = True
 
     def get_thumbnail(self, size='107x72'):
@@ -478,7 +490,7 @@ class Auction(AbstractAuction):
                 bids = self.placed_bids() - (n * self.minimum_precap)
                 percentaje = int((bids * 100) / self.precap_bids)
             return percentaje
-        return None
+        return 100
     
     
     def get_time_left(self):
@@ -928,4 +940,5 @@ class ConfigKey(models.Model):
 
     def __unicode__(self):
         return self.key
+
 
