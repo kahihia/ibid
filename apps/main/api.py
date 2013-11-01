@@ -4,7 +4,7 @@ from tastypie import http
 from tastypie.resources import ModelResource, ALL,Resource
 from tastypie.utils import trailing_slash
 from apps.main.models import Notification
-from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid
+from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid,Category
 
 from chat.models import Message, ChatUser
 
@@ -107,15 +107,21 @@ class AuctionAuthorization(ReadOnlyAuthorization):
         If querying for a member's auctions, checks that the logged member matches the member_id in the url.
         If there's no member_id in the url that means that the request is for all auctions so all auctions are allowed.
         """
-        try:
-            member_id = int(bundle.request.META['REQUEST_URI'].split('/')[-1])
-        except:
-            return object_list
+        method = bundle.request.META['REQUEST_URI'].split('/')[-2]
         
-        if member_id == bundle.request.user.id :    
-                return object_list
+        try:
+            object_id = int(bundle.request.META['REQUEST_URI'].split('/')[-1])
+        except:    
+            return object_list
+        if method=='user' or method =='getAuctionsIwon':
+           
+            if object_id == bundle.request.user.id :    
+                    return object_list
+            else:    
+                raise Unauthorized("Sorry, you're not the user.")    
         else:
-            raise Unauthorized("Sorry, you're not the user.")     
+            return object_list
+         
     
     def read_detail(self, object_list, bundle):
         return bundle.obj != None
@@ -178,9 +184,9 @@ class UserByFBTokenResource(ModelResource):
                 facebook_user = of.get('me/',)
                 action, db_user = connect_user(bundle.request, access_token)
             except Exception as e:
-                bundle.request.META['error'] = str(e)
+                raise ImmediateHttpResponse(response = self.error_response(bundle.request, str(e), http.HttpApplicationError))
         except open_facebook.exceptions.OAuthException as e:
-            bundle.request.META['error'] = str(e)
+            raise ImmediateHttpResponse(response = self.error_response(bundle.request, str(e), http.HttpApplicationError))
         return db_user
     
     def dehydrate(self, bundle):
@@ -200,11 +206,6 @@ class UserByFBTokenResource(ModelResource):
         bundle.data['image_thumb'] = json.loads(bundle.obj.raw_data)['image_thumb']
         return bundle
 
-    def full_dehydrate(self, bundle, for_list=False):
-        if bundle.obj:
-            return super(UserByFBTokenResource, self).full_dehydrate(bundle)
-        return bundle
-
     def check_permissions(self, access_token):
         
         """ check user permissions using django_facebook methods"""
@@ -218,25 +219,6 @@ class UserByFBTokenResource(ModelResource):
             error_format = 'Permissions Missing: %s'
             raise MissingPermissionsError(error_format % permissions_string)
         return graph
-
-    def alter_detail_data_to_serialize(self, request, data):
-        """
-        A hook to alter detail data just before it gets serialized & sent to the user.
-
-        Useful for restructuring/renaming aspects of the what's going to be
-        sent.
-
-        Should accommodate for receiving a single bundle of data.
-        """
-        try:
-            if request.META['error']:
-                error ={}
-                error['ERROR'] = request.META['error']
-                data.data = error
-        except Exception as e:
-            pass
-        return data
-    
     
 class MemberResource(ModelResource):
     
@@ -267,10 +249,27 @@ class MemberResource(ModelResource):
         return self.save(bundle)
 
 
-class ItemResource(ModelResource):
+class CategoryResource(ModelResource):
 
     """ Resource to retrive data of auction's items """    
     
+    class Meta:
+        queryset = Category.objects.all()
+        resource_name = 'category'
+        authorization = ReadOnlyAuthorization()
+        include_resource_uri = False
+        fields=['name', 'description','image']
+
+    def dehydrate(self, bundle):
+        bundle.data['categoryImage'] = bundle.obj.get_thumbnail(size="107x72")
+        return bundle
+
+
+
+class ItemResource(ModelResource):
+
+    """ Resource to retrive data of auction's items """    
+    categories = fields.ManyToManyField(CategoryResource, 'categories',null=True ,full=True)
     class Meta:
         queryset = Item.objects.all()
         resource_name = 'items'
@@ -291,6 +290,7 @@ class AuctionResource(ModelResource):
     """
     winner = fields.ForeignKey(MemberResource, 'winner',null=True, full=True)
     item = fields.ForeignKey(ItemResource, 'item', full=True)
+    
 
     class Meta:
         queryset = Auction.objects.all()
@@ -310,6 +310,8 @@ class AuctionResource(ModelResource):
             url(r"^(?P<resource_name>%s)/(?P<%s>\d+)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
             url(r"^(?P<resource_name>%s)/user/(?P<member_id>\d+)$" % self._meta.resource_name, self.wrap_view('dispatch_list'), name="api_dispatch_list"),
             url(r"^(?P<resource_name>%s)/getAuctionsIwon/(?P<winner_id>\d+)$" % self._meta.resource_name, self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/category/(?P<category_id>\d+)$" % self._meta.resource_name, self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+          
         ]
         
     def get_list(self, request, **kwargs):
@@ -392,6 +394,8 @@ class AuctionResource(ModelResource):
         if filters.get('winner_id'):
             ret_filters['winner_id'] = int(filters['winner_id'])
             ret_filters['status__in'] = ['paid' ,'waiting_payment']
+        if filters.get('category_id'):
+            ret_filters['item__categories__id'] = int(filters['category_id'])
         ret_filters['is_active'] = True
         return ret_filters
     
@@ -415,8 +419,6 @@ class AuctionResource(ModelResource):
             if member == request.user and bundle.data['placed'] > 0:
                 bid = bundle.obj.bid_set.get(bidder=member)
                 bundle.data['bid_amount'] = bid.left()
-        else:
-            bundle.data['placed'] = 0
         bundle.data['bidNumber'] = bundle.obj.used_bids() / bundle.obj.minimum_precap
         bundle.data['auctioneerMessages'] = []
         for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=True).order_by('-created')[:10]:
@@ -500,8 +502,7 @@ class PlayerActionResource(Resource):
             Let a user to join an auction, add/remove bids into an auction
             or claim an auction. Depends of the url used to access the resource.
         """
-        
-        ret = {"success": True, 'motive': ''}
+        error = None
         auction = Auction.objects.get(id=bundle.data['id'])
         bundle.obj = auction
         
@@ -513,20 +514,20 @@ class PlayerActionResource(Resource):
         try:
             amount = auction.minimum_precap
         except ValueError:
-            ret = {"success": False, 'motive':"not int"}
+            error = "not int"
         if method=='addBid':
            amount += member.auction_bids_left(auction)
            if auction.status == 'precap' and auction.can_precap(member, amount):
                 #check max tokens for member per auction
                if auction.bid_type != 'bid' and (((amount*100)/(auction.precap_bids)) > ConfigKey.get('AUCTION_MAX_TOKENS', 100)):
-                   ret = {"success": False, 'motive': 'AUCTION_MAX_TOKENS_REACHED'}
+                   error = 'AUCTION_MAX_TOKENS_REACHED'
                auction.place_precap_bid(member, amount)
                client.updatePrecap(auction)
            else:
                if auction.bid_type == 'bid':
-                ret = {"success": False, 'motive': 'NO_ENOUGH_CREDITS'}
+                error = 'NO_ENOUGH_CREDITS'
                else:
-                ret = {"success": False, 'motive': 'NO_ENOUGH_TOKENS'}
+                error = 'NO_ENOUGH_TOKENS'
         elif method =='remBid':
             amount = member.auction_bids_left(auction) - amount
             if auction.can_precap(member, amount):
@@ -553,15 +554,16 @@ class PlayerActionResource(Resource):
                         client.sendPackedMessages(clientMessages)
                     else:
                         #else ignore! because the claim is old, based on a previous timer.
-                        ret = {"success": False, 'motive': 'OLD_CLAIM'}
+                        error = 'OLD_CLAIM'
+                        
                 else:
                     #else ignore! because the claim is old, based on a previous timer.
-                    ret = {"success": False, 'motive': 'OLD_CLAIM'}
+                    error = 'OLD_CLAIM'
             else:
-                ret = {"success": False, 'motive': 'AUCTION_NOT_ACTIVE_OR_CANT_BID'}
+                error = 'AUCTION_NOT_ACTIVE_OR_CANT_BID'
         else:
             if amount < auction.minimum_precap:
-                ret = {"success":"not minimun", "minimun": '%s' % auction.minimum_precap}
+                error = "not minimun, minimun : %s" % auction.minimum_precap
             joining = False
             if auction.can_precap(member, amount):
                 joining = auction.place_precap_bid(member, amount)
@@ -572,10 +574,11 @@ class PlayerActionResource(Resource):
                 client.sendPackedMessages(clientMessages)
             else:
                 if auction.bid_type == 'bid':
-                    ret = {"success": False, 'motive': 'NO_ENOUGH_CREDITS'}
+                    error = 'NO_ENOUGH_CREDITS'
                 else:
-                    ret = {"success": False, 'motive': 'NO_ENOUGH_TOKENS'}
-        bundle.request.META['result'] = ret  
+                    error = 'NO_ENOUGH_TOKENS'
+        if error:
+            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))
         return AuctionResource.full_dehydrate_available(AuctionResource(),bundle.request,bundle,member)
         
     def alter_detail_data_to_serialize(self, request, data):
@@ -592,12 +595,6 @@ class PlayerActionResource(Resource):
         data.data = fix
         if data.data['auction']['placed'] <= 0:
             data.data['do'] = 'close'
-        if 'result' in request.META:
-            data.data['success'] = request.META['result']['success']
-            data.data['motive'] = request.META['result']['motive']
-        else:
-            data.data['success'] = True
-            data.data['motive'] = ''
         return data
 
 
@@ -641,8 +638,5 @@ class SendMessageResource(Resource):
             client.do_send_global_chat_message(member, text)
         return self.create_response(request, {} , response_class=http.HttpCreated)
     
-    def alter_detail_data_to_serialize(self, request, data):
-        data.data['success'] = True
-        return data
         
         
