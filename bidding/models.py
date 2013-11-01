@@ -412,7 +412,7 @@ class Auction(AbstractAuction):
 
     def finish_auction(self, bid_number):
         #refresh the current database auction status
-        if self.status == 'processing' and bid_number == self.getBidNumber(): 
+        if self.status == 'processing' and bid_number == self.getBidNumber():
             self.finish()
             if self.always_alive:
                 auction_copy = Auction.objects.create(item=self.item,
@@ -644,7 +644,7 @@ class Auction(AbstractAuction):
         bid.save()
         if self._check_thresholds():
             self.pause()
-            self.start_auction_delayed(self.bidding_time)
+            self.start_auction_delayed(15.0)#This is the time that the auction will be resume
         else:
             self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
     
@@ -655,7 +655,6 @@ class Auction(AbstractAuction):
         self.status = 'pause'
         self.save()
         client.auctionPause(self)
-        self.start_auction_delayed(10.0)
         send_in_thread(task_auction_pause, sender=self)
         
     def resume(self):
@@ -673,6 +672,73 @@ class Auction(AbstractAuction):
     
         client.auctionResume(self)
 
+#class PrePromotedAuction(AbstractAuction):
+#    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
+#    status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap')
+#    bidding_time = models.IntegerField(default=10)
+#    saved_time = models.IntegerField(default=0, blank=True, null=True)
+#
+#    #treshold
+#    threshold1 = models.IntegerField('25% Threshold',
+#                                     help_text='Bidding time after using 25% of commited bids. Will be ignored if blank.',
+#                                     null=True, blank=True, default=12)
+#    threshold2 = models.IntegerField('50% Threshold',
+#                                     help_text='Bidding time after using 50% of commited bids. Will be ignored if blank.',
+#                                     null=True, blank=True, default=8)
+#    threshold3 = models.IntegerField('75% Threshold',
+#                                     help_text='Bidding time after using 75% of commited bids. Will be ignored if blank.',
+#                                     null=True, blank=True, default=5)
+#
+#    is_active = models.BooleanField(default=True)
+#
+#    class Meta:
+#        ordering = ['-id']
+#
+#    def _state_delegate(self):
+#        return state_delegates[self.status](self)
+#
+#    def __getattr__(self, name):
+#        """ Tries to forward non resolved calls to the delegate objects. """
+#        logger.debug("Name: %s" % name)
+#        sd = self._state_delegate()
+#        if hasattr(sd, name):
+#            return getattr(sd, name)
+#
+#        if hasattr(super(PrePromotedAuction, self), '__getattr__'):
+#            return super(PrePromotedAuction, self).__getattr__(name)
+#        else:
+#            raise AttributeError
+#
+#
+#    def placed_bids(self):
+#        """ Returns the amount of bids commited in precap. """
+#        return self.bid_set.aggregate(Sum('placed_amount')
+#        )['placed_amount__sum'] or 0
+#
+#    def used_bids(self):
+#        """ Returns the amount of precap bids already used in the auction. """
+#        return self.bid_set.aggregate(Sum('used_amount')
+#        )['used_amount__sum'] or 0
+#
+#    def price(self):
+#        """ Returns the current price of the auction. """
+#
+#        dollars = float(self.used_bids()) / 100
+#        return Decimal('%.2f' % dollars)
+#
+#    def has_joined(self, member):
+#        """ Returns True if the member has joined the auction. """
+#
+#        return member in self.bidders.all()
+#
+#    def bidder_mails(self):
+#        """ Returns a list of mails of members that have joined this auction. """
+#
+#        return self.bidders.values_list('user__email', flat=True)
+#
+#    def __unicode__(self):
+#        return u'%s - %s' % (self.item.name, self.get_status_display())
+#
 
 class PromotedAuction(Auction):
     promoter = models.ForeignKey(Member, blank=False, null=False, related_name="promoter_user")
