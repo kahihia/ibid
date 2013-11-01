@@ -637,11 +637,6 @@ class Auction(AbstractAuction):
         """ 
         Uses one of the member's commited bids in the auction.
         """
-        logger.debug('***LOG***')
-        logger.debug('bid_number parametro - '+str(bidNumber))
-        logger.debug('getBidNumber auction finishing - '+str(self.getBidNumber()))
-        logger.debug('estatus del auction finish - '+str(self.status))
-        logger.debug('last bider auction finish - '+str(self.get_last_bidder()))
         bid = self.bid_set.get(bidder=member)
         bid.used_amount += self.minimum_precap
         bid_time = time.time()
