@@ -424,7 +424,7 @@ class Auction(AbstractAuction):
 
     def finish_auction(self, bid_number):
         #refresh the current database auction status
-        if self.status == 'processing' and bid_number == self.getBidNumber(): 
+        if self.status == 'processing' and bid_number == self.getBidNumber():
             self.finish()
             if self.always_alive:
                 auction_copy = Auction.objects.create(item=self.item,
@@ -656,7 +656,7 @@ class Auction(AbstractAuction):
         bid.save()
         if self._check_thresholds():
             self.pause()
-            self.start_auction_delayed(self.bidding_time)
+            self.start_auction_delayed(15.0)#This is the time that the auction will be resume
         else:
             self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
     
@@ -667,7 +667,6 @@ class Auction(AbstractAuction):
         self.status = 'pause'
         self.save()
         client.auctionPause(self)
-        self.start_auction_delayed(10.0)
         send_in_thread(task_auction_pause, sender=self)
         
     def resume(self):

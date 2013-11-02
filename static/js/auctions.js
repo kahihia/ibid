@@ -68,6 +68,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         // Add values to control the user interface aspect.
         auction.interface = {
             bidEnabled: true,
+            isWinning: false,
             addBidEnabled: $scope.isUserAbleToAddBidToAuction(auction),
             remBidEnabled: true,
             joinAuctionEnabled: true,
@@ -93,6 +94,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         // button.
         if (auction.lastBidder && auction.lastBidder.facebookId === $rootScope.user.facebookId) {
             auction.interface.bidEnabled = false;
+            auction.interface.isWinning = true;
         }
     };
 
@@ -133,8 +135,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             auction.auctioneerMessages.unshift(message.data.auctioneerMessages[0]);
                             break;
                         case 'someoneClaimed':
-                            if (message.data.lastClaimer !== $rootScope.user.displayName && auction.interface.can_bid) {
-                                auction.interface.bidEnabled = true;
+                            if (message.data.lastClaimer !== $rootScope.user.displayName) {
+                                auction.interface.isWinning = false;
+                                if (auction.interface.can_bid) {
+                                    auction.interface.bidEnabled = true;
+                                }
+                            }
+                            else if (message.data.lastClaimer === $rootScope.user.displayName) {
+                                auction.interface.isWinning = true;
                             }
                             auction.timeleft = message.data.timeleft;
                             auction.bidNumber = message.data.bidNumber;

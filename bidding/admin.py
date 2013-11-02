@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from django.db.models import Count
+from django.db.models import Count, Max, Min
 
 from bidding.forms import AuctionAdminForm
 from bidding.forms import ConfigKeyAdminForm
@@ -14,9 +14,11 @@ from bidding.models import FBOrderInfo
 from bidding.models import Item
 from bidding.models import ItemImage
 from bidding.models import Member
-#from bidding.models import PrePromotedAuction
 from bidding.models import PromotedAuction
 from actions import export_as_csv_action
+
+
+
 
 class BidAdmiA(admin.ModelAdmin):
     list_display = ('auction', 'bidder', 'unixtime')
@@ -74,40 +76,6 @@ class AuctionAdmin(admin.ModelAdmin):
         }
 
 
-#class PrePromotedAuctionAdmin(admin.ModelAdmin):
-#    form = AuctionAdminForm
-#    list_display = ('item',
-#                    'bid_type',
-#                    'status',
-#                    'is_active',)
-#    list_filter = ('is_active', 'status')
-#    fieldsets = (
-#        (None, {
-#            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active')
-#        }),
-#        ('Bidding time', {
-#            'fields': ('bidding_time', 'threshold1', 'threshold2', 'threshold3',)
-#        }),
-#        ('Don\'t change', {
-#            'classes': ('collapse',),
-#            'fields': ('status',
-#                       'saved_time',
-#            )
-#        }),
-#    )
-#
-#    class Media:
-#        js = (
-#            'js/jquery-1.7.min.js',
-#            'js/jquery-ui-1.8.6.custom.min.js',
-#            'js/combo_box.js',
-#            'js/auction_admin.js')
-#
-#        css = {
-#            'all': ('css/custom-theme/jquery-ui-1.8.6.custom.css',
-#                    'css/admin_fix.css',)
-#        }
-#
 
 class PromotedAuctionAdmin(admin.ModelAdmin):
     pass
@@ -163,8 +131,6 @@ class ItemAdmin(admin.ModelAdmin):
     ]
 
     def queryset(self, request):
-        from django.db.models import Count, Max, Min
-
         qs = (self.model._default_manager.get_query_set()
               .annotate(auctions=Count('auction'))
               .annotate(highest_price=Max('auction__won_price'))
@@ -225,5 +191,4 @@ admin.site.register(ConvertHistory)
 admin.site.register(FBOrderInfo)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Member, MemberUserAdmin)
-#admin.site.register(PrePromotedAuction, PrePromotedAuctionAdmin)
 admin.site.register(PromotedAuction, PromotedAuctionAdmin)

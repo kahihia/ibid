@@ -130,7 +130,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $scope.hideJoinedFriendsDialog = function (showInviteMoreFriends) {
         $scope.joinedFriendsData = null;
         if (showInviteMoreFriends) {
-            $scope.sendRequestViaMultiFriendSelector();
+            $rootScope.sendRequestViaMultiFriendSelector();
         }
     };
 
@@ -154,7 +154,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         });
     };
 
-    $scope.sendRequestViaMultiFriendSelector = function() {
+    $rootScope.sendRequestViaMultiFriendSelector = function() {
         FB.ui({method: 'apprequests',
             message: 'Come join me to play and win amazing deals at iBidGames!'
         }, sendRequestViaMultiFriendSelectorCallback);
