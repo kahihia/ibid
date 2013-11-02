@@ -24,7 +24,7 @@ class Migration(SchemaMigration):
         db.delete_column(u'bidding_item', 'category')
 
         # Adding M2M table for field categories on 'Item'
-        m2m_table_name = db.shorten_name(u'bidding_item_categories')
+        m2m_table_name = u'bidding_item_categories'
         db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('item', models.ForeignKey(orm[u'bidding.item'], null=False)),
@@ -60,7 +60,7 @@ class Migration(SchemaMigration):
                       keep_default=False)
 
         # Removing M2M table for field categories on 'Item'
-        db.delete_table(db.shorten_name(u'bidding_item_categories'))
+        db.delete_table(u'bidding_item_categories')
 
 
     models = {

@@ -117,7 +117,6 @@ class ItemAdmin(admin.ModelAdmin):
     form = ItemAdminForm
 
     list_display = ('name',
-                    'category',
                     'retail_price',
                     'total_price',
                     auctions,
