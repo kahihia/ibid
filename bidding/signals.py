@@ -29,8 +29,7 @@ logger = logging.getLogger('django')
 @receiver(auction_finished_signal)
 def send_win_email(sender, **kwargs):
     try:
-        client.send_pubnub_message(json.dumps({'method': 'log', 'params': 'SERVER: auction_finished_signal'}),
-                                   '/topic/main/')
+        client.log("auction_finished_signal")
         logger.debug("Sending mail")
         auction = sender
         user = auction.winner
@@ -68,9 +67,7 @@ def send_win_email(sender, **kwargs):
 @receiver(auction_finished_signal)
 def make_auction_invoice(sender, **kwargs):
     auction = sender
-    client.send_pubnub_message(json.dumps({'method': 'log', 'params': 'SERVER: auction_finished_signal'}),
-                               '/topic/main/')
-
+    client.log("auction_finished_signal")
     if auction.winner:
 
         from bidding.models import AuctionInvoice
