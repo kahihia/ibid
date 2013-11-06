@@ -304,12 +304,13 @@ class AuctionResource(ModelResource):
         The standard URLs this ``Resource`` should respond to.
         """
         return [
-            url(r"^(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/all%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
             url(r"^(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
             url(r"^(?P<resource_name>%s)/set/(?P<%s_list>\w[\w/;-]*)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('get_multiple'), name="api_get_multiple"),
             url(r"^(?P<resource_name>%s)/(?P<%s>\d+)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/user/(?P<member_id>\d+)$" % self._meta.resource_name, self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/getAuctionsIwon/(?P<winner_id>\d+)$" % self._meta.resource_name, self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/available%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_available_list"),
+            url(r"^(?P<resource_name>%s)/finished%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_finished_list"),
+            url(r"^(?P<resource_name>%s)/getAuctionsIwon/(?P<winner_id>\d+)$" % self._meta.resource_name, self.wrap_view('dispatch_list'), name="api_auctions_i_won_list"),
             url(r"^(?P<resource_name>%s)/category/(?P<category_id>\d+)$" % self._meta.resource_name, self.wrap_view('dispatch_list'), name="api_dispatch_list"),
           
         ]
@@ -322,61 +323,105 @@ class AuctionResource(ModelResource):
         Should return a HttpResponse (200 OK).
         """
         
-        base_bundle = self.build_bundle(request=request)
-        objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
-        sorted_objects = self.apply_sorting(objects, options=request.GET)
-
-        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
-        to_be_serialized = paginator.page()
-
-        # Dehydrate the bundles in preparation for serialization.
-
-        return_dict={'token':{},'credit':{}}
         
-        token_finished_list=[]
-        token_available_list=[]
-        credit_finished_list=[]
-        credit_available_list=[]
-        token_auctions_wout_winner=[]
-        credit_auctions_wout_winner=[]
+        
+        available_list=[]
+        token_playing_list=[]
+        credit_playing_list=[]
+        finished_list=[]
+        wout_winner=[]
+        
     
-        for obj in to_be_serialized[self._meta.collection_name]:
-            finished = ['paid' ,'waiting_payment']
-            
-            """ Make dehydrate in different ways depending if auction is finished or available"""           
+        finished_status = ['paid' ,'waiting_payment']
+        playing_status=['processing','pause','waiting']
+        
+        
+        method=request.META['REQUEST_URI'].split('/')[-2]
+        member=None
+        if method =='getAuctionsIwon':
             try:
                 member_id = int(request.META['REQUEST_URI'].split('/')[-1])
                 member=Member.objects.get(id=member_id)
             except:
-                finished = obj.status != 'precap'
-                member=None 
-            bundle = self.build_bundle(obj=obj, request=request)
-            if obj.bid_type=='token':
-                if obj.is_active==True and finished:
-                    if obj.winner:
-                        token_finished_list.append(self.full_dehydrate_finished(request, bundle))
-                    else:
-                        token_auctions_wout_winner.append(self.full_dehydrate_finished(request, bundle))
-                else:
-                    token_available_list.append(self.full_dehydrate_available(request, bundle, member))
+                pass
+        
+        base_bundle = self.build_bundle(request=request)
+        objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
+        
+        sorted_objects = self.apply_sorting(objects,method)
+
+        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
+        to_be_serialized = paginator.page()
+
+
+        # Dehydrate the bundles in preparation for serialization.
+        """ Make dehydrate in different ways depending if auction is finished or available"""           
+        if method in['available','category']:
+            return_dict={}
+            for obj in to_be_serialized[self._meta.collection_name]:
+                bundle = self.build_bundle(obj=obj, request=request)
+                available_list.append(self.full_dehydrate_available(request, bundle,member))
+            return_dict['available'] = available_list
                 
-            if obj.bid_type=='bid':
-                if obj.is_active==True and finished:
-                    if obj.winner:
-                        credit_finished_list.append(self.full_dehydrate_finished(request, bundle))
-                    else:
-                        credit_auctions_wout_winner.append(self.full_dehydrate_finished(request, bundle))
+        elif method in ['finished','getAuctionsIwon']:
+            return_dict={}
+            for obj in to_be_serialized[self._meta.collection_name]:
+                bundle = self.build_bundle(obj=obj, request=request)
+                if obj.winner:
+                    finished_list.append(self.full_dehydrate_finished(request, bundle))
                 else:
-                    credit_available_list.append(self.full_dehydrate_availabe(request, bundle, member))
+                    wout_winner.append(self.full_dehydrate_finished(request, bundle))
+            return_dict['finished'] = finished_list
+            return_dict['wout_winner'] = wout_winner
+        
+        else:
+            token_finished_list=[]
+            token_wout_winner=[]
+            token_playing_list=[]
+            token_available_list=[]
+            credit_finished_list=[]
+            credit_wout_winner=[]
+            credit_playing_list=[]
+            credit_available_list=[]
             
-        return_dict['token']['finished'] = token_finished_list
-        return_dict['token']['available'] = token_available_list
-        return_dict['token']['wout_winner'] = token_auctions_wout_winner
-        return_dict['credit']['finished'] = credit_finished_list
-        return_dict['credit']['available'] = credit_available_list
-        return_dict['credit']['wout_winner'] = credit_auctions_wout_winner
-        return_dict['token']['mine'] = []
-        return_dict['credit']['mine'] = []
+            return_dict={'token':{},'credit':{}}
+            for obj in to_be_serialized[self._meta.collection_name]:
+                bundle = self.build_bundle(obj=obj, request=request)
+                if obj.bid_type=='token' and obj.is_active ==True:
+                    if obj.status in finished_status:
+                        if obj.winner:
+                            token_finished_list.append(self.full_dehydrate_finished(request, bundle))
+                        else:
+                            token_wout_winner.append(self.full_dehydrate_finished(request, bundle))
+                    
+                    elif obj.status in playing_status:
+                        token_playing_list.append(self.full_dehydrate_available(request, bundle, member))
+                    else:
+                        token_available_list.append(self.full_dehydrate_available(request, bundle, member))
+                        
+                if obj.bid_type=='bid' and obj.is_active ==True:
+                    if obj.status in finished_status:
+                        if obj.winner:
+                            credit_finished_list.append(self.full_dehydrate_finished(request, bundle))
+                        else:
+                            credit_wout_winner.append(self.full_dehydrate_finished(request, bundle))
+                    
+                    elif obj.status in playing_status:
+                        credit_playing_list.append(self.full_dehydrate_available(request, bundle, member))
+                    else:
+                        credit_available_list.append(self.full_dehydrate_available(request, bundle, member)) 
+                
+        
+            return_dict['token']['finished'] = token_finished_list
+            return_dict['token']['available'] = token_available_list
+            return_dict['token']['wout_winner'] = token_wout_winner
+            return_dict['token']['playing'] = token_playing_list
+            return_dict['credit']['finished'] = credit_finished_list
+            return_dict['credit']['available'] = credit_available_list
+            return_dict['credit']['wout_winner'] = credit_wout_winner
+            return_dict['credit']['playing'] = credit_playing_list
+            
+        
         
         to_be_serialized[self._meta.collection_name] = return_dict
         to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
@@ -393,14 +438,35 @@ class AuctionResource(ModelResource):
             ret_filters['status__in'] = ('precap' ,'waiting', 'processing', 'pause')
         if filters.get('winner_id'):
             ret_filters['winner_id'] = int(filters['winner_id'])
-            ret_filters['status__in'] = ['paid' ,'waiting_payment']
         if filters.get('category_id'):
             ret_filters['item__categories__id'] = int(filters['category_id'])
         ret_filters['is_active'] = True
         return ret_filters
     
-    def apply_sorting(self, obj_list, options=None):
-        return obj_list.order_by('-status', 'won_date')
+    def apply_sorting(self, obj_list, method):
+        
+        if method=='finished' or method=='getAuctionsIwon':
+            return obj_list.filter(status__in=['paid' ,'waiting_payment']).order_by('won_date')
+        
+        elif method=='available':
+            obj_list=obj_list.filter(status='precap')
+            return_list=[]
+            for_token=obj_list.filter(bid_type='token').values('item__name','priority').order_by('-priority','item__name').distinct()
+            for_credit=obj_list.filter(bid_type='bid').values('item__name','priority').order_by('-priority','item__name').distinct()
+            
+          
+            log.debug('TOKEN:   '+str(for_token))
+            log.debug('CREDIT:   '+str(for_credit))
+            #auctions that are for items on both lists
+            [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_token if x  in for_credit]
+            #auctions that are for credit but not for tokens
+            [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_credit if x not in for_token]
+            #autions tht are for tokens but no for credits
+            [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_token if x not in for_credit]
+            
+            return return_list
+        else:
+            return obj_list
     
     def full_dehydrate_available(self, request, bundle, member):
         
@@ -414,12 +480,18 @@ class AuctionResource(ModelResource):
         bundle.data['completion'] = bundle.obj.completion()
         bundle.data['bidders'] = bundle.obj.bidders.count()
         bundle.data['bid_amount'] = 0
+        bundle.data['mine'] = bundle.obj.bidders.filter(id=request.user.id).exists()
+        if bundle.data['mine']:
+            bundle.data['placed'] = request.user.auction_bids_left(bundle.obj)
+            bid = bundle.obj.bid_set.get(bidder=request.user)
+            bundle.data['bid_amount'] = bid.left()
         if member:
             bundle.data['placed'] = member.auction_bids_left(bundle.obj)
             if member == request.user and bundle.data['placed'] > 0:
                 bid = bundle.obj.bid_set.get(bidder=member)
                 bundle.data['bid_amount'] = bid.left()
         bundle.data['bidNumber'] = bundle.obj.used_bids() / bundle.obj.minimum_precap
+       
         bundle.data['auctioneerMessages'] = []
         for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
@@ -451,8 +523,11 @@ class AuctionResource(ModelResource):
         bundle.data['placed']= 0
         bundle.data['auctioneerMessages'] = []
         bundle.data['chatMessages'] = []
-        format = '%d-%m-%Y' # Or whatever your date format is
-        bundle.data['won_date']=bundle.obj.won_date.strftime('%d/%m/%Y')
+        if bundle.obj.won_date:
+            format = '%d-%m-%Y' # Or whatever your date format is
+            bundle.data['won_date']=bundle.obj.won_date.strftime('%d/%m/%Y')
+        else:
+            bundle.data['won_date']=None
         return bundle
     
     
