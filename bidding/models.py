@@ -891,7 +891,8 @@ class AuctionKeeper(threading.Thread):
         stop = False
         while not stop:
             time.sleep(self.check_delay)
-            auction = Auction.objects.select_for_update().filter(id=self.auction_id)[0]
+            #auction = Auction.objects.select_for_update().filter(id=self.auction_id)[0]
+            auction = Auction.objects.get(id=self.auction_id)
             if auction.finish_time <= time.time():
                 if auction.status == 'processing':
                     auction.finish()

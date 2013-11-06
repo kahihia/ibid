@@ -455,29 +455,26 @@ def claim(request):
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
-
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
-
     member = request.user
 
     tmp = {}
     tmp["success"] = False
     if auction.status == 'processing' and \
         auction.can_bid(member) and \
-        auction.used_bids() / auction.minimum_precap == bidNumber and \
-        auction.bid(member, bidNumber):
+        auction.used_bids() / auction.minimum_precap == bidNumber:
 
-        clientMessages = []
-        clientMessages.append(client.someoneClaimedMessage(auction))
-        clientMessages.append(auctioneer.member_claim_message(auction, member))
-        client.sendPackedMessages(clientMessages)
-
-        bid = auction.bid_set.get(bidder=member)
+        bid = auction.bid(member, bidNumber)
+        #bid = auction.bid_set.get(bidder=member)
         tmp['id'] = auction_id
         tmp["placed_amount"] = bid.placed_amount
         tmp["used_amount"] = bid.used_amount
         tmp["success"] = True
 
+        clientMessages = []
+        clientMessages.append(client.someoneClaimedMessage(auction))
+        clientMessages.append(auctioneer.member_claim_message(auction, member))
+        client.sendPackedMessages(clientMessages)
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
 
