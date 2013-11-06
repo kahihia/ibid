@@ -135,12 +135,6 @@ class Member(AbstractUser, FacebookModel):
             availables.append(maximun)
         return availables
 
-    #    def convert(self, num_bids):
-    #        if self.tokens_left >= (num_bids / settings.TOKENS_TO_BIDS_RATE):
-    #            self.bidsto_left += num_bids
-    #            self.tokens_left -= (num_bids / settings.TOKENS_TO_BIDS_RATE)
-    #            self.save()
-
     def auction_bids_left(self, auction):
         """ 
         Return the amount of unused commited bids the member has for the 
@@ -297,17 +291,16 @@ class Member(AbstractUser, FacebookModel):
 
 
 class Category(models.Model):
-    
     name = models.CharField(max_length=55)
     description = models.TextField()
     image = models.ImageField(upload_to='item_category/', blank=True, null=True)
    
-    
     def __unicode__(self):
         return self.name
 
     def get_thumbnail(self, size='107x72'):
         return settings.IMAGES_SITE + get_thumbnail(self.image.name, size).url
+
 
 class Item(AuditedModel):
     name = models.CharField(max_length=255)  
@@ -343,15 +336,16 @@ class AbstractAuction(AuditedModel):
 class Auction(AbstractAuction):
     bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
     status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap')
+    always_alive = models.BooleanField(default=False)
     bidding_time = models.IntegerField(default=10)
     saved_time = models.IntegerField(default=0, blank=True, null=True)
-    always_alive = models.BooleanField(default=False)
+    finish_time = models.IntegerField(default=0, blank=True, null=True)
 
     bidders = models.ManyToManyField(Member, blank=True, null=True)
 
     #winner info
+    winner = models.ForeignKey(Member, related_name='autcions', blank=True, null=True)
     won_date = models.DateTimeField(null=True, blank=True)
-    winner = models.ForeignKey(Member,related_name='autcions', blank=True, null=True)
     won_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
 
     #scheduling options
@@ -393,7 +387,6 @@ class Auction(AbstractAuction):
 
     def bidder_mails(self):
         """ Returns a list of mails of members that have joined this auction. """
-
         return self.bidders.values_list('user__email', flat=True)
 
     def getBidNumber(self):
@@ -402,53 +395,41 @@ class Auction(AbstractAuction):
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
 
-    def start_auction(self):
-        #refresh the current database auction status
-       
-        bid_number = 0
-        if self.status == 'waiting':
-            self.start()
-        elif self.status == 'pause':
-            self.resume()
-        self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
+    ### def start_auction(self):
+    ###     bid_number = 0
+    ###     if self.status == 'waiting':
+    ###         self.start()
+    ###     elif self.status == 'pause':
+    ###         self.resume()
+    ###     self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
     
-    def start(self):
-        if self.status == 'waiting':
-            """ Starts the auction and saves the model. """
-            self.status = 'processing'
-            client.auctionActive(self)
-            self.saved_time = self.bidding_time
-            self.save()
-            send_in_thread(auction_started_signal, sender=self)
-        
+    ####def finish_auction(self, bid_number):
+    ####    #refresh the current database auction status
+    ####    if self.status == 'processing' and bid_number == self.getBidNumber():
+    ####        self.finish()
+    ####        if self.always_alive:
+    ####            auction_copy = Auction.objects.create(item=self.item,
+    ####                                                  bid_type=self.bid_type,
+    ####                                                  precap_bids=self.precap_bids,
+    ####                                                  minimum_precap=self.minimum_precap,
+    ####                                                  is_active=self.is_active,
+    ####                                                  always_alive=self.always_alive,
+    ####                                                  bidding_time=self.saved_time,
+    ####                                                  threshold1=self.threshold1,
+    ####                                                  threshold2=self.threshold2,
+    ####                                                  threshold3=self.threshold3)
+    ####            auction_copy.save()
+    ####    else:
+    ####        self.save()
 
-    def finish_auction(self, bid_number):
-        #refresh the current database auction status
-        if self.status == 'processing' and bid_number == self.getBidNumber():
-            self.finish()
-            if self.always_alive:
-                auction_copy = Auction.objects.create(item=self.item,
-                                                      bid_type=self.bid_type,
-                                                      precap_bids=self.precap_bids,
-                                                      minimum_precap=self.minimum_precap,
-                                                      is_active=self.is_active,
-                                                      always_alive=self.always_alive,
-                                                      bidding_time=self.saved_time,
-                                                      threshold1=self.threshold1,
-                                                      threshold2=self.threshold2,
-                                                      threshold3=self.threshold3)
-                auction_copy.save()
-        else:
-            self.save()
-
-    def start_auction_delayed(self, delay):
-        t = threading.Timer(delay, self.start_auction)
-        t.start()
+    ### def start_auction_delayed(self, delay):
+    ###     t = threading.Timer(delay, self.start_auction)
+    ###     t.start()
     
-    def finish_auction_delayed(self, bid_number, delay):
-        kwargs = {'bid_number': bid_number}
-        t = threading.Timer(delay, self.finish_auction, kwargs=kwargs)
-        t.start()
+    ### def finish_auction_delayed(self, bid_number, delay):
+    ###     kwargs = {'bid_number': bid_number}
+    ###     t = threading.Timer(delay, self.finish_auction, kwargs=kwargs)
+    ###     t.start()
 
     def get_last_bidder(self):
         """ 
@@ -525,11 +506,8 @@ class Auction(AbstractAuction):
         Returns True if the member has commited bids left to use on the 
         auction, and its not the last bidder. 
         """
-        logger.debug(self.get_last_bidder())
         if self.get_last_bidder() == member:
             return False
-        
-        
         return member.auction_bids_left(self)
   
     def place_precap_bid(self, member, amount, update_type = 'add'):
@@ -597,28 +575,95 @@ class Auction(AbstractAuction):
         """
         self.status = 'waiting'
         self.start_date = datetime.now() + timedelta(seconds=5)
+        self.finish_time = time.time() + 5.0
         self.save()
         
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
-        self.start_auction_delayed(5.0)
+        #self.start_auction_delayed(5.0)
         send_in_thread(precap_finished_signal, sender=self)
+
+        logger.debug('starting auction keeper')
+        keeper = AuctionKeeper()
+        keeper.auction_id = self.id
+        keeper.start()
+
+    def start(self):
+        """ Starts the auction and saves the model. """
+        self.status = 'processing'
+        self.saved_time = self.bidding_time
+        self.finish_time = time.time() + self.bidding_time
+        self.save()
+
+        client.auctionActive(self)
+        send_in_thread(auction_started_signal, sender=self)
     
+    def bid(self, member, bidNumber):
+        """ 
+        Uses one of the member's commited bids in the auction.
+        """
+        bid = self.bid_set.get(bidder=member)
+        bid.used_amount += self.minimum_precap
+        bid_time = time.time()
+        bid.unixtime = Decimal("%f" % bid_time)
+        bid.save()
+
+        if self._check_thresholds():
+            self.pause(15.0)
+            #self.start_auction_delayed(15.0)#This is the time that the auction will be resume
+        else:
+            self.finish_time = time.time() + self.bidding_time
+            self.save()
+            #self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
+        return True
+    
+    def pause(self, delay):
+        """ pauses the auction. """
+        self.status = 'pause'
+        self.finish_time = time.time() + delay
+        self.save()
+        client.auctionPause(self)
+        send_in_thread(task_auction_pause, sender=self)
+        
+    def resume(self):
+        """ Resumes the auction. """
+        self.status = 'processing'
+        #self.saved_time = self.bidding_time
+        self.finish_time = time.time() + self.bidding_time
+        self.save()
+    
+        #fixme ugly
+        bid = self.get_latest_bid()
+        now = time.time()
+        bid.unixtime = Decimal("%f" % now)
+        bid.save()
+    
+        client.auctionResume(self)
+
     def finish(self):
         """ Marks the auction as finished, sets the winner and win time. """
-        logger.debug("Entering finish")
-    
         bidder = self.get_last_bidder()
         self.winner = bidder if bidder else None
         self.won_price = self.price()
         self.status = 'waiting_payment'
         self.won_date = datetime.now()
         self.save()
-        logger.debug("Ended auction saved")
         auctioneer.auction_finished_message(self)
         client.auctionFinish(self)
         send_in_thread(auction_finished_signal, sender=self)
-        logger.debug("Sent signal")
+        # This could be attached to the auction_finised_signal signal
+        if self.always_alive:
+            auction_copy = Auction.objects.create(item=self.item,
+                                                  bid_type=self.bid_type,
+                                                  precap_bids=self.precap_bids,
+                                                  minimum_precap=self.minimum_precap,
+                                                  is_active=self.is_active,
+                                                  always_alive=self.always_alive,
+                                                  bidding_time=self.saved_time,
+                                                  threshold1=self.threshold1,
+                                                  threshold2=self.threshold2,
+                                                  threshold3=self.threshold3)
+            auction_copy.save()
         
     def _check_thresholds(self):
         """ 
@@ -644,113 +689,7 @@ class Auction(AbstractAuction):
             auctioneer.threshold_message(auction=self, number=3)
             return True
         return False
-    
-    def bid(self, member, bidNumber):
-        """ 
-        Uses one of the member's commited bids in the auction.
-        """
-        bid = self.bid_set.get(bidder=member)
-        bid.used_amount += self.minimum_precap
-        bid_time = time.time()
-        bid.unixtime = Decimal("%f" % bid_time)
-        bid.save()
-        if self._check_thresholds():
-            self.pause()
-            self.start_auction_delayed(15.0)#This is the time that the auction will be resume
-        else:
-            self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
-    
-        return True
-    
-    def pause(self):
-        """ pauses the auction. """
-        self.status = 'pause'
-        self.save()
-        client.auctionPause(self)
-        send_in_thread(task_auction_pause, sender=self)
-        
-    def resume(self):
-        """ Resumes the auction. """
-    
-        self.status = 'processing'
-        #self.saved_time = self.bidding_time
-        self.save()
-    
-        #fixme ugly
-        bid = self.get_latest_bid()
-        now = time.time()
-        bid.unixtime = Decimal("%f" % now)
-        bid.save()
-    
-        client.auctionResume(self)
 
-#class PrePromotedAuction(AbstractAuction):
-#    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
-#    status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap')
-#    bidding_time = models.IntegerField(default=10)
-#    saved_time = models.IntegerField(default=0, blank=True, null=True)
-#
-#    #treshold
-#    threshold1 = models.IntegerField('25% Threshold',
-#                                     help_text='Bidding time after using 25% of commited bids. Will be ignored if blank.',
-#                                     null=True, blank=True, default=12)
-#    threshold2 = models.IntegerField('50% Threshold',
-#                                     help_text='Bidding time after using 50% of commited bids. Will be ignored if blank.',
-#                                     null=True, blank=True, default=8)
-#    threshold3 = models.IntegerField('75% Threshold',
-#                                     help_text='Bidding time after using 75% of commited bids. Will be ignored if blank.',
-#                                     null=True, blank=True, default=5)
-#
-#    is_active = models.BooleanField(default=True)
-#
-#    class Meta:
-#        ordering = ['-id']
-#
-#    def _state_delegate(self):
-#        return state_delegates[self.status](self)
-#
-#    def __getattr__(self, name):
-#        """ Tries to forward non resolved calls to the delegate objects. """
-#        logger.debug("Name: %s" % name)
-#        sd = self._state_delegate()
-#        if hasattr(sd, name):
-#            return getattr(sd, name)
-#
-#        if hasattr(super(PrePromotedAuction, self), '__getattr__'):
-#            return super(PrePromotedAuction, self).__getattr__(name)
-#        else:
-#            raise AttributeError
-#
-#
-#    def placed_bids(self):
-#        """ Returns the amount of bids commited in precap. """
-#        return self.bid_set.aggregate(Sum('placed_amount')
-#        )['placed_amount__sum'] or 0
-#
-#    def used_bids(self):
-#        """ Returns the amount of precap bids already used in the auction. """
-#        return self.bid_set.aggregate(Sum('used_amount')
-#        )['used_amount__sum'] or 0
-#
-#    def price(self):
-#        """ Returns the current price of the auction. """
-#
-#        dollars = float(self.used_bids()) / 100
-#        return Decimal('%.2f' % dollars)
-#
-#    def has_joined(self, member):
-#        """ Returns True if the member has joined the auction. """
-#
-#        return member in self.bidders.all()
-#
-#    def bidder_mails(self):
-#        """ Returns a list of mails of members that have joined this auction. """
-#
-#        return self.bidders.values_list('user__email', flat=True)
-#
-#    def __unicode__(self):
-#        return u'%s - %s' % (self.item.name, self.get_status_display())
-#
 
 class PromotedAuction(Auction):
     promoter = models.ForeignKey(Member, blank=False, null=False, related_name="promoter_user")
@@ -791,6 +730,7 @@ def update_fb_info(sender, instance, **kwargs):
     url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)+'bid_package/'+str(instance.id))
     urlopen(url)
         
+
 class AuctionInvoice(AuditedModel):
     auction = models.ForeignKey(Auction)
     member = models.ForeignKey(Member)
@@ -805,7 +745,6 @@ from paypal.standard.ipn.signals import payment_was_successful
 
 def addbids(sender, **kwargs):
 #TODO move to signals.py?
-
     ipn_obj = sender
     if ipn_obj.custom.startswith('item'):
         invoice = AuctionInvoice.objects.get(uid=ipn_obj.invoice)
@@ -815,8 +754,6 @@ def addbids(sender, **kwargs):
         invoice.status = 'paid'
         invoice.save()
         #TODO maybe pay method in auction. And delete bid objects there
-
-
 payment_was_successful.connect(addbids)
 
 
@@ -870,6 +807,7 @@ FB_STATUS_CHOICES = (
                      ('confirmed', 'confirmed'),
 )
 
+
 class FBOrderInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage)
@@ -879,6 +817,7 @@ class FBOrderInfo(AuditedModel):
     
     def __unicode__(self):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
+
 
 @receiver(post_save, sender=FBOrderInfo)
 def on_confirmed_order(sender, instance, **kwargs):
@@ -941,3 +880,26 @@ class ConfigKey(models.Model):
         return self.key
 
 
+
+class AuctionKeeper(threading.Thread):
+    def __init__(self, *args, **kwargs):
+        super(AuctionKeeper, self).__init__(*args, **kwargs)
+        self.auction_id = None
+        self.check_delay = 1
+        
+    def run(self):
+        stop = False
+        while not stop:
+            time.sleep(self.check_delay)
+            auction = Auction.objects.select_for_update().filter(id=self.auction_id)[0]
+            if auction.finish_time <= time.time():
+                if auction.status == 'processing':
+                    auction.finish()
+                    stop = True
+                elif auction.status == 'waiting':
+                    auction.start()
+                elif auction.status == 'pause':
+                    auction.resume()
+                else:
+                    logger.debug('Keeper: unknown auction status: %s' % auction.status)
+                    stop = True

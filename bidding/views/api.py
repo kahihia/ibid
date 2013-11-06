@@ -446,6 +446,7 @@ def stopBidding(request):
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
+
 def claim(request):
     """
     The user uses the bids that has commit before to try to win the auction in
@@ -460,30 +461,22 @@ def claim(request):
     member = request.user
 
     tmp = {}
-    if auction.status == 'processing' and auction.can_bid(member):
+    tmp["success"] = False
+    if auction.status == 'processing' and \
+        auction.can_bid(member) and \
+        auction.used_bids() / auction.minimum_precap == bidNumber and \
+        auction.bid(member, bidNumber):
 
-        if auction.used_bids() / auction.minimum_precap == bidNumber:
-            if auction.bid(member, bidNumber):
+        clientMessages = []
+        clientMessages.append(client.someoneClaimedMessage(auction))
+        clientMessages.append(auctioneer.member_claim_message(auction, member))
+        client.sendPackedMessages(clientMessages)
 
-                clientMessages = []
-                clientMessages.append(client.someoneClaimedMessage(auction))
-                clientMessages.append(auctioneer.member_claim_message(auction, member))
-                client.sendPackedMessages(clientMessages)
-
-                bid = auction.bid_set.get(bidder=member)
-                tmp['id'] = auction_id
-                tmp["placed_amount"] = bid.placed_amount
-                tmp["used_amount"] = bid.used_amount
-
-                tmp["success"] = True
-            else:
-                #else ignore! because the claim is old, based on a previous timer.
-                tmp["success"] = False
-        else:
-            #else ignore! because the claim is old, based on a previous timer.
-            tmp["success"] = False
-    else:
-        tmp["success"] = False
+        bid = auction.bid_set.get(bidder=member)
+        tmp['id'] = auction_id
+        tmp["placed_amount"] = bid.placed_amount
+        tmp["used_amount"] = bid.used_amount
+        tmp["success"] = True
 
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
