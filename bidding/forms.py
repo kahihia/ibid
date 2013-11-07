@@ -4,6 +4,7 @@ from exceptions import ValueError
 
 from bidding import models
 from bidding.models import ITEM_CATEGORY_CHOICES, CONFIG_KEY_TYPES
+from django.forms.util import ErrorList
 
 
 class MemberAdminForm(UserChangeForm):
@@ -83,6 +84,43 @@ class AuctionAdminForm(forms.ModelForm):
             self._errors[field_low] = self.error_class([msg])
             del self.cleaned_data[field_low]
     
+    def _validate_priority(self):
+        save = False
+        _bid_type = self.cleaned_data['bid_type']
+        _item = self.cleaned_data['item']
+        _priority = self.cleaned_data['priority']
+        msg = 'Can`t create two auctions with same item and diferent priorities.'
+        msg2 = 'Can`t create two auctions with same item and bid_type.'
+        if hasattr(self, 'instance') and self.instance.pk is None:
+            repeated_auctions=models.Auction.objects.filter(item=_item).filter(status='precap')
+            if repeated_auctions.count() == 0 :
+                save = True
+            else:
+                if repeated_auctions.filter(bid_type=_bid_type).count() == 0 :
+                    if repeated_auctions.exclude(bid_type=_bid_type).filter(priority=_priority):
+                        save = True
+                    else:
+                        self._errors['priority'] = ErrorList([msg])
+                        del self.cleaned_data['priority']
+                else:
+                    self._errors['priority'] = ErrorList([msg2])
+                    del self.cleaned_data['priority']
+        else:
+            repeated_auctions=models.Auction.objects.filter(bid_type=_bid_type).filter(item=_item).filter(priority=_priority).values_list('pk',flat=True)
+            if repeated_auctions.count() > 0 :
+                if self.instance.pk in repeated_auctions:
+                    save = True
+                else:
+                    self._errors['priority'] = ErrorList([msg])
+                    del self.cleaned_data['priority']
+            else:
+                
+                self._errors['priority'] = ErrorList([msg2])
+                del self.cleaned_data['priority']
+        if save:
+            return self.cleaned_data
+       
+    
     def clean(self):
         super(AuctionAdminForm, self).clean()
         
@@ -96,7 +134,9 @@ class AuctionAdminForm(forms.ModelForm):
         self._validate_threshold_bidding('threshold3', 'bidding_time')
         self._validate_threshold_bidding('threshold3', 'threshold1')
         self._validate_threshold_bidding('threshold3', 'threshold2')
-                    
+        
+        self._validate_priority()
+        
         return self.cleaned_data
     
     class Meta:

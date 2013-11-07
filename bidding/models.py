@@ -372,20 +372,11 @@ class Auction(AbstractAuction):
     is_active = models.BooleanField(default=True)
     
     priority = models.IntegerField(default=-1)
+    
     class Meta:
         ordering = ['-id']
     
-    def save(self, *args, **kwargs):
-        if self.pk is None:
-            repeted_auctions=Auction.objects.filter(bid_type=self.bid_type).filter(item=self.item).filter(status='precap')
-            if repeted_auctions.count() == 0 :
-                super(Auction, self).save(*args, **kwargs)
-        else:
-            repeted_auctions=Auction.objects.filter(bid_type=self.bid_type).filter(item=self.item)
-            if repeted_auctions.count() > 0 :
-                if self in repeted_auctions:
-                    super(Auction, self).save(*args, **kwargs)
-        return  
+      
        
     def placed_bids(self):
         """ Returns the amount of bids commited in precap. """
