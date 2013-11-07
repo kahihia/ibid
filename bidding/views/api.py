@@ -40,7 +40,6 @@ def api(request, method):
 def getUserDetails(request):
     member = request.user
 
-
     data = {u'user':{
                 u'displayName': member.display_name(),
                 u'facebookId': member.facebook_id,
@@ -455,6 +454,7 @@ def claim(request):
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
+    #auction = Auction.objects.get(id=auction_id)
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
     member = request.user
 
@@ -465,6 +465,7 @@ def claim(request):
         auction.used_bids() / auction.minimum_precap == bidNumber:
 
         bid = auction.bid(member, bidNumber)
+        auction.save()
         #bid = auction.bid_set.get(bidder=member)
         tmp['id'] = auction_id
         tmp["placed_amount"] = bid.placed_amount
