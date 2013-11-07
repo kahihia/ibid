@@ -370,10 +370,14 @@ class Auction(AbstractAuction):
                                      null=True, blank=True, default=3)
 
     is_active = models.BooleanField(default=True)
-
+    
+    priority = models.IntegerField(default=-1)
+    
     class Meta:
         ordering = ['-id']
-
+    
+      
+       
     def placed_bids(self):
         """ Returns the amount of bids commited in precap. """
         return self.bid_set.aggregate(Sum('placed_amount'))['placed_amount__sum'] or 0
@@ -426,18 +430,6 @@ class Auction(AbstractAuction):
         #refresh the current database auction status
         if self.status == 'processing' and bid_number == self.getBidNumber():
             self.finish()
-            if self.always_alive:
-                auction_copy = Auction.objects.create(item=self.item,
-                                                      bid_type=self.bid_type,
-                                                      precap_bids=self.precap_bids,
-                                                      minimum_precap=self.minimum_precap,
-                                                      is_active=self.is_active,
-                                                      always_alive=self.always_alive,
-                                                      bidding_time=self.saved_time,
-                                                      threshold1=self.threshold1,
-                                                      threshold2=self.threshold2,
-                                                      threshold3=self.threshold3)
-                auction_copy.save()
         else:
             self.save()
 
@@ -598,12 +590,23 @@ class Auction(AbstractAuction):
         self.status = 'waiting'
         self.start_date = datetime.now() + timedelta(seconds=5)
         self.save()
-        
+        if self.always_alive:
+            auction_copy = Auction.objects.create(item=self.item,
+                                                  bid_type=self.bid_type,
+                                                  precap_bids=self.precap_bids,
+                                                  minimum_precap=self.minimum_precap,
+                                                  is_active=self.is_active,
+                                                  always_alive=self.always_alive,
+                                                  bidding_time=self.bidding_time,
+                                                  threshold1=self.threshold1,
+                                                  threshold2=self.threshold2,
+                                                  threshold3=self.threshold3)
+            auction_copy.save()
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
         self.start_auction_delayed(5.0)
         send_in_thread(precap_finished_signal, sender=self)
-    
+        
     def finish(self):
         """ Marks the auction as finished, sets the winner and win time. """
         logger.debug("Entering finish")

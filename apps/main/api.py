@@ -275,7 +275,7 @@ class ItemResource(ModelResource):
         resource_name = 'items'
         authorization = ReadOnlyAuthorization()
         include_resource_uri = False
-        fields=['name', 'retail_price']
+        
 
     def dehydrate(self, bundle):
         bundle.data['itemImage'] = bundle.obj.get_thumbnail(size="107x72")
