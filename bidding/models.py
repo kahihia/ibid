@@ -6,10 +6,11 @@ import json
 import threading
 from datetime import datetime, timedelta
 from decimal import Decimal
+from urllib2 import urlopen
 
 import open_facebook
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser,UserManager
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.aggregates import Sum
@@ -17,13 +18,10 @@ from django.db.models.signals import post_save
 from django.dispatch.dispatcher import receiver
 from django.utils.safestring import mark_safe
 from django_facebook.models import FacebookModel
-from urllib2 import urlopen
 from sorl.thumbnail import get_thumbnail
 
 import logging
 logger = logging.getLogger('django')
-
-re_bids = re.compile("(\d+)")
 
 from apps.audit.models import AuditedModel
 from bidding import client
@@ -33,9 +31,10 @@ from bidding.signals import auction_started_signal
 from bidding.signals import precap_finished_signal
 from bidding.signals import precap_finishing_signal
 from bidding.signals import task_auction_pause
-from bidding.signals import task_auction_start
-from bidding.signals import auction_threshold_signal
 from bidding.signals import send_in_thread
+
+
+re_bids = re.compile("(\d+)")
 
 
 AUCTION_STATUS_CHOICES = (
@@ -77,7 +76,7 @@ BID_TYPE_CHOICES = (
 
 class Member(AbstractUser, FacebookModel):
     objects = UserManager()
-    
+
     bids_left = models.IntegerField(default=0)
     tokens_left = models.IntegerField(default=0)
     bidsto_left = models.IntegerField(default=0)
@@ -136,8 +135,8 @@ class Member(AbstractUser, FacebookModel):
         return availables
 
     def auction_bids_left(self, auction):
-        """ 
-        Return the amount of unused commited bids the member has for the 
+        """
+        Return the amount of unused commited bids the member has for the
         given auction.
         """
 
@@ -145,9 +144,9 @@ class Member(AbstractUser, FacebookModel):
         return bid[0].left() if bid else 0
 
     def precap_bids(self, auction, amount):
-        """ 
-        Creates the specified amount of precap bids for the user in the given 
-        auction. Updates the member accordingly. 
+        """
+        Creates the specified amount of precap bids for the user in the given
+        auction. Updates the member accordingly.
         """
 
         unixtime = Decimal("%f" % time.time())
@@ -164,9 +163,9 @@ class Member(AbstractUser, FacebookModel):
         self.save()
 
     def get_placed_amount(self, auction):
-        """ 
-        Creates the specified amount of precap bids for the user in the given 
-        auction. Updates the member accordingly. 
+        """
+        Creates the specified amount of precap bids for the user in the given
+        auction. Updates the member accordingly.
         """
 
         unixtime = Decimal("%f" % time.time())
@@ -205,33 +204,28 @@ class Member(AbstractUser, FacebookModel):
         return mark_safe(output)
 
     def display_picture(self):
-        #of = open_facebook.OpenFacebook()
-        #return get_thumbnail(of.my_image_url(size='square'), '50x50').url
-        #return of.my_image_url(size='square')
         return "https://graph.facebook.com/%s/picture" % self.facebook_id
-    
+
     def can_chat(self, auction_id):
         """ Returns True if the user can chat in the given auction. """
         auction = Auction.objects.get(id=auction_id)
         return not self.remove_from_chat and auction.has_joined(self)
-    
+
     def post_win_story(self, **args):
-        # Posts a story when winning an item in an auction.
+        """ Posts a story when winning an item in an auction."""
         of = open_facebook.OpenFacebook(self.access_token)
-        response = of.set('me/{app}:win'.format(app=settings.FACEBOOK_APP_NAME),**args)
-            
+        response = of.set('me/{app}:win'.format(app=settings.FACEBOOK_APP_NAME), **args)
 
     def fb_check_like(self):
         ''' Checks if user likes the app in facebook '''
         of = open_facebook.OpenFacebook(self.access_token)
         response = of.get('me/og.likes',)
         return response
-    
-    
+
     def fb_like(self):
         ''' User like the app in facebook '''
         of = open_facebook.OpenFacebook(self.access_token)
-        response = of.set('me/og.likes', {'object':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),})
+        response = of.set('me/og.likes', {'object': settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME), })
         logger.debug('Response: %s' % response)
 
     def send_notification(self, message):
@@ -246,7 +240,6 @@ class Member(AbstractUser, FacebookModel):
 
         default_url = reverse('facebook_connect')
         response = next_redirect(request, default=default_url, next_key='register_next')
-        #response.set_cookie('fresh_registration', self.user_id)
 
         return response
 
@@ -294,7 +287,7 @@ class Category(models.Model):
     name = models.CharField(max_length=55)
     description = models.TextField()
     image = models.ImageField(upload_to='item_category/', blank=True, null=True)
-   
+
     def __unicode__(self):
         return self.name
 
@@ -303,13 +296,13 @@ class Category(models.Model):
 
 
 class Item(AuditedModel):
-    name = models.CharField(max_length=255)  
+    name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, help_text='Used to identify the item, should be unique')
     retail_price = models.DecimalField(max_digits=10, decimal_places=2)
     total_price = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     description = models.TextField()
     specification = models.TextField(blank=True, null=True)
-    categories = models.ManyToManyField(Category,related_name="items",blank=True, null=True)
+    categories = models.ManyToManyField(Category, related_name="items", blank=True, null=True)
     name.alphabetic_filter = True
 
     def get_thumbnail(self, size='107x72'):
@@ -378,7 +371,7 @@ class Auction(AbstractAuction):
 
     def price(self):
         """ Returns the current price of the auction. """
-        dollars = float(self.used_bids()/self.minimum_precap) / 100
+        dollars = float(self.used_bids() / self.minimum_precap) / 100
         return Decimal('%.2f' % dollars)
 
     def has_joined(self, member):
@@ -390,51 +383,15 @@ class Auction(AbstractAuction):
         return self.bidders.values_list('user__email', flat=True)
 
     def getBidNumber(self):
-        return self.used_bids()/self.minimum_precap
+        return self.used_bids() / self.minimum_precap
 
     def __unicode__(self):
         return u'%s - %s' % (self.item.name, self.get_status_display())
 
-    ### def start_auction(self):
-    ###     bid_number = 0
-    ###     if self.status == 'waiting':
-    ###         self.start()
-    ###     elif self.status == 'pause':
-    ###         self.resume()
-    ###     self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
-    
-    ####def finish_auction(self, bid_number):
-    ####    #refresh the current database auction status
-    ####    if self.status == 'processing' and bid_number == self.getBidNumber():
-    ####        self.finish()
-    ####        if self.always_alive:
-    ####            auction_copy = Auction.objects.create(item=self.item,
-    ####                                                  bid_type=self.bid_type,
-    ####                                                  precap_bids=self.precap_bids,
-    ####                                                  minimum_precap=self.minimum_precap,
-    ####                                                  is_active=self.is_active,
-    ####                                                  always_alive=self.always_alive,
-    ####                                                  bidding_time=self.saved_time,
-    ####                                                  threshold1=self.threshold1,
-    ####                                                  threshold2=self.threshold2,
-    ####                                                  threshold3=self.threshold3)
-    ####            auction_copy.save()
-    ####    else:
-    ####        self.save()
-
-    ### def start_auction_delayed(self, delay):
-    ###     t = threading.Timer(delay, self.start_auction)
-    ###     t.start()
-    
-    ### def finish_auction_delayed(self, bid_number, delay):
-    ###     kwargs = {'bid_number': bid_number}
-    ###     t = threading.Timer(delay, self.finish_auction, kwargs=kwargs)
-    ###     t.start()
-
     def get_last_bidder(self):
-        """ 
-        Returns the username of the last member that placed a bid on this 
-        auction. 
+        """
+        Returns the username of the last member that placed a bid on this
+        auction.
         """
         qs = self.bid_set.order_by('-unixtime')
 
@@ -442,16 +399,16 @@ class Auction(AbstractAuction):
             return None
 
         return qs[0].bidder
-        
+
     def get_latest_bid(self):
         """
         Returns the most recent bid of the auction.
         """
         bid_query = self.bid_set.order_by('-unixtime')
         return bid_query[0] if bid_query else None
-    
+
     def can_precap(self, member, amount):
-        """ 
+        """
         Returns True if the member can place the specified amount of precap
         bids in this auction.
         """
@@ -461,7 +418,7 @@ class Auction(AbstractAuction):
             return (member.get_bids(self.bid_type) >= amount
                 and not self.has_joined(member))
         return None
-    
+
     def completion(self, n=0):
         """ Returns a completion percentaje (0-100 integer) of the precap. """
         if self.status == 'precap':
@@ -472,8 +429,7 @@ class Auction(AbstractAuction):
                 percentaje = int((bids * 100) / self.precap_bids)
             return percentaje
         return 100
-    
-    
+
     def get_time_left(self):
         if self.status == 'waiting':
             start_time = Decimal("%f" % time.mktime(
@@ -492,29 +448,28 @@ class Auction(AbstractAuction):
                                  - time.time() + float(start_time))
                 return round(time_left) if time_left > 0 else 0
         return None
-    
+
     def _precap_bids_needed(self):
-            """ 
-            Returns the amount of bids needed before the precap is finished. 
+            """
+            Returns the amount of bids needed before the precap is finished.
             """
             needed = self.precap_bids - self.placed_bids()
             return needed if needed > 0 else 0
-    
-    
+
     def can_bid(self, member):
         """
-        Returns True if the member has commited bids left to use on the 
-        auction, and its not the last bidder. 
+        Returns True if the member has commited bids left to use on the
+        auction, and its not the last bidder.
         """
         if self.get_last_bidder() == member:
             return False
         return member.auction_bids_left(self)
-  
-    def place_precap_bid(self, member, amount, update_type = 'add'):
+
+    def place_precap_bid(self, member, amount, update_type='add'):
         if self.status == 'precap':
-            """ 
-            The member commits an amount precap bid to the auction and saves its 
-            state. 
+            """
+            The member commits an amount precap bid to the auction and saves its
+            state.
             Checks if the auction precap should be finished.
             Returns True if the member just joined the auction.
             """
@@ -532,32 +487,31 @@ class Auction(AbstractAuction):
                 previous_finishing = self.completion(1) < notification_percentage
                 if self.completion() >= notification_percentage > 0 and previous_finishing == True:
                     send_in_thread(precap_finishing_signal, sender=self)
-                
+
             #TODO two users can enter here because status is not yet changed
             if not self._precap_bids_needed():
                 self.finish_precap()
             return joining
-        
+
         elif self.status == 'waiting':
-            """ 
-            The member joins the auction. No validations are made (can_precap 
+            """
+            The member joins the auction. No validations are made (can_precap
             is assumed to be True).
             """
             self.bidders.add(member)
             member.precap_bids(self, amount)
             return True
-        
+
     def leave_auction(self, member):
         """ Returns all the bids commited to the auction by the member. """
 
         self.bidders.remove(member)
         member.leave_auction(self)
-        
-    
+
     def _check_preload_auctions(self):
-        """ 
-        Checks the amount of upcoming auctions, and runs a fixture in case 
-        there are not enough. 
+        """
+        Checks the amount of upcoming auctions, and runs a fixture in case
+        there are not enough.
         """
         upcoming = Auction.objects.filter(bid_type=self.bid_type,
                                           is_active=True, status__in='precap').count()
@@ -567,7 +521,7 @@ class Auction(AbstractAuction):
                 automatic=True):
             if fixture.threshold > upcoming:
                 fixture.make_auctions()
-    
+
     def finish_precap(self):
         """
         Changes the status to Waiting, sets the auction start date and saves
@@ -577,10 +531,9 @@ class Auction(AbstractAuction):
         self.start_date = datetime.now() + timedelta(seconds=5)
         self.finish_time = time.time() + 5.0
         self.save()
-        
+
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
-        #self.start_auction_delayed(5.0)
         send_in_thread(precap_finished_signal, sender=self)
 
         logger.debug('starting auction keeper')
@@ -597,9 +550,9 @@ class Auction(AbstractAuction):
 
         client.auctionActive(self)
         send_in_thread(auction_started_signal, sender=self)
-    
+
     def bid(self, member, bidNumber):
-        """ 
+        """
         Uses one of the member's commited bids in the auction.
         """
         bid = self.bid_set.get(bidder=member)
@@ -610,13 +563,11 @@ class Auction(AbstractAuction):
 
         if self._check_thresholds():
             self.pause(15.0)
-            #self.start_auction_delayed(15.0)#This is the time that the auction will be resume
         else:
             self.finish_time = time.time() + self.bidding_time
             self.save()
-            #self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
         return bid
-    
+
     def pause(self, delay):
         """ pauses the auction. """
         self.status = 'pause'
@@ -624,20 +575,19 @@ class Auction(AbstractAuction):
         self.save()
         client.auctionPause(self)
         send_in_thread(task_auction_pause, sender=self)
-        
+
     def resume(self):
         """ Resumes the auction. """
         self.status = 'processing'
-        #self.saved_time = self.bidding_time
         self.finish_time = time.time() + self.bidding_time
         self.save()
-    
+
         #fixme ugly
         bid = self.get_latest_bid()
         now = time.time()
         bid.unixtime = Decimal("%f" % now)
         bid.save()
-    
+
         client.auctionResume(self)
 
     def finish(self):
@@ -664,18 +614,18 @@ class Auction(AbstractAuction):
                                                   threshold2=self.threshold2,
                                                   threshold3=self.threshold3)
             auction_copy.save()
-        
+
     def _check_thresholds(self):
-        """ 
+        """
         Checks if a threshold has been reached, and modifies the bidding time
-        accordingly. If a threshold is reached True is returned.        
+        accordingly. If a threshold is reached True is returned.
         """
         current_bids = self.used_bids()
         limt_bids = int(self.placed_bids() * 0.25)
-    
-        while limt_bids % self.minimum_precap <> 0:
+
+        while limt_bids % self.minimum_precap != 0:
             limt_bids -= 1
-        
+
         if self.threshold1 and current_bids == limt_bids:
             self.bidding_time = self.threshold1
             auctioneer.threshold_message(auction=self, number=1)
@@ -724,12 +674,13 @@ class BidPackage(models.Model):
 
     def __unicode__(self):
         return self.title
-    
+
+
 @receiver(post_save, sender=BidPackage)
 def update_fb_info(sender, instance, **kwargs):
-    url='https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)+'bid_package/'+str(instance.id))
+    url = 'https://graph.facebook.com/?id=%s&scrape=true&method=post' % (settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME) + 'bid_package/' + str(instance.id))
     urlopen(url)
-        
+
 
 class AuctionInvoice(AuditedModel):
     auction = models.ForeignKey(Auction)
@@ -760,7 +711,7 @@ payment_was_successful.connect(addbids)
 class Invitation(AuditedModel):
     inviter = models.ForeignKey(Member)
     invited_facebook_id = models.CharField(max_length=100)
-    deleted = models.BooleanField(default=False) #facebook forced you to remove the invitation once used but not anymore
+    deleted = models.BooleanField(default=False)  # facebook forced you to remove the invitation once used but not anymore
 
 
 class AuctionInvitation(models.Model):
@@ -812,9 +763,9 @@ class FBOrderInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage)
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
-    fb_payment_id = models.BigIntegerField(blank=True, null=True) #this field should be unique
+    fb_payment_id = models.BigIntegerField(blank=True, null=True)  # this field should be unique
     date = models.DateTimeField(auto_now_add=True, null=True)
-    
+
     def __unicode__(self):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
 
@@ -831,9 +782,10 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bidsto=instance.member.bidsto_left,
         )
 
-CONFIG_KEY_TYPES = (('text' , 'text'),
-                    ('int' , 'int'),
-                    ('boolean' , 'boolean'))
+CONFIG_KEY_TYPES = (('text', 'text'),
+                    ('int', 'int'),
+                    ('boolean', 'boolean'))
+
 
 class ConfigKey(models.Model):
     key = models.CharField(max_length=100)
@@ -842,7 +794,7 @@ class ConfigKey(models.Model):
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='text')
 
     @staticmethod
-    def get( key,default=None,default_type=None, default_description=None):
+    def get(key, default=None, default_type=None, default_description=None):
         result = ConfigKey.objects.filter(key=key).all()
         if len(result):
             result = result[0]
@@ -880,13 +832,12 @@ class ConfigKey(models.Model):
         return self.key
 
 
-
 class AuctionKeeper(threading.Thread):
     def __init__(self, *args, **kwargs):
         super(AuctionKeeper, self).__init__(*args, **kwargs)
         self.auction_id = None
         self.check_delay = 1
-        
+
     def run(self):
         stop = False
         while not stop:

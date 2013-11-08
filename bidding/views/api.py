@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
 import json
-import logging
 import time
 
+import logging
 logger = logging.getLogger('django')
 
 from django.conf import settings
@@ -40,7 +40,7 @@ def api(request, method):
 def getUserDetails(request):
     member = request.user
 
-    data = {u'user':{
+    data = {u'user': {
                 u'displayName': member.display_name(),
                 u'facebookId': member.facebook_id,
                 u'profileFotoLink': member.display_picture(),
@@ -53,16 +53,17 @@ def getUserDetails(request):
                 u'last_name': member.last_name,
                 u'won_auctions': Auction.objects.filter(winner=member).all().count(),
                 u'actual_auctions': member.auction_set.exclude(status='waiting_payment').exclude(status='paid').all().count()
-                
+
             },
-            u'app':{
-                u'tokenValueInCredits':settings.TOKENS_TO_BIDS_RATE,
+            u'app': {
+                u'tokenValueInCredits': settings.TOKENS_TO_BIDS_RATE,
                 u'applink': settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
                 u'apppicture': get_static_url('images/400x400-Fblogo.png'),
             }
         }
 
     return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 def getTemplateContext(request):
     data = {
@@ -71,10 +72,11 @@ def getTemplateContext(request):
         u'FB_APP_ID': settings.FACEBOOK_APP_ID,
         u'MIXPANEL_TOKEN': settings.MIXPANEL_TOKEN,
         u'SITE_NAME': settings.SITE_NAME,
-        u'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH 
+        u'SITE_NAME_WOUT_BACKSLASH': settings.SITE_NAME_WOUT_BACKSLASH
     }
-    
+
     return HttpResponse(json.dumps(data), content_type="application/json")
+
 
 def getAuctionsInitialization(request):
     member = request.user
@@ -205,7 +207,7 @@ def getAuctionsInitialization(request):
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['bidders'] = auct.bidders.count()
-        
+
         tmp['auctioneerMessages'] = []
         for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
@@ -279,7 +281,6 @@ def getAuctionsInitialization(request):
     data['credit']['finished'] = auctions_bid_finished
     data['credit']['mine'] = auctions_bid_my
 
-
     return HttpResponse(json.dumps(data), content_type="application/json")
 
 
@@ -339,7 +340,7 @@ def startBidding(request):
     tmp['bidders'] = auct.bidders.count()
     tmp['itemId'] = auct.item.id
     tmp['won_price'] = 0
-    
+
     tmp['auctioneerMessages'] = []
     for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=True).order_by('-created')[:10]:
         w = {
@@ -380,10 +381,14 @@ def addBids(request):
 
     if auction.status == 'precap' and auction.can_precap(member, amount):
          #check max tokens for member per auction
-        if auction.bid_type != 'bid' and (((amount*100)/(auction.precap_bids)) > ConfigKey.get('AUCTION_MAX_TOKENS', 100)):
-            ret = {"success":False, 'motive': 'AUCTION_MAX_TOKENS_REACHED', 'data': {'placed': member.auction_bids_left(auction)}}
+        if auction.bid_type != 'bid' and (((amount * 100) / (auction.precap_bids)) > ConfigKey.get('AUCTION_MAX_TOKENS', 100)):
+            ret = {
+                "success": False,
+                'motive': 'AUCTION_MAX_TOKENS_REACHED',
+                'data': {'placed': member.auction_bids_left(auction)}
+                }
             return HttpResponse(json.dumps(ret), content_type="application/json")
-        
+
         auction.place_precap_bid(member, amount)
 
         client.updatePrecap(auction)
@@ -445,7 +450,6 @@ def stopBidding(request):
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
-
 def claim(request):
     """
     The user uses the bids that has commit before to try to win the auction in
@@ -454,7 +458,6 @@ def claim(request):
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
-    #auction = Auction.objects.get(id=auction_id)
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
     member = request.user
 
@@ -466,7 +469,6 @@ def claim(request):
 
         bid = auction.bid(member, bidNumber)
         auction.save()
-        #bid = auction.bid_set.get(bidder=member)
         tmp['id'] = auction_id
         tmp["placed_amount"] = bid.placed_amount
         tmp["used_amount"] = bid.used_amount
@@ -500,6 +502,7 @@ def convertTokens(request):
         return HttpResponse('{"success":true}', content_type="application/json")
     return HttpResponse('{"success":false}', content_type="application/json")
 
+
 def add_credits(request):
     if request.method == "POST":
         payment_id = int(request.POST['payment_id'])
@@ -507,9 +510,9 @@ def add_credits(request):
         while not order:
             time.sleep(1)
             order = FBOrderInfo.objects.filter(fb_payment_id=payment_id)
-        update_credits=order[0].member.bids_left
+        update_credits = order[0].member.bids_left
         return HttpResponse(
-            json.dumps({'update_credits': update_credits,}),
+            json.dumps({'update_credits': update_credits, }),
             content_type="application/json")
 
 
@@ -557,6 +560,7 @@ def inviteRequest(request):
 
     return HttpResponse(json.dumps([True]))
 
+
 def globalMessage(request):
     member = request.user
     if request.method == 'POST':
@@ -568,6 +572,7 @@ def globalMessage(request):
         return HttpResponse('{"success":true}', content_type="application/json")
 
     return HttpResponse('{"success":false}', content_type="application/json")
+
 
 def post_story(auction, member):
     fb_post_story(auction, member)
@@ -587,5 +592,5 @@ API = {
     'inviteRequest': inviteRequest,
     'add_credits': add_credits,
     'globalMessage': globalMessage,
-    'getTemplateContext' : getTemplateContext,
+    'getTemplateContext': getTemplateContext,
 }
