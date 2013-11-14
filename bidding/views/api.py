@@ -26,7 +26,7 @@ from lib import metrics
 from lib.utils import get_static_url
 
 
-metrics.initialize('baff1480b94c0f1acbf6fe1249ee35de')
+metrics.initialize(settings.MIXPANEL_TOKEN)
 auction_type_id = ContentType.objects.filter(name='auction').all()[0]
 
 

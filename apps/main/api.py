@@ -29,7 +29,7 @@ from chat.models import Message, ChatUser
 from lib import metrics
 
 
-metrics.initialize('baff1480b94c0f1acbf6fe1249ee35de')
+metrics.initialize(settings.MIXPANEL_TOKEN)
 
 
 class IBGModelResource(ModelResource):
