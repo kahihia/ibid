@@ -22,15 +22,20 @@ from bidding.views.facebook import post_story as fb_post_story
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
+from lib import metrics
 from lib.utils import get_static_url
 
 
+metrics.initialize('baff1480b94c0f1acbf6fe1249ee35de')
 auction_type_id = ContentType.objects.filter(name='auction').all()[0]
 
 
 def api(request, method):
     """api calls go through this method"""
+
+    start = time.time()
     result = API[method](request)
+    metrics.track_event('system', 'api_legacy_' + method, {'req_time': time.time() - start})
     if type(result) is HttpResponse or result.__class__ == HttpResponse:
         return result
     else:
