@@ -32,8 +32,10 @@ from bidding.signals import precap_finished_signal
 from bidding.signals import precap_finishing_signal
 from bidding.signals import task_auction_pause
 from bidding.signals import send_in_thread
+from lib import metrics
 
 
+metrics.initialize(settings.MIXPANEL_TOKEN)
 re_bids = re.compile("(\d+)")
 
 
@@ -598,6 +600,8 @@ class Auction(AbstractAuction):
         self.status = 'waiting_payment'
         self.won_date = datetime.now()
         self.save()
+        if self.winner is not None:
+            metrics.win_auction(self.winner, self)
         auctioneer.auction_finished_message(self)
         client.auctionFinish(self)
         send_in_thread(auction_finished_signal, sender=self)
