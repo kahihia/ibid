@@ -36,10 +36,7 @@ class IBGModelResource(ModelResource):
     def dispatch(self, *args, **kwargs):
         start = time.time()
         res = super(IBGModelResource, self).dispatch(*args, **kwargs)
-        print args
-        print kwargs.keys()
         event = 'api_{api_name}_{resource_name}'.format(**kwargs)
-        print event
         metrics.track_event('system', event, {'req_time': time.time() - start})
         return res
 
@@ -414,6 +411,7 @@ class PlayerActionResource(Resource):
                if auction.bid_type != 'bid' and (((amount*100)/(auction.precap_bids)) > ConfigKey.get('AUCTION_MAX_TOKENS', 100)):
                    error = 'AUCTION_MAX_TOKENS_REACHED'
                auction.place_precap_bid(member, amount)
+               metrics.add_bids(member, auction)
                client.updatePrecap(auction)
            else:
                if auction.bid_type == 'bid':
@@ -424,9 +422,11 @@ class PlayerActionResource(Resource):
             amount = member.auction_bids_left(auction) - amount
             if auction.can_precap(member, amount):
                 auction.place_precap_bid(member, amount, 'remove')
+                metrics.rem_bids(member, auction)
                 client.updatePrecap(auction)
             if member.auction_bids_left(auction) <= 0:
                 auction.leave_auction(member)
+                metrics.leave_auction(member, auction)
                 clientMessages = []
                 clientMessages.append(client.updatePrecapMessage(auction))
                 clientMessages.append(auctioneer.member_left_message(auction, member))
@@ -440,6 +440,7 @@ class PlayerActionResource(Resource):
             if auction.status == 'processing' and auction.can_bid(member):
                 if bidNumber == auction.getBidNumber():
                     if auction.bid(member, bidNumber):
+                        metrics.claim_auction(member, auction)
                         clientMessages = []
                         clientMessages.append(client.someoneClaimedMessage(auction))
                         clientMessages.append(auctioneer.member_claim_message(auction, member))
@@ -460,6 +461,7 @@ class PlayerActionResource(Resource):
             if auction.can_precap(member, amount):
                 joining = auction.place_precap_bid(member, amount)
             if joining:
+                metrics.join_auction(member, auction)
                 clientMessages = []
                 clientMessages.append(client.updatePrecapMessage(auction))
                 clientMessages.append(auctioneer.member_joined_message(auction, member))
