@@ -295,7 +295,6 @@ def startBidding(request):
     requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
-
     member = request.user
 
     try:
@@ -324,45 +323,43 @@ def startBidding(request):
             ret = {"success": False, 'motive': 'NO_ENOUGH_TOKENS'}
             return HttpResponse(json.dumps(ret), content_type="application/json")
 
-    auct = auction
     tmp = {}
-
-    tmp['id'] = auct.id
-    if hasattr(auct, 'completion'):
-        tmp['completion'] = auct.completion()
+    tmp['id'] = auction.id
+    if hasattr(auction, 'completion'):
+        tmp['completion'] = auction.completion()
     else:
         tmp['completion'] = 0
-    tmp['status'] = auct.status
-    tmp['bidPrice'] = auct.minimum_precap
-    tmp['bidType'] = {'token': 'token', 'bid': 'credit'}[auct.bid_type]
-    tmp['itemName'] = auct.item.name
-    tmp['retailPrice'] = str(auct.item.retail_price)
-    tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
-    tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap if auct.status == 'processing' else 0
-    tmp['placed'] = member.auction_bids_left(auct)
-    tmp['bids'] = member.auction_bids_left(auct)
-    tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
-    tmp['bidders'] = auct.bidders.count()
-    tmp['itemId'] = auct.item.id
+    tmp['status'] = auction.status
+    tmp['bidPrice'] = auction.minimum_precap
+    tmp['bidType'] = {'token': 'token', 'bid': 'credit'}[auction.bid_type]
+    tmp['itemName'] = auction.item.name
+    tmp['retailPrice'] = str(auction.item.retail_price)
+    tmp['timeleft'] = auction.get_time_left() if auction.status == 'processing' else None
+    tmp['bidNumber'] = auction.used_bids() / auction.minimum_precap if auction.status == 'processing' else 0
+    tmp['placed'] = member.auction_bids_left(auction)
+    tmp['bids'] = member.auction_bids_left(auction)
+    tmp['itemImage'] = auction.item.get_thumbnail(size="107x72")
+    tmp['bidders'] = auction.bidders.count()
+    tmp['itemId'] = auction.item.id
     tmp['won_price'] = 0
 
     tmp['auctioneerMessages'] = []
-    for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=True).order_by('-created')[:10]:
+    for mm in Message.objects.filter(object_id=auction.id).filter(_user__isnull=True).order_by('-created')[:10]:
         w = {
             'text': mm.format_message(),
             'date': mm.get_time(),
-            'auctionId': auct.id
+            'auctionId': auction.id
         }
         tmp['auctioneerMessages'].append(w)
 
     tmp['chatMessages'] = []
-    for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=False).order_by('-created')[:10]:
+    for mm in Message.objects.filter(object_id=auction.id).filter(_user__isnull=False).order_by('-created')[:10]:
         w = {'text': mm.format_message(),
              'date': mm.get_time(),
              'user': {'displayName': mm.get_user().display_name(),
                       'profileFotoLink': mm.get_user().picture(),
                       'profileLink': mm.get_user().user_link()},
-             'auctionId': auct.id
+             'auctionId': auction.id
         }
         tmp['chatMessages'].insert(0, w)
 
@@ -502,6 +499,7 @@ def convertTokens(request):
         member = request.user
         amount = member.maximun_bids_from_tokens()
         ConvertHistory.convert(member, int(amount))
+        metrics.track_event(member.id, 'ConvertTokens', {'credits_added': amount})
         return HttpResponse('{"success":true}', content_type="application/json")
     return HttpResponse('{"success":false}', content_type="application/json")
 
@@ -514,6 +512,7 @@ def add_credits(request):
             time.sleep(1)
             order = FBOrderInfo.objects.filter(fb_payment_id=payment_id)
         update_credits = order[0].member.bids_left
+        metrivs.track_event(order[0].member.id, 'AddCredits', {'credits_added': update_credits})
         return HttpResponse(
             json.dumps({'update_credits': update_credits, }),
             content_type="application/json")
