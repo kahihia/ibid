@@ -499,7 +499,7 @@ def convertTokens(request):
         member = request.user
         amount = member.maximun_bids_from_tokens()
         ConvertHistory.convert(member, int(amount))
-        metrics.track_event(member.id, 'ConvertTokens', {'credits_added': amount})
+        metrics.track_event(member.username, 'ConvertTokens', {'credits_added': amount})
         return HttpResponse('{"success":true}', content_type="application/json")
     return HttpResponse('{"success":false}', content_type="application/json")
 
@@ -512,7 +512,7 @@ def add_credits(request):
             time.sleep(1)
             order = FBOrderInfo.objects.filter(fb_payment_id=payment_id)
         update_credits = order[0].member.bids_left
-        metrivs.track_event(order[0].member.id, 'AddCredits', {'credits_added': update_credits})
+        metrivs.track_event(order[0].member.username, 'AddCredits', {'credits_added': update_credits})
         return HttpResponse(
             json.dumps({'update_credits': update_credits, }),
             content_type="application/json")

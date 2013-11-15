@@ -21,41 +21,42 @@ def track_event(user_id, event, data):
 
 def join_auction(user, auction):
     _update_user_profile(user)
-    _track_auction_event(user.id, auction, 'JoinAuction')
+    _track_auction_event(user, auction, 'JoinAuction')
 
 
 def add_bids(user, auction):
-    _track_auction_event(user.id, auction, 'AddBids')
+    _track_auction_event(user, auction, 'AddBids')
 
 
 def rem_bids(user, auction):
-    _track_auction_event(user.id, auction, 'RemBids')
+    _track_auction_event(user, auction, 'RemBids')
 
 
 def claim_auction(user, auction):
-    _track_auction_event(user.id, auction, 'ClaimAuction')
+    _track_auction_event(user, auction, 'ClaimAuction')
 
 
 def win_auction(user, auction):
-    _track_auction_event(user.id, auction, 'WinAuction')
+    _track_auction_event(user, auction, 'WinAuction')
 
 
 def leave_auction(user, auction):
-    _track_auction_event(user.id, auction, 'LeaveAuction')
+    _track_auction_event(user, auction, 'LeaveAuction')
 
 
-def _track_auction_event(user_id, auction, event):
+def _track_auction_event(user, auction, event):
     data = _get_auction_data(auction)
-    track_event(user_id, event, data)
+    track_event(user.username, event, data)
 
 
 
 def _update_user_profile(user):
     global _MP
-    _MP.people_set(user.id, {
+    _MP.people_set(user.username, {
         '$first_name': user.first_name,
         '$last_name': user.last_name,
         '$email': user.email,
+        'fb_id': user.facebook_id,
     })
 
 
