@@ -600,7 +600,8 @@ class Auction(AbstractAuction):
         self.status = 'waiting_payment'
         self.won_date = datetime.now()
         self.save()
-        metrics.win_auction(self.winner, self)
+        if self.winner is not None:
+            metrics.win_auction(self.winner, self)
         auctioneer.auction_finished_message(self)
         client.auctionFinish(self)
         send_in_thread(auction_finished_signal, sender=self)
