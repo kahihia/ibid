@@ -367,6 +367,7 @@ def startBidding(request):
         tmp['chatMessages'].insert(0, w)
 
     ret = {"success": True, 'auction': tmp}
+    metrics.join_auction(request.user, auction)
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 
@@ -394,11 +395,11 @@ def addBids(request):
                 }
             return HttpResponse(json.dumps(ret), content_type="application/json")
 
-        auction.place_precap_bid(member, amount)
 
+        metrics.add_bids(request.user, auction)
+        auction.place_precap_bid(member, amount)
         client.updatePrecap(auction)
         success = True
-
         res = {'success': success, 'data': {'placed': member.auction_bids_left(auction)}}
         return HttpResponse(json.dumps(res), content_type="application/json")
     else:
@@ -422,15 +423,13 @@ def remBids(request):
     member = request.user
     #minimum_precap means bid_price
     amount = auction.minimum_precap
-
     amount = member.auction_bids_left(auction) - amount
 
     if auction.can_precap(member, amount):
         auction.place_precap_bid(member, amount, 'remove')
-
         client.updatePrecap(auction)
-
     if member.auction_bids_left(auction) > 0:
+        metrics.rem_bids(request.user, auction)
         res = {'success': True, 'data': {'placed': member.auction_bids_left(auction)}}
         return HttpResponse(json.dumps(res), content_type="application/json")
     else:
@@ -442,13 +441,12 @@ def stopBidding(request):
     auction_id = int(requPOST['id'])
     auction = Auction.objects.get(id=auction_id)
 
-    member = request.user
-
-    auction.leave_auction(member)
+    auction.leave_auction(request.user)
+    metrics.leave_auction(request.user, auction)
 
     clientMessages = []
     clientMessages.append(client.updatePrecapMessage(auction))
-    clientMessages.append(auctioneer.member_left_message(auction, member))
+    clientMessages.append(auctioneer.member_left_message(auction, request.user))
     client.sendPackedMessages(clientMessages)
 
     ret = {'success': True, 'data': {'do': 'close'}}
@@ -464,16 +462,16 @@ def claim(request):
     auction_id = request.GET.get('id', int(requPOST['id']))
     auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
-    member = request.user
 
     tmp = {}
     tmp["success"] = False
     if auction.status == 'processing' and \
-        auction.can_bid(member) and \
+        auction.can_bid(request.user) and \
         auction.used_bids() / auction.minimum_precap == bidNumber:
 
-        bid = auction.bid(member, bidNumber)
+        bid = auction.bid(request.user, bidNumber)
         auction.save()
+        metrics.claim_auction(request.user, auction)
         tmp['id'] = auction_id
         tmp["placed_amount"] = bid.placed_amount
         tmp["used_amount"] = bid.used_amount
@@ -481,7 +479,7 @@ def claim(request):
 
         clientMessages = []
         clientMessages.append(client.someoneClaimedMessage(auction))
-        clientMessages.append(auctioneer.member_claim_message(auction, member))
+        clientMessages.append(auctioneer.member_claim_message(auction, request.user))
         client.sendPackedMessages(clientMessages)
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
