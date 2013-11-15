@@ -2,7 +2,8 @@
 from django.conf.urls import *
 from tastypie.api import Api
 
-from apps.main.api import CategoryResource,AuctionsWonByUserResource,NotificationResource,AuctionResource,MemberResource,MemberByFBTokenResource,ConverTokensResource,BidPackageResource,SendMessageResource,ItemResource,joinAuctionResource,addBidResource,remBidResource,claimBidResource,AuctionAvailableResource,AuctionFinishedResource,AuctionByCategoryResource
+from apps.main.api import CategoryResource,AuctionsWonByUserResource,NotificationResource,AuctionResource,MemberResource,MemberByFBTokenResource,ConverTokensResource,BidPackageResource,SendMessageResource,ItemResource,joinAuctionResource,addBidResource,remBidResource,claimBidResource
+#,AuctionAvailableResource,AuctionFinishedResource,AuctionByCategoryResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(NotificationResource())
@@ -18,9 +19,9 @@ v1_api.register(addBidResource())
 v1_api.register(remBidResource())
 v1_api.register(claimBidResource())
 v1_api.register(joinAuctionResource())
-v1_api.register(AuctionAvailableResource())
-v1_api.register(AuctionFinishedResource())
-v1_api.register(AuctionByCategoryResource())
+#v1_api.register(AuctionAvailableResource())
+#v1_api.register(AuctionFinishedResource())
+#v1_api.register(AuctionByCategoryResource())
 v1_api.register(AuctionsWonByUserResource())
 
 urlpatterns = patterns('',

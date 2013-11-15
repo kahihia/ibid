@@ -36,7 +36,7 @@ class CustomAuthentication(Authentication):
     def get_identifier(self, request):
         return request.user
     
-#################### AUTHORIZATION METHODS TO ENABLE OR DISABLE DATA ACCES FOR A USER
+###########    AUTHORIZATION METHODS TO ENABLE OR DISABLE DATA ACCES FOR A USER   ###########
 
 class NoAuthorization(Authorization):
     
@@ -111,26 +111,7 @@ class SendMessageAuthorization(NoAuthorization):
         except:    
             return False
 
-#############################RESOURCES############################################################
-
-def common_get_list(resource,request,method,**kwargs):
-    
-    base_bundle = resource.build_bundle(request=request)
-    objects = resource.obj_get_list(bundle=base_bundle, **resource.remove_api_resource_names(kwargs))
-    log.debug('resource  '+str(resource))
-    log.debug('objects  '+str(objects))
-    sorted_objects = resource.apply_sorting(objects,request)
-    
-  
-    
-    paginator = resource._meta.paginator_class(request.GET, sorted_objects, resource_uri=resource.get_resource_uri(), limit=resource._meta.limit, max_limit=resource._meta.max_limit, collection_name=resource._meta.collection_name)
-    to_be_serialized = paginator.page()
-    
-    return_dict=method(request,to_be_serialized,**kwargs)
-    
-    to_be_serialized[resource._meta.collection_name] = return_dict
-    to_be_serialized = resource.alter_list_data_to_serialize(request, to_be_serialized)
-    return resource.create_response(request, to_be_serialized)
+#############################    RESOURCES   ###################################
 
 class NotificationResource(ModelResource):
     
@@ -160,7 +141,7 @@ class MemberResource(ModelResource):
     class Meta:
         queryset = Member.objects.all()
         resource_name = 'member'
-        list_allowed_methods = []
+        list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         authorization = MemberAuthorization()
         authentication = CustomAuthentication()
@@ -236,9 +217,10 @@ class MemberByFBTokenResource(MemberResource):
         detail_uri_name = 'access_token'
         include_resource_uri = False
     
-    def prepend_urls(self):
+    def base_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<%s>.*?)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^member/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^member/(?P<resource_name>%s)/(?P<%s>.*?)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
     
     def obj_get(self, bundle, **kwargs):
@@ -286,7 +268,9 @@ class CategoryResource(ModelResource):
         authentication = SessionAuthentication()
         include_resource_uri = False
         fields=['name', 'description','image']
-
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get']
+        
     def dehydrate(self, bundle):
         bundle.data['categoryImage'] = bundle.obj.get_thumbnail(size="107x72")
         return bundle
@@ -302,6 +286,8 @@ class ItemResource(ModelResource):
         authorization = ReadOnlyAuthorization()
         authentication = SessionAuthentication()
         include_resource_uri = False
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get']
 
     def dehydrate(self, bundle):
         bundle.data['itemImage'] = bundle.obj.get_thumbnail(size="107x72")
@@ -316,18 +302,21 @@ class AuctionResource(ModelResource):
     """
     winner = fields.ForeignKey(MemberResource, 'winner',null=True, full=True, help_text = 'Member that won the auction.')
     item = fields.ForeignKey(ItemResource, 'item', full=True, help_text = 'Item being auctioned.')
+    categories = fields.ManyToManyField(CategoryResource, 'categories', full=True, help_text ='Category of the auction')
     
     class Meta:
         queryset = Auction.objects.all()
         resource_name = 'auction'
         collection_name = 'auctions'
+        detail_uri_name = 'id'
         authorization = ReadOnlyAuthorization()
         excludes = ['is_active']
         authentication = SessionAuthentication()
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         filtering = {
-            'status' : ['in'],
+            'status' : ['exact'],
+            'categories' : ['exact'],
         }
          
     def base_urls(self):
@@ -343,11 +332,35 @@ class AuctionResource(ModelResource):
             
         ]
     
-    def obj_update(self, bundle, **kwargs):
-        return super(AuctionResource, self).obj_get(bundle=bundle, **kwargs)
+    def get_list(self, request, **kwargs):
+        filters = dict(request.GET.iterlists())
+        get_list_method = self.default_get_list
+        apply_sorting_method = self.apply_sorting
+        if len(filters) > 0:
+            if 'status' in filters and len(filters['status'])==1:
+                if 'finished' in filters['status']:
+                    get_list_method = self.finished_get_list
+                    apply_sorting_method = self.finished_apply_sorting
+                if 'available' in filters['status']:
+                    get_list_method = self.available_get_list
+                    apply_sorting_method = self.available_apply_sorting
+                #if 'playing' in filters['status']:
+                #    get_list_method = self.playing_get_list
+        return self.common_get_list(request, get_list_method, apply_sorting_method, **kwargs)
     
-    def custom_get_list(self, request,to_be_serialized,**kwargs):
-        
+    def common_get_list(self, request, get_list_method, apply_sorting_method, **kwargs):
+        base_bundle = self.build_bundle(request=request)
+        objects = self.obj_get_list(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
+        log.debug(str(objects))
+        sorted_objects = apply_sorting_method(objects, request)
+        paginator = self._meta.paginator_class(request.GET, sorted_objects, resource_uri=self.get_resource_uri(), limit=self._meta.limit, max_limit=self._meta.max_limit, collection_name=self._meta.collection_name)
+        to_be_serialized = paginator.page()
+        return_dict=get_list_method(request,to_be_serialized,**kwargs)
+        to_be_serialized[self._meta.collection_name] = return_dict
+        to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+        return self.create_response(request, to_be_serialized)
+
+    def default_get_list(self, request,to_be_serialized,**kwargs):
         token_finished_list=[]
         token_wout_winner=[]
         token_playing_list=[]
@@ -395,21 +408,84 @@ class AuctionResource(ModelResource):
         return_dict['credit']['playing'] = credit_playing_list
         return return_dict
         
-    def get_list(self, request, **kwargs):
-        return common_get_list(self, request,self.custom_get_list,**kwargs)         
-        
+    def finished_get_list(self, request,to_be_serialized,**kwargs):
+        finished_list=[]
+        wout_winner=[]
+        return_dict={}
+        for obj in to_be_serialized[self._meta.collection_name]:
+            bundle = self.build_bundle(obj=obj, request=request)
+            if obj.winner:
+                finished_list.append(self.full_dehydrate_finished(request, bundle))
+            else:
+                wout_winner.append(self.full_dehydrate_finished(request, bundle))
+        return_dict['finished'] = finished_list
+        return_dict['wout_winner'] = wout_winner  
+        return return_dict
+    
+    def available_get_list(self, request,to_be_serialized,**kwargs):
+        # Dehydrate the bundles in preparation for serialization.
+        """ Make dehydrate in different ways depending if auction is finished or available"""           
+        available_list=[]
+        return_dict={}
+        for obj in to_be_serialized[self._meta.collection_name]:
+            bundle = self.build_bundle(obj=obj, request=request)
+            available_list.append(self.full_dehydrate_available(request, bundle))
+        return_dict['available'] = available_list
+        return return_dict
+      
     def build_filters(self, filters=None):
         
         """
         Apply filters depending on the url that was used to access the resource.
         """
-        ret_filters = super(AuctionResource, self).build_filters(filters)
+        ret_filters = {}
         ret_filters['is_active'] = True
         return ret_filters
-    #
-    def apply_sorting(self, obj_list,request=None):
-        return super(AuctionResource,self).apply_sorting(obj_list,options=request.GET)
+    
+    def apply_filters(self, request, applicable_filters):
+        log.debug(str(applicable_filters))
+        obj_list = self.get_object_list(request).filter(**applicable_filters)
+        return_list = obj_list
+        filters = dict(request.GET.iterlists())
+        if len(filters) > 0:
+            if 'status' in filters:
+                status_list = obj_list.none()
+                if 'finished' in filters['status']:
+                    finished = ['waiting_payment', 'paid']
+                    status_list = status_list | obj_list.filter(status__in=finished)
+                if 'available' in filters['status']:
+                    status_list = status_list | obj_list.filter(status = 'precap')
+                if 'playing' in filters['status']:
+                    playing = ['waiting', 'pause', 'processing']
+                    status_list = status_list | obj_list.filter(status__in = playing)
+                for search_status in filters['status'] :
+                    if search_status not in ['finished', 'playing','available'] :
+                        status_list = status_list | obj_list.filter(status = search_status)
+                return_list = return_list & status_list
+            filters_queryDict = request.GET.copy()
+            if 'status' in filters_queryDict:
+                filters_queryDict.pop('status')
+            applicable_filters = super(AuctionResource, self).build_filters(filters_queryDict)
+            return_list = return_list & obj_list.filter(**applicable_filters)
+            return return_list
+        return obj_list
+    
+    def available_apply_sorting(self, obj_list,request=None):
+        return_list=[]
+        for_token=obj_list.filter(bid_type='token').values('item__name','priority').order_by('-priority','item__name').distinct()
+        for_credit=obj_list.filter(bid_type='bid').values('item__name','priority').order_by('-priority','item__name').distinct()
         
+        #auctions that are for items on both lists
+        [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_token if x  in for_credit]
+        #auctions that are for credit but not for tokens
+        [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_credit if x not in for_token]
+        #autions tht are for tokens but no for credits
+        [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_token if x not in for_credit]
+        
+        return return_list
+    
+    def finished_apply_sorting(self, obj_list,request=None):
+        return obj_list.order_by('-won_date')
     
     def full_dehydrate_available(self, request, bundle):
         
@@ -467,116 +543,13 @@ class AuctionResource(ModelResource):
         else:
             bundle.data['won_date']=None
         return bundle
-
-class AuctionAvailableResource(AuctionResource):
-
-    class Meta:
-        queryset = Auction.objects.all()
-        resource_name = 'available'
-        authorization = ReadOnlyAuthorization()
-        include_resource_uri = False   
-        excludes = ['is_active']
-        list_allowed_methods = ['get']
-        detail_allowed_methods = []
-        authentication = CustomAuthentication()
     
-    def base_urls(self):
-        """
-        The standard URLs this ``Resource`` should respond to.
-        """
-        return [
-                url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-                url(r"^auction/(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
-                ]
-    
-    def custom_get_list(self, request,to_be_serialized,**kwargs):
-        # Dehydrate the bundles in preparation for serialization.
-        """ Make dehydrate in different ways depending if auction is finished or available"""           
-        available_list=[]
-        return_dict={}
-        for obj in to_be_serialized[self._meta.collection_name]:
-            bundle = self.build_bundle(obj=obj, request=request)
-            available_list.append(self.full_dehydrate_available(request, bundle))
-        return_dict['available'] = available_list
-        return return_dict
-    
-    def build_filters(self, filters=None):
-        
-        """
-        Apply filters depending on the url that was used to access the resource.
-        """
-        ret_filters = super(AuctionAvailableResource, self).build_filters(filters)
-        ret_filters['status__in'] = ['precap']
-        return ret_filters
-    
-    def apply_sorting(self, obj_list,request=None):
-        
-       
-        return_list=[]
-        for_token=obj_list.filter(bid_type='token').values('item__name','priority').order_by('-priority','item__name').distinct()
-        for_credit=obj_list.filter(bid_type='bid').values('item__name','priority').order_by('-priority','item__name').distinct()
-        
-        #auctions that are for items on both lists
-        [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_token if x  in for_credit]
-        #auctions that are for credit but not for tokens
-        [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_credit if x not in for_token]
-        #autions tht are for tokens but no for credits
-        [return_list.extend(Auction.objects.filter(status='precap').filter(item__name=x['item__name'],priority=x['priority']).order_by('-bid_type')) for x in for_token if x not in for_credit]
-        
-        return return_list
-
-class AuctionFinishedResource(AuctionResource):
-
-    class Meta:
-        queryset = Auction.objects.all()
-        resource_name = 'finished'
-        authorization = ReadOnlyAuthorization()
-        include_resource_uri = False   
-        excludes = ['is_active']
-        authentication = CustomAuthentication()
-        list_allowed_methods = ['get']
-        detail_allowed_methods = []
-        
-    def base_urls(self):
-        """
-        The standard URLs this ``Resource`` should respond to.
-        """
-        return [
-                url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-                url(r"^auction/(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
-                ]
-    
-    def custom_get_list(self, request,to_be_serialized,**kwargs):
-        
-        finished_list=[]
-        wout_winner=[]
-        return_dict={}
-        for obj in to_be_serialized[self._meta.collection_name]:
-            bundle = self.build_bundle(obj=obj, request=request)
-            if obj.winner:
-                finished_list.append(self.full_dehydrate_finished(request, bundle))
-            else:
-                wout_winner.append(self.full_dehydrate_finished(request, bundle))
-        return_dict['finished'] = finished_list
-        return_dict['wout_winner'] = wout_winner  
-        return return_dict
-    
-    def build_filters(self, filters=None):
-        """
-        Apply filters depending on the url that was used to access the resource.
-        """
-        ret_filters = super(AuctionFinishedResource, self).build_filters(filters)
-        ret_filters['status__in'] = ['paid' ,'waiting_payment']
-        return ret_filters
-    
-    def apply_sorting(self, obj_list,request=None):
-        return obj_list.order_by('won_date')
-            
-class AuctionsWonByUserResource(AuctionFinishedResource):
+class AuctionsWonByUserResource(AuctionResource):
     
     class Meta:
         queryset = Auction.objects.all()
-        resource_name = 'wonByUser'
+        resource_name = 'auctions_won'
+        collection_name = 'auctions'
         authorization = ReadOnlyAuthorization()
         include_resource_uri = False   
         excludes = ['is_active']
@@ -589,45 +562,16 @@ class AuctionsWonByUserResource(AuctionFinishedResource):
         The standard URLs this ``Resource`` should respond to.
         """
         return [
-                url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-                url(r"^auction/(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
+                url(r"^member/(?P<resource_name>%s)%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+                url(r"^member/(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
                 ]
+    
+    def get_list(self, request, **kwargs):
+        return self.common_get_list(request, self.finished_get_list, self.finished_apply_sorting, **kwargs)
     
     def apply_filters(self, request, applicable_filters):
         obj_list = self.get_object_list(request).filter(**applicable_filters)
         return obj_list.filter(winner__id = request.user.id)
-            
-class AuctionByCategoryResource(AuctionAvailableResource):
-    
-    class Meta:
-        queryset = Auction.objects.all()
-        resource_name = 'byCategory'
-        authorization = ReadOnlyAuthorization()
-        include_resource_uri = False   
-        excludes = ['is_active']
-        list_allowed_methods = ['get']
-        detail_allowed_methods = []
-        authentication = CustomAuthentication()
-        
-    def base_urls(self):
-        """
-        The standard URLs this ``Resource`` should respond to.
-        """
-        return [
-                url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-                url(r"^auction/(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
-                ]
-    
-    def build_filters(self, filters=None):
-        """
-        Apply filters depending on the url that was used to access the resource.
-        """
-        ret_filters = super(AuctionByCategoryResource, self).build_filters(filters)
-        if 'category_id' in filters:
-            ret_filters['item__categories__id'] = int(filters['category_id'])
-        else:
-            raise BadRequest("not valid category_id.")
-        return ret_filters   
 
 class BidPackageResource(ModelResource):
     
@@ -636,7 +580,9 @@ class BidPackageResource(ModelResource):
         resource_name = 'bid_package'
         authorization = ReadOnlyAuthorization()
         authentication = SessionAuthentication()
-        include_resource_uri = False   
+        include_resource_uri = False
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get']
 
 class addBidResource(ModelResource):
      
@@ -689,7 +635,6 @@ class addBidResource(ModelResource):
         if error:
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))
         return bundle.obj
-
 
 class remBidResource(ModelResource):
      
@@ -800,7 +745,6 @@ class claimBidResource(AuctionResource):
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))
         return AuctionResource.full_dehydrate_available(AuctionResource(),bundle.request,bundle)
 
-
 class joinAuctionResource(ModelResource):
      
     """
@@ -857,7 +801,6 @@ class joinAuctionResource(ModelResource):
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))
         return bundle.obj
 
-
 class SendMessageResource(ModelResource):
     
     """
@@ -876,18 +819,22 @@ class SendMessageResource(ModelResource):
     def post_list(self, request, **kwargs):
         deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
         basic_bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
-        text = basic_bundle.data['text']
-        if 'auction_id' in basic_bundle.data:
-            auction_id = basic_bundle.data['auction_id']
-            auction = Auction.objects.get(id=auction_id)
-            user_type_id=ContentType.objects.filter(name='user').all()[0]
-            auction_type_id=ContentType.objects.filter(name='auction').all()[0]
-            user = ChatUser.objects.get_or_create(object_id=request.user.id, content_type=user_type_id)[0]
-            bundle = self.obj_create(bundle=basic_bundle, text=text, user=user, content_type=auction_type_id, object_id=auction.id)
-            client.do_send_chat_message(auction, bundle.obj)
-        else:
-            member = request.user
-            client.do_send_global_chat_message(member, text)
-        return self.create_response(request, {} , response_class=http.HttpCreated)
+        if 'text' in basic_bundle.data:
+            text = basic_bundle.data['text']
+            if 'auction_id' in basic_bundle.data:
+                auction_id = basic_bundle.data['auction_id']
+                auction = Auction.objects.get(id=auction_id)
+                user_type_id=ContentType.objects.filter(name='user').all()[0]
+                auction_type_id=ContentType.objects.filter(name='auction').all()[0]
+                user = ChatUser.objects.get_or_create(object_id=request.user.id, content_type=user_type_id)[0]
+                bundle = self.obj_create(bundle=basic_bundle, text=text, user=user, content_type=auction_type_id, object_id=auction.id)
+                client.do_send_chat_message(auction, bundle.obj)
+                return self.create_response(request, {} , response_class=http.HttpCreated)
+            else:
+                member = request.user
+                client.do_send_global_chat_message(member, text)
+                return self.create_response(request, {} , response_class=http.HttpCreated)
+        return self.create_response(request, {} , response_class=http.HttpBadRequest)
+        
     
     
