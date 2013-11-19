@@ -98,8 +98,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }else {
             $scope.creditAuctionsWon.push(auction);
         };
-        console.log(" LISTA LOG: ");
-        console.log($scope.tokenAuctionsWon);
         $scope.wonAuction = auction;
         $scope.requestPermisionPublishActions('STORY');
         $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
