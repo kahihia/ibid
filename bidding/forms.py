@@ -89,12 +89,18 @@ class AuctionAdminForm(forms.ModelForm):
         _bid_type = self.cleaned_data['bid_type']
         _item = self.cleaned_data['item']
         _priority = self.cleaned_data['priority']
-        msg = 'Can`t create two auctions with same item and diferent priorities.'
-        msg2 = 'Can`t create two auctions with same item and bid_type.'
+        msg = "Can't create two auctions with same item and diferent priorities."
+        msg2 = "Can't create two auctions with same item and bid_type."
+        msg3 = "Can't create two auctions with same bid_type and priority"
         if hasattr(self, 'instance') and self.instance.pk is None:
-            repeated_auctions=models.Auction.objects.filter(item=_item).filter(status='precap')
+            auctions = models.Auction.objects.all()
+            repeated_auctions=auctions.filter(item=_item).filter(status='precap')
             if repeated_auctions.count() == 0 :
-                save = True
+                if auctions.filter(bid_type=_bid_type).filter(priority=_priority).count() == 0:
+                    save = True
+                else:
+                    self._errors['priority'] = ErrorList([msg3])
+                    del self.cleaned_data['priority']
             else:
                 if repeated_auctions.filter(bid_type=_bid_type).count() == 0 :
                     if repeated_auctions.exclude(bid_type=_bid_type).filter(priority=_priority):

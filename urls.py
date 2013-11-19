@@ -9,6 +9,7 @@ from django.views.generic.base import RedirectView
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'api/doc/', include('tastypie_swagger.urls', namespace='tastypie_swagger')),
     (r'', include('apps.main.urls')),
     (r'', include('bidding.urls')),
     (r'', include('message.urls')),
@@ -18,6 +19,8 @@ urlpatterns = patterns('',
     (r'^facebook/', include('django_facebook.urls')),
     (r'^accounts/', include('django_facebook.auth_urls')),
     url(r'^admin_tools/', include('admin_tools.urls')),
+    url(r'api/doc/', include('tastypie_swagger.urls', namespace='tastypie_swagger')),
+    
 )
 
 urlpatterns += patterns('',

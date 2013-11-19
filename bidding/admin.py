@@ -59,6 +59,7 @@ class AuctionAdmin(admin.ModelAdmin):
                        'winner',
                        'won_price',
                        'won_date',
+                       'priority',
             )
         }),
     )

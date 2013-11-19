@@ -341,11 +341,11 @@ class AbstractAuction(AuditedModel):
 
 
 class Auction(AbstractAuction):
-    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')
-    status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap')
-    bidding_time = models.IntegerField(default=10)
-    saved_time = models.IntegerField(default=0, blank=True, null=True)
-    always_alive = models.BooleanField(default=False)
+    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid', help_text='Type of currency for this auction.')
+    status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap', help_text='Auction status.')
+    bidding_time = models.IntegerField(default=10, help_text='Auction initial timer')
+    saved_time = models.IntegerField(default=0, blank=True, null=True, help_text='Saved bidding time for later use.')
+    always_alive = models.BooleanField(default=False, help_text='Wether the auction copies itself after precap.')
 
     bidders = models.ManyToManyField(Member, blank=True, null=True)
 
@@ -371,13 +371,12 @@ class Auction(AbstractAuction):
 
     is_active = models.BooleanField(default=True)
     
-    priority = models.IntegerField(default=-1)
+    priority = models.IntegerField(default=-1, help_text='Used for sorting.')
+    categories = models.ManyToManyField(Category,related_name="auctions",blank=True, null=True)
     
     class Meta:
         ordering = ['-id']
-    
-      
-       
+
     def placed_bids(self):
         """ Returns the amount of bids commited in precap. """
         return self.bid_set.aggregate(Sum('placed_amount'))['placed_amount__sum'] or 0
@@ -425,7 +424,6 @@ class Auction(AbstractAuction):
             self.save()
             send_in_thread(auction_started_signal, sender=self)
         
-
     def finish_auction(self, bid_number):
         #refresh the current database auction status
         if self.status == 'processing' and bid_number == self.getBidNumber():
@@ -600,7 +598,8 @@ class Auction(AbstractAuction):
                                                   bidding_time=self.bidding_time,
                                                   threshold1=self.threshold1,
                                                   threshold2=self.threshold2,
-                                                  threshold3=self.threshold3)
+                                                  threshold3=self.threshold3,
+                                                  priority=self.priority)
             auction_copy.save()
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
@@ -686,6 +685,12 @@ class Auction(AbstractAuction):
         bid.save()
     
         client.auctionResume(self)
+
+@receiver(post_save, sender=Auction)
+def categories_register(sender, instance, **kwargs):
+    if not instance.categories.count() > 0 and instance.item.categories.count() > 0:
+        [instance.categories.add(x) for x in instance.item.categories.all()]
+        instance.save()
 
 #class PrePromotedAuction(AbstractAuction):
 #    bid_type = models.CharField(max_length=5, choices=BID_TYPE_CHOICES, default='bid')

@@ -115,6 +115,7 @@ class SendMessageAuthorization(NoAuthorization):
 
 class NotificationResource(ModelResource):
     
+    """ Resource to interact with member notifications data objects.  """
     class Meta:
         resource_name = 'notification'
         list_allowed_methods = ['get', 'put']
@@ -136,7 +137,7 @@ class NotificationResource(ModelResource):
 
 class MemberResource(ModelResource):
     
-    """  Resource to interact with member data objects. """
+    """ Resource to interact with member data objects.  """
     
     class Meta:
         queryset = Member.objects.all()
@@ -294,12 +295,9 @@ class ItemResource(ModelResource):
         return bundle
 
 class AuctionResource(ModelResource):
-    """
-    This resource retrieves auctions data in different ways:
-        1- All auctions sorted by credits  (avaiable and finished) and tokens (avaiable and finished)
-        2- Auctions that the user with id = "member_id" (sent in url) is in, sorted by credits (avaiable and finished) and tokens (avaiable and finished)
-        3- Auctions that were won by the user with the "winner_id" (sent in the url)
-    """
+    
+    """ This resource retrieves auctions data filtered and sorted by status. """
+    
     winner = fields.ForeignKey(MemberResource, 'winner',null=True, full=True, help_text = 'Member that won the auction.')
     item = fields.ForeignKey(ItemResource, 'item', full=True, help_text = 'Item being auctioned.')
     categories = fields.ManyToManyField(CategoryResource, 'categories', full=True, help_text ='Category of the auction')
@@ -333,6 +331,9 @@ class AuctionResource(ModelResource):
         ]
     
     def get_list(self, request, **kwargs):
+        
+        """ Make object list in different ways depending if auction is finished or available"""
+         
         filters = dict(request.GET.iterlists())
         get_list_method = self.default_get_list
         apply_sorting_method = self.apply_sorting
@@ -423,8 +424,8 @@ class AuctionResource(ModelResource):
         return return_dict
     
     def available_get_list(self, request,to_be_serialized,**kwargs):
-        # Dehydrate the bundles in preparation for serialization.
-        """ Make dehydrate in different ways depending if auction is finished or available"""           
+                  
+        
         available_list=[]
         return_dict={}
         for obj in to_be_serialized[self._meta.collection_name]:
@@ -546,6 +547,8 @@ class AuctionResource(ModelResource):
     
 class AuctionsWonByUserResource(AuctionResource):
     
+    """ Resource to retrieve data of auctions won by some user """
+    
     class Meta:
         queryset = Auction.objects.all()
         resource_name = 'auctions_won'
@@ -574,6 +577,8 @@ class AuctionsWonByUserResource(AuctionResource):
         return obj_list.filter(winner__id = request.user.id)
 
 class BidPackageResource(ModelResource):
+    
+    """ Resource to retrieve data of bid package objects """
     
     class Meta:
         queryset = BidPackage.objects.all()
