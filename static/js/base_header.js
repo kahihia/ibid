@@ -88,6 +88,9 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $rootScope.$on('auction:finished', function (event, auction) {
         // If current user won, show win modal.
         if (auction.winner.facebookId !== $scope.user.facebookId) {
+            $scope.lostAuction = auction;
+            $scope.showLostTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
+            $scope.showLostItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
             return;
         }
         if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
@@ -125,6 +128,17 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
     };
 
+    $scope.closeLostAuctionDialog = function () {
+        //request for perm if does not have it
+        $scope.showLostTokensDialog = null;
+        $scope.showLostItemDialog = null;
+    };
+
+    $scope.closeLostAuctionDialogAndPlayForItems = function () {
+        $scope.closeLostAuctionDialog();
+        $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+    };
+    
     /**
      * Shows notification after users invited.
      *

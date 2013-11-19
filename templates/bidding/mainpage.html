@@ -159,6 +159,53 @@
 	    <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
 	    <img class="prize" src="{% static 'images/prize-medium.png' %}">
 	</div>
+	
+	<!-- Tokens lost modal -->
+	<div class="modal" ng-show="showLostTokensDialog" ng-cloak>
+		<div class="title">Auction Lost!</div>
+		<div class="title title-shadow">Auction Lost!</div>
+		<div class="content">
+			<p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
+			<div class="item">
+				<img ng-src="{$ lostAuction.itemImage $}">
+				<p>{$lostAuction.itemName $}</p>
+			</div>
+			<p class="info text-small-w">Invite some friends to get Free Tokens!</p>
+		</div>
+		<div class="buttons">
+			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div> </br></br>
+			<div class="btn btn-red" ng-mousedown="closeLostAuctionDialogAndPlayForItems()">Play for real items</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-mousedown="closeLostAuctionDialog()">
+			x
+		</div>
+		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+		<img class="prize" src="{% static 'images/prize-medium.png' %}">
+	</div>
+ 
+	<!-- Item lost modal -->
+	<div class="modal" ng-show="showLostItemDialog" ng-cloak>
+		<div class="title">Auction Lost!</div>
+		<div class="title title-shadow">Auction Lost!</div>
+		<div class="content">
+			<p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
+			<div class="item">
+				<img ng-src="{$ wonAuction.itemImage $}">
+				<p>{$wonAuction.itemName $}</p>
+			</div>
+			<p class="info text-small-w">Invite some friends to get Free Tokens!</p>
+		</div>
+		<div class="buttons">
+			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-mousedown="closeLostAuctionDialog()">
+			x
+		</div>
+		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+		<img class="prize" src="{% static 'images/prize-medium.png' %}">
+	</div>
 {% endblock %}
 
 {% block menu_wrapper %}
