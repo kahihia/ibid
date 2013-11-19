@@ -25,7 +25,7 @@ v1_api.register(joinAuctionResource())
 v1_api.register(AuctionsWonByUserResource())
 
 urlpatterns = patterns('',
+    (r'^api/doc/', include('tastypie_swagger.urls', namespace='tastypie_swagger')),
     (r'^api/', include(v1_api.urls)),
-    
 )
 
