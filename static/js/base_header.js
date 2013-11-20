@@ -44,6 +44,9 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $rootScope.convertTokens.tokens = 0;
     $rootScope.convertTokens.credits = 0;
 
+    $scope.tokenAuctionsWon = []
+    $scope.creditAuctionsWon = []
+    
     //define channel
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
@@ -90,7 +93,13 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             $scope.showLostItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
             return;
         }
+        if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
+            $scope.tokenAuctionsWon.push(auction);    
+        }else {
+            $scope.creditAuctionsWon.push(auction);
+        };
         $scope.wonAuction = auction;
+        $scope.requestPermisionPublishActions('STORY');
         $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
         $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
         // If playing for tokens, update user tokens.
@@ -100,10 +109,15 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
 
-    $scope.closeWonAuctionDialog = function () {
+    $scope.closeWonTokenAuctionDialog = function () {
+        $scope.tokenAuctionsWon = [];
         //request for perm if does not have it
-        $scope.requestPermisionPublishActions('STORY');
         $scope.showWonTokensDialog = null;
+    };
+    
+    $scope.closeWonCreditAuctionDialog = function () {
+        $scope.creditAuctionsWon = [];
+        //request for perm if does not have it
         $scope.showWonItemDialog = null;
     };
 
@@ -117,12 +131,12 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $scope.showLostTokensDialog = null;
         $scope.showLostItemDialog = null;
     };
-    
+
     $scope.closeLostAuctionDialogAndPlayForItems = function () {
         $scope.closeLostAuctionDialog();
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
     };
-
+    
     /**
      * Shows notification after users invited.
      *
