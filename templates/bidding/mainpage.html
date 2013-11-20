@@ -102,17 +102,22 @@
 		<div class="title">Tokens Won!</div>
 		<div class="title title-shadow">Tokens Won!</div>
 		<div class="content">
-			<p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span> <span class="item-name">You won {$wonAuction.itemName $}!</span></p>
-			<div class="item">
-			    <img ng-src="{$ wonAuction.itemImage $}">
-			    <div class="tokens">
-				<span>= </span>
-				<div class="value">
-				    <p>You get</p>
-				    {$ wonAuction.retailPrice | number:0 $}
-				    <p>free Tokens</p>
+			<p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span></p>
+			<div style="overflow-y: scroll; height: 165px;">
+				<div ng-repeat="auction in tokenAuctionsWon">
+					<p class="winner"><span class="item-name">You won {$auction.itemName $}!</span></p>
+					<div class="item">
+					    <img ng-src="{$ auction.itemImage $}">
+						<div class="tokens">
+						    <span>= </span>
+						    <div class="value">
+							<p>You get</p>
+							{$ auction.retailPrice | number:0 $}
+							<p>free Tokens</p>
+						    </div>
+						</div>
+					</div>
 				</div>
-			    </div>
 			</div>
 			<p class="info text-small-w">When you have 100.000 Tokens you can change it for 10 credits<br>and play for real items!</p>
 		</div>
@@ -121,7 +126,7 @@
 			<div class="btn btn-red" ng-mousedown="closeWonAuctionDialogAndPlayForItems()">Play for real items</div>
 		</div>
 		<div class="gloss"></div>
-		<div class="btn-close" ng-mousedown="closeWonAuctionDialog()">
+		<div class="btn-close" ng-mousedown="closeWonTokenAuctionDialog()">
                     x
                 </div>
 		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
@@ -133,9 +138,14 @@
 	    <div class="title">Item Won!</div>
 	    <div class="title title-shadow">Item Won!</div>
 	    <div class="content">
-		<p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span> <span class="item-name">You won {$wonAuction.itemName $}!</span></p>
-		<div class="item">
-		    <img ng-src="{$ wonAuction.itemImage $}">
+		<p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span></p>
+		<div style="overflow-y: scroll; height: 165px;">
+			<div ng-repeat="auction in creditAuctionsWon">
+				<p class="winner"><span class="item-name">You won {$auction.itemName $}!</span></p>
+				<div class="item">
+				    <img ng-src="{$ auction.itemImage $}">
+				</div>
+			</div>
 		</div>
 		<p class="info text-small-w">Check your e-mail, you will receive an email with<br>all the details you need to get your prize.</p>
 	    </div>
@@ -143,7 +153,7 @@
 		<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
 	    </div>
 	    <div class="gloss"></div>
-	    <div class="btn-close" ng-mousedown="closeWonAuctionDialog()">
+	    <div class="btn-close" ng-mousedown="closeWonCreditAuctionDialog()">
                     x
                 </div>
 	    <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
@@ -155,12 +165,12 @@
 		<div class="title">Auction Lost!</div>
 		<div class="title title-shadow">Auction Lost!</div>
 		<div class="content">
-		    <p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
-		    <div class="item">
-			<img ng-src="{$ lostAuction.itemImage $}">
-			<p>{$lostAuction.itemName $}</p>
-		    </div>
-		    <p class="info text-small-w">Invite some friends to get Free Tokens!</p>
+			<p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
+			<div class="item">
+				<img ng-src="{$ lostAuction.itemImage $}">
+				<p>{$lostAuction.itemName $}</p>
+			</div>
+			<p class="info text-small-w">Invite some friends to get Free Tokens!</p>
 		</div>
 		<div class="buttons">
 			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div> </br></br>
@@ -168,35 +178,34 @@
 		</div>
 		<div class="gloss"></div>
 		<div class="btn-close" ng-mousedown="closeLostAuctionDialog()">
-                    x
-                </div>
+			x
+		</div>
 		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
 		<img class="prize" src="{% static 'images/prize-medium.png' %}">
 	</div>
-
+ 
 	<!-- Item lost modal -->
 	<div class="modal" ng-show="showLostItemDialog" ng-cloak>
-	    <div class="title">Auction Lost!</div>
-	    <div class="title title-shadow">Auction Lost!</div>
-	    <div class="content">
-		<p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
-		    <div class="item">
-			<img ng-src="{$ wonAuction.itemImage $}">
-			<p>{$wonAuction.itemName $}</p>
-		    </div>
-		    <p class="info text-small-w">Invite some friends to get Free Tokens!</p>
+		<div class="title">Auction Lost!</div>
+		<div class="title title-shadow">Auction Lost!</div>
+		<div class="content">
+			<p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
+			<div class="item">
+				<img ng-src="{$ wonAuction.itemImage $}">
+				<p>{$wonAuction.itemName $}</p>
+			</div>
+			<p class="info text-small-w">Invite some friends to get Free Tokens!</p>
 		</div>
-	    <div class="buttons">
-		<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
-	    </div>
-	    <div class="gloss"></div>
-	    <div class="btn-close" ng-mousedown="closeLostAuctionDialog()">
-                    x
-                </div>
-	    <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
-	    <img class="prize" src="{% static 'images/prize-medium.png' %}">
+		<div class="buttons">
+			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-mousedown="closeLostAuctionDialog()">
+			x
+		</div>
+		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+		<img class="prize" src="{% static 'images/prize-medium.png' %}">
 	</div>
-
 {% endblock %}
 
 {% block menu_wrapper %}
