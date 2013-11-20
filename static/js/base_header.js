@@ -88,9 +88,31 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $rootScope.$on('auction:finished', function (event, auction) {
         // If current user won, show win modal.
         if (auction.winner.facebookId !== $scope.user.facebookId) {
+            show_token_lost_dialog  = false;
+            show_item_lost_dialog  = false;
+            if (auction.bidType == "bid") {
+                list = auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'];
+                for (i =0; i < list.length; i++){
+                    if (list[i].id == auction.id) {
+                        show_item_lost_dialog = true;
+                    }
+                }
+            }
+            if (auction.bidType == "token") {
+                list = auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'];
+                console.log("ANTES DEL FOR:");
+                for (var i =0; i < list.length; i=i+1){
+                    console.log("ENTRA AL FOR:");
+                    console.log("list[i].id:" + list[i].id);
+                    console.log("auction.id:" + auction.id);
+                    if (list[i].id == auction.id) {
+                        show_token_lost_dialog = true;
+                    }
+                }
+            }
             $scope.lostAuction = auction;
-            $scope.showLostTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
-            $scope.showLostItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
+            $scope.showLostTokensDialog = show_token_lost_dialog;
+            $scope.showLostItemDialog = show_item_lost_dialog;
             return;
         }
         if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {

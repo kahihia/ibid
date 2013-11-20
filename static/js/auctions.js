@@ -535,7 +535,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
                             },50);
                             break;
                         case 'waiting_payment':
-                            $scope.$emit('auction:finished', auction);
+                            $scope.$emit('auction:finished', auction, $scope.auctionList);
                             // Tutorial.
                             if (tutorialActive && tutorialAuctionId === auction.id) {
                                 $timeout(function(){jQuery('#btn-tutorial','#tooltip-help').trigger('tutorialEvent5');}, 500);
