@@ -15,6 +15,7 @@ from django_facebook.connect import connect_user
 from django_facebook.exceptions import MissingPermissionsError
 import open_facebook
 
+from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.conf import settings
 from django.conf.urls import url
@@ -237,9 +238,9 @@ class MemberByFBTokenResource(MemberResource):
                 facebook_user = of.get('me/',)
                 action, db_user = connect_user(bundle.request, access_token)
             except Exception as e:
-                raise ImmediateHttpResponse(response = self.error_response(bundle.request, str(e), http.HttpApplicationError))
+                raise ImmediateHttpResponse(response = self.error_response(bundle.request, str(e), http.HttpForbidden))
         except open_facebook.exceptions.OAuthException as e:
-            raise ImmediateHttpResponse(response = self.error_response(bundle.request, str(e), http.HttpApplicationError))
+            raise ImmediateHttpResponse(response = self.error_response(bundle.request, str(e), http.HttpForbidden))
         bundle.obj=db_user
         self.authorized_read_detail('', bundle)
         return db_user
@@ -383,9 +384,9 @@ class AuctionResource(ModelResource):
                         token_wout_winner.append(self.full_dehydrate_finished(request, bundle))
                 
                 elif obj.status in playing_status:
-                    token_playing_list.append(self.full_dehydrate_available(request, bundle))
+                    token_playing_list.append(self.full_dehydrate_available(bundle))
                 else:
-                    token_available_list.append(self.full_dehydrate_available(request, bundle))
+                    token_available_list.append(self.full_dehydrate_available( bundle))
                     
             if obj.bid_type=='bid' and obj.is_active ==True:
                 if obj.status in finished_status:
@@ -395,9 +396,9 @@ class AuctionResource(ModelResource):
                         credit_wout_winner.append(self.full_dehydrate_finished(request, bundle))
                 
                 elif obj.status in playing_status:
-                    credit_playing_list.append(self.full_dehydrate_available(request, bundle))
+                    credit_playing_list.append(self.full_dehydrate_available( bundle))
                 else:
-                    credit_available_list.append(self.full_dehydrate_available(request, bundle)) 
+                    credit_available_list.append(self.full_dehydrate_available( bundle)) 
             
         return_dict['token']['finished'] = token_finished_list
         return_dict['token']['available'] = token_available_list
@@ -430,7 +431,7 @@ class AuctionResource(ModelResource):
         return_dict={}
         for obj in to_be_serialized[self._meta.collection_name]:
             bundle = self.build_bundle(obj=obj, request=request)
-            available_list.append(self.full_dehydrate_available(request, bundle))
+            available_list.append(self.full_dehydrate_available( bundle))
         return_dict['available'] = available_list
         return return_dict
       
@@ -488,7 +489,10 @@ class AuctionResource(ModelResource):
     def finished_apply_sorting(self, obj_list,request=None):
         return obj_list.order_by('-won_date')
     
-    def full_dehydrate_available(self, request, bundle):
+    def full_dehydrate(self, bundle):
+        return self.full_dehydrate_available(bundle)
+    
+    def full_dehydrate_available(self,bundle):
         
         """
         Dehydrate available auctions in two ways:
@@ -500,10 +504,10 @@ class AuctionResource(ModelResource):
         bundle.data['completion'] = bundle.obj.completion()
         bundle.data['bidders'] = bundle.obj.bidders.count()
         bundle.data['bid_amount'] = 0
-        bundle.data['mine'] = bundle.obj.bidders.filter(id=request.user.id).exists()
+        bundle.data['mine'] = bundle.obj.bidders.filter(id=bundle.request.user.id).exists()
         if bundle.data['mine']:
-            bundle.data['placed'] = request.user.auction_bids_left(bundle.obj)
-            bid = bundle.obj.bid_set.get(bidder=request.user)
+            bundle.data['placed'] = bundle.request.user.auction_bids_left(bundle.obj)
+            bid = bundle.obj.bid_set.get(bidder=bundle.request.user)
             bundle.data['bid_amount'] = bid.left()
         bundle.data['bidNumber'] = bundle.obj.used_bids() / bundle.obj.minimum_precap
        
@@ -576,7 +580,7 @@ class AuctionsWonByUserResource(AuctionResource):
         obj_list = self.get_object_list(request).filter(**applicable_filters)
         return obj_list.filter(winner__id = request.user.id)
 
-class BidPackageResource(ModelResource):
+class BidPackageResource(AuctionResource):
     
     """ Resource to retrieve data of bid package objects """
     
@@ -589,7 +593,7 @@ class BidPackageResource(ModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
 
-class addBidResource(ModelResource):
+class addBidResource(AuctionResource):
      
     """
         Let a user to add bids into an auction
@@ -606,17 +610,19 @@ class addBidResource(ModelResource):
            
     def base_urls(self):
         return [
-            url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^auction/(?P<resource_name>%s)/(?P<auction_id>\d+)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="addBid"),
+            #url(r"^auction/'id'/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_list"),
         ]  
+
+    #def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
+    #    return 'auction/{auction_id}/addBid'
 
     def obj_get(self, bundle, **kwargs):
         
         error = None
         auction = Auction.objects.get(id=kwargs['auction_id'])
         bundle.obj = auction
-     
-        
+
         # check if authorized
         self.authorized_read_detail('', bundle)
         
@@ -633,15 +639,20 @@ class addBidResource(ModelResource):
             auction.place_precap_bid(member, amount)
             client.updatePrecap(auction)
         else:
-            if auction.bid_type == 'bid':
-             error = 'NO_ENOUGH_CREDITS'
+            if auction.status != "precap":
+                error = "NOT_IN_PRECAP"
             else:
-             error = 'NO_ENOUGH_TOKENS'
+                if auction.bid_type == 'bid':
+                    error = 'NO_ENOUGH_CREDITS'
+                else:
+                    error = 'NO_ENOUGH_TOKENS'
         if error:
-            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))
+            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
         return bundle.obj
+    
+    
 
-class remBidResource(ModelResource):
+class remBidResource(AuctionResource):
      
     """
         Let a user to remove bids into an auction
@@ -658,8 +669,8 @@ class remBidResource(ModelResource):
            
     def base_urls(self):
         return [
-            url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^auction/(?P<resource_name>%s)/(?P<auction_id>\d+)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="remBid"),
+            #url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="remBid"),
         ]  
 
     def obj_get(self, bundle, **kwargs):
@@ -689,7 +700,7 @@ class remBidResource(ModelResource):
             clientMessages.append(auctioneer.member_left_message(auction, member))
             client.sendPackedMessages(clientMessages)
         if error:
-            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))    
+            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))    
         return bundle.obj
 
 class claimBidResource(AuctionResource):
@@ -711,7 +722,7 @@ class claimBidResource(AuctionResource):
         
     def prepend_urls(self):
         return [
-            url(r"^auction/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),  
+            url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),  
         ]  
 
     def obj_update(self,bundle, **kwargs ):
@@ -747,10 +758,10 @@ class claimBidResource(AuctionResource):
         else:
             error = 'AUCTION_NOT_ACTIVE_OR_CANT_BID'
         if error:
-            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))
-        return AuctionResource.full_dehydrate_available(AuctionResource(),bundle.request,bundle)
+            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
+        return AuctionResource.full_dehydrate_available(AuctionResource(),bundle)
 
-class joinAuctionResource(ModelResource):
+class joinAuctionResource(AuctionResource):
      
     """
         Let a user to joing an auction
@@ -767,8 +778,8 @@ class joinAuctionResource(ModelResource):
         
     def base_urls(self):
         return [
-            url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^auction/(?P<resource_name>%s)/(?P<auction_id>\d+)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="joinAuction"),
+            #url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="joinAuction"),
         ]   
 
     def obj_get(self,bundle, **kwargs ):
@@ -803,7 +814,7 @@ class joinAuctionResource(ModelResource):
             else:
                 error = 'NO_ENOUGH_TOKENS'
         if error:
-            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpApplicationError))
+            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
         return bundle.obj
 
 class SendMessageResource(ModelResource):

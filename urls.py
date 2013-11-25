@@ -19,7 +19,6 @@ urlpatterns = patterns('',
     (r'^facebook/', include('django_facebook.urls')),
     (r'^accounts/', include('django_facebook.auth_urls')),
     url(r'^admin_tools/', include('admin_tools.urls')),
-    url(r'api/doc/', include('tastypie_swagger.urls', namespace='tastypie_swagger')),
     
 )
 
