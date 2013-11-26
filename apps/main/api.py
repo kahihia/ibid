@@ -620,7 +620,7 @@ class addBidResource(AuctionResource):
     def obj_get(self, bundle, **kwargs):
         
         error = None
-        auction = Auction.objects.get(id=kwargs['auction_id'])
+        auction = Auction.objects.select_for_update().filter(id=kwargs['auction_id'])[0]
         bundle.obj = auction
 
         # check if authorized
@@ -677,7 +677,7 @@ class remBidResource(AuctionResource):
           
         
         error = None
-        auction = Auction.objects.get(id=kwargs['auction_id'])
+        auction = Auction.objects.select_for_update().filter(id=kwargs['auction_id'])[0]
         bundle.obj = auction
      
         # check if authorized
@@ -691,7 +691,7 @@ class remBidResource(AuctionResource):
         
         amount = member.auction_bids_left(auction) - amount
         if auction.can_precap(member, amount):
-            auction.place_precap_bid(member, amount, 'remove')
+            auction.place_precap_bid(member, amount, False)
             client.updatePrecap(auction)
         if member.auction_bids_left(auction) <= 0:
             auction.leave_auction(member)
@@ -728,7 +728,7 @@ class claimBidResource(AuctionResource):
     def obj_update(self,bundle, **kwargs ):
         
         error = None
-        auction = Auction.objects.get(id=kwargs['auction_id'])
+        auction = Auction.objects.select_for_update().filter(id=kwargs['auction_id'])[0]
         bundle.obj = auction
         
         # check if authorized
@@ -785,7 +785,7 @@ class joinAuctionResource(AuctionResource):
     def obj_get(self,bundle, **kwargs ):
         
         error = None
-        auction = Auction.objects.get(id=kwargs['auction_id'])
+        auction = Auction.objects.select_for_update().filter(id=kwargs['auction_id'])[0]
         bundle.obj = auction
         
         # check if authorized

@@ -164,6 +164,7 @@ class Member(AbstractUser, FacebookModel):
         bid.time = unixtime
         bid.placed_amount = amount
         bid.save()
+        auction.save()
 
         #self.bids_left -= diff
         self.set_bids(auction.bid_type, self.get_bids(auction.bid_type) - diff)
@@ -374,6 +375,8 @@ class Auction(AbstractAuction):
     priority = models.IntegerField(default=-1, help_text='Used for sorting.')
     categories = models.ManyToManyField(Category,related_name="auctions",blank=True, null=True)
     
+    finish_time = models.IntegerField(default=0, blank=True, null=True)
+    
     class Meta:
         ordering = ['-id']
 
@@ -522,7 +525,7 @@ class Auction(AbstractAuction):
         
         return member.auction_bids_left(self)
   
-    def place_precap_bid(self, member, amount, update_type = 'add'):
+    def place_precap_bid(self, member, amount, add = True):
         if self.status == 'precap':
             """ 
             The member commits an amount precap bid to the auction and saves its 
@@ -534,7 +537,7 @@ class Auction(AbstractAuction):
             if joining:
                 self.bidders.add(member)
             member.precap_bids(self, amount)
-            if update_type == 'add':
+            if add :
                 if self.bid_type == 'bid':
                     notification_percentage = ConfigKey.get('NOTIFICATION_CREDIT_PERCENTAGE', 90)
                 elif self.bid_type == 'token':
@@ -656,6 +659,7 @@ class Auction(AbstractAuction):
         bid_time = time.time()
         bid.unixtime = Decimal("%f" % bid_time)
         bid.save()
+        self.save()
         if self._check_thresholds():
             self.pause()
             self.start_auction_delayed(15.0)#This is the time that the auction will be resume
