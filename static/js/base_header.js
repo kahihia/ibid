@@ -85,8 +85,9 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $scope.showBuyCreditsModal = false;
     });
 
-    $rootScope.$on('auction:finished', function (event, auction) {
+    $rootScope.$on('auction:finished', function (event,auction,auctionList) {
         // If current user won, show win modal.
+        showOverlay();
         if (auction.winner.facebookId !== $scope.user.facebookId) {
             show_token_lost_dialog  = false;
             show_item_lost_dialog  = false;
@@ -135,28 +136,33 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $scope.tokenAuctionsWon = [];
         //request for perm if does not have it
         $scope.showWonTokensDialog = null;
+        hideOverlay();
     };
     
     $scope.closeWonCreditAuctionDialog = function () {
         $scope.creditAuctionsWon = [];
         //request for perm if does not have it
         $scope.showWonItemDialog = null;
+        hideOverlay();
     };
 
     $scope.closeWonAuctionDialogAndPlayForItems = function () {
         $scope.closeWonAuctionDialog();
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+        hideOverlay();
     };
 
     $scope.closeLostAuctionDialog = function () {
         //request for perm if does not have it
         $scope.showLostTokensDialog = null;
         $scope.showLostItemDialog = null;
+        hideOverlay();
     };
 
     $scope.closeLostAuctionDialogAndPlayForItems = function () {
         $scope.closeLostAuctionDialog();
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+        hideOverlay();
     };
     
     /**
@@ -219,11 +225,13 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     $scope.openGetCredits = function() {
+        showOverlay();
         $rootScope.$emit('openGetCreditsPopover');
     };
 
     $scope.closeGetCredits = function() {
         $rootScope.$emit('closeGetCreditsPopover');
+        hideOverlay();
     };
 
     $scope.buy_bids = function(member,package_id) {
@@ -400,6 +408,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                 angular.element('#uvw-dialog-uv-1').animate({top: (clientHeight / 2) + scrollTop}, 0);
                 angular.element('#uvTab').css({zIndex: '1000'});
 
+                
+                
+                if (!!angular.element('.modal:visible').length) {
+                    var $tip = angular.element('.modal:visible');
+                    $tip.animate({top: (clientHeight / 2) - ($tip.height() / 2)}, 0);
+                    FB.Canvas.scrollTo(0, 0);
+                }
+                
                 // If tour is showing a modal tip, fix it's position
                 // on canvas.
                 if (!!angular.element('.joyride-modal-bg:visible').length) {
