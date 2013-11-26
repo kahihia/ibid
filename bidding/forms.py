@@ -42,8 +42,6 @@ class ConfigKeyAdminForm(forms.ModelForm):
     
 
 class ItemAdminForm(forms.ModelForm):
-    category = forms.ChoiceField(choices=[('', 'All')] + list(ITEM_CATEGORY_CHOICES), 
-                                 label='Category', required=False)
     
     def clean(self):
         super(ItemAdminForm, self).clean()
