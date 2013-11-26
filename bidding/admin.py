@@ -14,6 +14,7 @@ from bidding.models import FBOrderInfo
 from bidding.models import Item
 from bidding.models import ItemImage
 from bidding.models import Member
+from bidding.models import Category
 from bidding.models import PromotedAuction
 from actions import export_as_csv_action
 
@@ -188,6 +189,7 @@ admin.site.register(Auction, AuctionAdmin)
 admin.site.register(BidPackage)
 admin.site.register(ConfigKey, ConfigKeyAdmin)
 admin.site.register(ConvertHistory)
+admin.site.register(Category)
 admin.site.register(FBOrderInfo)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Member, MemberUserAdmin)
