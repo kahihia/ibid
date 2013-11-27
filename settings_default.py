@@ -155,9 +155,9 @@ INSTALLED_APPS = (
     'sorl.thumbnail',
     'django_facebook',
     'django.contrib.staticfiles',
-    'tastypie_swagger',
     'apps.audit',
     'apps.main',
+    'tastypie',
 )
 
 
@@ -293,4 +293,4 @@ MIXPANEL_TOKEN = ''
 
 # Tastypie settings (API)
 TASTYPIE_DEFAULT_FORMATS = ['json']
-TASTYPIE_SWAGGER_API_MODULE = 'apps.main.urls.v1_api'
+

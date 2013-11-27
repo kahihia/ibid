@@ -345,6 +345,7 @@ class Auction(AbstractAuction):
     status = models.CharField(max_length=15, choices=AUCTION_STATUS_CHOICES, default='precap', help_text='Auction status.')
     bidding_time = models.IntegerField(default=10, help_text='Auction initial timer')
     saved_time = models.IntegerField(default=0, blank=True, null=True, help_text='Saved bidding time for later use.')
+    finish_time = models.IntegerField(default=0, blank=True, null=True)
     always_alive = models.BooleanField(default=False, help_text='Wether the auction copies itself after precap.')
 
     bidders = models.ManyToManyField(Member, blank=True, null=True)
