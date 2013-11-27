@@ -603,7 +603,8 @@ class Auction(AbstractAuction):
                                                   threshold1=self.threshold1,
                                                   threshold2=self.threshold2,
                                                   threshold3=self.threshold3,
-                                                  priority=self.priority)
+                                                  priority=self.priority,
+                                                  finish_time=self.finish_time)
             auction_copy.save()
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
