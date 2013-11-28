@@ -1,136 +1,46 @@
-from tastypie.authorization import Authorization,ReadOnlyAuthorization
-from tastypie.authentication import Authentication
-from tastypie.exceptions import Unauthorized, BadRequest, ImmediateHttpResponse
-from tastypie import http
-from tastypie.resources import ModelResource, ALL,Resource
-from tastypie.constants import ALL_WITH_RELATIONS
-from tastypie.utils import trailing_slash, dict_strip_unicode_keys
-from apps.main.models import Notification
-from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid,Category
+# -*- coding: utf-8 -*-
 
-from chat.models import Message, ChatUser
+import logging
+logger = logging.getLogger('django')
 
+from datetime import datetime
+import json
+import time
+
+from django.conf import settings
+from django.conf.urls import url
+from django.contrib.contenttypes.models import ContentType
 from django_facebook.connect import connect_user
 from django_facebook.exceptions import MissingPermissionsError
 import open_facebook
 
-from django.core.urlresolvers import reverse
-from django.contrib.contenttypes.models import ContentType
-from django.conf import settings
-from django.conf.urls import url
-from datetime import datetime
-import json
 from tastypie import fields
-import logging
+from tastypie import http
+from tastypie.constants import ALL_WITH_RELATIONS
+from tastypie.authorization import Authorization, ReadOnlyAuthorization
+from tastypie.exceptions import Unauthorized, BadRequest, ImmediateHttpResponse
+from tastypie.resources import ModelResource, ALL, Resource
+from tastypie.utils import trailing_slash, dict_strip_unicode_keys
+
+from apps.main.models import Notification
+from apps.main.apiauth import *
 from bidding import client
+from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid,Category
 from chat import auctioneer
-log= logging.getLogger('django')
-from datetime import datetime
+from chat.models import Message, ChatUser
+from lib import metrics
 
-class CustomAuthentication(Authentication):
-    
-    def is_authenticated(self, request, **kwargs):
-        return request.user.is_authenticated()
-          
-    # Optional but recommended
-    def get_identifier(self, request):
-        return request.user
-    
-###########    AUTHORIZATION METHODS TO ENABLE OR DISABLE DATA ACCES FOR A USER   ###########
+metrics.initialize(settings.MIXPANEL_TOKEN)
 
-class NoAuthorization(Authorization):
-    
-    """
-    Is used as a super class to negate most of the hits
-    """
+class IBGModelResource(ModelResource):
+    def dispatch(self, *args, **kwargs):
+        start = time.time()
+        res = super(IBGModelResource, self).dispatch(*args, **kwargs)
+        event = 'api_{api_name}_{resource_name}'.format(**kwargs)
+        metrics.track_event('system', event, {'req_time': time.time() - start})
+        return res
 
-    def read_list(self, object_list, bundle):
-        raise Unauthorized("Sorry, no lists.")
-    def read_detail(self, object_list, bundle):
-        raise Unauthorized("Sorry, no detail.")
-    def create_list(self, object_list, bundle):
-        raise Unauthorized("Sorry, no creates.")
-    def create_detail(self, object_list, bundle):
-        raise Unauthorized("Sorry, no creates.")
-    def update_list(self, object_list, bundle):
-        raise Unauthorized("Sorry, no updates.")
-    def update_detail(self, object_list, bundle):
-        raise Unauthorized("Sorry, no updates.")
-    def delete_list(self, object_list, bundle):
-        raise Unauthorized("Sorry, no deletes.")
-    def delete_detail(self, object_list, bundle):
-        raise Unauthorized("Sorry, no deletes.")
-
-class UserNotificationsAuthorization(ReadOnlyAuthorization):
- 
-    """
-    This class is used to control the access to notifications
-    """
-    def read_list(self, object_list, bundle):
-        
-        """
-        Checks a configKey to know if the retrieval of notifications
-        is enabled
-        """
-        
-        if ConfigKey.get('NOTIFICATIONS_ENABLED', False):
-            return object_list.filter(recipient=bundle.request.user, status='Unread')
-        raise Unauthorized("Notifications disabled")
-    
-    def read_detail(self, object_list, bundle):
-        if bundle.request.path.endswith('schema/'):
-            return True
-        return bundle.obj.recipient == bundle.request.user
-        
-    
-    def update_detail(self, object_list, bundle):
-        return bundle.obj.recipient == bundle.request.user
-    
-class MemberAuthorization(NoAuthorization):
-    
-    def read_detail(self, object_list, bundle):
-        if bundle.request.path.endswith('schema/'):
-            return True
-        return bundle.request.user == bundle.obj
-    
-    def update_detail(self, object_list, bundle):
-        return bundle.request.user == bundle.obj
-
-class MessageAuthorization(NoAuthorization):
-    
-    def read_list(self, object_list, bundle):
-        if object_list:
-            if not Auction.objects.get(id=object_list[0].object_id).bidders.filter(id=bundle.request.user.id).exists():
-                raise Unauthorized("Not a bidder")
-        return object_list
-    
-    def read_detail(self, object_list, bundle):
-        if bundle.request.path.endswith('schema/'):
-            return True
-        return False
-    
-    def create_list(self, object_list, bundle):
-        if object_list:
-            auction_id = int(object_list[0].object_id)
-        if bundle.request.user.can_chat(auction_id):
-            return object_list
-        raise Unauthorized("Can't chat")
-
-    def update_detail(self, object_list, bundle):
-        log.debug("update_detail")
-        log.debug(bundle.obj)
-        if bundle.obj:
-            log.debug("dentro del if")
-            auction_id = int(bundle.obj.object_id)
-            if bundle.request.user.can_chat(auction_id):
-                return True
-        return False
-
-#############################    RESOURCES   ###################################
-
-class NotificationResource(ModelResource):
-    
-    """ Resource to interact with member notifications data objects.  """
+class NotificationResource(IBGModelResource):
     class Meta:
         resource_name = 'notification'
         list_allowed_methods = ['get', 'put']
@@ -150,7 +60,7 @@ class NotificationResource(ModelResource):
         bundle.obj.updated = datetime.now()
         return bundle
 
-class MemberResource(ModelResource):
+class MemberResource(IBGModelResource):
     
     """ Resource to interact with member data objects.  """
     
@@ -190,9 +100,6 @@ class MemberResource(ModelResource):
     def obj_get(self, bundle, **kwargs):
         return super(MemberResource, self).obj_get(bundle=bundle, **kwargs)
     
-    def obj_update(self, bundle, **kwargs):
-        return super(MemberResource, self).obj_get(bundle=bundle, **kwargs)
-    
 class ConverTokensResource(MemberResource):
     
     """ Resource to convert all of a member's tokens to credits """
@@ -220,7 +127,7 @@ class ConverTokensResource(MemberResource):
         bundle = self.save(bundle)
         return bundle.obj
     
-class MemberByFBTokenResource(MemberResource):
+class MemberByFBTokenResource(IBGModelResource):
     
     """ This resource loggins or register a user using the facebook access token. """
     
@@ -232,7 +139,7 @@ class MemberByFBTokenResource(MemberResource):
         queryset = Member.objects.all()
         detail_uri_name = 'access_token'
         include_resource_uri = False
-    
+
     def base_urls(self):
         return [
             url(r"^member/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
@@ -258,9 +165,24 @@ class MemberByFBTokenResource(MemberResource):
         bundle.obj=db_user
         self.authorized_read_detail('', bundle)
         return db_user
+    
+    def dehydrate(self, bundle):
+        """
+        A hook to allow a final manipulation of data once all fields/methods
+        have built out the dehydrated data.
+
+        Useful if you need to access more than one dehydrated field or want
+        to annotate on additional data.
+
+        Must return the modified member.
+        """
+        bundle.data['display_name'] = "%s %s" % (bundle.obj.first_name, bundle.obj.last_name) 
+        bundle.data['won_auctions'] = bundle.obj.auction_set.filter(winner=bundle.obj).all().count()
+        bundle.data['actual_auctions'] = bundle.obj.auction_set.exclude(status='waiting_payment').exclude(status='paid').all().count()
+        bundle.data['image_thumb'] = json.loads(bundle.obj.raw_data)['image_thumb']
+        return bundle
 
     def check_permissions(self, access_token):
-        
         """ check user permissions using django_facebook methods"""
         
         graph = open_facebook.OpenFacebook(access_token)
@@ -273,8 +195,7 @@ class MemberByFBTokenResource(MemberResource):
             raise MissingPermissionsError(error_format % permissions_string)
         return graph
 
-class CategoryResource(ModelResource):
-
+class CategoryResource(IBGModelResource):
     """ Resource to retrive data of auction's items """    
     
     class Meta:
@@ -291,11 +212,10 @@ class CategoryResource(ModelResource):
         bundle.data['categoryImage'] = bundle.obj.get_thumbnail(size="107x72")
         return bundle
 
-class ItemResource(ModelResource):
-
+class ItemResource(IBGModelResource):
     """ Resource to retrive data of auction's items """    
     categories = fields.ManyToManyField(CategoryResource, 'categories',null=True ,full=True)
-    
+
     class Meta:
         queryset = Item.objects.all()
         resource_name = 'item'
@@ -309,14 +229,13 @@ class ItemResource(ModelResource):
         bundle.data['itemImage'] = bundle.obj.get_thumbnail(size="107x72")
         return bundle
 
-class AuctionResource(ModelResource):
-    
+class AuctionResource(IBGModelResource):
     """ This resource retrieves auctions data filtered and sorted by status. """
     
     winner = fields.ForeignKey(MemberResource, 'winner',null=True, full=True, help_text = 'Member that won the auction.')
     item = fields.ForeignKey(ItemResource, 'item', full=True, help_text = 'Item being auctioned.')
     categories = fields.ManyToManyField(CategoryResource, 'categories', full=True, help_text ='Category of the auction')
-    
+
     class Meta:
         queryset = Auction.objects.all()
         resource_name = 'auction'
@@ -333,7 +252,6 @@ class AuctionResource(ModelResource):
         }
          
     def base_urls(self):
-        
         """
         The standard URLs this ``Resource`` should respond to.
         """
@@ -456,7 +374,6 @@ class AuctionResource(ModelResource):
         return return_dict
       
     def build_filters(self, filters=None):
-        
         """
         Apply filters depending on the url that was used to access the resource.
         """
@@ -518,7 +435,6 @@ class AuctionResource(ModelResource):
             1-for a member's auction
             2-for a general auction
         """
-        
         bundle = super(AuctionResource, self).full_dehydrate(bundle)
         bundle.data['completion'] = bundle.obj.completion()
         bundle.data['bidders'] = bundle.obj.bidders.count()
@@ -554,12 +470,10 @@ class AuctionResource(ModelResource):
         return bundle
     
     def full_dehydrate_finished(self, request, bundle):
-        
         """ Dehydrate a finished auction """
-        
         bundle = super(AuctionResource, self).full_dehydrate(bundle)
         bundle.data['bidNumber'] = bundle.obj.used_bids() / bundle.obj.minimum_precap
-        bundle.data['placed']= 0
+        bundle.data['placed'] = 0
         bundle.data['auctioneerMessages'] = []
         bundle.data['chatMessages'] = []
         if bundle.obj.won_date:
@@ -569,7 +483,7 @@ class AuctionResource(ModelResource):
             bundle.data['won_date']=None
         return bundle
     
-class memberAuctionsResource(AuctionResource):
+class MemberAuctionsResource(AuctionResource):
     
     """ Resource to retrieve data of auctions from some user """
     
@@ -617,7 +531,7 @@ class memberAuctionsResource(AuctionResource):
     def get_list(self, request, **kwargs):
         return super(AuctionResource, self).get_list(request, **kwargs)
 
-class BidPackageResource(AuctionResource):
+class BidPackageResource(IBGModelResource):
     
     """ Resource to retrieve data of bid package objects """
     
@@ -630,7 +544,7 @@ class BidPackageResource(AuctionResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
 
-class addBidResource(AuctionResource):
+class AddBidResource(AuctionResource):
      
     """
         Let a user to add bids into an auction
@@ -654,7 +568,6 @@ class addBidResource(AuctionResource):
         return super(addBidResource, self).get_detail(request, **kwargs)
     
     def obj_get(self, bundle, **kwargs):
-        
         error = None
         auction = Auction.objects.select_for_update().filter(id=kwargs['auction_id'])[0]
         bundle.obj = auction
@@ -667,7 +580,6 @@ class addBidResource(AuctionResource):
             amount = auction.minimum_precap
         except ValueError:
             error = "not int"
-        
         can_place = False
         
         if not auction.bidders.filter(id=member.id).exists():
@@ -676,6 +588,7 @@ class addBidResource(AuctionResource):
             if can_place:
                 joining = auction.place_precap_bid(member, amount)
             if joining:
+                metrics.join_auction(member, auction)
                 clientMessages = []
                 clientMessages.append(client.updatePrecapMessage(auction))
                 clientMessages.append(auctioneer.member_joined_message(auction, member))
@@ -700,7 +613,7 @@ class addBidResource(AuctionResource):
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
         return bundle.obj
     
-class remBidResource(AuctionResource):
+class RemBidResource(AuctionResource):
      
     """
         Let a user to remove bids into an auction
@@ -722,7 +635,6 @@ class remBidResource(AuctionResource):
 
     def obj_get(self, bundle, **kwargs):
           
-        
         error = None
         auction = Auction.objects.select_for_update().filter(id=kwargs['auction_id'])[0]
         bundle.obj = auction
@@ -750,8 +662,8 @@ class remBidResource(AuctionResource):
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))    
         return bundle.obj
 
-class claimBidResource(AuctionResource):
-     
+class ClaimBidResource(AuctionResource):
+
     """
         Let a user to calim bids into an auction
     """
@@ -807,65 +719,6 @@ class claimBidResource(AuctionResource):
         if error:
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
         return AuctionResource.full_dehydrate_available(AuctionResource(),bundle)
-
-#class joinAuctionResource(AuctionResource):
-#     
-#    """
-#        Let a user to joing an auction
-#    """
-#    
-#    class Meta:
-#        resource_name = 'joinAuction'
-#        authorization = Authorization()
-#        authentication = CustomAuthentication()
-#        queryset = Auction.objects.all()
-#        list_allowed_methods = []
-#        detail_allowed_methods = ['get']
-#        include_resource_uri = False
-#        
-#    def base_urls(self):
-#        return [
-#            #url(r"^auction/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-#            url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="joinAuction"),
-#        ]   
-#
-#    def obj_get(self,bundle, **kwargs ):
-#        
-#        error = None
-#        auction = Auction.objects.get(id=kwargs['auction_id'])
-#        bundle.obj = auction
-#        
-#        # check if authorized
-#        self.authorized_read_detail('', bundle)
-#        member = bundle.request.user
-#        try:
-#            amount = auction.minimum_precap
-#            
-#        except ValueError:
-#           
-#            error = "not int"
-#        if amount < auction.minimum_precap:
-#            error = "not minimun, minimun : %s" % auction.minimum_precap
-#            
-#            
-#            
-#        joining = False
-#        if auction.can_precap(member, amount):
-#            joining = auction.place_precap_bid(member, amount)
-#        
-#        if joining:
-#            clientMessages = []
-#            clientMessages.append(client.updatePrecapMessage(auction))
-#            clientMessages.append(auctioneer.member_joined_message(auction, member))
-#            client.sendPackedMessages(clientMessages)
-#        else:
-#            if auction.bid_type == 'bid':
-#                error = 'NO_ENOUGH_CREDITS'
-#            else:
-#                error = 'NO_ENOUGH_TOKENS'
-#        if error:
-#            raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
-#        return bundle.obj
 
 class MessageResource(ModelResource):
     

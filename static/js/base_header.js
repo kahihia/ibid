@@ -44,6 +44,9 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     $rootScope.convertTokens.tokens = 0;
     $rootScope.convertTokens.credits = 0;
 
+    $scope.tokenAuctionsWon = []
+    $scope.creditAuctionsWon = []
+    
     //define channel
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
@@ -82,15 +85,44 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $scope.showBuyCreditsModal = false;
     });
 
-    $rootScope.$on('auction:finished', function (event, auction) {
+    $rootScope.$on('auction:finished', function (event,auction,auctionList) {
         // If current user won, show win modal.
+        showOverlay();
         if (auction.winner.facebookId !== $scope.user.facebookId) {
+            show_token_lost_dialog  = false;
+            show_item_lost_dialog  = false;
+            if (auction.bidType == "bid") {
+                list = auctionList[$scope.AUCTION_TYPE_CREDITS]['mine'];
+                for (i =0; i < list.length; i++){
+                    if (list[i].id == auction.id) {
+                        show_item_lost_dialog = true;
+                    }
+                }
+            }
+            if (auction.bidType == "token") {
+                list = auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'];
+                console.log("ANTES DEL FOR:");
+                for (var i =0; i < list.length; i=i+1){
+                    console.log("ENTRA AL FOR:");
+                    console.log("list[i].id:" + list[i].id);
+                    console.log("auction.id:" + auction.id);
+                    if (list[i].id == auction.id) {
+                        show_token_lost_dialog = true;
+                    }
+                }
+            }
             $scope.lostAuction = auction;
-            $scope.showLostTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
-            $scope.showLostItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
+            $scope.showLostTokensDialog = show_token_lost_dialog;
+            $scope.showLostItemDialog = show_item_lost_dialog;
             return;
         }
+        if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
+            $scope.tokenAuctionsWon.push(auction);    
+        }else {
+            $scope.creditAuctionsWon.push(auction);
+        };
         $scope.wonAuction = auction;
+        $scope.requestPermisionPublishActions('STORY');
         $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
         $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
         // If playing for tokens, update user tokens.
@@ -100,29 +132,39 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
 
-    $scope.closeWonAuctionDialog = function () {
+    $scope.closeWonTokenAuctionDialog = function () {
+        $scope.tokenAuctionsWon = [];
         //request for perm if does not have it
-        $scope.requestPermisionPublishActions('STORY');
         $scope.showWonTokensDialog = null;
+        hideOverlay();
+    };
+    
+    $scope.closeWonCreditAuctionDialog = function () {
+        $scope.creditAuctionsWon = [];
+        //request for perm if does not have it
         $scope.showWonItemDialog = null;
+        hideOverlay();
     };
 
     $scope.closeWonAuctionDialogAndPlayForItems = function () {
         $scope.closeWonAuctionDialog();
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+        hideOverlay();
     };
 
     $scope.closeLostAuctionDialog = function () {
         //request for perm if does not have it
         $scope.showLostTokensDialog = null;
         $scope.showLostItemDialog = null;
+        hideOverlay();
     };
-    
+
     $scope.closeLostAuctionDialogAndPlayForItems = function () {
         $scope.closeLostAuctionDialog();
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
+        hideOverlay();
     };
-
+    
     /**
      * Shows notification after users invited.
      *
@@ -183,11 +225,13 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     $scope.openGetCredits = function() {
+        showOverlay();
         $rootScope.$emit('openGetCreditsPopover');
     };
 
     $scope.closeGetCredits = function() {
         $rootScope.$emit('closeGetCreditsPopover');
+        hideOverlay();
     };
 
     $scope.buy_bids = function(member,package_id) {
@@ -364,6 +408,14 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                 angular.element('#uvw-dialog-uv-1').animate({top: (clientHeight / 2) + scrollTop}, 0);
                 angular.element('#uvTab').css({zIndex: '1000'});
 
+                
+                
+                if (!!angular.element('.modal:visible').length) {
+                    var $tip = angular.element('.modal:visible');
+                    $tip.animate({top: (clientHeight / 2) - ($tip.height() / 2)}, 0);
+                    FB.Canvas.scrollTo(0, 0);
+                }
+                
                 // If tour is showing a modal tip, fix it's position
                 // on canvas.
                 if (!!angular.element('.joyride-modal-bg:visible').length) {

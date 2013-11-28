@@ -18,3 +18,4 @@ python-mimeparse==0.1.4
 gunicorn
 MySQL-python==1.2.4
 newrelic
+mixpanel-py==3.0.0
