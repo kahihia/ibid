@@ -509,7 +509,7 @@ class MemberAuctionsResource(AuctionResource):
     
     def apply_filters(self, request, applicable_filters):
         obj_list = self.get_object_list(request).filter(bidders = request.user.id)
-        return_list = obj_list & super(memberAuctionsResource, self).apply_filters(request, applicable_filters)
+        return_list = obj_list & super(MemberAuctionsResource, self).apply_filters(request, applicable_filters)
         filters = dict(request.GET.iterlists())
         if len(filters) > 0:
             if 'status' in filters:
@@ -565,7 +565,7 @@ class AddBidResource(AuctionResource):
         ]  
 
     def post_detail(self, request, **kwargs):
-        return super(addBidResource, self).get_detail(request, **kwargs)
+        return super(AddBidResource, self).get_detail(request, **kwargs)
     
     def obj_get(self, bundle, **kwargs):
         error = None
