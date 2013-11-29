@@ -46,6 +46,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
+    $scope.showItemDetails = false;
 
     $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
 
@@ -194,7 +195,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         // Post to server that user wants to start bidding on this
         // auction.
         $http
-            .post('/api/startBidding/', {id: auction.id})
+            .post('/api/v1/auction/'+auction.id+'/add_bids/')
             .success(function (data) {
                 // User can't bid on this auction.
                 if (!data.success) {
@@ -248,7 +249,7 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         auction.interface.remBidEnabled = false;
         // Post to the API the intention to add bids to auction.
         $http
-            .post('/api/addBids/', {id: auction.id})
+            .post('/api/v1/auction/'+auction.id+'/add_bids/')
             .success(function (rdata, status) {
                 console.log('addBids()', rdata);
                 // If the bid can't be added, do corresponding action.
@@ -554,6 +555,24 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
+    $scope.loadItemDetails = function(auction) {
+        $http
+            .get('/api/v1/auction/'+auction.id)
+            .success(function (auctionInfo) {
+                //var details = "<div class='item-image'><img src='"+auctionInfo['item']['itemImage']+"'></div><p>"+auctionInfo['item']['description']+"</p>";
+                
+                var details ='<div class="item"><img src="'+auctionInfo['item']['itemImage']+'"><p class="winner"><span class="item-name">'+auctionInfo['item']['name']+'</span></p></div><p class="info text-small-w">'+auctionInfo['item']['description']+'</p>';             
+                angular.element('#item-details').html(details);
+                $scope.showItemDetails = true;
+                showOverlay();
+        });
+    };
+    
+    $scope.hideItemDetails = function() {
+        $scope.showItemDetails = false;
+        hideOverlay();    
+    };
+    
     $scope.initializeAuctions();
 };
 
