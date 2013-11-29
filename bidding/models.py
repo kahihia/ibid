@@ -337,7 +337,10 @@ class Auction(AbstractAuction):
     finish_time = models.IntegerField(default=0, blank=True, null=True)
     always_alive = models.BooleanField(default=False, help_text='Wether the auction copies itself after precap.')
     bidders = models.ManyToManyField(Member, blank=True, null=True)
-
+    is_active = models.BooleanField(default=True)
+    priority = models.IntegerField(default=-1, help_text='Used for sorting.')
+    categories = models.ManyToManyField(Category,related_name="auctions",blank=True, null=True)
+    
     #winner info
     winner = models.ForeignKey(Member, related_name='autcions', blank=True, null=True)
     won_date = models.DateTimeField(null=True, blank=True)
@@ -358,13 +361,6 @@ class Auction(AbstractAuction):
                                      help_text='Bidding time after using 75% of commited bids. Will be ignored if blank.',
                                      null=True, blank=True, default=3)
 
-    is_active = models.BooleanField(default=True)
-    
-    priority = models.IntegerField(default=-1, help_text='Used for sorting.')
-    categories = models.ManyToManyField(Category,related_name="auctions",blank=True, null=True)
-    
-    finish_time = models.IntegerField(default=0, blank=True, null=True)
-    
     class Meta:
         ordering = ['-id']
 
@@ -660,19 +656,6 @@ class Auction(AbstractAuction):
         auctioneer.auction_finished_message(self)
         client.auctionFinish(self)
         send_in_thread(auction_finished_signal, sender=self)
-        # This could be attached to the auction_finised_signal signal
-        if self.always_alive:
-            auction_copy = Auction.objects.create(item=self.item,
-                                                  bid_type=self.bid_type,
-                                                  precap_bids=self.precap_bids,
-                                                  minimum_precap=self.minimum_precap,
-                                                  is_active=self.is_active,
-                                                  always_alive=self.always_alive,
-                                                  bidding_time=self.saved_time,
-                                                  threshold1=self.threshold1,
-                                                  threshold2=self.threshold2,
-                                                  threshold3=self.threshold3)
-            auction_copy.save()
 
     def _check_thresholds(self):
         """
@@ -698,47 +681,7 @@ class Auction(AbstractAuction):
             auctioneer.threshold_message(auction=self, number=3)
             return True
         return False
-    
-    def bid(self, member, bidNumber):
-        """ 
-        Uses one of the member's commited bids in the auction.
-        """
-        bid = self.bid_set.get(bidder=member)
-        bid.used_amount += self.minimum_precap
-        bid_time = time.time()
-        bid.unixtime = Decimal("%f" % bid_time)
-        bid.save()
-        self.save()
-        if self._check_thresholds():
-            self.pause()
-            self.start_auction_delayed(15.0)#This is the time that the auction will be resume
-        else:
-            self.finish_auction_delayed(self.getBidNumber(), self.bidding_time)
-    
-        return True
-    
-    def pause(self):
-        """ pauses the auction. """
-        self.status = 'pause'
-        self.save()
-        client.auctionPause(self)
-        send_in_thread(task_auction_pause, sender=self)
-        
-    def resume(self):
-        """ Resumes the auction. """
-    
-        self.status = 'processing'
-        #self.saved_time = self.bidding_time
-        self.save()
-    
-        #fixme ugly
-        bid = self.get_latest_bid()
-        now = time.time()
-        bid.unixtime = Decimal("%f" % now)
-        bid.save()
-    
-        client.auctionResume(self)
-
+     
 @receiver(post_save, sender=Auction)
 def categories_register(sender, instance, **kwargs):
     if not instance.categories.count() > 0 and instance.item.categories.count() > 0:
