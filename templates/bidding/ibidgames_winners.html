@@ -7,30 +7,6 @@
 
 {% block grayclasses %} won_items{% endblock %}
 
-{% block menu_wrapper %}
-	<div id="menu-wrapper">
-		<div id="menu">
-			<a class="btn-tokens" ng-href="/canvashome?auction_type=token"></a>
-			<a class="btn-items" ng-href="/canvashome?auction_type=credit"></a>
-			<div class="links">
-				<ul>
-					<li>
-						<a href="" id="interactiveTutotialBtn">Tutorial</a>
-					</li>
-					&nbsp; &nbsp;|&nbsp; &nbsp;
-					<li>
-						<a href="/faq/">FAQS</a>
-					</li>
-					&nbsp; &nbsp;|&nbsp; &nbsp;
-					<li>
-						<a href="/winners/">Winners</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-{% endblock %}
-
 {% block graywindowcontent %}
 	<div class="title">
 		Winners
@@ -53,7 +29,7 @@
 					<!-- >won the possibility to buy this product for <span>{{ auction.won_price|stringformat:"4.2f" }}</span> -->
 				</div>
 				<div class="pic">
-					<img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "107x72" as thumb %}{{thumb.url}}{% endthumbnail %}" />
+					<img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "107x72" as thumb %}{{thumb.url}}{% endthumbnail %}" onclick="_loadItemDetails('{{auction.item.get_thumbnail}}','{{auction.item.name}}','{{auction.item.description}}')"/>
 				</div>
 			</div>
 		{% endfor %}

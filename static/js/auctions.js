@@ -555,23 +555,19 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         $rootScope.$emit('closeGetCreditsPopover');
     };
 
-    $scope.loadItemDetails = function(auction) {
-        $http
-            .get('/api/v1/auction/'+auction.id)
-            .success(function (auctionInfo) {
-                //var details = "<div class='item-image'><img src='"+auctionInfo['item']['itemImage']+"'></div><p>"+auctionInfo['item']['description']+"</p>";
-                
-                var details ='<div class="item"><img src="'+auctionInfo['item']['itemImage']+'"><p class="winner"><span class="item-name">'+auctionInfo['item']['name']+'</span></p></div><p class="info text-small-w">'+auctionInfo['item']['description']+'</p>';             
-                angular.element('#item-details').html(details);
-                $scope.showItemDetails = true;
-                showOverlay();
-        });
-    };
-    
-    $scope.hideItemDetails = function() {
-        $scope.showItemDetails = false;
-        hideOverlay();    
-    };
+    //$scope.loadItemDetails = function(auction) {
+    //    var details ='<div class="item"><img src="'+auction['itemImage']+'"><p class="winner"><span class="item-name">'+auction['itemName']+'</span></p></div><p class="info text-small-w">'+auction['itemDescription']+'</p>';             
+    //            angular.element('#item-details').html(details);
+    //            //$scope.showItemDetails = true;
+    //            angular.element('.item-details.modal').css("display", "block");
+    //            showOverlay();
+    //};
+    //
+    //$scope.hideItemDetails = function() {
+    //    //$scope.showItemDetails = false;
+    //    angular.element('.item-details.modal').css("display", "none");
+    //    hideOverlay();    
+    //};
     
     $scope.initializeAuctions();
 };
@@ -591,6 +587,22 @@ function isDict(p) {
         return false;
     }
 }
+function loadItemDetails(auction) {
+    var details ='<div class="item"><img src="'+auction['itemImage']+'"><p class="winner"><span class="item-name">'+auction['itemName']+'</span></p></div><p class="info text-small-w">'+auction['itemDescription']+'</p>';             
+    angular.element('#item-details').html(details);
+    angular.element('.item-details.modal').css("display", "block");
+    showOverlay();
+};
+function _loadItemDetails(image,name,description) {
+    var details ='<div class="item"><img src="'+image+'"><p class="winner"><span class="item-name">'+name+'</span></p></div><p class="info text-small-w">'+description+'</p>';             
+    angular.element('#item-details').html(details);
+    angular.element('.item-details.modal').css("display", "block");
+    showOverlay();
+};
+function hideItemDetails() {
+        angular.element('.item-details.modal').css("display", "none");
+        hideOverlay();    
+    };
 
 jQuery(function(){
     showOverlay();

@@ -14,6 +14,7 @@
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
 		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
         <link rel="stylesheet" href="{% static 'css/tour.css' %}">
+		<link rel="stylesheet" href="{% static 'css/item_details.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -314,7 +315,37 @@
 				</div>
 			</div>
 			<div id="content-wrapper" ng-controller="AuctionsPanelController">
-				{% block menu_wrapper %}{% endblock %}
+						<div id="menu-wrapper" {% if auction_type == 'token' %} ng-init="playForTokens()" {% endif %}
+						{% if auction_type == 'credit' %} ng-init="playForItems()" {% endif %}>
+							<div id="menu">
+								{% block menu %}
+									<a class="btn-tokens" ng-href="/canvashome?auction_type=token"></a>
+									<a class="btn-items" ng-href="/canvashome?auction_type=credit"></a>
+									{% endblock %}
+								<div class="links">
+									<ul>
+										<li>
+												<a href ng-click="sendRequestViaMultiFriendSelector()">
+														<img src="{% static 'images/invite-menu.png' %}">
+														&nbsp;Invite Friends
+												</a>
+											</li>
+											&nbsp; &nbsp;|&nbsp; &nbsp;
+											<li>
+												<a href="" id="interactiveTutotialBtn">Tutorial</a>
+											</li>
+											&nbsp; &nbsp;|&nbsp; &nbsp;
+											<li>
+												<a href="/faq/">FAQS</a>
+											</li>
+											&nbsp; &nbsp;|&nbsp; &nbsp;
+											<li>
+												<a href="/winners/">Winners</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+							</div>
 				{% block content_wrapper %}
 					<div class="color-frame-tokens"></div>
 					<div class="frame">
@@ -324,6 +355,15 @@
 				{% endblock %}
 			</div>
 		</div>
+
+		<!-- Item Details -->
+				<div class="item-details modal" style="display:none;">
+							<div id="item-details" class="content"></div>
+						<div class="gloss"></div>
+						<div class="btn-close" onclick="hideItemDetails()">
+								x
+							</div>
+				</div>
 
         <!-- Interactive tour steps -->
         <ol id="tour--initial" ib-tour class="joyRideTipContent">

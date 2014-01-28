@@ -128,6 +128,7 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+        tmp['itemDescription'] = auct.item.description
         tmp['bidders'] = auct.bidders.count()
         tmp['auctioneerMessages'] = []
         tmp['chatMessages'] = []
@@ -147,6 +148,7 @@ def getAuctionsInitialization(request):
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+        tmp['itemDescription'] = auct.item.description
         tmp['bidders'] = auct.bidders.count()
         tmp['auctioneerMessages'] = []
         tmp['chatMessages'] = []
@@ -165,6 +167,7 @@ def getAuctionsInitialization(request):
         tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+        tmp['itemDescription'] = auct.item.description
         tmp['winner'] = {'firstName': auct.winner.first_name,
                          'displayName': auct.winner.display_name(),
                          'facebookId': auct.winner.facebook_id}
@@ -185,6 +188,7 @@ def getAuctionsInitialization(request):
         tmp['placed'] = 0
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+        tmp['itemDescription'] = auct.item.description
         tmp['winner'] = {'firstName': auct.winner.first_name,
                          'displayName': auct.winner.display_name(),
                          'facebookId': auct.winner.facebook_id}
@@ -211,6 +215,7 @@ def getAuctionsInitialization(request):
         tmp['placed'] = member.auction_bids_left(auct)
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+        tmp['itemDescription'] = auct.item.description
         tmp['bidders'] = auct.bidders.count()
 
         tmp['auctioneerMessages'] = []
@@ -252,6 +257,7 @@ def getAuctionsInitialization(request):
         tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap if auct.status == 'processing' else 0
         tmp['bids'] = member.auction_bids_left(auct)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
+        tmp['itemDescription'] = auct.item.description
         tmp['bidders'] = auct.bidders.count()
 
         tmp['auctioneerMessages'] = []
@@ -339,6 +345,7 @@ def startBidding(request):
     tmp['placed'] = member.auction_bids_left(auction)
     tmp['bids'] = member.auction_bids_left(auction)
     tmp['itemImage'] = auction.item.get_thumbnail(size="107x72")
+    tmp['itemDescription'] = auct.item.description
     tmp['bidders'] = auction.bidders.count()
     tmp['itemId'] = auction.item.id
     tmp['won_price'] = 0
