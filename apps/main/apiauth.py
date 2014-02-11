@@ -107,3 +107,12 @@ class MessageAuthorization(NoAuthorization):
             if bundle.request.user.can_chat(auction_id):
                 return True
         return False
+
+class PaymentAuthorization(NoAuthorization):
+    
+    def create_list(self, object_list, bundle):
+        if object_list:
+            if object_list[0].member == bundle.request.user:
+                return object_list
+        raise Unauthorized("payment error")
+

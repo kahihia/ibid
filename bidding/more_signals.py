@@ -41,6 +41,11 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
         invited.inviter.tokens_left += prize
         invited.inviter.save()
 
+        tmp = {}
+        tmp['invited_name'] = member.display_name()
+        Notification.objects.create(recipient=invited.inviter, sender=None, notification_type='FriendJoined', message=json.dumps(tmp))
+        client.update_tokens(member)
+
         #add an event to the inviter, to show it the next time he logs in
         #TODO: change this to transport pubnub
         eventFriendInvitationAccepted = vo_factory.create_voFriendInvitationAccepted(prize, [])

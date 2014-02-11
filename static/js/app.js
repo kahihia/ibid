@@ -59,6 +59,7 @@ angular
             });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
+            $rootScope.subscribeToPaymentChannel($rootScope.user);
         });
         
         // API request get user notifications

@@ -132,6 +132,61 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
 
+    $rootScope.subscribeToPaymentChannel = function(member) {
+        $scope.subscribeToChannel({
+            channel: $scope.channel + member,
+            message: function(messages) {
+                _.forEach(messages, function(message) {
+                    console.log('PubNub channel %s message (%s)', $scope.channel + member, getCurrentDateTime(), message);
+                    gameState.pubnubMessages.push([getCurrentDateTime(), message]);
+                    $scope.$apply(function () {
+                        try {
+                            jQuery('.credits').text("CREDITS: " + message.data.credits);
+                        }catch (e){
+                            jQuery('.tokens').text("TOKENS: " + message.data.tokens);
+                        }
+                    });
+                });
+            }
+        });
+    };
+
+    $rootScope.subscribeToChannel = function (options) {
+        _.defaults(options, {
+            connect: function () {
+                console.log('PubNub channel %s connected', options.channel);
+            },
+            message: function (messages) {
+                _.forEach(messages, function (message) {
+                    console.log('PubNub channel %s message (%s)', options.channel, getCurrentDateTime(), message);
+                });
+            },
+            reconnect: function () {
+                console.log('PubNub channel %s reconnected', options.channel);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Connected';
+                });
+            },
+            disconnect: function () {
+                console.log('PubNub channel %s disconnected', options.channel);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Disconnected';
+                });
+            },
+            error: function (data) {
+                console.log('PubNub channel %s network error', options.channel, data);
+            }
+        });
+        return PUBNUB.subscribe(options);
+    };
+
+    $rootScope.unsubscribeFromChannel = function (channel) {
+        console.log('PubNub channel %s disconnected' , channel);
+        return PUBNUB.unsubscribe({
+            channel: channel
+        });
+    };
+    
     $scope.closeWonTokenAuctionDialog = function () {
         $scope.tokenAuctionsWon = [];
         //request for perm if does not have it
@@ -249,58 +304,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     var getCredits_callback = function(data) {};
-
-    $scope.subscribeToPaymentChannel = function(member) {
-        $scope.subscribeToChannel({
-            channel: $scope.channel + member,
-            message: function(messages) {
-                _.forEach(messages, function(message) {
-                    console.log('PubNub channel %s message (%s)', $scope.channel + member, getCurrentDateTime(), message);
-                    gameState.pubnubMessages.push([getCurrentDateTime(), message]);
-                    $scope.$apply(function () {
-                        jQuery('.credits').text("CREDITS: " + message.data.credits)
-                        $scope.unsubscribeFromChannel($scope.channel + member)
-                    });
-                });
-            }
-        });
-    };
-
-    $scope.subscribeToChannel = function (options) {
-        _.defaults(options, {
-            connect: function () {
-                console.log('PubNub channel %s connected', options.channel);
-            },
-            message: function (messages) {
-                _.forEach(messages, function (message) {
-                    console.log('PubNub channel %s message (%s)', options.channel, getCurrentDateTime(), message);
-                });
-            },
-            reconnect: function () {
-                console.log('PubNub channel %s reconnected', options.channel);
-                $scope.$apply(function () {
-                    $scope.realtimeStatus = 'Connected';
-                });
-            },
-            disconnect: function () {
-                console.log('PubNub channel %s disconnected', options.channel);
-                $scope.$apply(function () {
-                    $scope.realtimeStatus = 'Disconnected';
-                });
-            },
-            error: function (data) {
-                console.log('PubNub channel %s network error', options.channel, data);
-            }
-        });
-        return PUBNUB.subscribe(options);
-    };
-
-    $scope.unsubscribeFromChannel = function (channel) {
-        console.log('PubNub channel %s disconnected' , channel);
-        return PUBNUB.unsubscribe({
-            channel: channel
-        });
-    };
 
     $scope.fb_check_like= function() {
         $http.post('/fb_check_like/').success(

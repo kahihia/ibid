@@ -7,6 +7,8 @@ from datetime import datetime
 import json
 import time
 
+from urllib2 import urlopen
+
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
@@ -25,7 +27,7 @@ from tastypie.utils import trailing_slash, dict_strip_unicode_keys
 from apps.main.models import Notification
 from apps.main.apiauth import *
 from bidding import client
-from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid,Category
+from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid,Category, IOPaymentInfo
 from chat import auctioneer
 from chat.models import Message, ChatUser
 from lib import metrics
@@ -761,4 +763,75 @@ class MessageResource(ModelResource):
     def apply_sorting(self, obj_list, options=None):
         obj_list = obj_list.order_by('-created')
         return obj_list
+    
+class IOPaymentInfoResource(ModelResource):
+    
+    """
+    Creates a new payment for a purchase via apple store
+    """
+    
+    class Meta:
+        resource_name = 'io_purchase'
+        authorization = PaymentAuthorization()
+        authentication = CustomAuthentication()
+        queryset = IOPaymentInfo.objects.all()
+        collection_name = 'payments'
+        list_allowed_methods = ['post']
+        detail_allowed_methods = []
+        include_resource_uri = False
+
+    def post_list(self, request, **kwargs):
+        error = None
+        deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        basic_bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
+        if 'receipt-data' in basic_bundle.data:
+            #bundle.data = urlopen('https://buy.itunes.apple.com/verifyReceipt', bundle.data).read()
+            post = urlopen('https://sandbox.itunes.apple.com/verifyReceipt', request.body).read()
+            logger.debug('post response:%s'%post)
+            verified_data = json.loads(post)
+            if 'status' in verified_data:
+                if verified_data['status'] == 0:
+                    for receipt in verified_data['receipt']['in_app']:
+                        try:
+                            IOPaymentInfo.objects.get(receipt['transaction_id'])
+                            error = 'DUPLICATED PURCHASE'
+                        except Exception:
+                            store_ids = ConfigKey.get('APPLE_STORE_PACKAGES')
+                            if store_ids:
+                                store_ids = json.loads(store_ids)
+                                package = BidPackage.objects.get(pk=store_ids[receipt['product_id']])
+                                bundle = self.obj_create(
+                                    bundle = basic_bundle, 
+                                    member = request.user,
+                                    package = package,
+                                    transaction_id = int(receipt['transaction_id']), 
+                                    purchase_date = datetime(receipt['purchase_date']),
+                                    quantity = int(receipt['quantity'])
+                                    )
+                                request.user.bids_left += (package.bids * int(receipt['quantity']))
+                                request.user.save()
+                                client.update_credits(request.user)
+                                return self.create_response(request, {} , response_class=http.HttpCreated)
+                            else:
+                                error = 'INVALID PACKAGE'
+                else:
+                    error = 'INVALID RECEIPT : %s' % verified_data['status']
+        else:
+            error = 'KEY MISSING : receipt-data'
+        return self.create_response(request, {'error':error} , response_class=http.HttpBadRequest)
+
+class AppleIbidPackageIdsResource(IBGModelResource):
+    
+    """ Resource to retrieve data of bid package objects """
+    
+    class Meta:
+        queryset = ConfigKey.objects.filter(key='APPLE_STORE_PACKAGES')
+        resource_name = 'apple_ibid_packages'
+        authorization = ReadOnlyAuthorization()
+        #authentication = CustomAuthentication()
+        include_resource_uri = False
+        list_allowed_methods = ['get']
+        detail_allowed_methods = []
+        fields = ('value',)
+        
     

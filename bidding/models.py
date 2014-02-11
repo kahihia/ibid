@@ -880,10 +880,10 @@ class FBOrderInfo(AuditedModel):
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
     fb_payment_id = models.BigIntegerField(blank=True, null=True)  # this field should be unique
     date = models.DateTimeField(auto_now_add=True, null=True)
+    quantity = models.IntegerField()
 
     def __unicode__(self):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
-
 
 @receiver(post_save, sender=FBOrderInfo)
 def on_confirmed_order(sender, instance, **kwargs):
@@ -896,6 +896,15 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bids=instance.member.bids_left,
                                       total_bidsto=instance.member.bidsto_left,
         )
+
+class IOPaymentInfo(AuditedModel):
+    member = models.ForeignKey(Member)
+    package = models.ForeignKey(BidPackage, null=True)
+    transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
+    purchase_date = models.DateTimeField(auto_now_add=True, null=True)
+
+    def __unicode__(self):
+        return repr(self.member) + ' - ' + repr(self.package) + ' (' + self.purchase_date + ')'
 
 CONFIG_KEY_TYPES = (('text', 'text'),
                     ('int', 'int'),

@@ -15,6 +15,8 @@ from apps.main.api import MessageResource
 from apps.main.api import AddBidResource
 from apps.main.api import ClaimBidResource
 from apps.main.api import RemBidResource
+from apps.main.api import IOPaymentInfoResource
+from apps.main.api import AppleIbidPackageIdsResource
 
 v1_api = Api(api_name='v1')
 v1_api.register(AuctionResource())
@@ -30,6 +32,8 @@ v1_api.register(MessageResource())
 v1_api.register(AddBidResource())
 v1_api.register(ClaimBidResource())
 v1_api.register(RemBidResource())
+v1_api.register(IOPaymentInfoResource())
+v1_api.register(AppleIbidPackageIdsResource())
 
 urlpatterns = patterns('',
     (r'^api/', include(v1_api.urls)),
