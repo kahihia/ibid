@@ -1,0 +1,23 @@
+{% extends "base_section.html" %}
+
+{% block title %}Confirm Your Purchase{% endblock %}
+{% block contentheader %}Confirm Your Purchase{% endblock %}
+
+{% block sectioncontent %}
+{% if auction %}
+{% endif %}
+<form action="." method="post" name="confirm_page_form" class="registration_form">{% csrf_token %}
+	{{ form.as_p }}
+    {% if auction %}
+    <p class="confirmation_message"><b>{{ auction.item.name }}</b> Price: <b>${{ auction.won_price }}</b>
+    {% else %}
+    <p class="confirmation_message">Bid package: <b>{{ package.name }}</b> Price: <b>${{ package.price }}</b>
+    {% endif %}
+    <button class="login_button" type="submit">
+    <span>Confirm</span>
+    </button></p>
+</form>
+{% endblock %}
+
+
+

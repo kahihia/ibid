@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="blue_header_left"></div>
+<div class="blue_header_right"></div>
+<div class="blue_header">{% block contentheader %}{% endblock %}</div>
+<div class="gray_window_bg{% block grayclasses %}{% endblock %} float_left" style="width:628px;">
+    {% block graywindowcontent %}
+    {% block sectioncontent %}
+    {% endblock %}
+    <div class="clear_both"><!-- --></div>
+    <div class="ten_height_spacer"><!-- --></div>
+	{% endblock %}
+</div>
+<div class="clear_both"><!-- --></div>
+<div class="gray_left_corner"><!-- --></div>
+<div class="gray_right_corner"><!-- --></div>
+<div class="gray_bar"><!-- --></div>
+{% endblock %}

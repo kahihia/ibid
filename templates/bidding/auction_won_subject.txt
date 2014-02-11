@@ -1,0 +1,1 @@
+{{ user.display_name|title }}, you won the {{ item.name|safe  }}

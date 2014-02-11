@@ -1,0 +1,5 @@
+mainCongratulations {{ user.get_profile.display_name|title }}
+
+You won {{ auction.item.name }}, to receive your price click following link,
+or copy and paste it into your browser's address bar:
+{{ site }}{% url bidding_buy_item auction.id %} 

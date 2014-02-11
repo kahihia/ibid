@@ -1,0 +1,40 @@
+{% extends "ibidgames_base_section.html" %}
+
+{% load thumbnail %}
+{% load thumbnail bidding_tags pagination_tag %}
+
+{% block contentheader %}Auctions won{% endblock %}
+
+{% block grayclasses %} won_items{% endblock %}
+
+{% block graywindowcontent %}
+	<div class="title">
+		Winners
+	</div>
+	<div class="winners">
+		{% paginate winners auctions current_page 10 10 pages %}
+		{% for auction in pages %}
+			<div class="winners-list">
+				<div class="date">
+					{{ auction.won_date|date:"m/d/y" }}
+				</div>
+				<div class="user">
+					<a href="https://facebook.com/{{ auction.winner_member.facebook_id }}" target="_blank"><img src="{{ auction.winner_member.display_picture }}" width="40" height="40"></a>
+					<a href="https://facebook.com/{{ auction.winner_member.facebook_id }}" target="_blank"><span>{{ auction.winner.first_name }}</span></a>
+				</div>
+				<div class="txt">
+					<p>
+						{{ auction.item.name }}
+					</p>
+					<!-- >won the possibility to buy this product for <span>{{ auction.won_price|stringformat:"4.2f" }}</span> -->
+				</div>
+				<div class="pic">
+					<img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "107x72" as thumb %}{{thumb.url}}{% endthumbnail %}" />
+				</div>
+			</div>
+		{% endfor %}
+		{% include 'pagination.html' %}
+	</div>
+{% endblock %}
+
+

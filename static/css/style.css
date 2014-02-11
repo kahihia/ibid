@@ -1,0 +1,1440 @@
+/*----------------------------
+CSS for site Yambid
+made by trasher 4/22/2009
+okryshchenko@gmail.com
+-----------------------------*/
+
+/*------------
+Layout
+------------*/
+body, ul, li, form, input, p, textarea, button, h2 {
+	padding:0;
+	margin:0;
+	border:none;
+}
+a {
+	outline:none;
+	color:#ff5300;
+	text-decoration:none;
+	cursor:pointer;
+}
+a:hover {
+	text-decoration:underline;
+}
+.main_div {
+	width:998px;
+	margin:0 auto;
+}
+.content {
+	margin-top:10px;
+}
+.left_column {
+	width:210px;
+	float:left;
+}
+.center_column {
+	width:630px;
+	float:left;
+	position:relative;
+	left:10px;
+	overflow:hidden;
+	display:inline;
+}
+.right_column {
+	width:139px;
+	float:right;
+	_margin-bottom:-10px ! important;
+}
+/*------------
+Font
+------------*/
+body {
+	font-family:Arial, Arial, Helvetica, sans-serif;
+	color:white;
+	font-weight:normal;
+	font-size:12pt;
+}
+.login_error {
+	color:red;
+	font-size:9pt;
+	text-align:center;
+	height:30px;
+	line-height:30px;
+}
+.login_input {
+	font-size:11pt;
+}
+.form-prompt-text {
+	font-size:11pt;
+	color:#c3c3c3;
+}
+.form-prompt-wrapper {
+    padding-left:18px;
+}
+.remember_me_label {
+	color:#7a7a7a;
+	font-size:10pt;
+}
+.login_button {
+	font-size:11pt;
+	color:white;
+}
+.forgot_password {
+	font-size:10pt;
+	padding-left:18px;
+}
+.chat_date {
+	font-size:10px;
+	color:#c3c3c3;
+	padding-left:4px;
+	_padding-left:2px ! important;
+}
+.chat_username {
+	font-size:9pt;
+	color:black;
+	font-weight:bold;
+	padding-left:4px;
+	_padding-left:2px ! important;
+}
+.chat_message {
+	color:#7a7a7a;
+	padding:2px 2px 0 44px;
+	font-size:10pt;
+	text-align:justify;
+}
+/*.item_header {
+	color:#ffdd6f;
+	font-weight:bold;
+}*/
+.item_header a {
+	color:white;
+}
+.small_gray_text {
+	color:#7a7a7a;
+	font-size:8pt;
+	padding:2px 0 0 0;
+}
+.item_timer .tick_time {
+	color:#FF5300;
+	font-size:26pt;
+	font-weight:bold;
+}
+.item_timer .auction_complete {
+	color:#FF5300;
+	font-size:26pt;
+	font-weight:bold;
+}
+.item_username {
+	color:black;
+	font-size:20pt;
+	font-weight:bold;
+	height:32px;
+	width:195px;
+	margin:0 auto;
+	display:table;
+	$font-weight:bold ! important;
+}
+.item_price {
+	color:#8dc63f;
+	font-size:18pt;
+	display:table;
+}
+.blue_button span {
+	color:white;
+	font-size:11pt;
+}
+.yambidders_header {
+	font-size:9pt;
+}
+.text_align_center {
+	text-align:center;
+}
+.green_text {
+	color:#8DC63F;
+}
+.red_text, .user_message {
+	color:red;
+}
+.gray_text {
+	color:#7a7a7a;
+}
+.copyright {
+	text-align:center;
+	font-size:9pt;
+	color:#7a7a7a;
+}
+.footer_bar {
+	font-size:10pt;
+}
+.footer_bar span {
+	padding-left:20px;
+}
+.form_label span {
+	font-size:7pt;
+	position:relative;
+	bottom:2px;
+}
+.form_input input {
+	font-size:10pt;
+	color:#4a4a4a;
+}
+.form_input_checkbox {
+	color:#7a7a7a;
+}
+.big_blue_button span {
+	color:white;
+	font-weight:bold;
+	font-size:20pt;
+}
+.private_chat {
+	font-family:courier;
+}
+.bids_package_description {
+	font-size:10pt;
+}
+h2 {
+	font-size:14pt;
+	padding:10px 0 5px 0;
+}
+p {
+	padding:5px 0 5px 0;
+}
+.card_security_code {
+	font-size:10pt;
+	text-align:center;
+}
+.last_seconds {
+	color:red;
+}
+/*------------
+Background
+------------*/
+body {
+	background:#e7e7e7 url(../images/body_bg.png) left top repeat-x;
+}
+.new_logo {
+	display:block;
+	cursor:pointer;
+	width:223px;
+	height:77px;
+	margin:10px 0 5px 5px;
+	background:transparent url(../images/logo_new.png) left top no-repeat;
+	text-decoration:none;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/logo_new.png');
+	zoom:1;
+}
+.new_logo h1 {
+	color:#545454;
+	top:64px;
+	left:132px;
+	font-weight:bold;
+	font-size:10pt;
+	position:relative;
+}
+.new_logo:hover {
+	text-decoration:none;
+}
+.logo {
+	display:block;
+	cursor:pointer;
+	width:354px;
+	height:66px;
+	margin:10px 0 0 10px;
+	background:transparent url(../images/logo.png) left top no-repeat;
+	text-decoration:none;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/logo.png');
+	zoom:1;
+}
+.logo h1 {
+	color:white;
+	font-weight:bold;
+	font-size:10pt;
+	position:relative;
+	top:48px;
+	left:1px;
+}
+.logo:hover {
+	text-decoration:none;
+}
+.register_now {
+	display:block;
+	cursor:pointer;
+	width:300px;
+	height:111px;
+	position:relative;
+	z-index:1;
+	bottom:71px;
+	margin-bottom:-78px;
+	margin-left:-300px;
+	float:right;
+	background:transparent url(../images/register_now.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/register_now.png');
+	zoom:1;
+}
+.change_logo {
+	font-size:9pt;
+	float:left;
+	position:relative;
+	left:508px;
+	top:50px;
+	margin-left:-68px;
+}
+.blue_bar_left {
+	width:10px;
+	height:32px;
+	float:left;
+	_margin-right:-10px ! important;
+	background:transparent url(../images/blue_bar_left.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/blue_bar_left.png');
+	zoom:1;
+}
+.blue_bar_right {
+	width:10px;
+	height:32px;
+	float:right;
+	_margin-left:-10px ! important;
+	background:transparent url(../images/blue_bar_right.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/blue_bar_right.png');
+	zoom:1;
+}
+.nav_bar {
+	height:32px;
+	background:transparent url(../images/blue_bar.png) left top repeat-x;
+	margin:0 10px 0 10px;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=scale, src='http://www.yambid.com/static/images/blue_bar.png');
+	zoom:1;
+}
+.nav_bar a {
+	color:white;
+	font-weight:bold;
+}
+.nav_bar a:hover {
+	color:#ffde73;
+	text-decoration:none;
+}
+.nav_bar ul {
+	list-style:none;
+	padding:7px 0 0 5px;
+	z-index:0;
+	position:relative;
+}
+.nav_bar li {
+	display:inline;
+}
+.menu_divider {
+	padding:0 10px 0 10px;
+	position:relative;
+	bottom:1px;
+}
+.blue_header_left {
+	width:5px;
+	height:30px;
+	background:transparent url(../images/blue_header_left.png) left top no-repeat;
+	float:left;
+	margin-right:-5px;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/blue_header_left.png');
+	zoom:1;
+}
+.blue_header_right {
+	width:5px;
+	height:30px;
+	background:transparent url(../images/blue_header_right.png) left top no-repeat;
+	float:right;
+	margin-left:-5px;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/blue_header_right.png');
+	zoom:1;
+}
+.blue_header {
+	height:30px;
+	line-height:30px;
+	background:transparent url(../images/blue_header.png) left top repeat-x;
+	margin:0 5px 0 5px;
+	text-align:center;
+	font-weight:bold;
+	overflow:hidden;
+	position:relative;
+}
+.gray_window_bg {
+	background:#e7e7e7;
+	border-left:1px solid #c3c3c3;
+	border-right:1px solid #c3c3c3;
+}
+.gray_left_corner {
+	width:5px;
+	height:5px;
+	background:transparent url(../images/gray_left_corner.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/gray_left_corner.png');
+	zoom:1;
+	float:left;
+	margin-right:-5px;
+}
+.gray_right_corner {
+	width:5px;
+	height:5px;
+	background:transparent url(../images/gray_right_corner.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/gray_right_corner.png');
+	zoom:1;
+	float:right;
+	margin-left:-5px;
+}
+.gray_bar {
+	height:4px;
+	background:#e7e7e7;
+	border-bottom:1px solid #c3c3c3;
+	margin:0 5px 0 5px;
+}
+.login_input {
+	width:154px;
+	height:18px;
+	padding:1px 8px 1px 8px;
+	border:1px solid #c3c3c3;
+	margin:0px auto;
+	display:block;
+}
+.margin_top_eleven {
+	margin-top:11px;
+}
+#id_remember_me {
+	position:relative;
+	left:50px;
+	top:4px;
+	$top:6px ! important;
+}
+.remember_me_label {
+	position:relative;
+	left:57px;
+	top:5px;
+}
+.login_button {
+	display:block;
+	width:172px;
+	height:22px;
+	line-height:22px;
+	border:none;
+	cursor:pointer;
+	text-align:center;
+	margin:10px auto 0;
+	background:transparent url(../images/login_button.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/login_button.png');
+	zoom:1;
+}
+.login_button span {
+	position:relative;
+	bottom:1px;
+}
+.ten_height_spacer {
+	height:10px;
+}
+.five_height_spacer {
+	height:5px;
+}
+.chat_window {
+	height:275px;
+	width:200px;
+	margin:0px 3px;
+	position:relative;
+	background:white;
+	border:1px solid #c3c3c3;
+	overflow:auto;
+}
+.chat_avatar {
+	width:38px;
+	height:38px;
+	border:1px solid #77a8d7;
+	float:left;
+	position:relative;
+	left:2px;
+	top:2px;
+}
+.chat_message_divider {
+	width:80%;
+	height:1px;
+	background:#c3c3c3;
+	margin:2px auto 2px;
+}
+#admin_selected_user {
+	display:block;
+	width:202px;
+	margin:5px auto 5px;
+}
+.chat_input {
+	width:202px;
+	height:37px;
+	margin:5px auto 0;
+}
+.chat_input a {
+	display:block;
+	width:26px;
+	height:37px;
+	background:transparent url(../images/send_button.png) left top no-repeat;
+	float:right;
+	position:relative;
+	border-right:1px solid #c3c3c3;
+	$top:1px ! important;
+}
+.chat_input textarea {
+	height:35px;
+	width:174px;
+	_width:171px ! important;
+	border:1px solid #c3c3c3;
+	border-right:none;
+}
+.big_picture {
+	width:630px;
+	height:232px;
+	background:transparent url(../images/big_picture.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/big_picture.png');
+	zoom:1;
+}
+.three_height_spacer {
+	height:3px;
+}
+.invite_friend {
+	display:block;
+	width:272px;
+	height:63px;
+	position:relative;
+	top:10px;
+	left:10px;
+	background:transparent url(../images/invite_friend.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/invite_friend.png');
+	zoom:1;
+}
+.scroll_left {
+	width:5px;
+	height:30px;
+	float:left;
+	margin-right:-5px;
+	background:transparent url(../images/scroll_left.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/scroll_left.png');
+	zoom:1;
+}
+.scroll_right {
+	width:5px;
+	height:30px;
+	float:right;
+	margin-left:-5px;
+	background:transparent url(../images/scroll_right.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/scroll_right.png');
+	zoom:1;
+}
+.scroll_div {
+	height:30px;
+	line-height:30px;
+	background:transparent url(../images/scroll_center.png) left top repeat-x;
+	margin:0 5px 0 5px;
+	$font-weight:bold ! important;
+}
+.scrollWrapper {
+	overflow:hidden;
+	width:620px;
+	height:30px;
+}
+.scrollWrapper p {
+	display:block;
+	width:330px;
+	float:left;
+	padding:0;
+	font-weight:bold;
+}
+.item {
+	width:203px;
+	float:left;
+	display:inline;
+	text-align:center;
+	margin-left:10px;
+	_margin:0 0 -12px 10px ! important;
+}
+.white_window_bg {
+	background:white;
+	border-left:1px solid #c3c3c3;
+	border-right:1px solid #c3c3c3;
+}
+.white_bar {
+	height:4px;
+	background:white;
+	border-bottom:1px solid #c3c3c3;
+	margin:0px 5px 0 5px;
+}
+.white_left_corner {
+	width:5px;
+	height:5px;
+	float:left;
+	margin-right:-5px;
+	background:transparent url(../images/white_left_corner.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/white_left_corner.png');
+	zoom:1;
+}
+.white_right_corner {
+	width:5px;
+	height:5px;
+	float:right;
+	margin-left:-5px;
+	background:transparent url(../images/white_right_corner.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/white_right_corner.png');
+	zoom:1;
+}
+.item_picture {
+	display:block;
+	height:95px;
+	width:165px;
+	margin:0 auto;
+}
+.item_timer {
+	height:53px;
+	width:163px;
+	border:1px solid #679ed2;
+	margin:0 auto;
+	overflow:hidden;
+}
+.item_price {
+	width:163px;
+	height:28px;
+	border:1px solid #8dc63f;
+	margin:0 auto;
+}
+.button {
+	height:30px;
+	margin:8px 0 0 17px;
+}
+.blue_button {
+	display:block;
+	height:22px;
+	float:left;
+	background:transparent url(../images/blue_button_right.png) right top no-repeat;
+	_background:transparent url(../images/blue_button_right_ie6.png) right top no-repeat ! important;
+	position:relative;
+}
+.blue_button_active {
+	background:transparent url(../images/blue_button_right.png) right bottom no-repeat;
+	_background:transparent url(../images/blue_button_right_ie6.png) right bottom no-repeat ! important;
+}
+.blue_button span {
+	display:block;
+	height:22px;
+	line-height:22px;
+	margin-right:5px;
+	padding-left:5px;
+	text-align:center;
+	background:transparent url(../images/blue_button_left.png) left top no-repeat;
+	_background:transparent url(../images/blue_button_left_ie6.png) left top no-repeat ! important;
+}
+.blue_button:hover {
+	text-decoration:none;
+}
+.glossy_blue_button {
+	display:block;
+	height:34px;
+	float:left;
+	background:transparent url(../images/big_blue_button_right.png) right top no-repeat;
+	position:relative;
+}
+.glossy_blue_button span {
+	display:block;
+	height:34px;
+	line-height:34px;
+	margin-right:8px;
+	padding-left:8px;
+	text-align:center;
+	background:transparent url(../images/big_blue_button_left.png) left top no-repeat;
+	color:white;
+	font-weight:bold;
+	font-size:16pt;
+}
+.glossy_blue_button:hover {
+	text-decoration:none;
+}
+.chat_blue_button {
+	display:block;
+	height:22px;
+	float:left;
+	background:transparent url(../images/blue_button_right.png) right bottom no-repeat;
+	_background:transparent url(../images/blue_button_right_ie6.png) right bottom no-repeat ! important;
+	position:relative;
+}
+.chat_blue_button span {
+	display:block;
+	height:22px;
+	line-height:22px;
+	margin-right:5px;
+	padding-left:5px;
+	color:white;
+	font-size:11pt;
+	text-align:center;
+	background:transparent url(../images/blue_button_left.png) left bottom no-repeat;
+	_background:transparent url(../images/blue_button_left_ie6.png) left bottom no-repeat ! important;
+}
+.chat_blue_button_active, .chat_blue_button:hover {
+	background:transparent url(../images/blue_button_right.png) right top no-repeat;
+	_background:transparent url(../images/blue_button_right_ie6.png) right top no-repeat ! important;
+}
+.chat_blue_button_active span, .chat_blue_button:hover span {
+	background:transparent url(../images/blue_button_left.png) left top no-repeat;
+	_background:transparent url(../images/blue_button_left_ie6.png) left top no-repeat ! important;
+}
+.chat_blue_button:hover {
+	text-decoration:none;
+}
+.item_bid_button {
+	width:151px;
+}
+.items {
+	width:640px;
+	margin-left:-10px;
+	float:left;
+	margin-bottom:10px;
+	_margin-bottom:0 ! important;
+}
+.video_tutorial {
+	display:block;
+	width:139px;
+	height:185px;
+	background:transparent url(../images/video_tutorial.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/video_tutorial.png');
+	zoom:1;
+}
+.won_item_small {
+	display:block;
+	height:120px;
+	width:120px;
+	margin:0 auto;
+}
+.gray_line_divider {
+	height:1px;
+	background:#c3c3c3;
+	width:80%;
+	margin:0 auto;
+}
+.footer {
+	clear:both;
+}
+.footer_bar {
+	height:32px;
+	line-height:32px;
+}
+.safe_icon {
+	height:30px;
+	width:272px;
+	background:transparent url(../images/safe_icon.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/safe_icon.png');
+	zoom:1;
+	float:left;
+	position:relative;
+	top:1px;
+	margin-left:5px;
+}
+.footer_bar span {
+	float:left;
+}
+.footer_bar ul {
+	padding:0 80px 0 0;
+	float:right;
+}
+.footer_bar a:hover {
+	color:white;
+	text-decoration:underline;
+}
+.registration_form {
+	margin:0 10px 0 10px;
+	color:#7a7a7a;
+}
+.form_gray_bg {
+	height:30px;
+	background:#d9d9d9;
+	overflow:hidden;
+}
+.form_no_bg {
+	background:none;
+}
+.form_label {
+	height:30px;
+	line-height:30px;
+	width:160px;
+	margin-left:10px;
+	float:left;
+	display:inline;
+}
+.no_line_height {
+	line-height:16px;
+}
+.red_cross {
+	height:30px;
+	width:10px;
+	color:red;
+	line-height:37px;
+	float:left;
+}
+.form_input, .form_input_checkbox {
+	height:30px;
+	line-height:30px;
+	float:left;
+}
+.form_input input {
+	width:215px;
+	height:18px;
+	padding:2px 5px 0 5px;
+	border:1px solid #adadad;
+	position:relative;
+	top:4px;
+	$top:0px ! important;
+	_top:3px ! important;
+}
+.form_input select {
+	position:relative;
+	bottom:2px;
+	$bottom:-1px ! important;
+	_top:4px ! important;
+}
+.captcha {
+	height:130px;
+	line-height:130px;
+}
+.captcha_red_cross {
+	line-height:138px;
+	height:130px;
+}
+.form_input_checkbox label {
+	margin-left:5px;
+}
+#id_terms {
+	position:relative;
+	top:7px;
+	float:left;
+	$top:5px ! important;
+}
+.big_blue_button {
+	border:none;
+	display:block;
+	height:32px;
+	line-height:32px;
+	width:227px;
+	background:transparent url(../images/big_blue_button.png) right center no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/big_blue_button.png');
+	zoom:1;
+	cursor:pointer;
+	position:relative;
+}
+.registration_submit {
+	top:15px;
+	left:195px;
+}
+.big_blue_button span {
+	position:relative;
+	bottom:1px;
+	$bottom:-2px ! important;
+}
+.error {
+	color:red;
+	padding-left:5px;
+	float:left;
+	$float:none;
+	font-size:10pt;
+}
+.form_input label {
+	width:190px;
+}
+.usermenu_button {
+	margin:5px 0 0 14px;
+	display:inline;
+}
+.usermenu_button span {
+	width:170px;
+}
+.clear_both {
+	clear:both;
+}
+.bids_left {
+	text-align:center;
+	color:#7a7a7a;
+	margin-top:5px;
+}
+.buy_bids_icon, .change_password_icon, .change_email_icon, .change_avatar_icon, .won_auction_icon, .suggest_item_icon {
+	height:20px;
+	width:20px;
+	display:block;
+	float:left;
+	margin-right:-20px;
+	position:relative;
+	top:1px;
+	left:5px;
+}
+.buy_bids_icon {
+	background:transparent url(../images/cursor_pointer.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/cursor_pointer.png');
+	zoom:1;
+}
+.change_password_icon {
+	background:transparent url(../images/buttons_icons.png) -40px 0px no-repeat;
+}
+.change_email_icon {
+	background:transparent url(../images/buttons_icons.png) -20px 0px no-repeat;
+}
+.change_avatar_icon {
+	background:transparent url(../images/buttons_icons.png) 0px 0px no-repeat;
+}
+.won_auction_icon {
+	background:transparent url(../images/buttons_icons.png) -100px 0px no-repeat;
+}
+.suggest_item_icon {
+	background:transparent url(../images/buttons_icons.png) -80px 0px no-repeat;
+}
+.chat_room_button {
+	margin:0 3px 0 3px;
+	display:inline;
+	_margin:0 2px 0 2px ! important;
+}
+.private_chat_button {
+	margin:3px 3px 0 3px;
+	display:inline;
+	_margin:3px 2px 0 3px ! important;
+}
+.chat_room_button span {
+	width:192px;
+}
+.private_chat_button span {
+	width:70px;
+	padding-left:23px;
+	$padding-left:21px ! important;
+	$width:72px ! important;
+	overflow:hidden;
+	text-align:left;
+}
+.close_private_chat {
+	display:block;
+	height:16px;
+	width:16px;
+	float:left;
+	margin-right:-16px;
+	position:relative;
+	top:3px;
+	left:3px;
+	cursor:pointer;
+	background:transparent url(../images/close_private_chat.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/close_private_chat.png');
+	zoom:1;
+}
+.buy_bids_form {
+	color:#7a7a7a;
+}
+.bids_packages_box, .bids_packages_payment {
+	/*height:213px;*/
+	background:#d9d9d9;
+	border:1px solid #c3c3c3;
+}
+.bids_packages_payment {
+	height:158px;
+}
+.bid_package {
+	text-align:center;
+	width:122px;
+	float:left;
+	display:inline;
+	margin:15px 0 0 60px;
+	$margin:8px 0 0 60px ! important;
+}
+.pid_package_image {
+	display:block;
+	width:87px;
+	height:164px;
+	line-height:164px;
+	/*cursor:pointer;*/
+	position:relative;
+	left:17px;
+}
+.bids_payment_raw {
+	height:42px;
+	margin:25px 20px 0 20px;
+}
+.bids_package_selector {
+	height:42px;
+	line-height:42px;
+	width:170px;
+	float:left;
+}
+.bids_package_selector input {
+	float:left;
+	position:relative;
+	top:13px;
+	$top:10px ! important;
+}
+.visa_checkout, .paypal_checkout {
+	display:block;
+	height:42px;
+	width:145px;
+	position:relative;
+	left:8px;
+	float:left;
+	background:transparent url(../images/visa_payment.png) left top no-repeat;
+	cursor:pointer;
+}
+.paypal_checkout {
+	background:transparent url(https://www.paypal.com/en_US/i/btn/btn_xpressCheckout.gif) left top no-repeat;
+}
+.bids_package_description {
+	height:42px;
+	float:left;
+	display:inline;
+	margin-left:40px;
+	width:350px;
+}
+.buy_bids_submit {
+	left:382px;
+}
+.system_message_left {
+    background:transparent url(/static/images/system_message.png) center center no-repeat;
+	border:1px solid white;
+	width:29px;
+	height:29px;
+	float:left;
+	position:relative;
+	left:2px;
+	top:2px;
+}
+.system_message_right {
+    background:transparent url(/static/images/system_message.png) center center no-repeat;
+	border:1px solid white;
+	width:29px;
+	height:29px;
+	float:right;
+	position:relative;
+	right:2px;
+	top:2px;
+}
+.chat_system_message {
+	color:#7A7A7A;
+	font-size:10pt;
+	padding:2px 35px 0 35px;
+	text-align:center;
+}
+#id_state, #id_country {
+	bottom:-4px;
+}
+#id_country {
+	width:225px;
+}
+#id_cvv2 {
+	width:35px;
+}
+.card_security_code img {
+	margin-top:5px;
+}
+.faq_div {
+	padding:10px;
+	color:#7a7a7a;
+	text-align:justify;
+	font-size:10pt;
+}
+.faq_div p {
+	padding:0 10px 0 10px;
+}
+.faq_div h2 {
+	padding:15px 10px 0 10px;
+	font-size:11pt;
+}
+.gray_header_left {
+	width:5px;
+	height:20px;
+	background:transparent url(../images/gray_header_left.png) left top no-repeat;
+	float:left;
+	margin-right:-5px;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/gray_header_left.png');
+	zoom:1;
+}
+.gray_header_right {
+	width:5px;
+	height:20px;
+	background:transparent url(../images/gray_header_right.png) left top no-repeat;
+	float:right;
+	margin-left:-5px;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/gray_header_right.png');
+	zoom:1;
+}
+.gray_header {
+	height:20px;
+	line-height:20px;
+	background:transparent url(../images/gray_header.png) left top repeat-x;
+	margin:0 5px 0 5px;
+	text-align:center;
+	color:white;
+	font-size:12pt;
+}
+.no_margin_ie6 {
+	_margin:0 ! important;
+}
+.tutorial_image {
+	width:522px;
+	height:307px;
+	background:transparent url(../images/tutorial_image.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/tutorial_image.png');
+	zoom:1;
+	margin:0 auto 0;
+}
+.flash_embed {
+	width:425px;
+	margin:0 auto 0;
+}
+.testimonials_embed_flash {
+	width:500px;
+}
+.won_items {
+	min-height:100px;
+	_height:auto ! important;
+	_height:100px ! important;
+}
+.won_item {
+	width:196px;
+	margin-left:10px;
+	display:inline;
+	float:left;
+}
+.won_item_picture {
+	display:block;
+	width:192px;
+	height:171px;
+}
+.paid {
+	display:block;
+	width:191px;
+	height:170px;
+	background:transparent url(../images/paid_bg.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/paid_bg.png');
+	zoom:1;
+	position:relative;
+	top:1px;
+	left:1px;
+}
+.not_paid {
+	display:block;
+	width:191px;
+	height:170px;
+	background:transparent url(../images/not_paid_bg.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/not_paid_bg.png');
+	zoom:1;
+	position:relative;
+	top:1px;
+	left:1px;
+}
+.winner {
+	width:299px;
+	font-size:10pt;
+	line-height:16pt;
+}
+.winner_picture {
+	width:160px;
+	height:120px;
+	float:left;
+}
+.item_description {
+	margin:0 10px 0 10px;
+}
+.item_description p {
+	padding:10px 20px 10px 20px;
+}
+.item_description fieldset {
+	margin:0 20px 0 20px;
+	text-align:justify;
+	padding:10px;
+}
+.item_description_pictures {
+	height:202px;
+	text-align:center;
+}
+.change_email {
+	margin:0 10px;
+	text-align:justify;
+	display:inline;
+}
+.confirm_button_width {
+	width:100px;
+}
+.email_confirm_block {
+	height:30px;
+	line-height:30px;
+	float:left;
+}
+.email_address {
+	width:200px;
+	overflow:hidden;
+}
+.confirm_status {
+	width:80px;
+	text-align:center;
+}
+.confirm_status img {
+	position:relative;
+	top:3px;
+}
+.confirm_button, .delete_button {
+	width:120px;
+	display:block;
+	margin-left:10px;
+}
+.delete_button span {
+	color:red;
+}
+.confirm_button a, .delete_button a {
+	position:relative;
+	top:4px;
+}
+.chat_bg {
+	background:#0b5196;
+	border-left:1px solid #0b5196;
+	border-right:1px solid #0b5196;
+}
+.chat_bg_blue_bar {
+	background:#0b5196;
+	border-bottom:1px solid #0b5196;
+}
+.chat_bg_left_corner {
+	background:transparent url(../images/blue_left_corner.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/blue_left_corner.png');
+	zoom:1;
+}
+.chat_bg_right_corner {
+	background:transparent url(../images/blue_right_corner.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/blue_right_corner.png');
+	zoom:1;
+}
+.bids_packs {
+	display:block;
+	width:139px;
+	height:212px;
+	background:transparent url(../images/bids_packs.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/bids_packs.png');
+	zoom:1;
+}
+.chat_popup {
+	width:165px;
+}
+.chat_popup_body {
+	width:165px;
+	background:transparent url(../images/chat_popup_body.png) left top repeat-y;
+}
+.chat_popup_body ul {
+	list-style:none;
+	padding-left:20px;
+}
+.chat_popup_top {
+	height:9px;
+	background:transparent url(../images/chat_popup_top.png) left top no-repeat;
+}
+.chat_popup_bottom {
+	height:20px;
+	background:transparent url(../images/chat_popup_bottom.png) left top no-repeat;
+}
+#chat_popup {
+    display:none;
+}
+.chat_container {
+    position:relative;
+}
+.chat_wrapper {
+    position:absolute;
+}
+.hidden {
+    display:none;
+}
+.logout_icon {
+	height:20px;
+	width:20px;
+	display:block;
+	float:left;
+	margin-right:-20px;
+	position:relative;
+	top:1px;
+	left:5px;
+	background:transparent url(../images/logout_icon.png) left top no-repeat;
+	_background:none;
+	_filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(enabled=true, sizingMethod=crop, src='http://www.yambid.com/static/images/logout_icon.png');
+	zoom:1;
+}
+.captcha_error {
+	width:105px;
+	height:50px;
+	color:red;
+	float:right;
+	font-size:10pt;
+	line-height:12pt;
+	text-align:center;
+	position:relative;
+	top:40px;
+	margin-left:-105px;
+}
+.custom_error, .form_error {
+	float:right;
+	display:block;
+    height:30px;
+	line-height:30px;
+	margin-right:55px;
+	color:red;
+	font-size:10pt;
+}
+/*.form_error {
+    display:block;
+    float:left;
+    padding: 5px;
+    color:red;
+}*/
+.change_password_label {
+	width:215px;
+}
+.change_password_input input {
+	width:125px;
+}
+.confirmation_message {
+	text-align:center;
+}
+.confirmation_message b {
+	color:#0B5196;
+}
+.won_item_price {
+	text-align:center;
+}
+.suggest_item textarea {
+	border:1px solid #c3c3c3;
+	padding:5px;
+	font-size:12pt;
+	color:#7a7a7a;
+}
+.suggest_item {
+	text-align:center;
+}
+.user_details, .thankyou_page {
+	margin:0 10px 0 10px;
+	color:#7a7a7a;
+}
+.thankyou_page {
+	text-align:center;
+}
+.thankyou_page_button span {
+	width:180px;
+}
+.thankyou_page_button {
+	left:215px;
+}
+.float_left {
+	float:left;
+}
+.user_message {
+	text-align:center;
+}
+.income_message span {
+	color:red;
+}
+.for_registered_users {
+	float:right;
+	position:relative;
+	z-index:1;
+	margin-left:-272px;
+	top:-72px;
+	margin-bottom:-72px;
+	left:0px;
+}
+.login_page_register {
+	width:300px;
+	float:right;
+	text-align:center;
+}
+.login_page_register a {
+	left:50px;
+}
+.login_page_register b {
+	color:red;
+}
+.login_page_login {
+	width:300px;
+	float:left;
+	text-align:center;
+}
+.login_page_login input {
+	display:inline;
+}
+.login_page_login label {
+	display:block;
+	float:left;
+	width:100px;
+}
+.hello_user {
+	/*float:right;
+	position:relative;
+	top:6px;
+	right:10px;*/
+}
+.hello_user b {
+	color:#FF5300;
+}
+.username_password {
+	margin-left:18px;
+}
+.ie_blue_header {
+	$width:200px ! important;
+}
+.ie6_25_height_spacer {
+	_height:23px ! important;
+}
+.ie7_form_gray_bg {
+	$width:608px ! important;
+}
+.ie6_form_input_checkbox {
+	_top:4px ! important; 
+	position:relative;
+}
+.bigger_text {
+	font-size:12pt;
+}
+.blue_line_devider {
+	background:blue;
+}
+.gray_background {
+	font-size:16pt;
+}
+.winners_page_width {
+	width:137px;
+	overflow:hidden;
+}
+/*------------------------------
+Safari tricks
+------------------------------*/
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	#id_remember_me {
+		top:4px;
+	}
+	.login_button span {
+		position:relative;
+		bottom:2px;
+	}
+	#id_terms {
+		position:relative;
+		top:9px;
+	}
+}

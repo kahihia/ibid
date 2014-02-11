@@ -1,0 +1,495 @@
+{% extends "ibidgames_base_section.html" %}
+{% load staticfiles %}
+
+{% block meta %}
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta property="og:type" content="Game" />
+	<meta property="og:url" content="{{ app_url }}" />
+	<meta property="og:title" content="{{ share_title }}" />
+	<meta property="og:image" content="{{SITE_NAME_WOUT_BACKSLASH}}{% static "images/200x200-Fblogo.png" %}" />
+	<meta property="og:site_name" content="{{ site_url }}" />
+	<meta property="og:description" content="{{ share_description }}" />
+	<link rel="stylesheet" href="{% static 'css/messages.css' %}">
+{% endblock %}
+
+{% block base_header %}
+	<!-- Messages modal -->
+	<div class="modal modal-wide" ng-show="showMessages" ng-cloak>
+		<div class="title">Your messages</div>
+		<div class="title title-shadow">Your messages</div>
+		<div class="content">
+			<div ng-repeat="message in messageList">
+				<div ng-switch on="message['notification_type']" ng-init=messageJsonParse(message)>
+					<!-- TEMPLATE: FinishedAuction -->
+					<div id="message-top" ng-switch-when="FinishedAuction">
+						<div class="message" id="message-{$ message['id'] $}">
+							<div class="message-content">
+								<div class="message-content-title">You missed an auction</div>
+								<div class="message-content-body">While you were away the auction for {$ message['message'].itemName $} was played.<br>
+									<a class="tokens-text" href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$ message['message'].winner['firstName'] $}</a>
+									won it for ${$ message['message'].won_price $}.
+								</div>
+							</div>
+							<div class="message-actions">
+								<div class="btn btn-green" ng-click="readMessage(message)">Accept</div>
+								<div class="btn-close" ng-click="closeMessage(message)">x</div>
+							</div>
+							<div class="message-users">
+								<img class="avatar" ng-src="{$ message['message']['itemImage'] $}">
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!--				
+				<ul>
+				    <li class="message">
+					<div class="message-content">
+					    <div class="message-content-title">You got a gift</div>
+					    <div class="message-content-body">You got <span class="tokens-text">10.000 tokens</span> from Martino and 4 other friends.<br>Do you want to send a gift back?</div>
+					</div>
+					<div class="message-actions">
+					    <div class="btn btn-green">Accept</div>
+					    <div class="btn-close">x</div>
+					</div>
+					<div class="message-users">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					</div>
+				    </li>
+				    <li class="message">
+					<div class="message-content">
+					    <div class="message-content-title">Help Daniel</div>
+					    <div class="message-content-body">Daniel is out of <span class="tokens-text">tokens</span>!<br>Send him a <span class="tokens-text">Tokens</span> gift.</div>
+					</div>
+					<div class="message-actions">
+					    <div class="btn btn-green">Send</div>
+					    <div class="btn-close">x</div>
+					</div>
+					<div class="message-users">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					</div>
+				    </li>
+				    <li class="message">
+					<div class="message-content">
+					    <div class="message-content-title">You have an invitation</div>
+					    <div class="message-content-body">Daniel and 4 more sent you an invitation to join a private auction.</div>
+					</div>
+					<div class="message-actions">
+					    <div class="btn btn-green">Join</div>
+					    <div class="btn-close">x</div>
+					</div>
+					<div class="message-users">
+					    <img class="avatar" src="http://profile.ak.fbcdn.net/hprofile-ak-prn2/275930_100002347256553_60234466_q.jpg" width="30" height="30">
+					</div>
+				    </li>
+				</ul>
+			-->
+				
+		</div>
+		<div class="buttons">
+			<div class="btn" ng-click="closeMessagesScreen()">Close</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-click="closeMessagesScreen()">x</div>
+	</div>
+
+	<!-- Tokens won modal -->
+	<div class="modal" ng-show="showWonTokensDialog" ng-cloak>
+		<div class="title">Tokens Won!</div>
+		<div class="title title-shadow">Tokens Won!</div>
+		<div class="content">
+			<p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span></p>
+			<div style="overflow-y: scroll; height: 165px;">
+				<div ng-repeat="auction in tokenAuctionsWon">
+					<p class="winner"><span class="item-name">You won {$auction.itemName $}!</span></p>
+					<div class="item">
+					    <img ng-src="{$ auction.itemImage $}">
+						<div class="tokens">
+						    <span>= </span>
+						    <div class="value">
+							<p>You get</p>
+							{$ auction.retailPrice | number:0 $}
+							<p>free Tokens</p>
+						    </div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<p class="info text-small-w">When you have 100.000 Tokens you can change it for 10 credits<br>and play for real items!</p>
+		</div>
+		<div class="buttons">
+			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div> </br></br>
+			<div class="btn btn-red" ng-mousedown="closeWonAuctionDialogAndPlayForItems()">Play for real items</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-mousedown="closeWonTokenAuctionDialog()">
+                    x
+                </div>
+		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+		<img class="prize" src="{% static 'images/prize-medium.png' %}">
+	</div>
+
+	<!-- Item won modal -->
+	<div class="modal" ng-show="showWonItemDialog" ng-cloak>
+	    <div class="title">Item Won!</div>
+	    <div class="title title-shadow">Item Won!</div>
+	    <div class="content">
+		<p class="winner">Congratulations <span class="winner-name">{$ user.displayName$}</span></p>
+		<div style="overflow-y: scroll; height: 165px;">
+			<div ng-repeat="auction in creditAuctionsWon">
+				<p class="winner"><span class="item-name">You won {$auction.itemName $}!</span></p>
+				<div class="item">
+				    <img ng-src="{$ auction.itemImage $}">
+				</div>
+			</div>
+		</div>
+		<p class="info text-small-w">Check your e-mail, you will receive an email with<br>all the details you need to get your prize.</p>
+	    </div>
+	    <div class="buttons">
+		<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
+	    </div>
+	    <div class="gloss"></div>
+	    <div class="btn-close" ng-mousedown="closeWonCreditAuctionDialog()">
+                    x
+                </div>
+	    <img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+	    <img class="prize" src="{% static 'images/prize-medium.png' %}">
+	</div>
+	
+	<!-- Tokens lost modal -->
+	<div class="modal" ng-show="showLostTokensDialog" ng-cloak>
+		<div class="title">Auction Lost!</div>
+		<div class="title title-shadow">Auction Lost!</div>
+		<div class="content">
+			<p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
+			<div class="item">
+				<img ng-src="{$ lostAuction.itemImage $}">
+				<p>{$lostAuction.itemName $}</p>
+			</div>
+			<p class="info text-small-w">Invite some friends to get Free Tokens!</p>
+		</div>
+		<div class="buttons">
+			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div> </br></br>
+			<div class="btn btn-red" ng-mousedown="closeLostAuctionDialogAndPlayForItems()">Play for real items</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-mousedown="closeLostAuctionDialog()">
+			x
+		</div>
+		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+		<img class="prize" src="{% static 'images/prize-medium.png' %}">
+	</div>
+ 
+	<!-- Item lost modal -->
+	<div class="modal" ng-show="showLostItemDialog" ng-cloak>
+		<div class="title">Auction Lost!</div>
+		<div class="title title-shadow">Auction Lost!</div>
+		<div class="content">
+			<p class="winner">Ooops...!<span class="winner-name"><br>{$ user.displayName$}</span> <br>You have lost the auction. Anyway you can play again and<br>this time try to place more bids!</p>
+			<div class="item">
+				<img ng-src="{$ wonAuction.itemImage $}">
+				<p>{$wonAuction.itemName $}</p>
+			</div>
+			<p class="info text-small-w">Invite some friends to get Free Tokens!</p>
+		</div>
+		<div class="buttons">
+			<div class="btn btn-green" ng-click="sendRequestViaMultiFriendSelector()">INVITE FRIENDS AND GET 5.000 TOKENS</div>
+		</div>
+		<div class="gloss"></div>
+		<div class="btn-close" ng-mousedown="closeLostAuctionDialog()">
+			x
+		</div>
+		<img class="kenny" src="{% static 'images/kenny-auction-left.png' %}">
+		<img class="prize" src="{% static 'images/prize-medium.png' %}">
+	</div>
+{% endblock %}
+{% block menu %}
+	<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
+	<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
+	{% endblock %}
+{% block content_wrapper %}
+	<div ng-class="{'color-frame-tokens': playFor == AUCTION_TYPE_TOKENS, 'color-frame-items': playFor == AUCTION_TYPE_CREDITS}"></div>
+	<div id="user-auctions">
+		<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
+			{$ user.displayName $}'s Upcoming Auctions
+		</div>
+		<div ng-repeat="auction in auctionList[playFor].mine">
+			<input type="hidden" class="auction-id"
+			value="{$ auction.id $}"/>
+
+			<div id="auction">
+				<div ng-switch on="auction.status">
+					<!-- TEMPLATE: precap -->
+					<div id="auction-top" ng-switch-when="precap">
+						<div class="img">
+							<img ng-src="{$ auction.itemImage $}">
+						</div>
+						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
+							{$ auction.itemName $}
+						</div>
+						<div id="auction-retail-price">
+							Retail price: {$ auction.retailPrice | currency:'$' $}
+						</div>
+						<div id="auction-status">
+							<p>
+								RESERVE
+							</p>
+							{$ auction.completion$}% / {$auction.bidders $} Bidders
+						</div>
+						<div id="auction-bids">
+							<p>PLACED {$ auction.placed$} {$playFor | uppercase $}S</p>
+
+							<div id="auction-precap-bid">
+								<span>{$ auction.bids/auction.bidPrice $}</span> Bids
+							</div>
+							<div id="btn-bid-less" class="btn btn-red btn-rem-bid" ng-click="remBids(auction)" ng-disabled="!auction.interface.remBidEnabled">-</div>
+							<div id="btn-bid-plus" class="btn btn-red btn-add-bid" ng-click="addBids(auction)" ng-disabled="!auction.interface.addBidEnabled">+</div>
+						</div>
+
+						<!--<div id="auction-btns">
+							<div id="btn-invite-auction" class="disabled"><img src="{% static 'images/btn-invite-auction-disabled.png' %}" width="36" height="42">
+							</div>
+							<div id="btn-chat-auction" class="disabled"><img src="{% static 'images/btn-chat-auction-disabled.png' %}" width="36" height="43">
+							</div>
+						</div>-->
+
+					</div>
+
+					<!-- TEMPLATE: waiting -->
+					<div id="auction-top" ng-switch-when="waiting">
+						<div class="img">
+							<img ng-src="{$ auction.itemImage $}">
+						</div>
+						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
+							{$ auction.itemName $}
+						</div>
+						<div id="auction-retail-price">
+							Retail price:
+							 {$ auction.retailPrice | currency:'$' $}
+						</div>
+						<div id="auction-play">
+							<div class="syncing">
+								SYNCING...
+							</div>
+
+						</div>
+
+					</div>
+
+					<!-- TEMPLATE: processing -->
+					<div id="auction-top" ng-switch-when="processing">
+						<div class="img">
+							<img ng-src="{$ auction.itemImage $}">
+						</div>
+						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
+							{$ auction.itemName $}
+						</div>
+						<div class="auction-final-price" ib-transition-class="{'auction-final-price-change': auction.bidNumber}">
+							Price: <span>{$ (auction.bidNumber / 100) | currency:'$' $} </span>
+						</div>
+						<div id="auction-play">
+							<div class="time-left">
+								<p>
+									TIME LEFT
+								</p>
+								{$ auction.timeleft $}
+							</div>
+							<div id="btn-bid-play">
+                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" ng-mousedown="claim(auction)" ng-disabled="!auction.interface.bidEnabled">
+                                    <span class="auction__bid-button__text" data-text="BID">BID</span>
+                                </button>
+                            </div>
+							<div class="bids-left">
+								<p>
+									BIDS LEFT
+								</p>
+								{$ auction.bids/auction.bidPrice $}
+							</div>
+						</div>
+					</div>
+
+					<!-- TEMPLATE: pause -->
+					<div id="auction-top" ng-switch-when="pause">
+						<div class="img">
+							<img ng-src="{$ auction.itemImage $}">
+						</div>
+						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
+							{$ auction.itemName $}
+						</div>
+						<div id="auction-retail-price">
+							Retail price: {$ auction.retailPrice | currency:'$' $}
+						</div>
+						<div id="auction-play">
+							<div class="time-left">
+								<p>
+									TIME LEFT
+								</p>
+								PAUSED
+							</div>
+                            <div id="btn-bid-play">
+                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" disabled>
+                                    <span class="auction__bid-button__text" data-text="BID">BID</span>
+                                </button>
+                            </div>
+							<div class="bids-left">
+								<p>
+									BIDS LEFT
+								</p>
+								{$ auction.bids/auction.bidPrice $}
+							</div>
+						</div>
+					</div>
+
+					<!-- TEMPLATE: waiting_payment -->
+					<div id="auction-top" ng-switch-when="waiting_payment">
+						<div class="btn-close" ng-mousedown="closeAuction(auction)">×</div>
+						<div class="img">
+							<img ng-src="{$ auction.itemImage $}">
+						</div>
+						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
+							{$ auction.itemName $}
+						</div>
+						<div class="auction-final-price">
+							Price: <span>{$ (auction.bidNumber / 100) | currency:'$' $}</span>
+						</div>
+						<div id="auction-status-winner">
+							<p>
+								WINNER
+							</p>
+							<a href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$auction.winner.firstName $}</a>
+						</div>
+					</div>
+
+				</div>
+
+				<div id="auction-content">
+					<div id="auction-auctioneer">
+						<div class="img">
+							<img src="{% static 'images/auctioneer.jpg' %}" height="109" width="106">
+						</div>
+						<div id="auctioneer-message" class="token">
+							<div ng-repeat="auctioneerMessage in auction.auctioneerMessages">
+								<div ng-bind-html-unsafe="auctioneerMessage.text"></div>
+							</div>
+
+							<div id="btn-acutioneer-up" class="scroll">
+								<img style="margin-top: 40px; display:none;" src="{% static 'images/btn-auctioneer-down.png' %}" height="40" width="42">
+								<img style="display:none;" src="{% static 'images/btn-auctioneer-up.png' %}" height="40" width="42" >
+							</div>
+							<div id="btn-acutioneer-down"></div>
+						</div>
+					</div>
+					<div id="auction-chat">
+						<div class="chat-title">Live chat</div>
+						<div class="chat-container">
+							<div class="chat-list" ib-autoscroll ng-model="auction.chatMessages">
+								<div class="line" ng-repeat="chatMessage in auction.chatMessages">
+									<div class="avatar">
+										<img ng-src="{$ chatMessage.user.profileFotoLink $}" width="30" height="30">
+									</div>
+									<div class="txt">
+										<p>{$ chatMessage.user.displayName $}</p>
+										<span>{$ chatMessage.text $}</span>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="user">
+							<div style="margin: 0 auto; width: 685px;">
+								<form ng-submit="sendChatMessage($index)">
+									<input type="text" class="imput-txt" ng-model="auction.chatMessage" value="Your message here">
+								</form>
+							</div>
+							<div class="enter-text">Press Enter to send</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div id="upcoming-auctions">
+		<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
+			Other Upcoming Auctions
+		</div>
+		<div id="auction" ng-repeat="auction in auctionList[playFor].available">
+			<input type="hidden" class="auction-id"
+			value="{$ auction.id $}"/>
+
+			<div id="auction-top">
+				<div class="img">
+					<img ng-src="{$ auction.itemImage $}">
+				</div>
+				<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
+					{$ auction.itemName $}
+				</div>
+				<div id="auction-retail-price">
+					Retail price: {$ auction.retailPrice | currency:'$' $}
+					<p ng-show="auction.bidType == AUCTION_TYPE_TOKENS">Winner gets {$ auction.retailPrice | number:0 $} tokens</p>
+				</div>
+				<div id="auction-status">
+					<p>
+						RESERVE
+					</p>
+					{$ auction.completion$}% / {$auction.bidders $} Bidders
+				</div>
+				<div id="auction-bids">
+					<div ng-switch on="auction.status">
+						<div id="btn-start-bid" class="btn btn-red btn-join-auction" ng-switch-when="precap" ng-click="startBidding(auction)" ng-disabled="!auction.interface.joinAuctionEnabled">JOIN AUCTION</div>
+						<div id="btn-start-bid" class="btn btn-longtext btn-join-auction" ng-switch-default disabled>ALREADY STARTED</div>
+					</div>
+				</div>
+				<!--<div id="auction-btns">
+					<div id="btn-invite-auction"><img src="{% static 'images/btn-invite-auction.png' %}" width="36"
+						height="42">
+					</div>
+					<div id="btn-chat-auction"><img src="{% static 'images/btn-chat-auction.png' %}" width="36"
+						height="43">
+					</div>
+				</div>-->
+			</div>
+		</div>
+	</div>
+	<div id="finished-auctions">
+		<div ng-class="{'title': playFor == AUCTION_TYPE_TOKENS, 'title-items-sec': playFor == AUCTION_TYPE_CREDITS}">
+			Recently Finished Auctions
+		</div>
+		<div id="auction" ng-repeat="auction in auctionList[playFor].finished">
+			<div id="auction-top">
+				<div class="img">
+					<img ng-src="{$ auction.itemImage $}">
+				</div>
+				<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
+					{$ auction.itemName $}
+				</div>
+				<div class="auction-final-price">
+					Price: <span>{$ (auction.bidNumber / 100) | currency:'$' $}</span>
+				</div>
+				<div id="auction-status-winner">
+					<p>
+						WINNER
+					</p>
+					<a href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$auction.winner.firstName $}</a>
+				</div>
+			</div>
+		</div>
+	</div>	
+
+        <!-- Notifications -->
+        <div id="notifications" class="notifications-container"></div>
+        <script id="template/notification.html" type="text/ng-template">
+        <div class="notification">
+            <div class="kenny">
+                <img src="{% static 'images/tooltip-info-kenny.png' %}">
+            </div>
+            <div class="content">
+                <div class="txt">{$ message $}</div>
+            </div>
+        </div>
+        </script>
+	</div>
+{% endblock %}

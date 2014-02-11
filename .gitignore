@@ -1,0 +1,8 @@
+*.py[co]
+*.swp
+*.db
+settings.py
+
+/venv*
+public_static
+/media/

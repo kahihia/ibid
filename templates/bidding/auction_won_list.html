@@ -1,0 +1,43 @@
+{% extends "ibidgames_base_section.html" %}
+
+{% load thumbnail %}
+
+{% block contentheader %}Auctions won{% endblock %}
+
+{% block grayclasses %} won_items{% endblock %}
+
+{% block graywindowcontent %}
+
+
+
+					<div class="title">
+						Items Won
+					</div>
+					<div class="items-won">
+
+    {% for auction in auctions %}
+                        <div class="won-list">
+							<div class="date">
+								04/03/13
+							</div>
+							<div class="txt">
+								<p>
+									{{ auction.item.name }}
+								</p>
+								RETAIL PRICE: <span>${{ auction.item.retail_price }}</span>
+
+							</div>
+							<div class="details">
+								{{ auction.item.description }}
+
+							</div>
+							<div class="pic">
+								<img src="{% thumbnail auction.item.itemimage_set.all.0.image.name "107x72" as thumb %}{{thumb.url}}{% endthumbnail %}" width="107" height="72">
+							</div>
+						</div>
+    {% endfor %}
+					</div>
+{% endblock %}
+
+
+

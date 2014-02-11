@@ -1,0 +1,3 @@
+Get ready! Auction for {{ auction.item.name }} is about to start! 
+
+You can start playing at {{ site }}{% url bidding_auction_detail auction.item.slug, auction.id %} 
