@@ -32,6 +32,11 @@ from chat import auctioneer
 from chat.models import Message, ChatUser
 from lib import metrics
 
+#########################################
+from rest_framework.decorators import api_view, link
+from django.utils.decorators import classonlymethod
+#########################################
+
 metrics.initialize(settings.MIXPANEL_TOKEN)
 
 class IBGModelResource(ModelResource):
@@ -43,6 +48,7 @@ class IBGModelResource(ModelResource):
         return res
 
 class NotificationResource(IBGModelResource):
+
     class Meta:
         resource_name = 'notification'
         list_allowed_methods = ['get', 'put']
@@ -55,7 +61,19 @@ class NotificationResource(IBGModelResource):
         filtering = {
             'status': ALL,
         }
-        
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrieves all of a users notifications """
+        return super(NotificationResource,self).wrap_view('dispatch_list')
+    
+    @classonlymethod
+    @api_view(['PUT'])
+    def put(self, request, pk=None):
+        """ Updates a notification as read """
+        return super(NotificationResource,self).wrap_view('dispatch_detail')
+    
     def hydrate(self, bundle):
         bundle.obj = Notification.objects.get(id=bundle.data['pk'])
         bundle.obj.status = bundle.data['objects'][0]['message']['status']
@@ -65,7 +83,7 @@ class NotificationResource(IBGModelResource):
 class MemberResource(IBGModelResource):
     
     """ Resource to interact with member data objects.  """
-    
+
     class Meta:
         queryset = Member.objects.all()
         resource_name = 'member'
@@ -84,6 +102,18 @@ class MemberResource(IBGModelResource):
             url(r"^(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
             url(r"^(?P<resource_name>%s)/(?P<%s>\d+)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrieves all members.  """
+        return super(MemberResource,self).wrap_view('dispatch_list')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request, pk=None):
+        """ Retrieves the member with 'pk' if it is the user  """
+        return super(MemberResource,self).wrap_view('dispatch_detail')
     
     def dehydrate(self, bundle):
         
@@ -121,6 +151,12 @@ class ConverTokensResource(MemberResource):
             url(r"^member/(?P<resource_name>%s)/(?P<member_id>\d+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="convertTokens"),
         ]
 
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Resource to convert all of a member's tokens to credits """
+        return super(ConvertTokensResource,self).wrap_view('dispatch_detail')
+
     def obj_get(self, bundle, **kwargs):
         bundle.obj = Member.objects.get(id = kwargs['member_id'])
         self.authorized_read_detail('', bundle)
@@ -131,8 +167,8 @@ class ConverTokensResource(MemberResource):
     
 class MemberByFBTokenResource(IBGModelResource):
     
-    """ This resource loggins or register a user using the facebook access token. """
-    
+    """ This resource logins or register a user using the facebook access token. """
+
     class Meta:
         resource_name = 'byFBToken'
         list_allowed_methods = []
@@ -147,7 +183,13 @@ class MemberByFBTokenResource(IBGModelResource):
             url(r"^member/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
             url(r"^member/(?P<resource_name>%s)/(?P<%s>.*?)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
-    
+
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ This resource logins or register a user using the facebook access token. """
+        return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
+
     def obj_get(self, bundle, **kwargs):
         
         """ Makes login or register the user with the access token from facebook. """
@@ -210,8 +252,23 @@ class CategoryResource(IBGModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrives all categories available."""
+        return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrives one category. """
+        return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
+    
     def dehydrate(self, bundle):
-        bundle.data['categoryImage'] = bundle.obj.get_thumbnail(size="107x72")
+        try:
+            bundle.data['categoryImage'] = bundle.obj.get_thumbnail(size="107x72")
+        except Exception:
+            pass
         return bundle
 
 class ItemResource(IBGModelResource):
@@ -227,12 +284,26 @@ class ItemResource(IBGModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
 
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrives all items available."""
+        return super(ItemResource,self).wrap_view('dispatch_detail')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrives one item. """
+        return super(ItemResource,self).wrap_view('dispatch_detail')
+
     def dehydrate(self, bundle):
         bundle.data['itemImage'] = bundle.obj.get_thumbnail(size="107x72")
         return bundle
 
 class AuctionResource(IBGModelResource):
-    """ This resource retrieves auctions data filtered and sorted by status. """
+    """
+    This resource retrieves auctions data filtered and sorted by status.
+    """
     
     winner = fields.ForeignKey(MemberResource, 'winner',null=True, full=True, help_text = 'Member that won the auction.')
     item = fields.ForeignKey(ItemResource, 'item', full=True, help_text = 'Item being auctioned.')
@@ -264,6 +335,21 @@ class AuctionResource(IBGModelResource):
             url(r"^(?P<resource_name>%s)/(?P<%s>\d+)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
             
         ]
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """
+        Retrives multiple auctions.
+        status --  filter
+        """
+        return super(AuctionResource,self).wrap_view('dispatch_list')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrieves one auction. """
+        return super(AuctionResource,self).wrap_view('dispatch_detail')
     
     def get_list(self, request, **kwargs):
         
@@ -509,6 +595,14 @@ class MemberAuctionsResource(AuctionResource):
                 url(r"^member/(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
                 ]
     
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """
+        Resource to retrieve data of auctions from the user
+        """
+        return super(MemberAuctionsResource,self).wrap_view('dispatch_list')
+    
     def apply_filters(self, request, applicable_filters):
         obj_list = self.get_object_list(request).filter(bidders = request.user.id)
         return_list = obj_list & super(MemberAuctionsResource, self).apply_filters(request, applicable_filters)
@@ -546,6 +640,18 @@ class BidPackageResource(IBGModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
 
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrieves data of all bid package objects """
+        return super(BidPackageResource,self).wrap_view('dispatch_list')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrieves data of one bid package object """
+        return super(BidPackageResource,self).wrap_view('dispatch_detail')
+
 class AddBidResource(AuctionResource):
      
     """
@@ -565,6 +671,12 @@ class AddBidResource(AuctionResource):
         return [
             url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]  
+
+    @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        """ The user add bids to an auction. """
+        return super(AddBidResource,self).wrap_view('dispatch_detail')
 
     def post_detail(self, request, **kwargs):
         return super(AddBidResource, self).get_detail(request, **kwargs)
@@ -635,6 +747,12 @@ class RemBidResource(AuctionResource):
             url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="remBid"),
         ]  
 
+    @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        """ The user remove bids to an auction. """
+        return super(RemBidResource,self).wrap_view('dispatch_detail')
+
     def obj_get(self, bundle, **kwargs):
           
         error = None
@@ -685,6 +803,12 @@ class ClaimBidResource(AuctionResource):
         return [
             url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),  
         ]  
+
+    @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        """ The user claims an auction. """
+        return super(ClaimBidResource,self).wrap_view('dispatch_detail')
 
     def obj_update(self,bundle, **kwargs ):
         
@@ -745,9 +869,18 @@ class MessageResource(ModelResource):
             url(r"^auction/(?P<object_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
         ]   
     
+    @classonlymethod
+    @api_view(['POST', 'GET'])
+    def post(self, request):
+        """
+        Message handler.
+        text -- text in the message
+        """
+        return super(MessageResource,self).wrap_view('dispatch_list')
+    
     def post_list(self, request, **kwargs):
-        deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
-        basic_bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
+        #deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        basic_bundle = self.build_bundle(data=request.body, request=request)#dict_strip_unicode_keys(deserialized), request=request)
         if 'text' in basic_bundle.data:
             text = basic_bundle.data['text']
             auction_id = kwargs['object_id']
@@ -779,6 +912,12 @@ class IOPaymentInfoResource(ModelResource):
         list_allowed_methods = ['post']
         detail_allowed_methods = []
         include_resource_uri = False
+
+    @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        """ Payment from apple store handler. """
+        return super(IOPaymentInfoResource,self).wrap_view('dispatch_list')
 
     def post_list(self, request, **kwargs):
         error = None
@@ -834,4 +973,9 @@ class AppleIbidPackageIdsResource(IBGModelResource):
         detail_allowed_methods = []
         fields = ('value',)
         
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Resource to retrieve data of bid package objects' relation with apple store """
+        return super(AppleIbidPackageIdsResource,self).wrap_view('dispatch_list')
     

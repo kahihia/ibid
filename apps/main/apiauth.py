@@ -6,7 +6,7 @@ logger = logging.getLogger('django')
 from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.exceptions import Unauthorized
 from tastypie.authentication import Authentication
-from bidding.models import ConfigKey
+from bidding.models import ConfigKey, Auction
 
 
 class CustomAuthentication(Authentication):
@@ -69,7 +69,9 @@ class UserNotificationsAuthorization(ReadOnlyAuthorization):
         return bundle.obj.recipient == bundle.request.user
     
 class MemberAuthorization(NoAuthorization):
-    
+    def read_list(self, object_list, bundle):
+        return object_list
+        
     def read_detail(self, object_list, bundle):
         if bundle.request.path.endswith('schema/'):
             return True

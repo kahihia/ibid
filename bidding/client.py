@@ -220,9 +220,7 @@ def do_send_auctioneer_message(auction,message):
 
     tmp = {}
 
-    tmp['auctioneerMessages'] = [{'text':text,
-        'date': message.get_time()
-        }]
+    tmp['auctioneerMessages'] = [{'text':text,'date': message.get_time()}]
     tmp['id'] = auction.id
 
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}

@@ -11,6 +11,7 @@ from bidding.models import BidPackage
 from bidding.models import ConfigKey
 from bidding.models import ConvertHistory
 from bidding.models import FBOrderInfo
+from bidding.models import IOPaymentInfo
 from bidding.models import Item
 from bidding.models import ItemImage
 from bidding.models import Member
@@ -191,6 +192,7 @@ admin.site.register(ConfigKey, ConfigKeyAdmin)
 admin.site.register(ConvertHistory)
 admin.site.register(Category)
 admin.site.register(FBOrderInfo)
+admin.site.register(IOPaymentInfo)
 admin.site.register(Item, ItemAdmin)
 admin.site.register(Member, MemberUserAdmin)
 admin.site.register(PromotedAuction, PromotedAuctionAdmin)
