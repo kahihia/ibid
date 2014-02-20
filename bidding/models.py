@@ -906,10 +906,10 @@ class IOPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage, null=True)
     transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
-    purchase_date = models.DateTimeField(auto_now_add=True, null=True)
+    purchase_date = models.DateTimeField(null=True)
 
     def __unicode__(self):
-        return repr(self.member) + ' - ' + repr(self.package) + ' (' + self.purchase_date + ')'
+        return repr(self.member) + ' - ' + repr(self.package) + ' (' + str(self.purchase_date) + ')'
 
 
 CONFIG_KEY_TYPES = (('text', 'text'),
@@ -924,7 +924,7 @@ class ConfigKey(models.Model):
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='text')
 
     @staticmethod
-    def get(key, default=None, default_type=None, default_description=None):
+    def get(key, default="", default_type=None, default_description=None):
         result = ConfigKey.objects.filter(key=key).all()
         if len(result):
             result = result[0]

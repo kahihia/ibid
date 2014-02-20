@@ -6,6 +6,7 @@ logger = logging.getLogger('django')
 from datetime import datetime
 import json
 import time
+from urllib2 import urlopen
 
 from django.conf import settings
 from django.conf.urls import url
@@ -843,8 +844,9 @@ class IOPaymentInfoResource(ModelResource):
     
     class Meta:
         resource_name = 'io_purchase'
-        authorization = PaymentAuthorization()
-        authentication = CustomAuthentication()
+        authorization = Authorization()
+        #authorization = PaymentAuthorization()
+        #authentication = CustomAuthentication()
         queryset = IOPaymentInfo.objects.all()
         collection_name = 'payments'
         list_allowed_methods = ['post']
@@ -853,6 +855,7 @@ class IOPaymentInfoResource(ModelResource):
 
     def post_list(self, request, **kwargs):
         error = None
+        logger.debug('REQUEST.BODY: %s' % request.body)
         deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
         basic_bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
         if 'receipt-data' in basic_bundle.data:
@@ -864,25 +867,29 @@ class IOPaymentInfoResource(ModelResource):
                 if verified_data['status'] == 0:
                     for receipt in verified_data['receipt']['in_app']:
                         try:
-                            IOPaymentInfo.objects.get(receipt['transaction_id'])
+                            IOPaymentInfo.objects.get(transaction_id=receipt['transaction_id'])
                             error = 'DUPLICATED PURCHASE'
                         except Exception:
                             store_ids = ConfigKey.get('APPLE_STORE_PACKAGES')
                             if store_ids:
-                                store_ids = json.loads(store_ids)
-                                package = BidPackage.objects.get(pk=store_ids[receipt['product_id']])
-                                bundle = self.obj_create(
-                                    bundle = basic_bundle, 
-                                    member = request.user,
-                                    package = package,
-                                    transaction_id = int(receipt['transaction_id']), 
-                                    purchase_date = datetime(receipt['purchase_date']),
-                                    quantity = int(receipt['quantity'])
-                                    )
-                                request.user.bids_left += (package.bids * int(receipt['quantity']))
-                                request.user.save()
-                                client.update_credits(request.user)
-                                return self.create_response(request, {} , response_class=http.HttpCreated)
+                                try:
+                                    store_ids = json.loads(store_ids)
+                                    package = BidPackage.objects.get(pk=store_ids[receipt['product_id']])
+                                    logger.debug(str(receipt['purchase_date']))
+                                    bundle = self.obj_create(
+                                        bundle = basic_bundle, 
+                                        member = request.user,
+                                        package = package,
+                                        transaction_id = int(receipt['transaction_id']), 
+                                        purchase_date = datetime.strptime(str(receipt['purchase_date']), '%Y-%m-%d %H:%M:%S Etc/GMT'),
+                                        quantity = int(receipt['quantity'])
+                                        )
+                                    request.user.bids_left += (package.bids * int(receipt['quantity']))
+                                    request.user.save()
+                                    client.update_credits(request.user)
+                                    return self.create_response(request, {} , response_class=http.HttpCreated)
+                                except Exception:
+                                    error = 'ERROR IN THE PURCHASE' 
                             else:
                                 error = 'INVALID PACKAGE'
                 else:

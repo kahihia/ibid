@@ -273,12 +273,12 @@ def callReverse(userIdentifier, function):
 def update_credits(member):
     tmp = {}
     tmp['credits'] = member.bids_left
-    send_pubnub_message({'data':tmp}, '/topic/main/%s' % member.id)
+    send_pubnub_message({'method': 'update_credits','data':tmp}, '/topic/main/%s' % member.id)
 
 def update_tokens(member):
     tmp = {}
     tmp['tokens'] = member.tokens_left
-    send_pubnub_message({'data':tmp}, '/topic/main/%s' % member.id)
+    send_pubnub_message({'method': 'update_tokens','data':tmp}, '/topic/main/%s' % member.id)
 
 def clock_pubnub():
     message = {}
