@@ -98,6 +98,7 @@ CACHE = {
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -158,6 +159,9 @@ INSTALLED_APPS = (
     'apps.audit',
     'apps.main',
     'tastypie',
+    'rest_framework',
+    'rest_framework_swagger',
+
 )
 
 

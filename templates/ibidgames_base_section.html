@@ -14,6 +14,7 @@
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
 		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
         <link rel="stylesheet" href="{% static 'css/tour.css' %}">
+		<link rel="stylesheet" href="{% static 'css/item_details.css' %}">
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -354,6 +355,16 @@
 				{% endblock %}
 			</div>
 		</div>
+
+
+		<!-- Item Details -->
+				<div class="item-details modal" style="display:none;">
+							<div id="item-details" class="content"></div>
+						<div class="gloss"></div>
+						<div class="btn-close" onclick="hideItemDetails()">
+								x
+							</div>
+				</div>
 
         <!-- Interactive tour steps -->
         <ol id="tour--initial" ib-tour class="joyRideTipContent">

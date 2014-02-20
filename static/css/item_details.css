@@ -1,0 +1,22 @@
+.item-details{
+background-color: whitesmoke;
+background-image: none!important;
+}
+
+.item-details:after {
+background-image: none!important;
+content: none!important;
+}
+
+.item-details .info {
+border-top: none!important;
+width: 70%;
+font-size: 15px!important;
+padding-top: 2em!important;
+}
+
+.item-details .item-name {
+font-size: 18px!important;
+color: #777777!important;
+padding-top: 1em!important;
+}

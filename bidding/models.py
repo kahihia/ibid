@@ -300,6 +300,7 @@ class Category(models.Model):
         return None
 
 
+
 class Item(AuditedModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, help_text='Used to identify the item, should be unique')
@@ -315,6 +316,7 @@ class Item(AuditedModel):
         if qs:
             return settings.IMAGES_SITE + get_thumbnail(qs[0].image.name, size).url
         return None
+
 
     def __unicode__(self):
         return self.name
@@ -886,6 +888,7 @@ class FBOrderInfo(AuditedModel):
     fb_payment_id = models.BigIntegerField(blank=True, null=True)  # this field should be unique
     date = models.DateTimeField(auto_now_add=True, null=True)
 
+
     def __unicode__(self):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
 
@@ -906,6 +909,7 @@ class IOPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage, null=True)
     transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
+    quantity = models.IntegerField()
     purchase_date = models.DateTimeField(null=True)
 
     def __unicode__(self):
@@ -924,7 +928,8 @@ class ConfigKey(models.Model):
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='text')
 
     @staticmethod
-    def get(key, default="", default_type=None, default_description=None):
+
+    def get(key, default=None, default_type=None, default_description=None):
         result = ConfigKey.objects.filter(key=key).all()
         if len(result):
             result = result[0]

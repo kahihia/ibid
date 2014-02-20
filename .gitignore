@@ -3,6 +3,9 @@
 *.db
 settings.py
 
+wsgy.py
+
+
 /venv*
 public_static
 /media/

@@ -21,6 +21,7 @@ def create_auctioneer_message(auction, message):
         'date': message.get_time(),
         }]
 
+
     tmp['id'] = auction.id
 
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
@@ -40,10 +41,8 @@ def member_joined_message(auction, member):
 
 
 def member_claim_message(auction, member):
-    
     if auction.bid_type == 'bid':
-        text = AuctioneerPhrase.objects.get(key='claimITEMS').text
-        
+        text = AuctioneerPhrase.objects.get(key='claimITEMS').text        
     else:
         text = AuctioneerPhrase.objects.get(key='claimTOKENS').text
      
@@ -85,6 +84,7 @@ def auction_finished_message(auction):
             text = AuctioneerPhrase.objects.get(key='finishITEMS').text
         elif auction.bid_type == "token":
             text = AuctioneerPhrase.objects.get(key='finishTOKENS').text
+
         message = text.format(user=member.display_linked_facebook_profile(), price=auction.price(), facebook_id=member.facebook_id, item=auction.item)
         send_auctioneer_message(auction, message)
 

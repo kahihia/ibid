@@ -207,10 +207,12 @@
 		<img class="prize" src="{% static 'images/prize-medium.png' %}">
 	</div>
 {% endblock %}
+
 {% block menu %}
 	<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
 	<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
 	{% endblock %}
+
 {% block content_wrapper %}
 	<div ng-class="{'color-frame-tokens': playFor == AUCTION_TYPE_TOKENS, 'color-frame-items': playFor == AUCTION_TYPE_CREDITS}"></div>
 	<div id="user-auctions">
@@ -221,12 +223,15 @@
 			<input type="hidden" class="auction-id"
 			value="{$ auction.id $}"/>
 
+
 			<div id="auction">
 				<div ng-switch on="auction.status">
 					<!-- TEMPLATE: precap -->
 					<div id="auction-top" ng-switch-when="precap">
 						<div class="img">
-							<img ng-src="{$ auction.itemImage $}">
+
+							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -262,7 +267,9 @@
 					<!-- TEMPLATE: waiting -->
 					<div id="auction-top" ng-switch-when="waiting">
 						<div class="img">
-							<img ng-src="{$ auction.itemImage $}">
+
+							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -283,7 +290,9 @@
 					<!-- TEMPLATE: processing -->
 					<div id="auction-top" ng-switch-when="processing">
 						<div class="img">
-							<img ng-src="{$ auction.itemImage $}">
+
+							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -315,7 +324,9 @@
 					<!-- TEMPLATE: pause -->
 					<div id="auction-top" ng-switch-when="pause">
 						<div class="img">
-							<img ng-src="{$ auction.itemImage $}">
+
+							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -348,7 +359,9 @@
 					<div id="auction-top" ng-switch-when="waiting_payment">
 						<div class="btn-close" ng-mousedown="closeAuction(auction)">×</div>
 						<div class="img">
-							<img ng-src="{$ auction.itemImage $}">
+
+							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -422,7 +435,8 @@
 
 			<div id="auction-top">
 				<div class="img">
-					<img ng-src="{$ auction.itemImage $}">
+
+					<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
 				</div>
 				<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 					{$ auction.itemName $}
@@ -461,7 +475,8 @@
 		<div id="auction" ng-repeat="auction in auctionList[playFor].finished">
 			<div id="auction-top">
 				<div class="img">
-					<img ng-src="{$ auction.itemImage $}">
+
+					<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
 				</div>
 				<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 					{$ auction.itemName $}
@@ -479,17 +494,20 @@
 		</div>
 	</div>	
 
-        <!-- Notifications -->
-        <div id="notifications" class="notifications-container"></div>
-        <script id="template/notification.html" type="text/ng-template">
-        <div class="notification">
-            <div class="kenny">
-                <img src="{% static 'images/tooltip-info-kenny.png' %}">
-            </div>
-            <div class="content">
-                <div class="txt">{$ message $}</div>
-            </div>
-        </div>
-        </script>
+
+		<!-- Notifications -->
+		<div id="notifications" class="notifications-container"></div>
+		<script id="template/notification.html" type="text/ng-template">
+										<div class="notification">
+														<div class="kenny">
+																		<img src="{% static 'images/tooltip-info-kenny.png' %}">
+														</div>
+														<div class="content">
+																		<div class="txt">{$ message $}</div>
+														</div>
+										</div>
+		</script>
 	</div>
+
+
 {% endblock %}

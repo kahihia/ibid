@@ -1,20 +1,16 @@
 # -*- coding: utf-8 -*-
-
 import logging
 logger = logging.getLogger('django')
-
 from datetime import datetime
 import json
 import time
 from urllib2 import urlopen
-
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
 from django_facebook.connect import connect_user
 from django_facebook.exceptions import MissingPermissionsError
 import open_facebook
-
 from tastypie import fields
 from tastypie import http
 from tastypie.constants import ALL_WITH_RELATIONS
@@ -22,7 +18,6 @@ from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.exceptions import Unauthorized, BadRequest, ImmediateHttpResponse
 from tastypie.resources import ModelResource, ALL, Resource
 from tastypie.utils import trailing_slash, dict_strip_unicode_keys
-
 from apps.main.models import Notification
 from apps.main.apiauth import *
 from bidding import client
@@ -30,6 +25,12 @@ from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, Co
 from chat import auctioneer
 from chat.models import Message, ChatUser
 from lib import metrics
+
+#########################################
+from rest_framework.decorators import api_view, link
+from django.utils.decorators import classonlymethod
+#########################################
+
 
 metrics.initialize(settings.MIXPANEL_TOKEN)
 
@@ -42,6 +43,7 @@ class IBGModelResource(ModelResource):
         return res
 
 class NotificationResource(IBGModelResource):
+
     class Meta:
         resource_name = 'notification'
         list_allowed_methods = ['get', 'put']
@@ -54,7 +56,21 @@ class NotificationResource(IBGModelResource):
         filtering = {
             'status': ALL,
         }
-        
+
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrieves all of a users notifications """
+        return super(NotificationResource,self).wrap_view('dispatch_list')
+    
+    @classonlymethod
+    @api_view(['PUT'])
+    def put(self, request, pk=None):
+        """ Updates a notification as read """
+        return super(NotificationResource,self).wrap_view('dispatch_detail')
+    
+
     def hydrate(self, bundle):
         bundle.obj = Notification.objects.get(id=bundle.data['pk'])
         bundle.obj.status = bundle.data['objects'][0]['message']['status']
@@ -64,7 +80,7 @@ class NotificationResource(IBGModelResource):
 class MemberResource(IBGModelResource):
     
     """ Resource to interact with member data objects.  """
-    
+
     class Meta:
         queryset = Member.objects.all()
         resource_name = 'member'
@@ -83,6 +99,19 @@ class MemberResource(IBGModelResource):
             url(r"^(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
             url(r"^(?P<resource_name>%s)/(?P<%s>\d+)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
+    
+
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrieves all members.  """
+        return super(MemberResource,self).wrap_view('dispatch_list')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request, pk=None):
+        """ Retrieves the member with 'pk' if it is the user  """
+        return super(MemberResource,self).wrap_view('dispatch_detail')
     
     def dehydrate(self, bundle):
         
@@ -120,6 +149,13 @@ class ConverTokensResource(MemberResource):
             url(r"^member/(?P<resource_name>%s)/(?P<member_id>\d+)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="convertTokens"),
         ]
 
+
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Resource to convert all of a member's tokens to credits """
+        return super(ConvertTokensResource,self).wrap_view('dispatch_detail')
+
     def obj_get(self, bundle, **kwargs):
         bundle.obj = Member.objects.get(id = kwargs['member_id'])
         self.authorized_read_detail('', bundle)
@@ -130,8 +166,9 @@ class ConverTokensResource(MemberResource):
     
 class MemberByFBTokenResource(IBGModelResource):
     
-    """ This resource loggins or register a user using the facebook access token. """
-    
+
+    """ This resource logins or register a user using the facebook access token. """
+
     class Meta:
         resource_name = 'byFBToken'
         list_allowed_methods = []
@@ -146,12 +183,18 @@ class MemberByFBTokenResource(IBGModelResource):
             url(r"^member/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
             url(r"^member/(?P<resource_name>%s)/(?P<%s>.*?)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
-    
+
+
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ This resource logins or register a user using the facebook access token. """
+        return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
+
     def obj_get(self, bundle, **kwargs):
         
         """ Makes login or register the user with the access token from facebook. """
-        en = datetime.now()
-        logger.debug("entrada: %s" % en)
+
         access_token = kwargs['access_token']
         db_user = Member.objects.none()
         try:
@@ -182,8 +225,7 @@ class MemberByFBTokenResource(IBGModelResource):
         bundle.data['won_auctions'] = bundle.obj.auction_set.filter(winner=bundle.obj).all().count()
         bundle.data['actual_auctions'] = bundle.obj.auction_set.exclude(status='waiting_payment').exclude(status='paid').all().count()
         bundle.data['image_thumb'] = json.loads(bundle.obj.raw_data)['image_thumb']
-        sal = datetime.now()
-        logger.debug("salida: %s" % sal)
+
         return bundle
 
     def check_permissions(self, access_token):
@@ -206,6 +248,7 @@ class CategoryResource(IBGModelResource):
         queryset = Category.objects.all()
         resource_name = 'category'
         collection_name = 'categories'
+
         authorization = ReadOnlyAuthorization()
         authentication = CustomAuthentication()
         include_resource_uri = False
@@ -213,8 +256,24 @@ class CategoryResource(IBGModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         
+
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrives all categories available."""
+        return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrives one category. """
+        return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
+    
     def dehydrate(self, bundle):
-        bundle.data['categoryImage'] = bundle.obj.get_thumbnail(size="107x72")
+        try:
+            bundle.data['categoryImage'] = bundle.obj.get_thumbnail(size="107x72")
+        except Exception:
+            pass
         return bundle
 
 class ItemResource(IBGModelResource):
@@ -231,13 +290,27 @@ class ItemResource(IBGModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
 
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrives all items available."""
+        return super(ItemResource,self).wrap_view('dispatch_detail')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrives one item. """
+        return super(ItemResource,self).wrap_view('dispatch_detail')
+
     def dehydrate(self, bundle):
         bundle.data['itemImage'] = bundle.obj.get_thumbnail(size="107x72")
         return bundle
 
 class AuctionResource(IBGModelResource):
-    """ This resource retrieves auctions data filtered and sorted by status. """
-    
+
+    """
+    This resource retrieves auctions data filtered and sorted by status.
+    """
     winner = fields.ForeignKey(MemberResource, 'winner',null=True, full=True, help_text = 'Member that won the auction.')
     item = fields.ForeignKey(ItemResource, 'item', full=True, help_text = 'Item being auctioned.')
     categories = fields.ManyToManyField(CategoryResource, 'categories', full=True, help_text ='Category of the auction')
@@ -269,6 +342,22 @@ class AuctionResource(IBGModelResource):
             
         ]
     
+
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """
+        Retrives multiple auctions.
+        status --  filter
+        """
+        return super(AuctionResource,self).wrap_view('dispatch_list')
+    
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrieves one auction. """
+        return super(AuctionResource,self).wrap_view('dispatch_detail')
+
     def get_list(self, request, **kwargs):
         
         """ Make object list in different ways depending if auction is finished or available"""
@@ -311,8 +400,7 @@ class AuctionResource(IBGModelResource):
         finished_status = ['paid' ,'waiting_payment']
         playing_status=['processing','pause','waiting']
         return_dict={'token':{},'credit':{}}
-        logger.debug('INICIO')
-        inicial = datetime.now()
+
         for obj in to_be_serialized[self._meta.collection_name]:
             bundle = self.build_bundle(obj=obj, request=request)
             if obj.bid_type=='token' and obj.is_active ==True:
@@ -337,11 +425,8 @@ class AuctionResource(IBGModelResource):
                 elif obj.status in playing_status:
                     credit_playing_list.append(self.full_dehydrate_available( bundle))
                 else:
-                    credit_available_list.append(self.full_dehydrate_available( bundle))
-            logger.debug("FINAL")
-            final = datetime.now()
-            logger.debug(final - inicial)
-            
+                    credit_available_list.append(self.full_dehydrate_available( bundle)) 
+     
         return_dict['token']['finished'] = token_finished_list
         return_dict['token']['available'] = token_available_list
         return_dict['token']['wout_winner'] = token_wout_winner
@@ -458,7 +543,6 @@ class AuctionResource(IBGModelResource):
             bundle.data['timeleft'] = bundle.obj.get_time_left() if bundle.obj.status == 'processing' else None
             bundle.data['send_time'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime()) if  bundle.obj.status == 'processing' else None
         bundle.data['bidNumber'] = bundle.obj.used_bids() / bundle.obj.minimum_precap
-       
         bundle.data['auctioneerMessages'] = []
         for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
@@ -475,7 +559,8 @@ class AuctionResource(IBGModelResource):
                  'user': {'displayName': mm.get_user().display_name(),
                           'profileFotoLink': mm.get_user().picture(),
                           'profileLink': mm.user.user_link(),
-                          'facebookId': mm.get_user().user_facebook_id()},
+                          'facebookId': mm.get_user().user_facebook_id()
+                          },
                  'auctionId': bundle.obj.id
             }
             bundle.data['chatMessages'].insert(0, w)
@@ -519,7 +604,15 @@ class MemberAuctionsResource(AuctionResource):
                 url(r"^member/(?P<resource_name>%s)%s$" % (self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
                 url(r"^member/(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
                 ]
-    
+
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """
+        Resource to retrieve data of auctions from the user
+        """
+        return super(MemberAuctionsResource,self).wrap_view('dispatch_list')
+
     def apply_filters(self, request, applicable_filters):
         obj_list = self.get_object_list(request).filter(bidders = request.user.id)
         return_list = obj_list & super(MemberAuctionsResource, self).apply_filters(request, applicable_filters)
@@ -557,8 +650,20 @@ class BidPackageResource(IBGModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
 
-class AddBidResource(AuctionResource):
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Retrieves data of all bid package objects """
+        return super(BidPackageResource,self).wrap_view('dispatch_list')
     
+    @classonlymethod
+    @api_view(['GET'])
+    def retrieve(self, request):
+        """ Retrieves data of one bid package object """
+        return super(BidPackageResource,self).wrap_view('dispatch_detail')
+
+class AddBidResource(AuctionResource):
+     
     """
         Let a user to add bids into an auction
     """
@@ -575,7 +680,13 @@ class AddBidResource(AuctionResource):
     def base_urls(self):
         return [
             url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-        ]  
+        ]
+    
+    @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        """ The user add bids to an auction. """
+        return super(AddBidResource,self).wrap_view('dispatch_detail')
 
     def post_detail(self, request, **kwargs):
         return super(AddBidResource, self).get_detail(request, **kwargs)
@@ -614,6 +725,7 @@ class AddBidResource(AuctionResource):
                 else:
                     auction.place_precap_bid(member, amount)
                     client.updatePrecap(auction)
+
         if not can_place:
             if auction.status != "precap":
                 error = "NOT_IN_PRECAP"
@@ -639,6 +751,7 @@ class RemBidResource(AuctionResource):
         queryset = Auction.objects.all()
         list_allowed_methods = []
         detail_allowed_methods = ['post']
+
         include_resource_uri = False
            
     def base_urls(self):
@@ -649,6 +762,12 @@ class RemBidResource(AuctionResource):
     def post_detail(self, request, **kwargs):
         return super(RemBidResource, self).get_detail(request, **kwargs)
     
+    @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        """ The user remove bids to an auction. """
+        return super(RemBidResource,self).wrap_view('dispatch_detail')
+
     def obj_get(self, bundle, **kwargs):
           
         error = None
@@ -692,6 +811,7 @@ class ClaimBidResource(AuctionResource):
         always_return_data = True
         list_allowed_methods = []
         detail_allowed_methods = ['post']
+
         include_resource_uri = False
         detail_uri_name = 'auction_id'
         
@@ -700,8 +820,15 @@ class ClaimBidResource(AuctionResource):
             url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),  
         ]  
 
+
     def post_detail(self, request, **kwargs):
         return super(ClaimBidResource, self).get_detail(request, **kwargs)
+
+    @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        "" " The user claims an auction. """
+        return super(ClaimBidResource,self).wrap_view('dispatch_detail')
     
     def obj_get(self,bundle, **kwargs ):
         
@@ -740,7 +867,9 @@ class ClaimBidResource(AuctionResource):
             error = 'AUCTION_NOT_ACTIVE_OR_CANT_BID'
         if error:
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
+
         return bundle.obj
+
 
 class MessageResource(ModelResource):
     
@@ -764,6 +893,16 @@ class MessageResource(ModelResource):
         return [
             url(r"^auction/(?P<object_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
         ]   
+    
+    
+    @classonlymethod
+    @api_view(['POST', 'GET'])
+    def post(self, request):
+        """
+        Message handler.
+        text -- text in the message
+        """
+        return super(MessageResource,self).wrap_view('dispatch_list')
     
     def post_list(self, request, **kwargs):
         deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
@@ -835,7 +974,7 @@ class ServerClockResource(Resource):
         client.clock_pubnub()
         return self.create_response(request, time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime()))
 
-    
+  
 class IOPaymentInfoResource(ModelResource):
     
     """
@@ -844,15 +983,23 @@ class IOPaymentInfoResource(ModelResource):
     
     class Meta:
         resource_name = 'io_purchase'
+
         authorization = Authorization()
         #authorization = PaymentAuthorization()
         #authentication = CustomAuthentication()
+
         queryset = IOPaymentInfo.objects.all()
         collection_name = 'payments'
         list_allowed_methods = ['post']
         detail_allowed_methods = []
         include_resource_uri = False
 
+        @classonlymethod
+    @api_view(['POST'])
+    def post(self, request):
+        """ Payment from apple store handler. """
+        return super(IOPaymentInfoResource,self).wrap_view('dispatch_list')
+    
     def post_list(self, request, **kwargs):
         error = None
         logger.debug('REQUEST.BODY: %s' % request.body)
@@ -912,4 +1059,10 @@ class AppleIbidPackageIdsResource(IBGModelResource):
         detail_allowed_methods = []
         fields = ('value',)
         
+    @classonlymethod
+    @api_view(['GET'])
+    def get(self, request):
+        """ Resource to retrieve data of bid package objects' relation with apple store """
+        return super(AppleIbidPackageIdsResource,self).wrap_view('dispatch_list')
+
     

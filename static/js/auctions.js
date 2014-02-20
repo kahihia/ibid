@@ -46,6 +46,10 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.realtimeStatus = "Connecting...";
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
+<<<<<<< HEAD
+=======
+    $scope.showItemDetails = false;
+>>>>>>> 429804ad5b1e02cdbf19b6c1fa93c6aa52849181
 
     $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
 
@@ -194,7 +198,11 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         // Post to server that user wants to start bidding on this
         // auction.
         $http
+<<<<<<< HEAD
             .post('/api/startBidding/', {id: auction.id})
+=======
+            .post('/api/v1/auction/'+auction.id+'/add_bids/')
+>>>>>>> 429804ad5b1e02cdbf19b6c1fa93c6aa52849181
             .success(function (data) {
                 // User can't bid on this auction.
                 if (!data.success) {
@@ -572,6 +580,23 @@ function isDict(p) {
         return false;
     }
 }
+
+function loadItemDetails(auction) {
+    var details ='<div class="item"><img src="'+auction['itemImage']+'"><p class="winner"><span class="item-name">'+auction['itemName']+'</span></p></div><p class="info text-small-w">'+auction['itemDescription']+'</p>';             
+    angular.element('#item-details').html(details);
+    angular.element('.item-details.modal').css("display", "block");
+    showOverlay();
+};
+function _loadItemDetails(image,name,description) {
+    var details ='<div class="item"><img src="'+image+'"><p class="winner"><span class="item-name">'+name+'</span></p></div><p class="info text-small-w">'+description+'</p>';             
+    angular.element('#item-details').html(details);
+    angular.element('.item-details.modal').css("display", "block");
+    showOverlay();
+};
+function hideItemDetails() {
+        angular.element('.item-details.modal').css("display", "none");
+        hideOverlay();    
+    };
 
 jQuery(function(){
     showOverlay();

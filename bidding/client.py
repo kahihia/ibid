@@ -21,6 +21,7 @@ def send_multiple_messages(pairs):
 def send_pubnub_message(message, destination):
     if type(message) is dict:
         message['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
+
     
     info = pubnub.publish({
            'channel' : destination,
@@ -88,7 +89,6 @@ def auction_created(auction):
     tmp['itemImage'] = auction.item.get_thumbnail()
     tmp['itemDescription'] = auction.item.description
     tmp['bidders'] = auction.bidders.count()
-
     tmp['placed'] = 0
     tmp['timeleft'] = None
     tmp['bidNumber'] = 0
@@ -135,7 +135,6 @@ def auctionAwait(auction):
     tmp = {}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
-
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
@@ -169,7 +168,6 @@ def auctionPause(auction):
     tmp={}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
-
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
@@ -179,7 +177,6 @@ def auctionResume(auction):
     tmp['id'] = auction.id
     tmp['status'] = auction.status
     tmp['timeleft'] = auction.get_time_left()
-
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
@@ -212,28 +209,21 @@ def someoneClaimedMessage(auction):
                      'facebookId': auction.get_last_bidder().facebook_id}
     tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
     tmp['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
-
     result = {'method': 'someoneClaimed', 'data': tmp}
     return (result, '/topic/main/%s' % auction.id)
 
 
 def do_send_auctioneer_message(auction,message):
     text = message.format_message()
-
     tmp = {}
-
-    tmp['auctioneerMessages'] = [{'text':text,
-        'date': message.get_time(),
-        }]
+    tmp['auctioneerMessages'] = [{'text':text,'date': message.get_time()}]
     tmp['id'] = auction.id
-
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
     send_pubnub_message(result, '/topic/main/%s' % auction.id)
 
 
 def do_send_chat_message(auction, message):
     text = message.format_message()
-
     user = {}
     user['displayName'] = message.get_user().display_name()
     user['profileFotoLink'] = message.get_user().picture()
@@ -241,9 +231,7 @@ def do_send_chat_message(auction, message):
     user['facebookId'] = message.get_user().user_facebook_id()
     user['tokens'] = 0
     user['credits'] = 0
-
     result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
-
     send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
 
@@ -254,7 +242,6 @@ def do_send_global_chat_message(member, text):
     user['profileFotoLink'] = "http://graph.facebook.com/%s/picture" % str(member.facebook_id)
     user['profileLink'] = "https://facebook.com/%s" % str(member.facebook_id)
     user['facebookId'] = member.facebook_id
-    
     result = {'method':'receiveChatMessage', 'data':{'user': user, 'text': text}}
 
     send_pubnub_message(result, 'global')
@@ -275,6 +262,8 @@ def update_credits(member):
     tmp['credits'] = member.bids_left
     send_pubnub_message({'method': 'update_credits','data':tmp}, '/topic/main/%s' % member.id)
 
+
+
 def update_tokens(member):
     tmp = {}
     tmp['tokens'] = member.tokens_left
@@ -284,4 +273,6 @@ def clock_pubnub():
     message = {}
     message['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
     send_pubnub_message({'data':message}, '/topic/main/clock/')
-    
+
+   
+

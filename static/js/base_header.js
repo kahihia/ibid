@@ -132,7 +132,11 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
 
+<<<<<<< HEAD
      $rootScope.subscribeToPaymentChannel = function(member) {
+=======
+    $rootScope.subscribeToPaymentChannel = function(member) {
+>>>>>>> 429804ad5b1e02cdbf19b6c1fa93c6aa52849181
         $scope.subscribeToChannel({
             channel: $scope.channel + member,
             message: function(messages) {
@@ -299,6 +303,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             product: $rootScope.SITE_NAME+'bid_package/'+package_id,
         };
 
+        $scope.subscribeToPaymentChannel(member)
         FB.ui(obj, getCredits_callback);
     };
 

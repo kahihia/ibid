@@ -22,7 +22,6 @@ class Migration(SchemaMigration):
         # Deleting model 'IOPaymentInfo'
         db.delete_table(u'bidding_iopaymentinfo')
 
-
     models = {
         u'auth.group': {
             'Meta': {'object_name': 'Group'},
