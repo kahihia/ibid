@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.db.models import Count, Max, Min
-
 from bidding.forms import AuctionAdminForm
 from bidding.forms import ConfigKeyAdminForm
 from bidding.forms import ItemAdminForm

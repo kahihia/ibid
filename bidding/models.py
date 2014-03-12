@@ -300,7 +300,6 @@ class Category(models.Model):
         return None
 
 
-
 class Item(AuditedModel):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True, help_text='Used to identify the item, should be unique')
@@ -904,6 +903,7 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bids=instance.member.bids_left,
                                       total_bidsto=instance.member.bidsto_left,
         )
+
 
 class IOPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)

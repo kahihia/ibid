@@ -47,9 +47,12 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
     $scope.channel = "/topic/main/";
     $scope.limit = 20;
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
     $scope.showItemDetails = false;
 >>>>>>> 429804ad5b1e02cdbf19b6c1fa93c6aa52849181
+=======
+>>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 
     $rootScope.playFor = $scope.AUCTION_TYPE_TOKENS;
 
@@ -199,10 +202,14 @@ function AuctionsPanelController($scope, $rootScope, $http, $timeout) {
         // auction.
         $http
 <<<<<<< HEAD
+<<<<<<< HEAD
             .post('/api/startBidding/', {id: auction.id})
 =======
             .post('/api/v1/auction/'+auction.id+'/add_bids/')
 >>>>>>> 429804ad5b1e02cdbf19b6c1fa93c6aa52849181
+=======
+            .post('/api/startBidding/', {id: auction.id})
+>>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
             .success(function (data) {
                 // User can't bid on this auction.
                 if (!data.success) {
@@ -581,6 +588,7 @@ function isDict(p) {
     }
 }
 
+<<<<<<< HEAD
 function loadItemDetails(auction) {
     var details ='<div class="item"><img src="'+auction['itemImage']+'"><p class="winner"><span class="item-name">'+auction['itemName']+'</span></p></div><p class="info text-small-w">'+auction['itemDescription']+'</p>';             
     angular.element('#item-details').html(details);
@@ -598,6 +606,8 @@ function hideItemDetails() {
         hideOverlay();    
     };
 
+=======
+>>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 jQuery(function(){
     showOverlay();
 })

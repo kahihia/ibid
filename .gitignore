@@ -3,9 +3,12 @@
 *.db
 settings.py
 
+<<<<<<< HEAD
 wsgy.py
 
 
+=======
+>>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 /venv*
 public_static
 /media/

@@ -80,7 +80,6 @@ class NotificationResource(IBGModelResource):
 class MemberResource(IBGModelResource):
     
     """ Resource to interact with member data objects.  """
-
     class Meta:
         queryset = Member.objects.all()
         resource_name = 'member'
@@ -168,7 +167,7 @@ class MemberByFBTokenResource(IBGModelResource):
     
 
     """ This resource logins or register a user using the facebook access token. """
-
+    
     class Meta:
         resource_name = 'byFBToken'
         list_allowed_methods = []
@@ -183,7 +182,6 @@ class MemberByFBTokenResource(IBGModelResource):
             url(r"^member/(?P<resource_name>%s)%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
             url(r"^member/(?P<resource_name>%s)/(?P<%s>.*?)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
-
 
     @classonlymethod
     @api_doc_view(['GET'])
@@ -225,7 +223,6 @@ class MemberByFBTokenResource(IBGModelResource):
         bundle.data['won_auctions'] = bundle.obj.auction_set.filter(winner=bundle.obj).all().count()
         bundle.data['actual_auctions'] = bundle.obj.auction_set.exclude(status='waiting_payment').exclude(status='paid').all().count()
         bundle.data['image_thumb'] = json.loads(bundle.obj.raw_data)['image_thumb']
-
         return bundle
 
     def check_permissions(self, access_token):
@@ -248,7 +245,6 @@ class CategoryResource(IBGModelResource):
         queryset = Category.objects.all()
         resource_name = 'category'
         collection_name = 'categories'
-
         authorization = ReadOnlyAuthorization()
         authentication = CustomAuthentication()
         include_resource_uri = False
@@ -256,7 +252,6 @@ class CategoryResource(IBGModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         
-
     @classonlymethod
     @api_doc_view(['GET'])
     def get(self, request):
@@ -307,7 +302,6 @@ class ItemResource(IBGModelResource):
         return bundle
 
 class AuctionResource(IBGModelResource):
-
     """
     This resource retrieves auctions data filtered and sorted by status.
     """
@@ -342,7 +336,6 @@ class AuctionResource(IBGModelResource):
             
         ]
     
-
     @classonlymethod
     @api_doc_view(['GET'])
     def get(self, request):
@@ -400,7 +393,6 @@ class AuctionResource(IBGModelResource):
         finished_status = ['paid' ,'waiting_payment']
         playing_status=['processing','pause','waiting']
         return_dict={'token':{},'credit':{}}
-
         for obj in to_be_serialized[self._meta.collection_name]:
             bundle = self.build_bundle(obj=obj, request=request)
             if obj.bid_type=='token' and obj.is_active ==True:
@@ -426,7 +418,6 @@ class AuctionResource(IBGModelResource):
                     credit_playing_list.append(self.full_dehydrate_available( bundle))
                 else:
                     credit_available_list.append(self.full_dehydrate_available( bundle)) 
-     
         return_dict['token']['finished'] = token_finished_list
         return_dict['token']['available'] = token_available_list
         return_dict['token']['wout_winner'] = token_wout_winner
@@ -725,7 +716,6 @@ class AddBidResource(AuctionResource):
                 else:
                     auction.place_precap_bid(member, amount)
                     client.updatePrecap(auction)
-
         if not can_place:
             if auction.status != "precap":
                 error = "NOT_IN_PRECAP"
@@ -751,7 +741,6 @@ class RemBidResource(AuctionResource):
         queryset = Auction.objects.all()
         list_allowed_methods = []
         detail_allowed_methods = ['post']
-
         include_resource_uri = False
            
     def base_urls(self):
@@ -815,7 +804,6 @@ class ClaimBidResource(AuctionResource):
         always_return_data = True
         list_allowed_methods = []
         detail_allowed_methods = ['post']
-
         include_resource_uri = False
         detail_uri_name = 'auction_id'
         
@@ -823,7 +811,6 @@ class ClaimBidResource(AuctionResource):
         return [
             url(r"^auction/(?P<auction_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),  
         ]  
-
 
     def post_detail(self, request, **kwargs):
         return super(ClaimBidResource, self).get_detail(request, **kwargs)
@@ -897,8 +884,7 @@ class MessageResource(ModelResource):
         return [
             url(r"^auction/(?P<object_id>\d+)/(?P<resource_name>%s)%s$" %(self._meta.resource_name,trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
         ]   
-    
-    
+        
     @classonlymethod
     @api_doc_view(['POST', 'GET'])
     def post(self, request):

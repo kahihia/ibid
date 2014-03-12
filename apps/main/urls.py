@@ -16,6 +16,7 @@ from apps.main.api import AddBidResource
 from apps.main.api import ClaimBidResource
 from apps.main.api import RemBidResource
 
+
 from apps.main.api import RegisterInvitationResource
 from apps.main.api import ServerClockResource
 
@@ -84,5 +85,6 @@ urlpatterns = patterns('',
 #############################
     url(r'^api/docs/', include('rest_framework_swagger.urls')),
     url(r'^api/', include(v1_api.urls)),
+
 
 )

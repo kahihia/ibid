@@ -298,6 +298,7 @@ MIXPANEL_TOKEN = ''
 # Tastypie settings (API)
 TASTYPIE_DEFAULT_FORMATS = ['json']
 
+
 # Swagger settings
 SWAGGER_SETTINGS = {
      "exclude_namespaces": [],    #  List URL namespaces to ignore
@@ -325,3 +326,4 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+

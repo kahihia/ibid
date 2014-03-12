@@ -21,7 +21,6 @@ def send_multiple_messages(pairs):
 def send_pubnub_message(message, destination):
     if type(message) is dict:
         message['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
-
     
     info = pubnub.publish({
            'channel' : destination,
@@ -135,6 +134,7 @@ def auctionAwait(auction):
     tmp = {}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
+
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
@@ -168,6 +168,7 @@ def auctionPause(auction):
     tmp={}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
+
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
@@ -177,6 +178,7 @@ def auctionResume(auction):
     tmp['id'] = auction.id
     tmp['status'] = auction.status
     tmp['timeleft'] = auction.get_time_left()
+
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
 
@@ -209,6 +211,7 @@ def someoneClaimedMessage(auction):
                      'facebookId': auction.get_last_bidder().facebook_id}
     tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
     tmp['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
+
     result = {'method': 'someoneClaimed', 'data': tmp}
     return (result, '/topic/main/%s' % auction.id)
 
@@ -218,6 +221,7 @@ def do_send_auctioneer_message(auction,message):
     tmp = {}
     tmp['auctioneerMessages'] = [{'text':text,'date': message.get_time()}]
     tmp['id'] = auction.id
+
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
     send_pubnub_message(result, '/topic/main/%s' % auction.id)
 
@@ -243,7 +247,6 @@ def do_send_global_chat_message(member, text):
     user['profileLink'] = "https://facebook.com/%s" % str(member.facebook_id)
     user['facebookId'] = member.facebook_id
     result = {'method':'receiveChatMessage', 'data':{'user': user, 'text': text}}
-
     send_pubnub_message(result, 'global')
 
 
@@ -261,8 +264,6 @@ def update_credits(member):
     tmp = {}
     tmp['credits'] = member.bids_left
     send_pubnub_message({'method': 'update_credits','data':tmp}, '/topic/main/%s' % member.id)
-
-
 
 def update_tokens(member):
     tmp = {}

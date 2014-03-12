@@ -41,7 +41,7 @@ class ChatUser(models.Model):
 
     def user_facebook_id(self):
           return self.content_object.facebook_id
-     
+
     def __unicode__(self):
         return self.display_name()
 
@@ -76,6 +76,7 @@ class Message(models.Model):
         """ Returns time when message was created in the readable form. """
         
         return self.created.strftime("%m/%d/%y %H:%M:%S")
+
     
     def get_user(self):
         return self._user or AuctioneerProxy()
