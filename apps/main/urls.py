@@ -42,6 +42,7 @@ v1_api.register(MessageResource())
 v1_api.register(IOPaymentInfoResource())
 v1_api.register(AppleIbidPackageIdsResource())
 
+
 urlpatterns = patterns('',
 
 #############################
@@ -78,7 +79,10 @@ urlpatterns = patterns('',
     url(r"^%s$" % (IOPaymentInfoResource()._meta.resource_name), IOPaymentInfoResource.post, name="payment_io_dispatch_list"),
     
     url(r"^%s$" % (AppleIbidPackageIdsResource()._meta.resource_name), AppleIbidPackageIdsResource.get, name="apple_ibid_bid_package_dispatch_list"),
+    
+    url(r"^%s$" % (RegisterInvitationResource()._meta.resource_name), RegisterInvitationResource.post, name="register_invitation_resource_dispatch_list"),
 #############################
+    url(r'^api/docs/', include('rest_framework_swagger.urls')),
     url(r'^api/', include(v1_api.urls)),
 
 )

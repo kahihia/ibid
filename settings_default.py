@@ -297,3 +297,31 @@ MIXPANEL_TOKEN = ''
 
 # Tastypie settings (API)
 TASTYPIE_DEFAULT_FORMATS = ['json']
+
+# Swagger settings
+SWAGGER_SETTINGS = {
+     "exclude_namespaces": [],    #  List URL namespaces to ignore
+     "enabled_methods": [ # Methods to enable in UI
+         'get',
+         'post',
+         'put',
+         'patch',
+         'delete'
+     ],
+     "is_authenticated": True,
+     "api_path": "/api/v1",
+     
+}
+
+REST_FRAMEWORK = {
+    # Use hyperlinked styles by default.
+    # Only used if the `serializer_class` attribute is not set on a view.
+    'DEFAULT_MODEL_SERIALIZER_CLASS':
+        'rest_framework.serializers.HyperlinkedModelSerializer',
+
+    # Use Django's standard `django.contrib.auth` permissions,
+    # or allow read-only access for unauthenticated users.
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+    ]
+}
