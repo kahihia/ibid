@@ -1,0 +1,48 @@
+.message {
+    min-height: 72px;
+    padding-bottom: 0.8em;
+    margin-bottom: 0.8em;
+    list-style: none;
+    text-align: left;
+    border-bottom: 1px dotted gray;
+}
+.message:last-child {
+    border-bottom: none;
+}
+/* clearfix */
+.message:before,
+.message:after {
+    content: " ";
+    display: table;
+}
+.message:after {
+    clear: both;
+}
+.message-content,
+.message-users,
+.message-actions {
+    float: left;
+}
+.message-content {
+    width: 300px;
+}
+.message-content-title {
+    color: #ffeb00;
+    font-size: 1.2em;
+}
+.message-users,
+.message-actions {
+    float: right;
+    width: 180px;
+    position: relative;
+    top: 1.2em;
+    text-align: center;
+}
+.message-users .avatar {
+    border: 1px solid #555;
+    box-shadow: 2px 2px 10px black;;
+}
+.message-actions .btn-close {
+    position: static;
+    float: right;
+}

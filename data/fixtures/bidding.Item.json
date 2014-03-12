@@ -1,0 +1,451 @@
+[
+{
+  "pk": 94, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "919.00", 
+    "description": "This Brand New iphone 5 64GB White phone comes in Original box from Apple with all Original accessories in the box. This iphone 5 64GB phone comes Factory Unlocked for any GSM and will work with any GSM SIM card in the world.", 
+    "specification": "", 
+    "retail_price": "919.00", 
+    "slug": "apple-iphone-5-64gb-unlocked-white", 
+    "categories": [], 
+    "name": "Apple iPhone 5 64Gb Unlocked (White"
+  }
+},
+{
+  "pk": 95, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "919.00", 
+    "description": "This Brand New iphone 5 64GB Black phone comes in Original box from Apple with all Original accessories in the box. This iphone 5 64GB phone comes Factory Unlocked for any GSM and will work with any GSM SIM card in the world.", 
+    "specification": "", 
+    "retail_price": "919.00", 
+    "slug": "iphone-5-64gb-black", 
+    "categories": [], 
+    "name": "iPhone 5 64Gb Black"
+  }
+},
+{
+  "pk": 96, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "929.00", 
+    "description": "Check out this brand new iPad Retina 64Gb Black factory unlocked: 2048 x 1536 Resolution Apple iOS 6; Dual-Core A6X Chip with Quad-Core Graphics 5 MP iSight Camera; 1080p HD Video Recording Wi-Fi (802.11a/b/g/n) + 4G LTE; 64 GB Capacity Up to 10 Hours of Battery Life; weight 1.46 lbs.", 
+    "specification": "", 
+    "retail_price": "929.00", 
+    "slug": "ipad-retina-64gb-wi-fi-4g-black-factory-unlocked", 
+    "categories": [], 
+    "name": "iPad Retina 64Gb Wi-Fi + 4G Black (Factory Unlocked)"
+  }
+},
+{
+  "pk": 97, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "519.00", 
+    "description": "The latest Citizen Eco-Drive with Atomic Timekeeping, the Perpetual Chrono A-T. The world\u2019s most accurate watch, this perpetual calendar alarm chronograph with day-date is radio controlled in 5 time zones and also features a non-reflective sapphire glass.\r\n\r\nSummary of Features\r\n\u2022 Atomic Timekeeping, The Most Accurate Watch in the World \r\n\u2022 1 Second Chronograph, Measures up to 60 Minutes \r\n\u2022 Perpetual Calendar \r\n\u2022 Radio Controlled in 5 Time Zones \r\n\u2022 Alarm \r\n\u2022 12/24 Hour Time \r\n\u2022 Power Reserve Indicator \r\n\u2022 Non-Reflective Sapphire Glass ", 
+    "specification": "", 
+    "retail_price": "519.00", 
+    "slug": "citizen-at4003-04e-mens-watch", 
+    "categories": [], 
+    "name": "Citizen AT4003-04E Men's Watch"
+  }
+},
+{
+  "pk": 98, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "600.00", 
+    "description": "Ferragamo Women's F64SBQ99909 S099 Gancino Sparkling Silver/Black Stainless Steel Watch\r\n\r\nThis sophisticated Ferragamo watch is a real winner. The sleek, subtle design endows this watch with an unmistakable sense of luxury that cannot be matched. Don\u2019t deny the inevitable and make your smart choice today by ordering your Ferragamo.\r\n\r\nProduct Details\r\nItem Weight: 1 pounds\r\nShipping Weight: 2.8 pounds (View shipping rates and policies)\r\nShipping: This item is also available for shipping to select countries outside the U.S.\r\nASIN: B007OCAS3Q\r\nItem model number: F64SBQ99909 S099\r\nBatteries 1 Nonstandard Battery batteries required. (included)", 
+    "specification": "", 
+    "retail_price": "600.00", 
+    "slug": "ferragamo-womans-watch", 
+    "categories": [], 
+    "name": "Ferragamo Woman's Watch"
+  }
+},
+{
+  "pk": 99, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "600.00", 
+    "description": "If today's high definition A/V components are a high-performance exotic sports car, the RS-220 is the driver. And you're at the Grand Prix!\r\n\r\nAudiophiles have long asked when the audio quality of the legendary HD 600 series (HD 600 and HD 650) could be ported to a wireless format. Utilizing powerful developments in wireless audio transmission, the RS 220 bridges the gap between wireless and wired headphones via DSSS. Able to work in crowded RF environments amongst Bluetooth, Kleer and Wi-Fi signals, the RS 220 delivers clear, clean, uncompressed audio without the need for tuning. \r\n\r\nThe transmitter/charging dock features digital inputs in optical (Toslink) and coaxial formats. Analog RCA inputs with input-gain control round out a versatile interconnect panel. Each input is duplicated into an output, allowing you to feed other audio components within your system (also known as daisy-chaining). \r\n\r\nThe headphones (receiver) feature a line-of-sight range up to 300 feet and are engineered for outstanding performance in your home theater or listening room. \r\n\r\nYou have spent countless hours, days, months, and years choosing your hi-fi system with painstaking attention to detail. The new RS 220 is prepared to take that entertainment to new places.\r\n\r\nAnalog inputs (RCA) Up to 300 foot range (line of sight), and 100 foot range (indoors) Engineered for best performance in the same room as your high definition media Easy on/off - simply press and hold the power key Tactile buttons - adjust volume, audio source (input) and balance in the dark with ease Luxurious velour ear pads Simple recharging - simply dock the headphones on the transmitter/charging base Fully adjustable headband with tension reducing spring-loaded earcup swivel mount Operating frequency 2.4 GHz (2.4-2.483.5) Wearing style Around-the-ear Transducer principle Open-aire, dynamic Frequency response (headphones) 16-22,000", 
+    "specification": "", 
+    "retail_price": "600.00", 
+    "slug": "sennheiser-rs-220-headphone-black", 
+    "categories": [], 
+    "name": "Sennheiser RS 220 Headphone Black"
+  }
+},
+{
+  "pk": 100, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "580.00", 
+    "description": "What's in the Box\r\n\r\nEOS 60D Body\r\nEyecup Eb\r\nWide Strap EW-EOS 60D\r\nUSB Interface Cable IFC-130U\r\nStereo AV cable AVC-DC400ST\r\nBattery Pack LP-E6\r\nBattery Charger LC-E6\r\nEOS Digital Solution Disk and Instruction Manuals \"Great Photography is Easy\" Booklet and \"Do More with Macro\" Booklet", 
+    "specification": "", 
+    "retail_price": "580.00", 
+    "slug": "canon-eos-60d", 
+    "categories": [], 
+    "name": "Canon EOS 60D"
+  }
+},
+{
+  "pk": 101, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "3000.00", 
+    "description": "Apple MC976LL/A 15.4\" MacBook Pro. Notebook Computer with Retina Display, 2.7GHz Intel Core i7 Quad-Core with Turbo Boost up to 3.7GHz, 16GB 1600MHz DDR3L SDRAM, 768GB Flash Storage, Wi-Fi.", 
+    "specification": "", 
+    "retail_price": "3000.00", 
+    "slug": "macbook-pro-154", 
+    "categories": [], 
+    "name": "MacBook Pro 15.4"
+  }
+},
+{
+  "pk": 102, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "3199.00", 
+    "description": "9-11mm GLA CERTIFIED Black Tahitian South Sea Pearl Necklace - AAAA Quality, 18\" Princess Length\r\n\r\nThis beautiful tahitian pearl necklace represents the finest quality available anywhere. The pearls on the strand are AAAA in quality, which consists of the highest luster and cleanest surfaces of pearls that come from Tahiti. The strand is strung and double knotted with silk thread between each pearl. The necklace is 18 inches in length and is affixed with a beautiful 14k yellow gold ball clasp with a safety latch. The necklace is accompanied by an official appraisal issued by the Gemological Laboratory of America (GLA) which has graded the strand as AAAA quality and has assigned a retail value of $31,985 for the piece. Please look at the additional photos for pictures of the actual certificate you will receive. The necklace comes packaged in a beautiful jewelry box.", 
+    "specification": "", 
+    "retail_price": "3199.00", 
+    "slug": "black-tahitian-south-sea-pearl-necklace", 
+    "categories": [], 
+    "name": " Black Tahitian South Sea Pearl Necklace"
+  }
+},
+{
+  "pk": 103, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "800.00", 
+    "description": "Fendi Pequin Multi Stripe Cross Body Bag\r\n\r\nThis classic cross body bag will add the perfect finishing touch to any ensemble. Brightly colored stripes adorn this classic silhouette. Raspberry leather trim and front flap. Gorgeous front buckle. Made in Italy.", 
+    "specification": "", 
+    "retail_price": "800.00", 
+    "slug": "fendi-multi-stripe-bag", 
+    "categories": [], 
+    "name": "Fendi Multi Stripe Bag"
+  }
+},
+{
+  "pk": 104, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "159.00", 
+    "description": "All new \u2014 40% faster, twice the memory, longer battery life\r\nUltra-fast web browsing over built-in Wi-Fi, easy-to-use email works with Gmail, Yahoo! and more\r\nThe most popular apps and games \u2014 Facebook, Twitter, Netflix, HBO GO, Pandora, Angry Birds Space, and more\r\nKindle FreeTime \u2014 set screen limits, create child profiles, and more\r\nKindle FreeTime Unlimited \u2014 just for kids. Unlimited access to books, games, apps, movies and TV shows. Learn more\r\nMassive book selection, vibrant color magazines. Over a million titles.\r\nOver 23 million movies, TV shows, songs, magazines, books, audiobooks, apps, and games", 
+    "specification": "", 
+    "retail_price": "159.00", 
+    "slug": "kindle-fire-tablet", 
+    "categories": [], 
+    "name": "Kindle Fire Tablet"
+  }
+},
+{
+  "pk": 105, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "159.00", 
+    "description": "All new \u2014 40% faster, twice the memory, longer battery life\r\nUltra-fast web browsing over built-in Wi-Fi, easy-to-use email works with Gmail, Yahoo! and more\r\nThe most popular apps and games \u2014 Facebook, Twitter, Netflix, HBO GO, Pandora, Angry Birds Space, and more\r\nKindle FreeTime \u2014 set screen limits, create child profiles, and more\r\nKindle FreeTime Unlimited \u2014 just for kids. Unlimited access to books, games, apps, movies and TV shows. Learn more\r\nMassive book selection, vibrant color magazines. Over a million titles.\r\nOver 23 million movies, TV shows, songs, magazines, books, audiobooks, apps, and games", 
+    "specification": "", 
+    "retail_price": "159.00", 
+    "slug": "kindle-fire-tablet_7", 
+    "categories": [], 
+    "name": "Kindle Fire Tablet"
+  }
+},
+{
+  "pk": 106, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "630.00", 
+    "description": "Product Dimensions: 3 x 3 x 4 inches\r\n GSM 850 / 900 / 1800 / 1900, 3G Network : HSDPA 850 / 900 / 1900 / 2100 , Chipset: Exynos 5 Octa 5410 ,\r\nCPU: Quad-core 1.6 GHz Cortex-A15 & quad-core 1.2 GHz Cortex-A7", 
+    "specification": "", 
+    "retail_price": "630.00", 
+    "slug": "samsung-galaxy-s4-factory-unlocked-white", 
+    "categories": [], 
+    "name": "Samsung Galaxy S4 Factory Unlocked (White)"
+  }
+},
+{
+  "pk": 107, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "1111.00", 
+    "description": "Apple MacBook Air MD231LL/A 13.3-Inch Laptop\r\nFaster Flash Storage; USB 3.0; 720p FaceTime HD Camera\r\n1.8 GHz Intel Core i5 Processor\r\n128 GB Solid State Drive; 4 GB DDR3 RAM\r\nIntel HD Graphics 4000; 13.3-inch LED Display", 
+    "specification": "", 
+    "retail_price": "1111.00", 
+    "slug": "macbook-air-133", 
+    "categories": [], 
+    "name": "MacBook Air 13.3''"
+  }
+},
+{
+  "pk": 108, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "587.00", 
+    "description": "Samsung UN46EH5300 46-Inch 1080p 60Hz LED HDTV (Black)\r\nSmart TV\r\nSignature Services\r\nSmart Hub\r\nBuilt-in Wi-Fi\r\nTV with stand (Width x Height x Depth): 41.7-Inch x 26.8-Inch x 9.8-Inch, TV without stand (Width x Height x Depth): 41.7-Inch x 24.6-Inch x 3.7-Inch", 
+    "specification": "", 
+    "retail_price": "587.00", 
+    "slug": "samsung-46-inch-smart-tv-black", 
+    "categories": [], 
+    "name": "Samsung 46-inch Smart TV (black)"
+  }
+},
+{
+  "pk": 109, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "999.00", 
+    "description": "Samsung Series 7 DP700A3D-A01US 23-Inch All-in-One Touchscreen Desktop\r\nIntel Core i5 3470T 2.90 GHz\r\n6 GB DDR3\r\n1TB HDD\r\n23.6-Inch Screen\r\nWindows 8 (64-bit)", 
+    "specification": "", 
+    "retail_price": "999.00", 
+    "slug": "samsung-all-one-touchscreen-pc", 
+    "categories": [], 
+    "name": "Samsung All in One Touchscreen PC"
+  }
+},
+{
+  "pk": 115, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Apple iPad Mini.", 
+    "specification": "", 
+    "retail_price": "333.00", 
+    "slug": "ipad-mini", 
+    "categories": [], 
+    "name": "iPad Mini 16GB"
+  }
+},
+{
+  "pk": 116, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Apple TV second generation.", 
+    "specification": "", 
+    "retail_price": "99.00", 
+    "slug": "apple-tv", 
+    "categories": [], 
+    "name": "Apple TV"
+  }
+},
+{
+  "pk": 118, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Smartphone Samsung Galaxy S IV", 
+    "specification": "", 
+    "retail_price": "620.00", 
+    "slug": "galaxy-s4", 
+    "categories": [], 
+    "name": "Samsung Galaxy S4"
+  }
+},
+{
+  "pk": 119, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "iPhone 5 16gb", 
+    "specification": "", 
+    "retail_price": "699.00", 
+    "slug": "iphone-5", 
+    "categories": [], 
+    "name": "iPhone 5"
+  }
+},
+{
+  "pk": 120, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Camera Canon T3 Rebel", 
+    "specification": "", 
+    "retail_price": "450.00", 
+    "slug": "canon-t3", 
+    "categories": [], 
+    "name": "Canon T3"
+  }
+},
+{
+  "pk": 121, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Louis Vuitton handbag", 
+    "specification": "", 
+    "retail_price": "1200.00", 
+    "slug": "louis-vuitton-handbag", 
+    "categories": [], 
+    "name": "Louis Vuitton handbag"
+  }
+},
+{
+  "pk": 122, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Sony PlayStation 3", 
+    "specification": "", 
+    "retail_price": "301.00", 
+    "slug": "playstation-3", 
+    "categories": [], 
+    "name": "PlayStation 3"
+  }
+},
+{
+  "pk": 123, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "xBox Live", 
+    "specification": "", 
+    "retail_price": "500.00", 
+    "slug": "xbox-live", 
+    "categories": [], 
+    "name": "xBox Live"
+  }
+},
+{
+  "pk": 124, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "MacBook pro 13 inch", 
+    "specification": "", 
+    "retail_price": "1100.00", 
+    "slug": "macbook-pro-13", 
+    "categories": [], 
+    "name": "MacBook Pro 13''"
+  }
+},
+{
+  "pk": 125, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "MacBook Air 11 inch", 
+    "specification": "", 
+    "retail_price": "1100.00", 
+    "slug": "macbook-air-11", 
+    "categories": [], 
+    "name": "MacBook Air 11''"
+  }
+},
+{
+  "pk": 127, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Bosse Theatre Audio System", 
+    "specification": "", 
+    "retail_price": "1500.00", 
+    "slug": "bosse-audio-system", 
+    "categories": [], 
+    "name": "Bose Audio System"
+  }
+},
+{
+  "pk": 128, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "1295.00", 
+    "description": "Movado Men's 606268 Sapphire Synergy Black Rubber Strap Watch.\r\nShowcasing a clean, modern design, the Movado Men's Sapphire Synergy Black Rubber Strap Watch is a handsome addition to your casual business and weekend attire. Constructed with a stainless-steel-and-pvd case, the timepiece includes a stationary black stainless-steel-and-pvd bezel, and a black rubber wristband secured with a deployment buckle. A scratch-resistant-sapphire window shields the museum black dial, which features silver-tone watch hands and the signature Movado concave dot at the 12 o'clock position. Featuring Swiss quartz movement, the timepiece is water resistant to 99 feet (30 M).", 
+    "specification": "Watch Information\r\n\r\nBrand, Seller, or Collection Name\tMovado\r\nModel number\t                                606268\r\nPart Number\t                                0606268\r\nModel Year                                       \t2011\r\nItem Shape                                       Round/Oval\r\nDial window material type\t                Scratch resistant sapphire\r\nDisplay Type\t                                Analogue\r\nClasp\t                                        Deployment Buckle\r\nMetal stamp                               \tnone\r\nCase material                               \tss/pvd\r\nCase diameter                             \t42 millimeters\r\nCase Thickness                                \t7\r\nBand Material                              \tRubber\r\nBand length                               \twomens\r\nBand width                                 \t26 millimeters\r\nBand Color                                  \tBlack\r\nDial color                                   \tBlack\r\nBezel material                              \tss/pvd\r\nBezel function                              \tStationary\r\nSpecial features                               \tWater-Resistant\r\nItem weight                                 \t1.1 Pounds\r\nMovement                                  \tSwiss quartz\r\nWater resistant depth                    \t99 Feet", 
+    "retail_price": "1295.00", 
+    "slug": "movado-mens-watch", 
+    "categories": [], 
+    "name": "Movado Men's Watch"
+  }
+},
+{
+  "pk": 129, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": "99.00", 
+    "description": "Brand Name: SanDisk\r\nModel: SDCZ36-064G-AFFP\r\nMemory Storage Capacity: 64 GB\r\nHardware Platform: PC, Mac, Unix", 
+    "specification": "", 
+    "retail_price": "99.00", 
+    "slug": "64gb-flash-drive", 
+    "categories": [], 
+    "name": "64Gb Flash Drive"
+  }
+},
+{
+  "pk": 130, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "In the Box - iPod shuffle, Apple Earphones, iPod shuffle USB Cable, Quick Start GuideFeatures\r\nSmall and wearable\r\nPolished anodized aluminum design\r\nBuilt-in clip\r\nEasy-to-use control pad for playing your music, audiobooks, and podcasts", 
+    "specification": "", 
+    "retail_price": "50.00", 
+    "slug": "ipod-shuffle-2gb", 
+    "categories": [], 
+    "name": "IPod Shuffle 2GB"
+  }
+},
+{
+  "pk": 132, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Ideal for DJ's and audio pros,Total harmonic distortion (THD): <0.5%\r\nVery clean, deep bass response,Jack plug 3.5/6.3 mm stereo\r\nDetachable ear cups for pro users\r\n10 foot Y style cable, Frequency Range : 18Hz - 18kHz,Impedance: 32 Ohm\r\nWind-up belt clip for excess cable", 
+    "specification": "", 
+    "retail_price": "30.00", 
+    "slug": "sennheiser-headphones", 
+    "categories": [], 
+    "name": "Sennheiser headphones"
+  }
+},
+{
+  "pk": 133, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Closed-type supra-aural, 30mm driver unit, neodymium magnet, 1.2m cable (both-sided)\r\nHigh quality and powerful sound\r\nEnjoy clear mids and deep bass", 
+    "specification": "", 
+    "retail_price": "30.00", 
+    "slug": "sony-headphones", 
+    "categories": [
+      1
+    ], 
+    "name": "Sony Headphones"
+  }
+},
+{
+  "pk": 134, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Forward thinking.\r\nWith iPhone 5s, Apple designers and engineers found ways to add even more features while preserving the thin, light design. These features aren\u2019t just what\u2019s technologically possible, but what\u2019s technologically useful.\r\n\r\nTouch ID. A new fingerprint\r\nidentity sensor.\r\nPut your finger on the Home button, and just like that your iPhone unlocks. Your fingerprint can also approve purchases from iTunes or the App Store.\r\n\r\nAll-new A7 and M7 chips.\r\nThe new 64-bit A7 chip delivers up to 2x faster CPU and graphics performance.3 And the new M7 motion coprocessor handles specific tasks to make iPhone 5s even more power efficient.\r\n\r\nNew iSight camera.\r\nA 15 percent larger sensor. Wider \u0192/2.2 aperture.3 True Tone flash. Burst mode and slo-mo video. The new 8-megapixel iSight camera packs in so much great technology, it\u2019s even easier to get a great shot.\r\n\r\nUltrafast LTE wireless.\r\niPhone 5s supports more LTE bands than ever. Which means you can get ultrafast LTE coverage in more places.4\r\n\r\niOS 7. Designed to complement iPhone 5s beautifully.\r\niOS 7 takes full advantage of the advanced technologies built into iPhone \u2014 including the 64-bit A7 chip and Touch ID. And it introduces great new features like smarter multitasking, AirDrop, and Control Center.\r\n\r\nWhat\u2019s in the box\r\niPhone 5s with iOS 7\r\nApple EarPods with Remote and Mic\r\nLightning to USB Cable\r\n5W USB Power Adapter\r\nWarranty\r\nEvery iPhone includes 90 days of free telephone technical support and a one-year limited warranty.", 
+    "specification": "", 
+    "retail_price": "1000.00", 
+    "slug": "iphone-5s-64gb-gsm-unlocked", 
+    "categories": [
+      1
+    ], 
+    "name": "iPhone 5s 64gb"
+  }
+},
+{
+  "pk": 135, 
+  "model": "bidding.item", 
+  "fields": {
+    "total_price": null, 
+    "description": "Newly designed 22.3 Megapixel full-frame CMOS sensor, 14-bit A/D conversion, wide range ISO setting 100-25600 (L:50, H1: 51200, H2: 102400) for shooting from bright to dim light and next generation DIGIC 5+ Image Processor for enhanced noise reduction and exceptional processing speed.\r\nNew 61-Point High Density Reticular AF including up to 41 cross-type AF points with f/4.0 lens support and 5 dual diagonal AF points (sensitive to f/2.8).\r\niFCL Metering with 63 zone dual-layer metering sensor that utilizes AF and color information for optimizing exposure and image quality.\r\nEOS HD Video with manual exposure control and multiple frame rates (1080: 30p (29.97) / 24p (23.976) / 25p, 720: 60p (59.94) / 50p, 480: 30p (29.97) / 25p) with 4 GB automatic file partitioning (continuous recording time 29 minutes 59 seconds), selectable \"All i-frame\" or IPB compressions, embedded timecode, manual audio level control while recording, and headphone terminal.\r\n3.2-inch Clear View II LCD monitor, 170\u00b0 viewing angle, 1,040,000-dot VGA, reflection; magnesium-alloy body with shutter durability tested up to 150,000 cycles, enhanced dust-and-weather resistance, and updated EOS Integrated Cleaning system for improved vibration-based dust removal.", 
+    "specification": "", 
+    "retail_price": "4000.00", 
+    "slug": "canon-eos-5d-mark-iii", 
+    "categories": [
+      1
+    ], 
+    "name": "Canon EOS 5D Mark III"
+  }
+}
+]
+

@@ -1,0 +1,62 @@
+{% load staticfiles %}
+<link rel="stylesheet" href="{% static 'css/main.css' %}">
+<link rel="stylesheet" href="{% static 'css/popup.css' %}">
+
+<style media="screen" type="text/css">
+
+body {
+	text-align:center !important;
+	}
+
+</style>
+	
+
+
+{% load thumbnail %}
+
+{% block graywindowcontent %}
+<a style="text-align: center;" href="{% url 'canvashome' %}"><img style="margin: 20px 0 40px 0;" src="{% static 'images/logo.png' %}" width="293" height="105"></a>
+<div class="popup" style="margin: 0px auto 0 auto;display: inherit;">
+	<div class="title">
+
+		<h1>ITEM WON</h1>
+	</div>
+	<div class="info" style="text-align: center; margin-top: 30px;">
+		<span style="color:#f36500; font-weight: 700; font-size: 24px;">{{ auction.item.name }}</span>
+		</br>
+		<img style="border: 1px solid #91d3eb; margin-top: 10px;" src="{% thumbnail auction.item.itemimage_set.all.0.image.name "202x202" as thumb %}{{ thumb.url }}{% endthumbnail %}" alt="{{ auction.item.name }}">
+		</br>
+		You have the privilege to buy</br> this item for only: 
+		<b class="green_text">${{ auction.won_price }}</b>
+	</div>
+	<div style="margin: 30px 0px 26px 0px;border-bottom: 1px solid #DFDFDF;">
+
+	</div>
+	<div style="text-align: center;">
+		<span style="font-size: 12px; margin-bottom: 10px;">Buy it now by clicking the button.</br>You will pay it on paypal, easy and secure.</span>
+		{% if auction.status == 'waiting_payment' %}
+
+		{% if debug %}
+		{{ form.sandbox }}
+		{% else %}
+		{{ form.render }}
+		{% endif %}
+
+		{% else %} {% if auction.status == 'paid' %}
+
+		<div>
+			Item paid! you will receive the product in your paypal address.
+		</div>
+	</div>
+	{% endif %}{% endif %}
+</div>
+</div>
+
+<!-- -->
+<!-- -->
+<!-- -->
+<!-- -->
+<!-- -->
+<!-- -->
+{% endblock %}
+

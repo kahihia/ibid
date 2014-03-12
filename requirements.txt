@@ -1,0 +1,21 @@
+# Django
+Django==1.5.1
+django-admin-tools==0.5.1
+-e git+https://github.com/tschellenbach/Django-facebook.git@df70e48f51b5881141cf9e4d776dadd5d1e837d9#egg=django-facebook
+django-paypal==0.1.2
+South==0.7.6
+
+# Sorl (+PIL)
+Pillow
+sorl-thumbnail==11.12
+
+# Tastypie 
+django-tastypie==0.10.0
+django-tastypie-swagger==0.1.1
+python-mimeparse==0.1.4
+
+# Other
+gunicorn
+MySQL-python==1.2.4
+newrelic
+mixpanel-py==3.0.0
