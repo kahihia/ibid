@@ -295,7 +295,9 @@ class Category(models.Model):
         return self.name
 
     def get_thumbnail(self, size='107x72'):
-        return settings.IMAGES_SITE + get_thumbnail(self.image.name, size).url
+        if self.image:
+            return settings.IMAGES_SITE + get_thumbnail(self.image.name, size).url
+        return None
 
 
 class Item(AuditedModel):
@@ -309,7 +311,11 @@ class Item(AuditedModel):
     name.alphabetic_filter = True
 
     def get_thumbnail(self, size='107x72'):
-        return settings.IMAGES_SITE + get_thumbnail(self.itemimage_set.all()[0].image.name, size).url
+        qs = self.itemimage_set.all()
+        if qs:
+            return settings.IMAGES_SITE + get_thumbnail(qs[0].image.name, size).url
+        return None
+
 
     def __unicode__(self):
         return self.name
@@ -880,10 +886,11 @@ class FBOrderInfo(AuditedModel):
     status = models.CharField(choices=FB_STATUS_CHOICES, max_length=25)
     fb_payment_id = models.BigIntegerField(blank=True, null=True)  # this field should be unique
     date = models.DateTimeField(auto_now_add=True, null=True)
-    quantity = models.IntegerField()
+
 
     def __unicode__(self):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
+
 
 @receiver(post_save, sender=FBOrderInfo)
 def on_confirmed_order(sender, instance, **kwargs):
@@ -897,14 +904,17 @@ def on_confirmed_order(sender, instance, **kwargs):
                                       total_bidsto=instance.member.bidsto_left,
         )
 
+
 class IOPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage, null=True)
     transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
-    purchase_date = models.DateTimeField(auto_now_add=True, null=True)
+    quantity = models.IntegerField()
+    purchase_date = models.DateTimeField(null=True)
 
     def __unicode__(self):
-        return repr(self.member) + ' - ' + repr(self.package) + ' (' + self.purchase_date + ')'
+        return repr(self.member) + ' - ' + repr(self.package) + ' (' + str(self.purchase_date) + ')'
+
 
 CONFIG_KEY_TYPES = (('text', 'text'),
                     ('int', 'int'),
@@ -918,6 +928,7 @@ class ConfigKey(models.Model):
     value_type = models.CharField(choices=CONFIG_KEY_TYPES, null=False, blank=False, max_length=10, default='text')
 
     @staticmethod
+
     def get(key, default=None, default_type=None, default_description=None):
         result = ConfigKey.objects.filter(key=key).all()
         if len(result):

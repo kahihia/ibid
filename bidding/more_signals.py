@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import json
 from django.db.models.signals import post_save
 from django.dispatch.dispatcher import Signal
 from django_facebook import signals
@@ -40,11 +41,11 @@ def fb_user_registered_handler(sender, user, facebook_data, **kwargs):
         prize = ConfigKey.get('INVITE_FRIENDS_TOKEN_PRIZE', 1000)
         invited.inviter.tokens_left += prize
         invited.inviter.save()
-
         tmp = {}
         tmp['invited_name'] = member.display_name()
         Notification.objects.create(recipient=invited.inviter, sender=None, notification_type='FriendJoined', message=json.dumps(tmp))
         client.update_tokens(member)
+
 
         #add an event to the inviter, to show it the next time he logs in
         #TODO: change this to transport pubnub

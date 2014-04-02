@@ -259,7 +259,6 @@ def getAuctionsInitialization(request):
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
         tmp['itemDescription'] = auct.item.description
         tmp['bidders'] = auct.bidders.count()
-
         tmp['auctioneerMessages'] = []
         for mm in Message.objects.filter(object_id=auct.id).filter(_user__isnull=True).order_by('-created')[:10]:
             w = {
@@ -349,7 +348,6 @@ def startBidding(request):
     tmp['bidders'] = auction.bidders.count()
     tmp['itemId'] = auction.item.id
     tmp['won_price'] = 0
-
     tmp['auctioneerMessages'] = []
     for mm in Message.objects.filter(object_id=auction.id).filter(_user__isnull=True).order_by('-created')[:10]:
         w = {

@@ -132,7 +132,12 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
 
+<<<<<<< HEAD
+<<<<<<< HEAD
+     $rootScope.subscribeToPaymentChannel = function(member) {
+=======
     $rootScope.subscribeToPaymentChannel = function(member) {
+>>>>>>> 429804ad5b1e02cdbf19b6c1fa93c6aa52849181
         $scope.subscribeToChannel({
             channel: $scope.channel + member,
             message: function(messages) {
@@ -187,6 +192,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         });
     };
     
+=======
+>>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
     $scope.closeWonTokenAuctionDialog = function () {
         $scope.tokenAuctionsWon = [];
         //request for perm if does not have it
@@ -305,6 +312,61 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     var getCredits_callback = function(data) {};
 
+<<<<<<< HEAD
+=======
+    $scope.subscribeToPaymentChannel = function(member) {
+        $scope.subscribeToChannel({
+            channel: $scope.channel + member,
+            message: function(messages) {
+                _.forEach(messages, function(message) {
+                    console.log('PubNub channel %s message (%s)', $scope.channel + member, getCurrentDateTime(), message);
+                    gameState.pubnubMessages.push([getCurrentDateTime(), message]);
+                    $scope.$apply(function () {
+                        jQuery('.credits').text("CREDITS: " + message.data.credits)
+                        $scope.unsubscribeFromChannel($scope.channel + member)
+                    });
+                });
+            }
+        });
+    };
+
+    $scope.subscribeToChannel = function (options) {
+        _.defaults(options, {
+            connect: function () {
+                console.log('PubNub channel %s connected', options.channel);
+            },
+            message: function (messages) {
+                _.forEach(messages, function (message) {
+                    console.log('PubNub channel %s message (%s)', options.channel, getCurrentDateTime(), message);
+                });
+            },
+            reconnect: function () {
+                console.log('PubNub channel %s reconnected', options.channel);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Connected';
+                });
+            },
+            disconnect: function () {
+                console.log('PubNub channel %s disconnected', options.channel);
+                $scope.$apply(function () {
+                    $scope.realtimeStatus = 'Disconnected';
+                });
+            },
+            error: function (data) {
+                console.log('PubNub channel %s network error', options.channel, data);
+            }
+        });
+        return PUBNUB.subscribe(options);
+    };
+
+    $scope.unsubscribeFromChannel = function (channel) {
+        console.log('PubNub channel %s disconnected' , channel);
+        return PUBNUB.unsubscribe({
+            channel: channel
+        });
+    };
+
+>>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
     $scope.fb_check_like= function() {
         $http.post('/fb_check_like/').success(
             function(data){

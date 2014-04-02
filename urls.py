@@ -9,10 +9,12 @@ from django.views.generic.base import RedirectView
 admin.autodiscover()
 
 urlpatterns = patterns('',
+
     (r'', include('apps.main.urls')),
     (r'', include('bidding.urls')),
     (r'', include('message.urls')),
-    url(r'^docs/', include('rest_framework_swagger.urls')),
+    #url(r'^docs/', include('rest_framework_swagger.urls')),
+
     (r'^chat/', include('chat.urls')),
     (r'^paypal/ipn/', include('paypal.standard.ipn.urls')),
     (r'^admin/', include(admin.site.urls)),
@@ -23,6 +25,7 @@ urlpatterns = patterns('',
 )
 
 urlpatterns += patterns('',
+
     url(r'^winners/$', RedirectView.as_view(url='/winners/1/'), name='bidding_winners_redirect'),
     (r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
 )

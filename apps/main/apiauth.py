@@ -13,7 +13,7 @@ class CustomAuthentication(Authentication):
     
     def is_authenticated(self, request, **kwargs):
         return request.user.is_authenticated()
-          
+
     # Optional but recommended
     def get_identifier(self, request):
         return request.user
@@ -69,9 +69,10 @@ class UserNotificationsAuthorization(ReadOnlyAuthorization):
         return bundle.obj.recipient == bundle.request.user
     
 class MemberAuthorization(NoAuthorization):
+
     def read_list(self, object_list, bundle):
         return object_list
-        
+
     def read_detail(self, object_list, bundle):
         if bundle.request.path.endswith('schema/'):
             return True

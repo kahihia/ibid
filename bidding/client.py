@@ -20,7 +20,7 @@ def send_multiple_messages(pairs):
 
 def send_pubnub_message(message, destination):
     if type(message) is dict:
-        message['timestamp'] = str(datetime.now())
+        message['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
     
     info = pubnub.publish({
            'channel' : destination,
@@ -39,7 +39,7 @@ def send_pubnub_message(message, destination):
 def _send_pubnub_message(message, destination):
    
     if type(message) is dict:
-        message['timestamp'] = str(datetime.now())
+        message['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
 
     ## non threaded
     info = pubnub.publish({
@@ -86,8 +86,8 @@ def auction_created(auction):
     tmp['retailPrice'] = str(auction.item.retail_price)
     tmp['completion'] = auction.completion()
     tmp['itemImage'] = auction.item.get_thumbnail()
+    tmp['itemDescription'] = auction.item.description
     tmp['bidders'] = auction.bidders.count()
-
     tmp['placed'] = 0
     tmp['timeleft'] = None
     tmp['bidNumber'] = 0
@@ -210,6 +210,7 @@ def someoneClaimedMessage(auction):
                      'displayName': auction.get_last_bidder().display_name(),
                      'facebookId': auction.get_last_bidder().facebook_id}
     tmp['bidNumber'] = auction.used_bids()/auction.minimum_precap
+    tmp['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
 
     result = {'method': 'someoneClaimed', 'data': tmp}
     return (result, '/topic/main/%s' % auction.id)
@@ -217,9 +218,7 @@ def someoneClaimedMessage(auction):
 
 def do_send_auctioneer_message(auction,message):
     text = message.format_message()
-
     tmp = {}
-
     tmp['auctioneerMessages'] = [{'text':text,'date': message.get_time()}]
     tmp['id'] = auction.id
 
@@ -229,16 +228,14 @@ def do_send_auctioneer_message(auction,message):
 
 def do_send_chat_message(auction, message):
     text = message.format_message()
-
     user = {}
     user['displayName'] = message.get_user().display_name()
     user['profileFotoLink'] = message.get_user().picture()
     user['profileLink'] = message.get_user().user_link()
+    user['facebookId'] = message.get_user().user_facebook_id()
     user['tokens'] = 0
     user['credits'] = 0
-
     result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
-
     send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
 
@@ -248,9 +245,8 @@ def do_send_global_chat_message(member, text):
     user['displayName'] = member.first_name
     user['profileFotoLink'] = "http://graph.facebook.com/%s/picture" % str(member.facebook_id)
     user['profileLink'] = "https://facebook.com/%s" % str(member.facebook_id)
-
+    user['facebookId'] = member.facebook_id
     result = {'method':'receiveChatMessage', 'data':{'user': user, 'text': text}}
-
     send_pubnub_message(result, 'global')
 
 
@@ -267,9 +263,17 @@ def callReverse(userIdentifier, function):
 def update_credits(member):
     tmp = {}
     tmp['credits'] = member.bids_left
-    send_pubnub_message({'data':tmp}, '/topic/main/%s' % member.id)
+    send_pubnub_message({'method': 'update_credits','data':tmp}, '/topic/main/%s' % member.id)
 
 def update_tokens(member):
     tmp = {}
     tmp['tokens'] = member.tokens_left
-    send_pubnub_message({'data':tmp}, '/topic/main/%s' % member.id)
+    send_pubnub_message({'method': 'update_tokens','data':tmp}, '/topic/main/%s' % member.id)
+
+def clock_pubnub():
+    message = {}
+    message['timestamp'] = time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime())
+    send_pubnub_message({'data':message}, '/topic/main/clock/')
+
+   
+

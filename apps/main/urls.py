@@ -16,10 +16,18 @@ from apps.main.api import MessageResource
 from apps.main.api import AddBidResource
 from apps.main.api import ClaimBidResource
 from apps.main.api import RemBidResource
+
+
+from apps.main.api import RegisterInvitationResource
+from apps.main.api import ServerClockResource
+
 from apps.main.api import IOPaymentInfoResource
 from apps.main.api import AppleIbidPackageIdsResource
 
 v1_api = Api(api_name='v1')
+
+v1_api.register(RegisterInvitationResource())
+v1_api.register(ServerClockResource())
 v1_api.register(NotificationResource())
 v1_api.register(MemberResource())
 v1_api.register(ConverTokensResource())
@@ -36,7 +44,9 @@ v1_api.register(MessageResource())
 v1_api.register(IOPaymentInfoResource())
 v1_api.register(AppleIbidPackageIdsResource())
 
+
 urlpatterns = patterns('',
+
 #############################
     url(r"^%s$" % (NotificationResource()._meta.resource_name), login_required(NotificationResource.get), name="notification_dispatch_list"),
     url(r"^%s/(?P<pk>\d+)/$" % (NotificationResource()._meta.resource_name), NotificationResource.put, name="notification_dispatch_detail"),
@@ -71,6 +81,11 @@ urlpatterns = patterns('',
     url(r"^%s$" % (IOPaymentInfoResource()._meta.resource_name), IOPaymentInfoResource.post, name="payment_io_dispatch_list"),
     
     url(r"^%s$" % (AppleIbidPackageIdsResource()._meta.resource_name), AppleIbidPackageIdsResource.get, name="apple_ibid_bid_package_dispatch_list"),
+    
+    url(r"^%s$" % (RegisterInvitationResource()._meta.resource_name), RegisterInvitationResource.post, name="register_invitation_resource_dispatch_list"),
 #############################
+    url(r'^api/docs/', include('rest_framework_swagger.urls')),
     url(r'^api/', include(v1_api.urls)),
+
+
 )
