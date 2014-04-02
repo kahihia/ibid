@@ -33,8 +33,8 @@ from chat.models import Message, ChatUser
 from lib import metrics
 
 #########################################
-from rest_framework.decorators import api_view, link
 from django.utils.decorators import classonlymethod
+from doc_utils import *
 #########################################
 
 metrics.initialize(settings.MIXPANEL_TOKEN)
@@ -63,13 +63,13 @@ class NotificationResource(IBGModelResource):
         }
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], NotificationSerializer)
     def get(self, request):
         """ Retrieves all of a users notifications """
         return super(NotificationResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_view(['PUT'])
+    @api_doc_view(['PUT'], NotificationSerializer)
     def put(self, request, pk=None):
         """ Updates a notification as read """
         return super(NotificationResource,self).wrap_view('dispatch_detail')
@@ -104,13 +104,13 @@ class MemberResource(IBGModelResource):
         ]
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def get(self, request):
         """ Retrieves all members.  """
         return super(MemberResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def retrieve(self, request, pk=None):
         """ Retrieves the member with 'pk' if it is the user  """
         return super(MemberResource,self).wrap_view('dispatch_detail')
@@ -152,7 +152,7 @@ class ConverTokensResource(MemberResource):
         ]
 
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def get(self, request):
         """ Resource to convert all of a member's tokens to credits """
         return super(ConvertTokensResource,self).wrap_view('dispatch_detail')
@@ -185,7 +185,7 @@ class MemberByFBTokenResource(IBGModelResource):
         ]
 
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def get(self, request):
         """ This resource logins or register a user using the facebook access token. """
         return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
@@ -248,18 +248,18 @@ class CategoryResource(IBGModelResource):
         authorization = ReadOnlyAuthorization()
         authentication = CustomAuthentication()
         include_resource_uri = False
-        fields=['name', 'description','image']
+        fields=['name', 'description','image','id']
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], CategorySerializer)
     def get(self, request):
         """ Retrives all categories available."""
         return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], CategorySerializer)
     def retrieve(self, request):
         """ Retrives one category. """
         return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
@@ -285,13 +285,13 @@ class ItemResource(IBGModelResource):
         detail_allowed_methods = ['get']
 
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], ItemSerializer)
     def get(self, request):
         """ Retrives all items available."""
         return super(ItemResource,self).wrap_view('dispatch_detail')
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], ItemSerializer)
     def retrieve(self, request):
         """ Retrives one item. """
         return super(ItemResource,self).wrap_view('dispatch_detail')
@@ -337,7 +337,7 @@ class AuctionResource(IBGModelResource):
         ]
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], AuctionSerializer)
     def get(self, request):
         """
         Retrives multiple auctions.
@@ -346,7 +346,7 @@ class AuctionResource(IBGModelResource):
         return super(AuctionResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], AuctionSerializer)
     def retrieve(self, request):
         """ Retrieves one auction. """
         return super(AuctionResource,self).wrap_view('dispatch_detail')
@@ -596,7 +596,7 @@ class MemberAuctionsResource(AuctionResource):
                 ]
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], AuctionSerializer)
     def get(self, request):
         """
         Resource to retrieve data of auctions from the user
@@ -641,13 +641,13 @@ class BidPackageResource(IBGModelResource):
         detail_allowed_methods = ['get']
 
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], BidPackageSerializer)
     def get(self, request):
         """ Retrieves data of all bid package objects """
         return super(BidPackageResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], BidPackageSerializer)
     def retrieve(self, request):
         """ Retrieves data of one bid package object """
         return super(BidPackageResource,self).wrap_view('dispatch_detail')
@@ -661,7 +661,7 @@ class AddBidResource(AuctionResource):
     class Meta:
         resource_name = 'add_bids'
         authorization = Authorization()
-        authentication = CustomAuthentication()
+        #authentication = CustomAuthentication()
         queryset = Auction.objects.all()
         list_allowed_methods = []
         detail_allowed_methods = ['post']
@@ -673,9 +673,12 @@ class AddBidResource(AuctionResource):
         ]  
 
     @classonlymethod
-    @api_view(['POST'])
+    @api_doc_view(['POST'], AuctionSerializer)
     def post(self, request):
-        """ The user add bids to an auction. """
+        """ The user add bids to an auction.
+        
+         Body  :  {}
+        """
         return super(AddBidResource,self).wrap_view('dispatch_detail')
 
     def post_detail(self, request, **kwargs):
@@ -695,10 +698,9 @@ class AddBidResource(AuctionResource):
         except ValueError:
             error = "not int"
         can_place = False
-        
+        can_place = auction.can_precap(member, amount)
         if not auction.bidders.filter(id=member.id).exists():
             joining = False
-            can_place = auction.can_precap(member, amount)
             if can_place:
                 joining = auction.place_precap_bid(member, amount)
             if joining:
@@ -707,7 +709,7 @@ class AddBidResource(AuctionResource):
                 clientMessages.append(client.updatePrecapMessage(auction))
                 clientMessages.append(auctioneer.member_joined_message(auction, member))
                 client.sendPackedMessages(clientMessages)
-        else: 
+        else:
             amount += member.auction_bids_left(auction)
             if auction.status == 'precap' and can_place:
                  #check max tokens for member per auction
@@ -736,10 +738,10 @@ class RemBidResource(AuctionResource):
     class Meta:
         resource_name = 'rem_bids'
         authorization = Authorization()
-        authentication = CustomAuthentication()
+        #authentication = CustomAuthentication()
         queryset = Auction.objects.all()
         list_allowed_methods = []
-        detail_allowed_methods = ['get']
+        detail_allowed_methods = ['post']
         include_resource_uri = False
            
     def base_urls(self):
@@ -748,10 +750,16 @@ class RemBidResource(AuctionResource):
         ]  
 
     @classonlymethod
-    @api_view(['POST'])
+    @api_doc_view(['POST'], AuctionSerializer)
     def post(self, request):
-        """ The user remove bids to an auction. """
+        """
+            The user remove bids to an auction.
+            
+        """
         return super(RemBidResource,self).wrap_view('dispatch_detail')
+
+    def post_detail(self, request, **kwargs):
+        return super(RemBidResource, self).get_detail(request, **kwargs)
 
     def obj_get(self, bundle, **kwargs):
           
@@ -791,11 +799,11 @@ class ClaimBidResource(AuctionResource):
     class Meta:
         resource_name = 'claim'
         authorization = Authorization()
-        authentication = CustomAuthentication()
+        #authentication = CustomAuthentication()
         queryset = Auction.objects.all()
         always_return_data = True
         list_allowed_methods = []
-        detail_allowed_methods = ['put']
+        detail_allowed_methods = ['post']
         include_resource_uri = False
         detail_uri_name = 'auction_id'
         
@@ -805,12 +813,20 @@ class ClaimBidResource(AuctionResource):
         ]  
 
     @classonlymethod
-    @api_view(['POST'])
+    @api_doc_view(['POST'], ClaimSerializer)
     def post(self, request):
-        """ The user claims an auction. """
+        """
+            The user claims an auction.
+            Body: {"bidNumber":Integer}
+        """
         return super(ClaimBidResource,self).wrap_view('dispatch_detail')
-
-    def obj_update(self,bundle, **kwargs ):
+    
+    def post_detail(self, request, **kwargs):
+        if 'bidNumber' in request.POST:
+            request.BODY = json.dumps(request.POST.dict())
+        return super(ClaimBidResource, self).get_detail(request, **kwargs)
+    
+    def obj_get(self,bundle, **kwargs ):
         
         error = None
         auction = Auction.objects.select_for_update().filter(id=kwargs['auction_id'])[0]
@@ -824,8 +840,12 @@ class ClaimBidResource(AuctionResource):
             amount = auction.minimum_precap
         except ValueError:
             error = "not int"
-        
-        bidNumber = int(bundle.data['bidNumber'])
+        #try:
+        logger.debug(bundle.request.BODY)
+        bidNumber = int(json.loads(bundle.request.BODY)['bidNumber'])
+        #except Exception:
+        #    error = 'BIDNUMBER_MISSING'
+        #    raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpBadRequest))
         if auction.status == 'processing' and auction.can_bid(member):
             if bidNumber == auction.getBidNumber():
                 if auction.bid(member, bidNumber):
@@ -844,17 +864,17 @@ class ClaimBidResource(AuctionResource):
             error = 'AUCTION_NOT_ACTIVE_OR_CANT_BID'
         if error:
             raise ImmediateHttpResponse(response = self.error_response(bundle.request, error, http.HttpForbidden))
-        return AuctionResource.full_dehydrate_available(AuctionResource(),bundle)
+        return bundle.obj
 
 class MessageResource(ModelResource):
-    
     """
     Creates a new message for an auction.
     """
     class Meta:
         resource_name = 'messages'
-        authorization = MessageAuthorization()
-        authentication = CustomAuthentication()
+        authorization = Authorization()
+        #authorization = MessageAuthorization()
+        #authentication = CustomAuthentication()
         queryset = Message.objects.all()
         collection_name = 'messages'
         list_allowed_methods = ['get', 'post']
@@ -870,28 +890,35 @@ class MessageResource(ModelResource):
         ]   
     
     @classonlymethod
-    @api_view(['POST', 'GET'])
+    @api_doc_view(['POST', 'GET'])#, MessageSerializer)
     def post(self, request):
         """
         Message handler.
-        text -- text in the message
+        
+        Body: { "text" : String }
         """
+        
         return super(MessageResource,self).wrap_view('dispatch_list')
     
     def post_list(self, request, **kwargs):
         #deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
-        basic_bundle = self.build_bundle(data=request.body, request=request)#dict_strip_unicode_keys(deserialized), request=request)
+        data=None
+        if 'text' in request.POST:
+            data_dict = request.POST.dict()
+        else:
+            data_dict = json.loads(request.body)
+        basic_bundle = self.build_bundle(data=data_dict, request=request)#dict_strip_unicode_keys(deserialized), request=request)
         if 'text' in basic_bundle.data:
             text = basic_bundle.data['text']
-            auction_id = kwargs['object_id']
+            auction_id = int(kwargs['object_id'])
             auction = Auction.objects.get(id=auction_id)
             user_type_id=ContentType.objects.filter(name='user').all()[0]
             auction_type_id=ContentType.objects.filter(name='auction').all()[0]
             user = ChatUser.objects.get_or_create(object_id=request.user.id, content_type=user_type_id)[0]
             bundle = self.obj_create(bundle=basic_bundle, text=text, user=user, content_type=auction_type_id, object_id=auction.id)
             client.do_send_chat_message(auction, bundle.obj)
-            return self.create_response(request, {} , response_class=http.HttpCreated)
-        return self.create_response(request, {} , response_class=http.HttpBadRequest)
+            return self.create_response(request, 'CREATED' , response_class=http.HttpCreated)
+        return self.create_response(request, 'BAD REQUEST' , response_class=http.HttpBadRequest)
 
     def apply_sorting(self, obj_list, options=None):
         obj_list = obj_list.order_by('-created')
@@ -914,15 +941,23 @@ class IOPaymentInfoResource(ModelResource):
         include_resource_uri = False
 
     @classonlymethod
-    @api_view(['POST'])
+    @api_doc_view(['POST'])#, IOPaymentInfoSerializer)
     def post(self, request):
-        """ Payment from apple store handler. """
+        """
+        Payment from apple store handler.
+        
+        Body   :   { "receipt-data" : string(64-bit coded data) }
+        """
         return super(IOPaymentInfoResource,self).wrap_view('dispatch_list')
 
     def post_list(self, request, **kwargs):
         error = None
-        deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
-        basic_bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
+        data=None
+        if 'text' in request.POST:
+            data_dict = request.POST.dict()
+        else:
+            data_dict = json.loads(request.body)
+        basic_bundle = self.build_bundle(data=data_dict, request=request)
         if 'receipt-data' in basic_bundle.data:
             #bundle.data = urlopen('https://buy.itunes.apple.com/verifyReceipt', bundle.data).read()
             post = urlopen('https://sandbox.itunes.apple.com/verifyReceipt', request.body).read()
@@ -961,7 +996,7 @@ class IOPaymentInfoResource(ModelResource):
 
 class AppleIbidPackageIdsResource(IBGModelResource):
     
-    """ Resource to retrieve data of bid package objects """
+    """ Resource to retrieve data of bid package objects  """
     
     class Meta:
         queryset = ConfigKey.objects.filter(key='APPLE_STORE_PACKAGES')
@@ -974,8 +1009,12 @@ class AppleIbidPackageIdsResource(IBGModelResource):
         fields = ('value',)
         
     @classonlymethod
-    @api_view(['GET'])
+    @api_doc_view(['GET'], AppleIbidPackageIdsSerializer)
     def get(self, request):
-        """ Resource to retrieve data of bid package objects' relation with apple store """
+        """ Resource to retrieve data of bid package objects' relation with apple store
+        
+        Returns : { "value": "{A:B, ...}" }
+        where 'A' is the apple store code and 'B' is the package's id in the daabase.
+        """
         return super(AppleIbidPackageIdsResource,self).wrap_view('dispatch_list')
     

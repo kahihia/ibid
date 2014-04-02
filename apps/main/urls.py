@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import *
 from tastypie.api import Api
+from django.contrib.auth.decorators import login_required
 
 from apps.main.api import AuctionResource
 from apps.main.api import MemberAuctionsResource
@@ -37,7 +38,7 @@ v1_api.register(AppleIbidPackageIdsResource())
 
 urlpatterns = patterns('',
 #############################
-    url(r"^%s$" % (NotificationResource()._meta.resource_name), NotificationResource.get, name="notification_dispatch_list"),
+    url(r"^%s$" % (NotificationResource()._meta.resource_name), login_required(NotificationResource.get), name="notification_dispatch_list"),
     url(r"^%s/(?P<pk>\d+)/$" % (NotificationResource()._meta.resource_name), NotificationResource.put, name="notification_dispatch_detail"),
     
     url(r"^%s$" % (MemberResource()._meta.resource_name), MemberResource.get, name="member_dispatch_list"),

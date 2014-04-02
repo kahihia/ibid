@@ -22,13 +22,13 @@ class MessageAdminForm(forms.ModelForm):
 class MessageAdmin(admin.ModelAdmin):
     form = MessageAdminForm
     list_display = ('content_type', 'user', 'created', 'text')
-    fields = ('content_type', 'user', 'text', 'created')
+    fields = ('object_id','content_type', 'user', 'text', 'created')
     raw_id_fields = ('content_type',)
     readonly_fields = ('user',)
     
 
 class ChatUserAdmin(admin.ModelAdmin):
-    list_display = ('content_type', ) 
+    list_display = ('content_type', 'object_id') 
 
 
 class AuctioneerPhraseAdmin(admin.ModelAdmin):
