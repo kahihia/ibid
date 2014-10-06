@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.conf.urls import *
 from tastypie.api import Api
-from django.contrib.auth.decorators import login_required
 
 from apps.main.api import AuctionResource
 from apps.main.api import MemberAuctionsResource
@@ -23,10 +22,6 @@ from apps.main.api import ServerClockResource
 
 from apps.main.api import IOPaymentInfoResource
 from apps.main.api import AppleIbidPackageIdsResource
-#############################################################
-from apps.main.api import SurveyResource
-from apps.main.api import QuestionResource
-from apps.main.api import AnswerResource
 
 v1_api = Api(api_name='v1')
 
@@ -47,14 +42,12 @@ v1_api.register(ClaimBidResource())
 v1_api.register(MessageResource())
 v1_api.register(IOPaymentInfoResource())
 v1_api.register(AppleIbidPackageIdsResource())
-v1_api.register(SurveyResource())
-v1_api.register(QuestionResource())
-v1_api.register(AnswerResource())
+
 
 urlpatterns = patterns('',
 
 #############################
-    url(r"^%s$" % (NotificationResource()._meta.resource_name), login_required(NotificationResource.get), name="notification_dispatch_list"),
+    url(r"^%s$" % (NotificationResource()._meta.resource_name), NotificationResource.get, name="notification_dispatch_list"),
     url(r"^%s/(?P<pk>\d+)/$" % (NotificationResource()._meta.resource_name), NotificationResource.put, name="notification_dispatch_detail"),
     
     url(r"^%s$" % (MemberResource()._meta.resource_name), MemberResource.get, name="member_dispatch_list"),

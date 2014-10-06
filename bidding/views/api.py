@@ -344,7 +344,7 @@ def startBidding(request):
     tmp['placed'] = member.auction_bids_left(auction)
     tmp['bids'] = member.auction_bids_left(auction)
     tmp['itemImage'] = auction.item.get_thumbnail(size="107x72")
-    tmp['itemDescription'] = auct.item.description
+    tmp['itemDescription'] = auction.item.description
     tmp['bidders'] = auction.bidders.count()
     tmp['itemId'] = auction.item.id
     tmp['won_price'] = 0

@@ -132,12 +132,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         $rootScope.user.tokens += Number(auction.retailPrice);
     });
 
-<<<<<<< HEAD
-<<<<<<< HEAD
      $rootScope.subscribeToPaymentChannel = function(member) {
-=======
-    $rootScope.subscribeToPaymentChannel = function(member) {
->>>>>>> 429804ad5b1e02cdbf19b6c1fa93c6aa52849181
         $scope.subscribeToChannel({
             channel: $scope.channel + member,
             message: function(messages) {
@@ -192,8 +187,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         });
     };
     
-=======
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
     $scope.closeWonTokenAuctionDialog = function () {
         $scope.tokenAuctionsWon = [];
         //request for perm if does not have it
@@ -312,8 +305,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     var getCredits_callback = function(data) {};
 
-<<<<<<< HEAD
-=======
     $scope.subscribeToPaymentChannel = function(member) {
         $scope.subscribeToChannel({
             channel: $scope.channel + member,
@@ -366,7 +357,6 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         });
     };
 
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
     $scope.fb_check_like= function() {
         $http.post('/fb_check_like/').success(
             function(data){

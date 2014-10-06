@@ -102,7 +102,10 @@ class MessageAuthorization(NoAuthorization):
         raise Unauthorized("Can't chat")
 
     def update_detail(self, object_list, bundle):
+        log.debug("update_detail")
+        log.debug(bundle.obj)
         if bundle.obj:
+            log.debug("dentro del if")
             auction_id = int(bundle.obj.object_id)
             if bundle.request.user.can_chat(auction_id):
                 return True

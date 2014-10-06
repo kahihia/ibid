@@ -315,6 +315,7 @@
 				</div>
 			</div>
 			<div id="content-wrapper" ng-controller="AuctionsPanelController">
+
 						<div id="menu-wrapper" {% if auction_type == 'token' %} ng-init="playForTokens()" {% endif %}
 						{% if auction_type == 'credit' %} ng-init="playForItems()" {% endif %}>
 							<div id="menu">
@@ -346,7 +347,7 @@
 									</div>
 								</div>
 							</div>
-				{% block menu_wrapper %}{% endblock %}
+
 				{% block content_wrapper %}
 					<div class="color-frame-tokens"></div>
 					<div class="frame">
@@ -357,6 +358,8 @@
 			</div>
 		</div>
 
+
+
 		<!-- Item Details -->
 				<div class="item-details modal" style="display:none;">
 							<div id="item-details" class="content"></div>
@@ -365,6 +368,7 @@
 								x
 							</div>
 				</div>
+
 
         <!-- Interactive tour steps -->
         <ol id="tour--initial" ib-tour class="joyRideTipContent">

@@ -208,6 +208,7 @@
 	</div>
 {% endblock %}
 
+
 {% block menu %}
 	<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
 	<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
@@ -230,6 +231,7 @@
 						<div class="img">
 
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -278,8 +280,11 @@
 							<div class="syncing">
 								SYNCING...
 							</div>
+
 						</div>
+
 					</div>
+
 					<!-- TEMPLATE: processing -->
 					<div id="auction-top" ng-switch-when="processing">
 						<div class="img">
@@ -311,6 +316,7 @@
 							</div>
 						</div>
 					</div>
+
 					<!-- TEMPLATE: pause -->
 					<div id="auction-top" ng-switch-when="pause">
 						<div class="img">
@@ -329,11 +335,11 @@
 								</p>
 								PAUSED
 							</div>
-                            <div id="btn-bid-play">
-                                <button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" disabled>
-                                    <span class="auction__bid-button__text" data-text="BID">BID</span>
-                                </button>
-                            </div>
+									<div id="btn-bid-play">
+													<button class="auction__bid-button" ng-class="{'auction__bid-button--winning': auction.interface.isWinning}" disabled>
+																	<span class="auction__bid-button__text" data-text="BID">BID</span>
+													</button>
+									</div>
 							<div class="bids-left">
 								<p>
 									BIDS LEFT
@@ -342,6 +348,7 @@
 							</div>
 						</div>
 					</div>
+
 					<!-- TEMPLATE: waiting_payment -->
 					<div id="auction-top" ng-switch-when="waiting_payment">
 						<div class="btn-close" ng-mousedown="closeAuction(auction)">×</div>
@@ -361,7 +368,9 @@
 							<a href="http://facebook.com/{$ auction.winner.facebookId$}" target="_blank">{$auction.winner.firstName $}</a>
 						</div>
 					</div>
+
 				</div>
+
 				<div id="auction-content">
 					<div id="auction-auctioneer">
 						<div class="img">
@@ -371,6 +380,7 @@
 							<div ng-repeat="auctioneerMessage in auction.auctioneerMessages">
 								<div ng-bind-html-unsafe="auctioneerMessage.text"></div>
 							</div>
+
 							<div id="btn-acutioneer-up" class="scroll">
 								<img style="margin-top: 40px; display:none;" src="{% static 'images/btn-auctioneer-down.png' %}" height="40" width="42">
 								<img style="display:none;" src="{% static 'images/btn-auctioneer-up.png' %}" height="40" width="42" >
@@ -414,7 +424,6 @@
 		<div id="auction" ng-repeat="auction in auctionList[playFor].available">
 			<input type="hidden" class="auction-id"
 			value="{$ auction.id $}"/>
-
 			<div id="auction-top">
 				<div class="img">
 					<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
@@ -474,17 +483,21 @@
 		</div>
 	</div>	
 
+
+
 		<!-- Notifications -->
 		<div id="notifications" class="notifications-container"></div>
 		<script id="template/notification.html" type="text/ng-template">
-			<div class="notification">
-				<div class="kenny">
-					<img src="{% static 'images/tooltip-info-kenny.png' %}">
-				</div>
-				<div class="content">
-					<div class="txt">{$ message $}</div>
-				</div>
-			</div>
+										<div class="notification">
+														<div class="kenny">
+																		<img src="{% static 'images/tooltip-info-kenny.png' %}">
+														</div>
+														<div class="content">
+																		<div class="txt">{$ message $}</div>
+														</div>
+										</div>
 		</script>
 	</div>
+
+
 {% endblock %}
