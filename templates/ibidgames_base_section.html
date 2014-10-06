@@ -14,10 +14,7 @@
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
 		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
         <link rel="stylesheet" href="{% static 'css/tour.css' %}">
-<<<<<<< HEAD
 		<link rel="stylesheet" href="{% static 'css/item_details.css' %}">
-=======
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
 
 		{{ js_error_tracker|safe }}
@@ -318,7 +315,6 @@
 				</div>
 			</div>
 			<div id="content-wrapper" ng-controller="AuctionsPanelController">
-<<<<<<< HEAD
 						<div id="menu-wrapper" {% if auction_type == 'token' %} ng-init="playForTokens()" {% endif %}
 						{% if auction_type == 'credit' %} ng-init="playForItems()" {% endif %}>
 							<div id="menu">
@@ -350,9 +346,7 @@
 									</div>
 								</div>
 							</div>
-=======
 				{% block menu_wrapper %}{% endblock %}
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 				{% block content_wrapper %}
 					<div class="color-frame-tokens"></div>
 					<div class="frame">
@@ -363,8 +357,6 @@
 			</div>
 		</div>
 
-<<<<<<< HEAD
-
 		<!-- Item Details -->
 				<div class="item-details modal" style="display:none;">
 							<div id="item-details" class="content"></div>
@@ -374,8 +366,6 @@
 							</div>
 				</div>
 
-=======
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
         <!-- Interactive tour steps -->
         <ol id="tour--initial" ib-tour class="joyRideTipContent">
             <li>

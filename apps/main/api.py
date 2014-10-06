@@ -18,7 +18,7 @@ from tastypie.authorization import Authorization, ReadOnlyAuthorization
 from tastypie.exceptions import Unauthorized, BadRequest, ImmediateHttpResponse
 from tastypie.resources import ModelResource, ALL, Resource
 from tastypie.utils import trailing_slash, dict_strip_unicode_keys
-from apps.main.models import Notification
+from apps.main.models import Notification,Survey,Question,Answer
 from apps.main.apiauth import *
 from bidding import client
 from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid, Category, Invitation, IOPaymentInfo
@@ -997,7 +997,6 @@ class ServerClockResource(Resource):
         client.clock_pubnub()
         return self.create_response(request, time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime()))
 
-  
 class IOPaymentInfoResource(ModelResource):
     
     """
@@ -1099,4 +1098,80 @@ class AppleIbidPackageIdsResource(IBGModelResource):
         """
         return super(AppleIbidPackageIdsResource,self).wrap_view('dispatch_list')
 
+########################################
+
+class QuestionResource(IBGModelResource):
     
+    class Meta:
+        queryset = Question.objects.filter()
+        resource_name = 'questions'
+        authorization = Authorization()
+        #authentication = CustomAuthentication()
+        include_resource_uri = False
+        list_allowed_methods = ['get']
+        detail_allowed_methods = []
+      
+    def apply_filters(self, request, applicable_filters):
+        
+        obj_list = self.get_object_list(request).filter(survey = request.GET['survey'])
+        return_list = obj_list & super(QuestionResource, self).apply_filters(request, applicable_filters)
+        return return_list
+
+class SurveyResource(IBGModelResource):
+    
+    questions = fields.OneToManyField(QuestionResource, 'questions',null=True, full=True)
+    
+    class Meta:
+        queryset = Survey.objects.filter()
+        resource_name = 'surveys'
+        authorization = Authorization()
+        #authentication = CustomAuthentication()
+        include_resource_uri = False
+        list_allowed_methods = ['get']
+        detail_allowed_methods = ['get']
+        #fields = ('value',)
+        
+    def alter_detail_data_to_serialize(self, request, data):
+        lista = []
+        for q in data.data['questions']:
+            lista.append(q.obj.toDict())
+        data.data['surveyData'] = lista
+        data.data.pop("questions", None)
+        return data
+   
+class AnswerResource(IBGModelResource):
+    
+    class Meta:
+        queryset = Answer.objects.filter()
+        resource_name = 'answers'
+        authorization = Authorization()
+        #authentication = CustomAuthentication()
+        include_resource_uri = False
+        list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = []
+        
+    def apply_filters(self, request, applicable_filters):
+        
+        obj_list = self.get_object_list(request).filter(question = request.GET['question'])
+        #return_list = obj_list & super(QuestionResource, self).apply_filters(request, applicable_filters)
+        return obj_list
+    
+    def post_list(self, request, **kwargs):
+        response = {}
+        response['question_id'] = 'FAIL'
+        response['user_token'] = 'FAIL'
+        response['answer'] = 'FAIL'
+        if 'text' in request.POST:
+            data_dict = request.POST.dict()
+        else:
+            data_dict = json.loads(request.body)
+        try:
+            assert(data_dict['question_id'])
+            response['question_id'] = 'OK'
+            assert(data_dict['user_token'])
+            response['user_token'] = 'OK'
+            assert(data_dict['answer'])
+            response['answer'] = 'OK'
+            return self.create_response(request, {'response':'survey answers received'} , response_class=http.HttpCreated)
+        except AssertionError as e:
+            return self.create_response(request, {'response': response} , response_class=http.HttpBadRequest)

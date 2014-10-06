@@ -16,3 +16,44 @@ class Notification(models.Model):
     
     def __unicode__(self):
         return "To: %s, From: %s, Message: %s" % (self.recipient, self.sender, self.message)
+
+class Survey(models.Model):
+    
+    start_date = models.DateTimeField(auto_now_add=True)
+    end_date = models.DateTimeField(auto_now=True)
+    reward= models.CharField(max_length=20)
+    survey_image = models.ImageField(upload_to='bid_packages/', blank=True, null=True)
+    detail_image = models.ImageField(upload_to='bid_packages/', blank=True, null=True)
+    num_questions = models.IntegerField()
+    
+class Question(models.Model):
+
+    survey = models.ForeignKey(Survey, related_name='questions',null=True,blank=True)
+    question = models.CharField(max_length=255)
+    options = models.CharField(max_length=255)
+    type = models.IntegerField()
+    number = models.IntegerField()
+    
+    def toDict(self):
+        import json
+        dic = {}
+        dic['type'] = self.type
+        dic['question_id'] = self.id
+        dic['question'] = self.question
+        dic['question_number'] = self.number
+        dic['images'] = list(self.images.values_list('image', flat=True))
+        if self.options:
+            dic['options'] = json.loads(self.options)
+        return dic
+    
+class Image(models.Model):
+    
+    image = models.ImageField(upload_to='bid_packages/', blank=True, null=True)
+    question = models.ForeignKey(Question, related_name='images',null=True,blank=True)
+    
+class Answer(models.Model):
+    
+    image = models.ImageField(upload_to='bid_packages/', blank=True, null=True)
+    question = models.ForeignKey(Question, related_name='answers',null=True,blank=True)
+    answer = models.CharField(max_length=255)
+    checked = models.BooleanField(default=False)

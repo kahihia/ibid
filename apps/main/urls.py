@@ -23,6 +23,10 @@ from apps.main.api import ServerClockResource
 
 from apps.main.api import IOPaymentInfoResource
 from apps.main.api import AppleIbidPackageIdsResource
+#############################################################
+from apps.main.api import SurveyResource
+from apps.main.api import QuestionResource
+from apps.main.api import AnswerResource
 
 v1_api = Api(api_name='v1')
 
@@ -43,7 +47,9 @@ v1_api.register(ClaimBidResource())
 v1_api.register(MessageResource())
 v1_api.register(IOPaymentInfoResource())
 v1_api.register(AppleIbidPackageIdsResource())
-
+v1_api.register(SurveyResource())
+v1_api.register(QuestionResource())
+v1_api.register(AnswerResource())
 
 urlpatterns = patterns('',
 
