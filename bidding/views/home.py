@@ -9,7 +9,7 @@ from django.contrib.flatpages.models import FlatPage
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import ListView
@@ -20,6 +20,11 @@ from bidding.models import Member
 from bidding.models import BidPackage
 from bidding.models import ConfigKey
 
+from django_facebook.middleware import FacebookCanvasMiddleWare
+from django_facebook.connect import connect_user
+from django_facebook.canvas import generate_oauth_url
+from django_facebook.exceptions import MissingPermissionsError
+from open_facebook.api import FacebookAuthorization
 
 logger = logging.getLogger('django')
 
@@ -34,13 +39,14 @@ def canvashome(request):
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
 
-    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    fb_url = settings.FACEBOOK_APP_URL#.format(appname=settings.FACEBOOK_APP_NAME)
     share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
-
+    if not request.GET.get('code', None):    
+        return redirect(generate_oauth_url())
+    access_token = FacebookAuthorization.convert_code(request.GET.get('code', None), fb_url)['access_token']
     if not request.user.is_authenticated() :
         #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
-        request.META['HTTP_REFERER'] = fb_url
         data = {
             'authorization_url': fb_url,
             'app_url': fb_url,
@@ -48,9 +54,8 @@ def canvashome(request):
             'share_title': share_title,
             'share_description': share_description,
         }
+        _action, _user = connect_user(request, access_token)
         return render_response(request, 'fb_redirect.html', data)
-        
-        
     member = request.user
 
     #give free tokens from promo
