@@ -44,8 +44,9 @@ def canvashome(request):
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
     if not request.GET.get('code', None):    
         return redirect(generate_oauth_url())
-    access_token = FacebookAuthorization.convert_code(request.GET.get('code', None), fb_url)['access_token']
     if not request.user.is_authenticated() :
+        
+        access_token = FacebookAuthorization.convert_code(request.GET.get('code', None), fb_url)['access_token']
         #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
         data = {
             'authorization_url': fb_url,
