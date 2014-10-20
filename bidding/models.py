@@ -9,6 +9,7 @@ from decimal import Decimal
 from urllib2 import urlopen
 
 import open_facebook
+import django.dispatch
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.urlresolvers import reverse
@@ -815,18 +816,18 @@ class AuctionInvoice(AuditedModel):
 from paypal.standard.ipn.signals import payment_was_successful
 
 
-def addbids(sender, **kwargs):
-#TODO move to signals.py?
-    ipn_obj = sender
-    if ipn_obj.custom.startswith('item'):
-        invoice = AuctionInvoice.objects.get(uid=ipn_obj.invoice)
-        auction = invoice.auction
-        auction.status = 'paid'
-        auction.save()
-        invoice.status = 'paid'
-        invoice.save()
-        #TODO maybe pay method in auction. And delete bid objects there
-payment_was_successful.connect(addbids)
+#def addbids(sender, **kwargs):
+##TODO move to signals.py?
+#    ipn_obj = sender
+#    if ipn_obj.custom.startswith('item'):
+#        invoice = AuctionInvoice.objects.get(uid=ipn_obj.invoice)
+#        auction = invoice.auction
+#        auction.status = 'paid'
+#        auction.save()
+#        invoice.status = 'paid'
+#        invoice.save()
+#        #TODO maybe pay method in auction. And delete bid objects there
+#payment_was_successful.connect(addbids)
 
 
 class Invitation(AuditedModel):
@@ -892,28 +893,43 @@ class FBOrderInfo(AuditedModel):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
 
 
-@receiver(post_save, sender=FBOrderInfo)
-def on_confirmed_order(sender, instance, **kwargs):
-    """Function to add order to the history when confirmed"""
-    if instance.status == 'confirmed':
-        ConvertHistory.objects.create(member=instance.member,
-                                      tokens_amount=0,
-                                      bids_amount=instance.package.bids,
-                                      total_tokens=instance.member.tokens_left,
-                                      total_bids=instance.member.bids_left,
-                                      total_bidsto=instance.member.bidsto_left,
-        )
-
 
 class IOPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage, null=True)
-    transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
+    transaction_id = models.CharField(max_length=255,unique=True)  # this field should be unique
     quantity = models.IntegerField()
     purchase_date = models.DateTimeField(null=True)
 
     def __unicode__(self):
         return repr(self.member) + ' - ' + repr(self.package) + ' (' + str(self.purchase_date) + ')'
+
+class PaypalPaymentInfo(AuditedModel):
+    member = models.ForeignKey(Member)
+    package = models.ForeignKey(BidPackage, null=True)
+    transaction_id = models.CharField(max_length=255,unique=True)  # this field should be unique
+    quantity = models.IntegerField()
+    purchase_date = models.DateTimeField(null=True)
+
+    def __unicode__(self):
+        return repr(self.member) + ' - ' + repr(self.package) + ' (' + str(self.purchase_date) + ')'
+
+
+#@receiver(post_save, sender=FBOrderInfo)
+#@receiver(post_save, sender=IOPaymentInfo)
+buy_tokens = django.dispatch.Signal(providing_args=["instance"])
+def on_confirmed_order(sender,**kwargs):
+    """Function to add order to the history when confirmed"""
+    #if instance.status == 'confirmed':
+    instance=kwargs['instance']
+    ConvertHistory.objects.create(member=instance.member,
+                                  tokens_amount=0,
+                                  bids_amount=instance.package.bids,
+                                  total_tokens=instance.member.tokens_left,
+                                  total_bids=instance.member.bids_left,
+                                  total_bidsto=instance.member.bidsto_left,
+    )
+buy_tokens.connect(on_confirmed_order)
 
 
 CONFIG_KEY_TYPES = (('text', 'text'),

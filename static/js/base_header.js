@@ -289,21 +289,16 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         hideOverlay();
     };
 
-    $scope.buy_bids = function(member,package_id) {
+    $scope.buy_bids = function(member,package_id,$event) {
         // calling the API ...
-
-        analytics.track('buy bids');
-        var obj = {
-            method: 'pay',
-            action: 'purchaseitem',
-            product: $rootScope.SITE_NAME+'bid_package/'+package_id,
-        };
-
+        $(".purchase_popup .joyride-tip-guide").css('top', ($(window).height()/2)-90);
+        $(".purchase_popup").removeClass("hidden");
         $scope.subscribeToPaymentChannel(member)
-        FB.ui(obj, getCredits_callback);
+        dom_elem=$event.target
+        $(dom_elem).find('form').submit();
     };
 
-    var getCredits_callback = function(data) {};
+   // var getCredits_callback = function(data) {};
 
     $scope.subscribeToPaymentChannel = function(member) {
         $scope.subscribeToChannel({

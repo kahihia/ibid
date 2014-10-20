@@ -16,7 +16,10 @@ urlpatterns = patterns('',
     #url(r'^docs/', include('rest_framework_swagger.urls')),
 
     (r'^chat/', include('chat.urls')),
+    
     (r'^paypal/ipn/', include('paypal.standard.ipn.urls')),
+    (r'^paypal/', include('paypal.standard.ipn.urls')),
+    
     (r'^admin/', include(admin.site.urls)),
     (r'^facebook/', include('django_facebook.urls')),
     (r'^accounts/', include('django_facebook.auth_urls')),
