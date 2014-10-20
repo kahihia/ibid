@@ -907,7 +907,7 @@ class IOPaymentInfo(AuditedModel):
 class PaypalPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage, null=True)
-    transaction_id = models.CharField(max_length=255,unique=True)  # this field should be unique
+    transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
     quantity = models.IntegerField()
     purchase_date = models.DateTimeField(null=True)
 
