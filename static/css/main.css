@@ -18,6 +18,7 @@ a {
 	transition: .2s;
 }
 
+
 a:hover {
 	color: #666;
 	-o-transition: .2s;
