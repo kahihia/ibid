@@ -1,0 +1,119 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>iBidGames</title>
+		<link rel="stylesheet" href="{% static 'css/login.css' %}" type="text/css" >
+		
+		
+		<!---->
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+		<script>
+			// Mouseover/ Click sound effect- by JavaScript Kit (www.javascriptkit.com)
+			// Visit JavaScript Kit at http://www.javascriptkit.com/ for full source code
+
+			//** Usage: Instantiate script by calling: var uniquevar=createsoundbite("soundfile1", "fallbackfile2", "fallebacksound3", etc)
+			//** Call: uniquevar.playclip() to play sound
+
+			var html5_audiotypes = {//define list of audio file extensions and their associated audio types. Add to it if your specified audio file isn't on this list:
+				"mp3" : "audio/mp3",
+				"mp4" : "audio/mp4",
+				"ogg" : "audio/ogg",
+				"wav" : "audio/wav"
+			}
+
+			function createsoundbite(sound) {
+				var html5audio = document.createElement('audio')
+				if (html5audio.canPlayType) {//check support for HTML5 audio
+					for (var i = 0; i < arguments.length; i++) {
+						var sourceel = document.createElement('source')
+						sourceel.setAttribute('src', arguments[i])
+						if (arguments[i].match(/\.(\w+)$/i))
+							sourceel.setAttribute('type', html5_audiotypes[RegExp.$1])
+						html5audio.appendChild(sourceel)
+					}
+					html5audio.load()
+					html5audio.playclip = function() {
+						html5audio.pause()
+						html5audio.currentTime = 0
+						html5audio.play()
+					}
+					return html5audio
+				} else {
+					return {
+						playclip : function() {
+							throw new Error("Your browser doesn't support HTML5 audio unfortunately")
+						}
+					}
+				}
+			}
+
+			//Initialize two sound clips with 1 fallback file each:
+
+			var clicksoundClose = createsoundbite("{% static 'audio/clicksound-btn.mp3' %}")
+			var clicksound = createsoundbite("{% static 'audio/clicksound-btn.mp3' %}")
+
+		</script>
+
+	</head>
+
+	<body>
+		<div style="margin: 0 auto; width: 600px">
+			
+				<!-- ----------------------------------------------- POP UP SIGN IN SOCIAL-->
+			<div class="popup">
+				<div class="btn-close" onclick="clicksoundClose.playclip()" style="display: none;">
+					x
+				</div>
+				<div class="kenny"><img src="{% static 'images/kenny-auction-left.png' %}">
+				</div>
+				<div class="prize"><img src="{% static 'images/prize-medium.png' %}">
+				</div>
+				<div class="gloss"></div>
+
+				<div class="title">
+					Welcome!
+				</div>
+				<div class="title title-shadow">
+					Welcome!
+				</div>
+				<div class="content">
+					
+						<div class="welcome-text">
+							</br></br>To continue, please Sign Up with Facebook or Google+</br>to authenticate your identity
+						</div>
+						
+				
+					<div class="signup">
+						<div class='fbconnect'>	
+							<a href='/canvashome/?facebook_login=True'><img src="{% static 'css/images/facebook.png' %}" /></a>
+						</div>
+						<div class="goggleconnect">
+							<a href='{% url "socialauth_begin" "google-oauth2" %}'><img src="{% static 'css/images/googlebtn.png' %}" /></a>
+						</div>
+					</div>
+
+				</div>
+				<div class="info text-small-w">
+					<span>...............................................................................................</span>
+					</br>
+					We are the first honest & prefunded interactive auction. </br>All our players are real people so we ask our users to login with Facebook or Google+
+					
+				</div>
+				
+				<div class="bkg"></div>
+			</div>
+			<!-- --------------------------------------------END----------------->
+			<div style="height: 150px"></div>
+			
+			
+			</div>
+
+	
+	</body>
+
+</html>
+

@@ -77,6 +77,16 @@ BID_TYPE_CHOICES = (
 )
 
 
+
+class Google_profile(models.Model):
+    
+    profile_url =  models.URLField(null=True,blank=True,max_length=255)
+    profile_picture_url = models.URLField(null=True,blank=True,max_length=255)
+    displayName = models.CharField(null=True,blank=True,max_length=255)
+    email = models.EmailField(null=True,blank=True,max_length=255)
+    gender = models.CharField(null=True,blank=True,max_length=255)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='google_profile')
+    
 class Member(AbstractUser, FacebookModel):
     objects = UserManager()
 
@@ -208,7 +218,13 @@ class Member(AbstractUser, FacebookModel):
         return mark_safe(output)
 
     def display_picture(self):
-        return "https://graph.facebook.com/%s/picture" % self.facebook_id
+        
+        if self.facebook_id:
+            return "https://graph.facebook.com/%s/picture" % self.facebook_id
+        else:
+            if self.google_profile.count() > 0:
+                return self.google_profile.all()[0].profile_picture_url
+            return ""
 
     def can_chat(self, auction_id):
         """ Returns True if the user can chat in the given auction. """

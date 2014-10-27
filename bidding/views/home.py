@@ -3,7 +3,8 @@ Home page views.
 '''
 
 import logging
-
+import urllib2
+import json
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
 from django.core.urlresolvers import reverse
@@ -19,19 +20,32 @@ from bidding.models import ConvertHistory
 from bidding.models import Member
 from bidding.models import BidPackage
 from bidding.models import ConfigKey
+from bidding.models import Google_profile
 
 from django_facebook.middleware import FacebookCanvasMiddleWare
 from django_facebook.connect import connect_user
 from django_facebook.canvas import generate_oauth_url
 from django_facebook.exceptions import MissingPermissionsError
 from open_facebook.api import FacebookAuthorization
-
+from social_auth.db.django_models import UserSocialAuth
+from social_auth.backends.google import GoogleOAuth2
 logger = logging.getLogger('django')
 
 
 def render_response(req, *args, **kwargs):
     kwargs['context_instance'] = RequestContext(req)
     return render_to_response(*args, **kwargs)
+
+
+
+
+
+
+def get_data(uid,access_token):
+    url = settings.GOOGLE_API_URL+'/%s/?access_token=%s' %(uid,access_token)
+    serialized_data = urllib2.urlopen(url).read()
+    data = json.loads(serialized_data)
+    return data 
 
 def canvashome(request):
     redirectTo = request.session.get('redirect_to', False)
@@ -42,23 +56,45 @@ def canvashome(request):
     fb_url = settings.FACEBOOK_APP_URL#.format(appname=settings.FACEBOOK_APP_NAME)
     share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
-    if not request.GET.get('code', None):    
-        return redirect(generate_oauth_url())
-    if not request.user.is_authenticated() :
+    if not request.user.is_authenticated():
         
-        access_token = FacebookAuthorization.convert_code(request.GET.get('code', None), fb_url)['access_token']
-        #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
-        data = {
-            'authorization_url': fb_url,
-            'app_url': fb_url,
-            'site_url': settings.SITE_NAME,
-            'share_title': share_title,
-            'share_description': share_description,
-        }
-        _action, _user = connect_user(request, access_token)
-        return render_response(request, 'fb_redirect.html', data)
-    member = request.user
-
+        if not request.GET.get('facebook_login', None) and not request.GET.get('code', None):
+            return render_response(request, 'login.html')
+        else:    
+            if not request.GET.get('code', None):    
+                return redirect(generate_oauth_url())
+            access_token = FacebookAuthorization.convert_code(request.GET.get('code', None), fb_url)['access_token']
+            #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
+            data = {
+                'authorization_url': fb_url,
+                'app_url': fb_url,
+                'site_url': settings.SITE_NAME,
+                'share_title': share_title,
+                'share_description': share_description,
+            }
+            _action, _user = connect_user(request, access_token)
+            return render_response(request, 'fb_redirect.html', data)
+    else:
+        social_auth_user = UserSocialAuth.objects.filter(provider='google-oauth2').filter(user_id=request.user.id)
+        if social_auth_user.count() > 0:
+            social_auth_user = social_auth_user[0]
+            data = get_data(social_auth_user.uid,social_auth_user.extra_data['access_token'])
+            google_profile = Google_profile.objects.filter(user_id=social_auth_user.user_id)
+            if google_profile.count() ==0:
+                google_profile = Google_profile.objects.create(
+                    user_id= social_auth_user.user_id,
+                    profile_url =  data['url'],
+                    profile_picture_url = data['image']['url'],
+                    displayName = data['displayName'],
+                    email = data['emails'][0]['value'],
+                    gender =data['gender']
+                )
+            else:
+                google_profile = google_profile[0]
+                profile_picture_url = data['image']['url']
+                google_profile.save()
+                
+    member = request.user    
     #give free tokens from promo
     freeExtraTokens = request.session.get('freeExtraTokens', 0)
     if freeExtraTokens and not member.getSession('freeExtraTokens', None):
