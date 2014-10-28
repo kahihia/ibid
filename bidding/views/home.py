@@ -53,7 +53,7 @@ def canvashome(request):
     if redirectTo:
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
-
+    member=None
     fb_url = settings.FACEBOOK_APP_URL#.format(appname=settings.FACEBOOK_APP_NAME)
     share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
@@ -90,7 +90,7 @@ def canvashome(request):
                     email = data['emails'][0]['value'],
                     gender =data['gender']
                 )
-                member=Member.objects.filter(id=social_auth_user.user_id)[0]
+                member=Member.objects.get(id=social_auth_user.user_id)
                 member.bids_left = 0
                 member.tokens_left = 2000
                 member.save()
@@ -99,8 +99,9 @@ def canvashome(request):
                 google_profile = google_profile[0]
                 profile_picture_url = data['image']['url']
                 google_profile.save()
-                
-    member = request.user    
+    
+    if not member:           
+        member = Member.objects.get(id=request.user.id)    
     #give free tokens from promo
     freeExtraTokens = request.session.get('freeExtraTokens', 0)
     if freeExtraTokens and not member.getSession('freeExtraTokens', None):
