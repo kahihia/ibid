@@ -5,6 +5,7 @@ Home page views.
 import logging
 import urllib2
 import json
+import bidding.client as client
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
 from django.core.urlresolvers import reverse
@@ -89,6 +90,11 @@ def canvashome(request):
                     email = data['emails'][0]['value'],
                     gender =data['gender']
                 )
+                member=Member.objects.filter(id=social_auth_user.user_id)[0]
+                member.bids_left = 0
+                member.tokens_left = 2000
+                member.save()
+                client.update_tokens(member)
             else:
                 google_profile = google_profile[0]
                 profile_picture_url = data['image']['url']
