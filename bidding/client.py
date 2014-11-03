@@ -157,6 +157,7 @@ def auctionFinish(auction):
     tmp['status'] = auction.status
     tmp['winner'] = {'firstName': auction.winner.first_name if auction.winner else 'Nobody has bid!',
                      'displayName': auction.winner.display_name() if auction.winner else 'Nobody',
+                     'id': auction.winner.id if auction.winner else '',
                      'facebookId': auction.winner.facebook_id if auction.winner else ''}
     tmp['won_price'] = str(auction.won_price)
     

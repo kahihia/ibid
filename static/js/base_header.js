@@ -87,8 +87,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
 
     $rootScope.$on('auction:finished', function (event,auction,auctionList) {
         // If current user won, show win modal.
-        showOverlay();
-        if (auction.winner.facebookId !== $scope.user.facebookId) {
+        if (auction.winner.id !== $scope.user.id) {
             show_token_lost_dialog  = false;
             show_item_lost_dialog  = false;
             if (auction.bidType == "bid") {
@@ -101,11 +100,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             }
             if (auction.bidType == "token") {
                 list = auctionList[$scope.AUCTION_TYPE_TOKENS]['mine'];
-                console.log("ANTES DEL FOR:");
                 for (var i =0; i < list.length; i=i+1){
-                    console.log("ENTRA AL FOR:");
-                    console.log("list[i].id:" + list[i].id);
-                    console.log("auction.id:" + auction.id);
                     if (list[i].id == auction.id) {
                         show_token_lost_dialog = true;
                     }
@@ -114,22 +109,28 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
             $scope.lostAuction = auction;
             $scope.showLostTokensDialog = show_token_lost_dialog;
             $scope.showLostItemDialog = show_item_lost_dialog;
-            return;
+            if (show_token_lost_dialog) {
+                showOverlay();
+            }
+        } else {
+            $scope.wonAuction = auction;
+            $scope.requestPermisionPublishActions('STORY');
+            $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
+            $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
+            // If playing for tokens, update user tokens.
+            if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
+                $rootScope.user.tokens += Number(auction.retailPrice);
+            }
+            showOverlay();
         }
         if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
-            $scope.tokenAuctionsWon.push(auction);    
-        }else {
-            $scope.creditAuctionsWon.push(auction);
-        };
-        $scope.wonAuction = auction;
-        $scope.requestPermisionPublishActions('STORY');
-        $scope.showWonTokensDialog = (auction.bidType === $scope.AUCTION_TYPE_TOKENS);
-        $scope.showWonItemDialog = (auction.bidType === $scope.AUCTION_TYPE_CREDITS);
-        // If playing for tokens, update user tokens.
-        if (auction.bidType !== $scope.AUCTION_TYPE_TOKENS) {
-            return;
-        }
-        $rootScope.user.tokens += Number(auction.retailPrice);
+               $scope.tokenAuctionsWon.push(auction);
+               auctionList[$scope.AUCTION_TYPE_TOKENS]['finished'].push(auction);
+           }else {
+               $scope.creditAuctionsWon.push(auction);
+               auctionList[$scope.AUCTION_TYPE_CREDITS]['finished'].push(auction);
+           };
+        return;
     });
 
      $rootScope.subscribeToPaymentChannel = function(member) {
@@ -155,6 +156,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         _.defaults(options, {
             connect: function () {
                 console.log('PubNub channel %s connected', options.channel);
+                console.log($rootScope.user);
             },
             message: function (messages) {
                 _.forEach(messages, function (message) {
@@ -293,65 +295,10 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         // calling the API ...
         $(".purchase_popup .joyride-tip-guide").css('top', ($(window).height()/2)-90);
         $(".purchase_popup").removeClass("hidden");
-        $scope.subscribeToPaymentChannel(member)
         dom_elem=$event.target
         $(dom_elem).find('form').submit();
     };
-
-   // var getCredits_callback = function(data) {};
-
-    $scope.subscribeToPaymentChannel = function(member) {
-        $scope.subscribeToChannel({
-            channel: $scope.channel + member,
-            message: function(messages) {
-                _.forEach(messages, function(message) {
-                    console.log('PubNub channel %s message (%s)', $scope.channel + member, getCurrentDateTime(), message);
-                    gameState.pubnubMessages.push([getCurrentDateTime(), message]);
-                    $scope.$apply(function () {
-                        jQuery('.credits').text("CREDITS: " + message.data.credits)
-                        $scope.unsubscribeFromChannel($scope.channel + member)
-                    });
-                });
-            }
-        });
-    };
-
-    $scope.subscribeToChannel = function (options) {
-        _.defaults(options, {
-            connect: function () {
-                console.log('PubNub channel %s connected', options.channel);
-            },
-            message: function (messages) {
-                _.forEach(messages, function (message) {
-                    console.log('PubNub channel %s message (%s)', options.channel, getCurrentDateTime(), message);
-                });
-            },
-            reconnect: function () {
-                console.log('PubNub channel %s reconnected', options.channel);
-                $scope.$apply(function () {
-                    $scope.realtimeStatus = 'Connected';
-                });
-            },
-            disconnect: function () {
-                console.log('PubNub channel %s disconnected', options.channel);
-                $scope.$apply(function () {
-                    $scope.realtimeStatus = 'Disconnected';
-                });
-            },
-            error: function (data) {
-                console.log('PubNub channel %s network error', options.channel, data);
-            }
-        });
-        return PUBNUB.subscribe(options);
-    };
-
-    $scope.unsubscribeFromChannel = function (channel) {
-        console.log('PubNub channel %s disconnected' , channel);
-        return PUBNUB.unsubscribe({
-            channel: channel
-        });
-    };
-
+    
     $scope.fb_check_like= function() {
         $http.post('/fb_check_like/').success(
             function(data){
@@ -362,7 +309,7 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
                 }else{
                 }});
     };
-
+    
 
     $scope.fb_story= function() {
         var events = [];

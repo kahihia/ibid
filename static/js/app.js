@@ -59,7 +59,7 @@ angular
             });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
-            $rootScope.subscribeToPaymentChannel($rootScope.user);
+            $rootScope.subscribeToPaymentChannel($rootScope.user.id);
 
         });
         

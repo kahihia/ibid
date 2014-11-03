@@ -148,7 +148,7 @@
 							{% for package,form in packages %}
 							<div class="credits-btn btn btn-red" ng-click="buy_bids({{user.id}},{{ package.id }},$event)">
 							    {{ package.description|safe }}
-							    {{form}}
+							    {{form.sandbox}}
 							</div>
 							{% endfor %}
 						</div>

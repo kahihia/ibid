@@ -55,8 +55,8 @@ def buy_item(request, id):
         
 
 def payment_callback(sender, **kwargs):
+    logger.debug("in callback")
     ipn_obj = sender
-    
     if ipn_obj.payment_status == "Completed":
         custom_params=json.loads(str(ipn_obj.custom))
         member = Member.objects.get(id=custom_params['member_id'])
@@ -64,8 +64,10 @@ def payment_callback(sender, **kwargs):
             package = BidPackage.objects.get(pk=custom_params['package_id'])
             member.bids_left += package.bids
             member.save()
+            logger.debug("antes de pubnub....")
             client.update_credits(member)
-            order = PaypalPaymentInfo.objects.create(package=package,member=member,transaction_id =ipn_obj.invoice,quantity=1,purchase_date=datetime.datetime.now())
+            logger.debug("depues pubnub....")
+            order = PaypalPaymentInfo.objects.create(package=package,member=member,transaction_id =ipn_obj.txn_id,quantity=1,purchase_date=datetime.datetime.now())
             buy_tokens.send(sender=order.__class__, instance=order)
         elif ipn_obj.item_name and ipn_obj.item_number:
             item=Item.objects.get(id=ipn_obj.item_number)
