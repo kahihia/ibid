@@ -75,30 +75,30 @@ def canvashome(request):
             }
             _action, _user = connect_user(request, access_token)
             return render_response(request, 'fb_redirect.html', data)
-    else:
-        social_auth_user = UserSocialAuth.objects.filter(provider='google-oauth2').filter(user_id=request.user.id)
-        if social_auth_user.count() > 0:
-            social_auth_user = social_auth_user[0]
-            data = get_data(social_auth_user.uid,social_auth_user.extra_data['access_token'])
-            google_profile = Google_profile.objects.filter(user_id=social_auth_user.user_id)
-            if google_profile.count() ==0:
-                google_profile = Google_profile.objects.create(
-                    user_id= social_auth_user.user_id,
-                    profile_url =  data['url'],
-                    profile_picture_url = data['image']['url'],
-                    displayName = data['displayName'],
-                    email = data['emails'][0]['value'],
-                    gender =data['gender']
-                )
-                member=Member.objects.get(id=social_auth_user.user_id)
-                member.bids_left = 0
-                member.tokens_left = 2000
-                member.save()
-                client.update_tokens(member)
-            else:
-                google_profile = google_profile[0]
-                profile_picture_url = data['image']['url']
-                google_profile.save()
+    #else:
+    #    social_auth_user = UserSocialAuth.objects.filter(provider='google-oauth2').filter(user_id=request.user.id)
+    #    if social_auth_user.count() > 0:
+    #        social_auth_user = social_auth_user[0]
+    #        data = get_data(social_auth_user.uid,social_auth_user.extra_data['access_token'])
+    #        google_profile = Google_profile.objects.filter(user_id=social_auth_user.user_id)
+    #        if google_profile.count() ==0:
+    #            google_profile = Google_profile.objects.create(
+    #                user_id= social_auth_user.user_id,
+    #                profile_url =  data['url'],
+    #                profile_picture_url = data['image']['url'],
+    #                displayName = data['displayName'],
+    #                email = data['emails'][0]['value'],
+    #                gender =data['gender']
+    #            )
+    #            member=Member.objects.get(id=social_auth_user.user_id)
+    #            member.bids_left = 0
+    #            member.tokens_left = 2000
+    #            member.save()
+    #            client.update_tokens(member)
+    #        else:
+    #            google_profile = google_profile[0]
+    #            profile_picture_url = data['image']['url']
+    #            google_profile.save()
     
     if not member:           
         member = Member.objects.get(id=request.user.id)    
