@@ -1058,7 +1058,7 @@ class AppleIbidPackageIdsResource(IBGModelResource):
     """ Resource to retrieve data of bid package objects """
     
     class Meta:
-        queryset = ConfigKey.objects.filter(key='APPLE_STORE_PACKAGES')
+        queryset = BidPackage.objects.all()
         resource_name = 'apple_ibid_packages'
         authorization = ReadOnlyAuthorization()
         #authentication = CustomAuthentication()
@@ -1072,5 +1072,18 @@ class AppleIbidPackageIdsResource(IBGModelResource):
     def get(self, request):
         """ Resource to retrieve data of bid package objects' relation with apple store """
         return super(AppleIbidPackageIdsResource,self).wrap_view('dispatch_list')
+    
+    def alter_list_data_to_serialize(self, request, data):
+        """
+        A hook to alter detail data just before it gets serialized & sent to the user.
+        Useful for restructuring/renaming aspects of the what's going to be
+        sent.
+        Should accommodate for receiving a single bundle of data.
+        """
+        result={}
+        for bundle in data['objects']:
+            result[bundle.obj.apple_store_key]=bundle.obj.id
+        data["objects"]=[{"value":result}]
+        return data
 
     

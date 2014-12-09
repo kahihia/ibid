@@ -808,6 +808,7 @@ class BidPackage(models.Model):
     description = models.TextField()
     price = models.IntegerField()
     bids = models.IntegerField(default=0)
+    apple_store_key = models.CharField(max_length=55)
     image = models.ImageField(upload_to='bid_packages/', blank=True, null=True)
 
     def __unicode__(self):
