@@ -372,6 +372,8 @@ class Auction(AbstractAuction):
     #scheduling options
     start_date = models.DateTimeField(help_text='Date and time the auction is scheduled to start',
                                       null=True, blank=True)
+    start_time = models.TimeField(help_text='Time of day the auction is scheduled to start',
+                                      null=True, blank=True)
 
     #treshold
     threshold1 = models.IntegerField('25% Threshold',
@@ -386,6 +388,11 @@ class Auction(AbstractAuction):
 
     class Meta:
         ordering = ['-id']
+
+    def save(self, *args, **kwargs):
+        if self.start_date:
+            self.start_date = self.start_date.replace(second=0, microsecond = 0)
+        super(Auction, self).save()
 
     def placed_bids(self):
         """ Returns the amount of bids commited in precap. """
@@ -492,22 +499,19 @@ class Auction(AbstractAuction):
         return 100
 
     def get_time_left(self):
+        time_left = None
         if self.status == 'waiting':
-            start_time = Decimal("%f" % time.mktime(
-                self.start_date.timetuple()))
-            return float(start_time) - time.time()
+            time_left = self.start_date - datetime.utcnow()
+            time_left = (time_left.microseconds + (time_left.seconds + time_left.days * 24 * 3600) * 10**6) / 10**6
         elif self.status == 'processing':
             bid = self.get_latest_bid()
             if bid:
                 if bid.used_amount == 0:
-                    #if its the first bid, the base is the start date
-                    start_time = Decimal("%f" % time.mktime(
-                        self.start_date.timetuple()))
+                    time_left = self.bidding_time
                 else:
-                    start_time = bid.unixtime
-                time_left = (float(self.bidding_time)
-                                 - time.time() + float(start_time))
-                return round(time_left) if time_left > 0 else 0
+                    time_left = (float(self.bidding_time) - time.time() + float(bid.unixtime))
+        if time_left:
+            return round(time_left) if time_left > 0 else 0
         return None
 
     def _precap_bids_needed(self):
@@ -590,8 +594,13 @@ class Auction(AbstractAuction):
         it.
         """
         self.status = 'waiting'
-        self.start_date = datetime.now() + timedelta(seconds=5)
-        self.finish_time = time.time() + 5.0
+        if self.bid_type == 'bid':
+            now = datetime.utcnow().replace(second=0, microsecond=0)
+            self.start_date = now.replace(hour=self.start_time.hour, minute=self.start_time.minute) + timedelta(days=1)
+            self.finish_time = 0 #time.mktime(time.strptime(str(self.start_date),'%Y-%m-%d %H:%M:%S'))
+        elif self.bid_type == 'token':
+            self.start_date = datetime.utcnow() + timedelta(seconds=5)
+            self.finish_time = time.time() + 5.0
         self.save()
         if self.always_alive:
             auction_copy = Auction.objects.create(item=self.item,
@@ -605,17 +614,19 @@ class Auction(AbstractAuction):
                                                   threshold2=self.threshold2,
                                                   threshold3=self.threshold3,
                                                   priority=self.priority,
-                                                  finish_time=self.finish_time)
+                                                  finish_time=self.finish_time,
+                                                  start_time=self.start_time)
             auction_copy.save()
 
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
-        send_in_thread(precap_finished_signal, sender=self)
-
-        logger.debug('starting auction keeper')
-        keeper = AuctionKeeper()
-        keeper.auction_id = self.id
-        keeper.start()
+        if self.bid_type == 'bid':
+            send_in_thread(precap_finished_signal, sender=self)
+        elif self.bid_type == 'token':
+            logger.debug('starting auction keeper')
+            keeper = AuctionKeeper()
+            keeper.auction_id = self.id
+            keeper.start()
 
     def start(self):
         """ Starts the auction and saves the model. """
@@ -1022,4 +1033,3 @@ class AuctionKeeper(threading.Thread):
                 else:
                     logger.debug('Keeper: unknown auction status: %s' % auction.status)
                     stop = True
-            auction.save()

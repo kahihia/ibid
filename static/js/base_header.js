@@ -125,10 +125,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         }
         if (auction.bidType === $scope.AUCTION_TYPE_TOKENS) {
                $scope.tokenAuctionsWon.push(auction);
-               auctionList[$scope.AUCTION_TYPE_TOKENS]['finished'].push(auction);
            }else {
                $scope.creditAuctionsWon.push(auction);
-               auctionList[$scope.AUCTION_TYPE_CREDITS]['finished'].push(auction);
            };
         return;
     });
@@ -204,9 +202,8 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
     };
 
     $scope.closeWonAuctionDialogAndPlayForItems = function () {
-        $scope.closeWonAuctionDialog();
+        $scope.closeWonTokenAuctionDialog();
         $rootScope.playFor = $scope.AUCTION_TYPE_CREDITS;
-        hideOverlay();
     };
 
     $scope.closeLostAuctionDialog = function () {

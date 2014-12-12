@@ -134,6 +134,7 @@ def auctionAwait(auction):
     tmp = {}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
+    tmp['startDate'] = auction.start_date.strftime('%B %d - %H:%M')
 
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')

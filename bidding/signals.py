@@ -9,7 +9,8 @@ import uuid
 
 from open_facebook import OpenFacebook, FacebookAuthorization 
 from django.conf import settings
-from django.core.mail import send_mass_mail
+from django.core.mail import EmailMultiAlternatives, get_connection, send_mass_mail
+from django.utils.html import strip_tags
 from django.dispatch.dispatcher import receiver, Signal
 from django.template.loader import render_to_string
 
@@ -18,6 +19,7 @@ import client
 auction_threshold_signal = Signal(providing_args=["number"])
 auction_started_signal = Signal()
 auction_finished_signal = Signal()
+auction_schedule_signal = Signal()
 precap_finishing_signal = Signal()
 precap_finished_signal = Signal()
 task_auction_start = Signal()
@@ -36,10 +38,6 @@ def send_win_email(sender, **kwargs):
 
         if user and auction.bid_type == 'bid':
             print "sending email"
-
-            from django.core.mail import EmailMultiAlternatives
-            from django.template.loader import render_to_string
-            from django.utils.html import strip_tags
 
             subject = render_to_string('bidding/auction_won_subject.txt',
                                        {'user': user,
@@ -86,6 +84,48 @@ def make_auction_invoice(sender, **kwargs):
 
             client.callReverse(mem.facebook_id, 'reloadTokens')
 
+@receiver(precap_finished_signal)
+def send_precap_finished_email(sender, **kwargs):
+    send_schedule_email(sender, False)
+        
+@receiver(auction_schedule_signal)
+def send_auction_remainder_email(sender, **kwargs):
+    send_schedule_email(sender, True)
+    
+def send_schedule_email(auction, remainder):
+    client.send_pubnub_message(json.dumps({'method': 'log', 'params': 'SERVER: precap_finished_signal'}),
+                               '/topic/main/')
+    try:
+        if auction.bid_type == 'bid':
+            messages = []
+            connection = get_connection()
+            if remainder:
+                message_type = 'Remainder'
+            else:
+                message_type = 'Date set'
+            for bidder in auction.bidders.all():
+                subject = render_to_string('bidding/auction_scheduled_subject.txt',
+                                           {'user': bidder,
+                                            'item': auction.item,
+                                            'type' : message_type,
+                                            'number': auction.id}).replace('\n', '')
+                from_email = settings.DEFAULT_FROM_EMAIL
+                to = bidder.email
+                html_content = render_to_string('bidding/mail_precap_finished.html',
+                                                {'user': bidder,
+                                                 'auction': auction,
+                                                 'site': settings.SITE_NAME,
+                                                 'images_site': settings.IMAGES_SITE,
+                                                 'remainder':remainder})
+                text_content = strip_tags(html_content) # this strips the html, so people will have the text as well.
+                # create the email, and attach the HTML version as well.
+                msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
+                msg.attach_alternative(html_content, "text/html")
+                messages.append(msg)
+            connection.send_messages(messages)
+    except Exception as e:
+        logging.info('signal.send_schedule_email', exc_info=True)
+        raise
 
 #@receiver(precap_finished_signal)
 def send_start_email(sender, **kwargs):

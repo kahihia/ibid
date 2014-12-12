@@ -37,11 +37,6 @@ def render_response(req, *args, **kwargs):
     kwargs['context_instance'] = RequestContext(req)
     return render_to_response(*args, **kwargs)
 
-
-
-
-
-
 def get_data(uid,access_token):
     url = settings.GOOGLE_API_URL+'/%s/?access_token=%s' %(uid,access_token)
     serialized_data = urllib2.urlopen(url).read()
@@ -214,7 +209,8 @@ def winners(request, page):
                                .select_related('item', 'winner')
                                .order_by('-won_date'))
     for auction in auctions:
-        auction.winner_member = Member.objects.filter(id=auction.winner.id)[0]
+        if auction.winner:
+            auction.winner_member = Member.objects.filter(id=auction.winner.id)[0]
     #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
     return render_response(request, 'bidding/ibidgames_winners.html',
                            {    'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
@@ -291,3 +287,4 @@ def example_404(request):
 def example_500(request):
     response = render_response(request, '500.html')
     return response
+

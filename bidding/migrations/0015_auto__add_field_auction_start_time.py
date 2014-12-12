@@ -8,36 +8,16 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        pass
-        # Adding model 'Google_profile'
-        #db.create_table(u'bidding_google_profile', (
-        #    (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-        #    ('profile_url', self.gf('django.db.models.fields.URLField')(max_length=255, null=True, blank=True)),
-        #    ('profile_picture_url', self.gf('django.db.models.fields.URLField')(max_length=255, null=True, blank=True)),
-        #    ('displayName', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-        #    ('email', self.gf('django.db.models.fields.EmailField')(max_length=255, null=True, blank=True)),
-        #    ('gender', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
-        #    ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='google_profile', to=orm['bidding.Member'])),
-        #))
-        #db.send_create_signal(u'bidding', ['Google_profile'])
+        # Adding field 'Auction.start_time'
+        db.add_column(u'bidding_auction', 'start_time',
+                      self.gf('django.db.models.fields.TimeField')(null=True, blank=True),
+                      keep_default=False)
 
-
-        # Changing field 'IOPaymentInfo.transaction_id'
-        #db.alter_column(u'bidding_iopaymentinfo', 'transaction_id', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255))
-
-        # Changing field 'PaypalPaymentInfo.transaction_id'
-        #db.alter_column(u'bidding_paypalpaymentinfo', 'transaction_id', self.gf('django.db.models.fields.BigIntegerField')(unique=True))
 
     def backwards(self, orm):
-        # Deleting model 'Google_profile'
-        db.delete_table(u'bidding_google_profile')
+        # Deleting field 'Auction.start_time'
+        db.delete_column(u'bidding_auction', 'start_time')
 
-
-        # Changing field 'IOPaymentInfo.transaction_id'
-        db.alter_column(u'bidding_iopaymentinfo', 'transaction_id', self.gf('django.db.models.fields.BigIntegerField')(unique=True))
-
-        # Changing field 'PaypalPaymentInfo.transaction_id'
-        db.alter_column(u'bidding_paypalpaymentinfo', 'transaction_id', self.gf('django.db.models.fields.CharField')(max_length=255, unique=True))
 
     models = {
         u'auth.group': {
@@ -69,6 +49,7 @@ class Migration(SchemaMigration):
             'priority': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'start_time': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'precap'", 'max_length': '15'}),
             'threshold1': ('django.db.models.fields.IntegerField', [], {'default': '7', 'null': 'True', 'blank': 'True'}),
             'threshold2': ('django.db.models.fields.IntegerField', [], {'default': '5', 'null': 'True', 'blank': 'True'}),
@@ -105,6 +86,7 @@ class Migration(SchemaMigration):
         },
         u'bidding.bidpackage': {
             'Meta': {'object_name': 'BidPackage'},
+            'apple_store_key': ('django.db.models.fields.CharField', [], {'max_length': '55'}),
             'bids': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'description': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),

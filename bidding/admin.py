@@ -39,16 +39,19 @@ class AuctionAdmin(admin.ModelAdmin):
                     'bid_type',
                     'status',
                     'is_active',
+                    'start_time',
+                    'start_date',
                     'always_alive',
                     'winner',
                     'won_price',
                     'won_date',
-                    winner_name)
+                    winner_name,
+                    'priority')
     readonly_fields = ("id",)
-    list_filter = ('is_active', 'status')
+    list_filter = ('is_active', 'status', 'start_time', 'bid_type')
     fieldsets = (
         (None, {
-            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active', 'always_alive')
+            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active','start_time', 'start_date','finish_time','always_alive')
         }),
         ('Bidding time', {
             'fields': ('bidding_time', 'threshold1', 'threshold2', 'threshold3',)

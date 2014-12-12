@@ -61,7 +61,8 @@ def member_left_message(auction, member):
 
 def precap_finished_message(auction):
     text = AuctioneerPhrase.objects.get(key='precap').text
-    send_auctioneer_message(auction, text)
+    message = text.format(start_date=auction.start_date)
+    send_auctioneer_message(auction, message)
 
 
 def threshold_message(auction, number):
@@ -110,7 +111,7 @@ def initialize_phrases():
     
     phrase, created = AuctioneerPhrase.objects.get_or_create(key='precap')
     if created:
-        phrase.text = "Precap finished. Auction will start in a few seconds."
+        phrase.text = "Completion 100% !. Auction is scheduled to start: {start_date}."
         phrase.description = "Displayed when precap finishes."
         phrase.save()
     

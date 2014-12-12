@@ -127,6 +127,7 @@ class MemberResource(IBGModelResource):
         return bundle
     
     def obj_get(self, bundle, **kwargs):
+        logger.debug('dasdasd')
         return super(MemberResource, self).obj_get(bundle=bundle, **kwargs)
     
 class ConverTokensResource(MemberResource):
@@ -322,6 +323,7 @@ class AuctionResource(IBGModelResource):
         filtering = {
             'status' : ['exact'],
             'categories' : ['exact'],
+            'winner' : ALL_WITH_RELATIONS,
         }
          
     def base_urls(self):
