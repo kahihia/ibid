@@ -29,7 +29,7 @@ from lib import metrics
 
 #########################################
 from django.utils.decorators import classonlymethod
-from doc_utils import api_doc_view
+from doc_utils import *
 #########################################
 
 metrics.initialize(settings.MIXPANEL_TOKEN)
@@ -59,13 +59,13 @@ class NotificationResource(IBGModelResource):
 
     
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], NotificationSerializer)
     def get(self, request):
         """ Retrieves all of a users notifications """
         return super(NotificationResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_doc_view(['PUT'])
+    @api_doc_view(['PUT'], NotificationSerializer)
     def put(self, request, pk=None):
         """ Updates a notification as read """
         return super(NotificationResource,self).wrap_view('dispatch_detail')
@@ -101,13 +101,13 @@ class MemberResource(IBGModelResource):
     
 
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def get(self, request):
         """ Retrieves all members.  """
         return super(MemberResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def retrieve(self, request, pk=None):
         """ Retrieves the member with 'pk' if it is the user  """
         return super(MemberResource,self).wrap_view('dispatch_detail')
@@ -150,7 +150,7 @@ class ConverTokensResource(MemberResource):
 
 
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def get(self, request):
         """ Resource to convert all of a member's tokens to credits """
         return super(ConvertTokensResource,self).wrap_view('dispatch_detail')
@@ -184,7 +184,7 @@ class MemberByFBTokenResource(IBGModelResource):
         ]
 
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], MemberSerializer)
     def get(self, request):
         """ This resource logins or register a user using the facebook access token. """
         return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
@@ -248,18 +248,18 @@ class CategoryResource(IBGModelResource):
         authorization = ReadOnlyAuthorization()
         authentication = CustomAuthentication()
         include_resource_uri = False
-        fields=['name', 'description','image']
+        fields=['name', 'description','image','id']
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get']
         
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], CategorySerializer)
     def get(self, request):
         """ Retrives all categories available."""
         return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
     
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], CategorySerializer)
     def retrieve(self, request):
         """ Retrives one category. """
         return super(MemberByFBTokenResource,self).wrap_view('dispatch_detail')
@@ -286,13 +286,13 @@ class ItemResource(IBGModelResource):
         detail_allowed_methods = ['get']
 
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], ItemSerializer)
     def get(self, request):
         """ Retrives all items available."""
         return super(ItemResource,self).wrap_view('dispatch_detail')
     
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], ItemSerializer)
     def retrieve(self, request):
         """ Retrives one item. """
         return super(ItemResource,self).wrap_view('dispatch_detail')
@@ -337,7 +337,7 @@ class AuctionResource(IBGModelResource):
         ]
     
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], AuctionSerializer)
     def get(self, request):
         """
         Retrives multiple auctions.
@@ -346,7 +346,7 @@ class AuctionResource(IBGModelResource):
         return super(AuctionResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], AuctionSerializer)
     def retrieve(self, request):
         """ Retrieves one auction. """
         return super(AuctionResource,self).wrap_view('dispatch_detail')
@@ -597,7 +597,7 @@ class MemberAuctionsResource(AuctionResource):
                 ]
 
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], AuctionSerializer)
     def get(self, request):
         """
         Resource to retrieve data of auctions from the user
@@ -642,13 +642,13 @@ class BidPackageResource(IBGModelResource):
         detail_allowed_methods = ['get']
 
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], BidPackageSerializer)
     def get(self, request):
         """ Retrieves data of all bid package objects """
         return super(BidPackageResource,self).wrap_view('dispatch_list')
     
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], BidPackageSerializer)
     def retrieve(self, request):
         """ Retrieves data of one bid package object """
         return super(BidPackageResource,self).wrap_view('dispatch_detail')
@@ -674,7 +674,7 @@ class AddBidResource(AuctionResource):
         ]
     
     @classonlymethod
-    @api_doc_view(['POST'])
+    @api_doc_view(['POST'], AuctionSerializer)
     def post(self, request):
         """ The user add bids to an auction. """
         return super(AddBidResource,self).wrap_view('dispatch_detail')
@@ -752,7 +752,7 @@ class RemBidResource(AuctionResource):
         return super(RemBidResource, self).get_detail(request, **kwargs)
     
     @classonlymethod
-    @api_doc_view(['POST'])
+    @api_doc_view(['POST'], AuctionSerializer)
     def post(self, request):
         """ The user remove bids to an auction. """
         return super(RemBidResource,self).wrap_view('dispatch_detail')
@@ -816,7 +816,7 @@ class ClaimBidResource(AuctionResource):
         return super(ClaimBidResource, self).get_detail(request, **kwargs)
 
     @classonlymethod
-    @api_doc_view(['POST'])
+    @api_doc_view(['POST'], AuctionSerializer)
     def post(self, request):
         "" " The user claims an auction. """
         return super(ClaimBidResource,self).wrap_view('dispatch_detail')
@@ -886,7 +886,7 @@ class MessageResource(ModelResource):
         ]   
         
     @classonlymethod
-    @api_doc_view(['POST', 'GET'])
+    @api_doc_view(['POST', 'GET'], MessageSerializer)
     def post(self, request):
         """
         Message handler.
@@ -1065,7 +1065,7 @@ class AppleIbidPackageIdsResource(IBGModelResource):
         fields = ('value',)
         
     @classonlymethod
-    @api_doc_view(['GET'])
+    @api_doc_view(['GET'], AppleIbidPackageIdsSerializer)
     def get(self, request):
         """ Resource to retrieve data of bid package objects' relation with apple store """
         return super(AppleIbidPackageIdsResource,self).wrap_view('dispatch_list')

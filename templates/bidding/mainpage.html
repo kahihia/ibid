@@ -208,44 +208,10 @@
 	</div>
 {% endblock %}
 
-<<<<<<< HEAD
 {% block menu %}
 	<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
 	<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
 	{% endblock %}
-=======
-{% block menu_wrapper %}
-	<div id="menu-wrapper" {% if auction_type == 'token' %} ng-init="playForTokens()" {% endif %}
-						{% if auction_type == 'credit' %} ng-init="playForItems()" {% endif %}>
-		<div id="menu">
-			<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
-			<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
-			<div class="links">
-				<ul>
-					<li>
-						<a href ng-click="sendRequestViaMultiFriendSelector()">
-                          <img src="{% static 'images/invite-menu.png' %}">
-                          &nbsp;Invite Friends
-                        </a>
-					</li>
-					&nbsp; &nbsp;|&nbsp; &nbsp;
-					<li>
-						<a href="" id="interactiveTutotialBtn">Tutorial</a>
-					</li>
-					&nbsp; &nbsp;|&nbsp; &nbsp;
-					<li>
-						<a href="/faq/">FAQS</a>
-					</li>
-					&nbsp; &nbsp;|&nbsp; &nbsp;
-					<li>
-						<a href="/winners/">Winners</a>
-					</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-{% endblock %}
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 
 {% block content_wrapper %}
 	<div ng-class="{'color-frame-tokens': playFor == AUCTION_TYPE_TOKENS, 'color-frame-items': playFor == AUCTION_TYPE_CREDITS}"></div>
@@ -257,22 +223,17 @@
 			<input type="hidden" class="auction-id"
 			value="{$ auction.id $}"/>
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 			<div id="auction">
 				<div ng-switch on="auction.status">
 					<!-- TEMPLATE: precap -->
 					<div id="auction-top" ng-switch-when="precap">
 						<div class="img">
-<<<<<<< HEAD
+
 
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
 
-=======
-							<img ng-src="{$ auction.itemImage $}">
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -308,13 +269,11 @@
 					<!-- TEMPLATE: waiting -->
 					<div id="auction-top" ng-switch-when="waiting">
 						<div class="img">
-<<<<<<< HEAD
+
 
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
 
-=======
-							<img ng-src="{$ auction.itemImage $}">
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -335,13 +294,11 @@
 					<!-- TEMPLATE: processing -->
 					<div id="auction-top" ng-switch-when="processing">
 						<div class="img">
-<<<<<<< HEAD
+
 
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
 
-=======
-							<img ng-src="{$ auction.itemImage $}">
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -373,13 +330,11 @@
 					<!-- TEMPLATE: pause -->
 					<div id="auction-top" ng-switch-when="pause">
 						<div class="img">
-<<<<<<< HEAD
+
 
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
 
-=======
-							<img ng-src="{$ auction.itemImage $}">
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -412,13 +367,10 @@
 					<div id="auction-top" ng-switch-when="waiting_payment">
 						<div class="btn-close" ng-mousedown="closeAuction(auction)">×</div>
 						<div class="img">
-<<<<<<< HEAD
+
 
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
 
-=======
-							<img ng-src="{$ auction.itemImage $}">
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -492,12 +444,10 @@
 
 			<div id="auction-top">
 				<div class="img">
-<<<<<<< HEAD
+
 
 					<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
-=======
-					<img ng-src="{$ auction.itemImage $}">
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
+
 				</div>
 				<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 					{$ auction.itemName $}
@@ -536,12 +486,10 @@
 		<div id="auction" ng-repeat="auction in auctionList[playFor].finished">
 			<div id="auction-top">
 				<div class="img">
-<<<<<<< HEAD
+
 
 					<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
-=======
-					<img ng-src="{$ auction.itemImage $}">
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
+
 				</div>
 				<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 					{$ auction.itemName $}
@@ -559,7 +507,7 @@
 		</div>
 	</div>	
 
-<<<<<<< HEAD
+
 
 		<!-- Notifications -->
 		<div id="notifications" class="notifications-container"></div>
@@ -575,20 +523,4 @@
 		</script>
 	</div>
 
-
-=======
-        <!-- Notifications -->
-        <div id="notifications" class="notifications-container"></div>
-        <script id="template/notification.html" type="text/ng-template">
-        <div class="notification">
-            <div class="kenny">
-                <img src="{% static 'images/tooltip-info-kenny.png' %}">
-            </div>
-            <div class="content">
-                <div class="txt">{$ message $}</div>
-            </div>
-        </div>
-        </script>
-	</div>
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
 {% endblock %}
