@@ -296,5 +296,5 @@
 	position: relative;
 	min-width: 100px;
 }
-
+.credits-btn.btn.btn-red form {display:none;}
 /*form.ng-pristine.ng-valid{display:none;}*/
