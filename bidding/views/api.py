@@ -468,45 +468,46 @@ def stopBidding(request):
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
 def scheduledAuctions(request):
-    actual_time = datetime.utcnow()
-    actual_time = actual_time.replace(second=0,microsecond=0) # round up or down to on the clock minute time
-    datetime_limit = actual_time + timedelta(hours=1) # limit is now plus one hour
-    auctions = Auction.objects.filter(is_active=True, status='waiting', bid_type='bid')
-    auctions_to_start = auctions.filter(start_date=actual_time)
-    auctions_to_email = auctions.filter(start_date=datetime_limit)
-    ##
-    ok = ''
-    auctions_start_str='Start - Auctions // '
-    auctions_email_str='Email - Auctions // '
-    ##
-    for auction in auctions_to_start:
-        keeper = AuctionKeeper()
-        keeper.auction_id = auction.id
-        keeper.start()
+    key = request.POST.get('key','')
+    if key == ConfigKey.get('SCHEDULE_KEY'):
+        actual_time = datetime.utcnow()
+        actual_time = actual_time.replace(second=0,microsecond=0) # round up or down to on the clock minute time
+        datetime_limit = actual_time + timedelta(hours=1) # limit is now plus one hour
+        auctions = Auction.objects.filter(is_active=True, status='waiting', bid_type='bid')
+        auctions_to_start = auctions.filter(start_date=actual_time)
+        auctions_to_email = auctions.filter(start_date=datetime_limit)
         ##
-        auctions_start_str = auctions_start_str + str(auction.id ) + ', '
+        auctions_start_str='Start - Auctions | '
+        auctions_email_str='Email - Auctions | '
         ##
-    for auction in auctions_to_email:
-        send_in_thread(auction_schedule_signal, sender=auction)
+        for auction in auctions_to_start:
+            keeper = AuctionKeeper()
+            keeper.auction_id = auction.id
+            keeper.start()
+            ##
+            auctions_start_str = auctions_start_str + str(auction.id ) + ', '
+            ##
+        for auction in auctions_to_email:
+            send_in_thread(auction_schedule_signal, sender=auction)
+            ##
+            auctions_email_str = auctions_email_str + str(auction.id ) + ', ' 
+            ##
         ##
-        auctions_email_str = auctions_email_str + str(auction.id ) + ', ' 
+        return HttpResponse('datetime.now() : %s -- server_time: %s -- time_limit: %s -- [ %s ] -- [ %s ] \n' % (
+            datetime.utcnow(),actual_time, datetime_limit, auctions_start_str, auctions_email_str)
+                            )
         ##
-    ##
-    return HttpResponse('<p>datetime.now() : %s</p><p>server_time: %s</p><p>time_limit: %s</p> -- OK - %s : <p>%s</p><p>%s</p>' % (
-        datetime.utcnow(),actual_time, datetime_limit, ok, auctions_start_str, auctions_email_str)
-                        )
-    ##
+    else:
+        return HttpResponse('Wrong schedule key', status=401)
+    
 def claim(request):
     """
     The user uses the bids that has commit before to try to win the auction in
     process.
     """
-    logger.debug('CLAIM START...')
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
-    logger.debug('SELECT AUCTION...')
     auction = Auction.objects.select_for_update().get(id=auction_id)
-    logger.debug('STARTING PROCESS...')
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
 
     tmp = {}
@@ -514,11 +515,8 @@ def claim(request):
     if auction.status == 'processing' and \
         auction.can_bid(request.user) and \
         auction.used_bids() / auction.minimum_precap == bidNumber:
-        logger.debug('CLAIM 1...')
         bid = auction.bid(request.user, bidNumber)
-        logger.debug('CLAIM AUCTION SAVE...')
         auction.save()
-        logger.debug('CLAIM AUCTION POST-SAVE...')
         metrics.claim_auction(request.user, auction)
         tmp['id'] = auction_id
         tmp["placed_amount"] = bid.placed_amount
@@ -528,9 +526,7 @@ def claim(request):
         clientMessages = []
         clientMessages.append(client.someoneClaimedMessage(auction))
         clientMessages.append(auctioneer.member_claim_message(auction, request.user))
-        logger.debug('CLAIM PRE CLIENT...')
         client.sendPackedMessages(clientMessages)
-        logger.debug('CLAIM POST SAVE...')
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
 
