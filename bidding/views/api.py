@@ -2,6 +2,7 @@
 
 import json
 import time
+from datetime import datetime, timedelta
 
 import logging
 logger = logging.getLogger('django')
@@ -13,12 +14,14 @@ from django.contrib.contenttypes.models import ContentType
 
 from bidding import client
 from bidding.models import Auction
+from bidding.models import AuctionKeeper
 from bidding.models import ConvertHistory
 from bidding.models import Invitation
 from bidding.models import Member
 from bidding.models import ConfigKey
 from bidding.models import FBOrderInfo
 from bidding.views.facebook import post_story as fb_post_story
+from bidding.signals import send_in_thread, auction_schedule_signal
 from chat import auctioneer
 from chat.models import ChatUser
 from chat.models import Message
@@ -46,6 +49,7 @@ def getUserDetails(request):
     member = request.user
 
     data = {u'user': {
+                u'id': member.id,
                 u'displayName': member.display_name(),
                 u'facebookId': member.facebook_id,
                 u'profileFotoLink': member.display_picture(),
@@ -125,6 +129,7 @@ def getAuctionsInitialization(request):
         tmp['bids'] = 0
         tmp['placed'] = 0
         tmp['bidType'] = 'token'
+        tmp['startDate'] = 'SYNCING...'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -145,6 +150,8 @@ def getAuctionsInitialization(request):
         tmp['bids'] = 0
         tmp['placed'] = 0
         tmp['bidType'] = 'credit'
+        if auct.start_date:
+            tmp['startDate'] = auct.start_date.strftime('%B %d - %H:%M')
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['itemImage'] = auct.item.get_thumbnail(size="107x72")
@@ -161,6 +168,7 @@ def getAuctionsInitialization(request):
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'token'
+        tmp['startDate'] = 'SYNCING...'
         tmp['itemName'] = auct.item.name
         tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap
         tmp['bids'] = 0
@@ -182,6 +190,8 @@ def getAuctionsInitialization(request):
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'credit'
+        if auct.start_date:
+            tmp['startDate'] = auct.start_date.strftime('%B %d - %H:%M')
         tmp['itemName'] = auct.item.name
         tmp['bidNumber'] = auct.used_bids() / auct.minimum_precap
         tmp['bids'] = 0
@@ -208,6 +218,7 @@ def getAuctionsInitialization(request):
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'token'
+        tmp['startDate'] = 'SYNCING...'
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['timeleft'] = auct.get_time_left() if auct.status == 'processing' else None
@@ -250,6 +261,8 @@ def getAuctionsInitialization(request):
         tmp['status'] = auct.status
         tmp['bidPrice'] = auct.minimum_precap
         tmp['bidType'] = 'credit'
+        if auct.start_date:
+            tmp['startDate'] = auct.start_date.strftime('%B %d - %H:%M')
         tmp['itemName'] = auct.item.name
         tmp['retailPrice'] = str(auct.item.retail_price)
         tmp['placed'] = member.auction_bids_left(auct)
@@ -344,7 +357,7 @@ def startBidding(request):
     tmp['placed'] = member.auction_bids_left(auction)
     tmp['bids'] = member.auction_bids_left(auction)
     tmp['itemImage'] = auction.item.get_thumbnail(size="107x72")
-    tmp['itemDescription'] = auct.item.description
+    tmp['itemDescription'] = auction.item.description
     tmp['bidders'] = auction.bidders.count()
     tmp['itemId'] = auction.item.id
     tmp['won_price'] = 0
@@ -378,7 +391,7 @@ def addBids(request):
 
     requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])
-    auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
+    auction = Auction.objects.select_for_update().get(id=auction_id)
 
     member = request.user
 
@@ -420,7 +433,7 @@ def remBids(request):
 
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
-    auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
+    auction = Auction.objects.select_for_update().get(id=auction_id)
 
     member = request.user
     #minimum_precap means bid_price
@@ -454,15 +467,46 @@ def stopBidding(request):
     ret = {'success': True, 'data': {'do': 'close'}}
     return HttpResponse(json.dumps(ret), content_type="application/json")
 
-
+def scheduledAuctions(request):
+    actual_time = datetime.utcnow()
+    actual_time = actual_time.replace(second=0,microsecond=0) # round up or down to on the clock minute time
+    datetime_limit = actual_time + timedelta(hours=1) # limit is now plus one hour
+    auctions = Auction.objects.filter(is_active=True, status='waiting', bid_type='bid')
+    auctions_to_start = auctions.filter(start_date=actual_time)
+    auctions_to_email = auctions.filter(start_date=datetime_limit)
+    ##
+    ok = ''
+    auctions_start_str='Start - Auctions // '
+    auctions_email_str='Email - Auctions // '
+    ##
+    for auction in auctions_to_start:
+        keeper = AuctionKeeper()
+        keeper.auction_id = auction.id
+        keeper.start()
+        ##
+        auctions_start_str = auctions_start_str + str(auction.id ) + ', '
+        ##
+    for auction in auctions_to_email:
+        send_in_thread(auction_schedule_signal, sender=auction)
+        ##
+        auctions_email_str = auctions_email_str + str(auction.id ) + ', ' 
+        ##
+    ##
+    return HttpResponse('<p>datetime.now() : %s</p><p>server_time: %s</p><p>time_limit: %s</p> -- OK - %s : <p>%s</p><p>%s</p>' % (
+        datetime.utcnow(),actual_time, datetime_limit, ok, auctions_start_str, auctions_email_str)
+                        )
+    ##
 def claim(request):
     """
     The user uses the bids that has commit before to try to win the auction in
     process.
     """
+    logger.debug('CLAIM START...')
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
-    auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
+    logger.debug('SELECT AUCTION...')
+    auction = Auction.objects.select_for_update().get(id=auction_id)
+    logger.debug('STARTING PROCESS...')
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
 
     tmp = {}
@@ -470,9 +514,11 @@ def claim(request):
     if auction.status == 'processing' and \
         auction.can_bid(request.user) and \
         auction.used_bids() / auction.minimum_precap == bidNumber:
-
+        logger.debug('CLAIM 1...')
         bid = auction.bid(request.user, bidNumber)
+        logger.debug('CLAIM AUCTION SAVE...')
         auction.save()
+        logger.debug('CLAIM AUCTION POST-SAVE...')
         metrics.claim_auction(request.user, auction)
         tmp['id'] = auction_id
         tmp["placed_amount"] = bid.placed_amount
@@ -482,7 +528,9 @@ def claim(request):
         clientMessages = []
         clientMessages.append(client.someoneClaimedMessage(auction))
         clientMessages.append(auctioneer.member_claim_message(auction, request.user))
+        logger.debug('CLAIM PRE CLIENT...')
         client.sendPackedMessages(clientMessages)
+        logger.debug('CLAIM POST SAVE...')
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
 
@@ -590,6 +638,7 @@ API = {
     'getAuctionsInitialization': getAuctionsInitialization,
     'addBids': addBids,
     'remBids': remBids,
+    'scheduledAuctions': scheduledAuctions,
     'claim': claim,
     'sendMessage': sendMessage,
     'getUserDetails': getUserDetails,

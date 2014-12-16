@@ -41,6 +41,8 @@ urlpatterns += patterns('bidding.views.api',
 
 urlpatterns += patterns('bidding.views.paypal_views',
                         url(r'^buy_item/(?P<id>[-\w]+)/$', 'buy_item', name='bidding_buy_item'), #REMOVED:{'SSL':True}
+                        #url(r'^buy_credits/$', 'buy_credits', name='bidding_buy_credits'),
+                        
 )
 
 urlpatterns += patterns('',

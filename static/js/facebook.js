@@ -18,7 +18,7 @@ function store_invitation(url, auction_id, request_id) {
 
 function buy_bids(url, package_id) {
     var order_info = -1;
-
+	
     $.post(url, {'package_id': package_id},
         function (data) {
             if (data.order_info != undefined) {

@@ -42,9 +42,12 @@ ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
 AUTHENTICATION_BACKENDS = (
     'django_facebook.auth_backends.FacebookBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    
 
 )
 AUTH_USER_MODEL="bidding.Member"
+SOCIAL_AUTH_USER_MODEL = 'bidding.Member'
 #AUTH_USER_MODEL="auth.User"
 #AUTH_PROFILE_MODULE = 'bidding.member'
 #ABSOLUTE_URL_OVERRIDES = {
@@ -110,7 +113,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.flatpages.middleware.FlatpageFallbackMiddleware',
     'bidding.middleware.P3PHeaderMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
-    'django_facebook.middleware.FacebookCanvasMiddleWare',
+    #'django_facebook.middleware.FacebookCanvasMiddleWare',
 )
 
 MESSAGE_STORAGE = 'django.contrib.messages.storage.cookie.CookieStorage'
@@ -161,6 +164,7 @@ INSTALLED_APPS = (
     'tastypie',
     'rest_framework',
     'rest_framework_swagger',
+    'social_auth',
 
 )
 

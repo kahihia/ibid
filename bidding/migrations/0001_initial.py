@@ -8,6 +8,18 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
+        # Adding model 'Google_profile'
+        db.create_table(u'bidding_google_profile', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('profile_url', self.gf('django.db.models.fields.URLField')(max_length=255, null=True, blank=True)),
+            ('profile_picture_url', self.gf('django.db.models.fields.URLField')(max_length=255, null=True, blank=True)),
+            ('displayName', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('email', self.gf('django.db.models.fields.EmailField')(max_length=255, null=True, blank=True)),
+            ('gender', self.gf('django.db.models.fields.CharField')(max_length=255, null=True, blank=True)),
+            ('user', self.gf('django.db.models.fields.related.ForeignKey')(related_name='google_profile', to=orm['bidding.Member'])),
+        ))
+        db.send_create_signal(u'bidding', ['Google_profile'])
+
         # Adding model 'Member'
         db.create_table(u'bidding_member', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -58,11 +70,19 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(u'bidding_member_user_permissions', ['member_id', 'permission_id'])
 
+        # Adding model 'Category'
+        db.create_table(u'bidding_category', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('name', self.gf('django.db.models.fields.CharField')(max_length=55)),
+            ('description', self.gf('django.db.models.fields.TextField')()),
+            ('image', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
+        ))
+        db.send_create_signal(u'bidding', ['Category'])
+
         # Adding model 'Item'
         db.create_table(u'bidding_item', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('name', self.gf('django.db.models.fields.CharField')(max_length=255)),
-            ('category', self.gf('django.db.models.fields.CharField')(max_length=5, null=True, blank=True)),
             ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=50)),
             ('retail_price', self.gf('django.db.models.fields.DecimalField')(max_digits=10, decimal_places=2)),
             ('total_price', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=10, decimal_places=2, blank=True)),
@@ -70,6 +90,14 @@ class Migration(SchemaMigration):
             ('specification', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
         ))
         db.send_create_signal(u'bidding', ['Item'])
+
+        # Adding M2M table for field categories on 'Item'
+        db.create_table(u'bidding_item_categories', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('item', models.ForeignKey(orm[u'bidding.item'], null=False)),
+            ('category', models.ForeignKey(orm[u'bidding.category'], null=False))
+        ))
+        db.create_unique(u'bidding_item_categories', ['item_id', 'category_id'])
 
         # Adding model 'ItemImage'
         db.create_table(u'bidding_itemimage', (
@@ -89,15 +117,18 @@ class Migration(SchemaMigration):
             ('status', self.gf('django.db.models.fields.CharField')(default='precap', max_length=15)),
             ('bidding_time', self.gf('django.db.models.fields.IntegerField')(default=10)),
             ('saved_time', self.gf('django.db.models.fields.IntegerField')(default=0, null=True, blank=True)),
+            ('finish_time', self.gf('django.db.models.fields.IntegerField')(default=0, null=True, blank=True)),
             ('always_alive', self.gf('django.db.models.fields.BooleanField')(default=False)),
-            ('won_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+            ('priority', self.gf('django.db.models.fields.IntegerField')(default=-1)),
             ('winner', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='autcions', null=True, to=orm['bidding.Member'])),
+            ('won_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
             ('won_price', self.gf('django.db.models.fields.DecimalField')(null=True, max_digits=10, decimal_places=2, blank=True)),
             ('start_date', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
+            ('start_time', self.gf('django.db.models.fields.TimeField')(null=True, blank=True)),
             ('threshold1', self.gf('django.db.models.fields.IntegerField')(default=7, null=True, blank=True)),
             ('threshold2', self.gf('django.db.models.fields.IntegerField')(default=5, null=True, blank=True)),
             ('threshold3', self.gf('django.db.models.fields.IntegerField')(default=3, null=True, blank=True)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
         ))
         db.send_create_signal(u'bidding', ['Auction'])
 
@@ -109,22 +140,13 @@ class Migration(SchemaMigration):
         ))
         db.create_unique(u'bidding_auction_bidders', ['auction_id', 'member_id'])
 
-        # Adding model 'PrePromotedAuction'
-        db.create_table(u'bidding_prepromotedauction', (
-            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('item', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bidding.Item'])),
-            ('precap_bids', self.gf('django.db.models.fields.IntegerField')()),
-            ('minimum_precap', self.gf('django.db.models.fields.IntegerField')(default=10)),
-            ('bid_type', self.gf('django.db.models.fields.CharField')(default='bid', max_length=5)),
-            ('status', self.gf('django.db.models.fields.CharField')(default='precap', max_length=15)),
-            ('bidding_time', self.gf('django.db.models.fields.IntegerField')(default=10)),
-            ('saved_time', self.gf('django.db.models.fields.IntegerField')(default=0, null=True, blank=True)),
-            ('threshold1', self.gf('django.db.models.fields.IntegerField')(default=12, null=True, blank=True)),
-            ('threshold2', self.gf('django.db.models.fields.IntegerField')(default=8, null=True, blank=True)),
-            ('threshold3', self.gf('django.db.models.fields.IntegerField')(default=5, null=True, blank=True)),
-            ('is_active', self.gf('django.db.models.fields.BooleanField')(default=True)),
+        # Adding M2M table for field categories on 'Auction'
+        db.create_table(u'bidding_auction_categories', (
+            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
+            ('auction', models.ForeignKey(orm[u'bidding.auction'], null=False)),
+            ('category', models.ForeignKey(orm[u'bidding.category'], null=False))
         ))
-        db.send_create_signal(u'bidding', ['PrePromotedAuction'])
+        db.create_unique(u'bidding_auction_categories', ['auction_id', 'category_id'])
 
         # Adding model 'PromotedAuction'
         db.create_table(u'bidding_promotedauction', (
@@ -154,6 +176,7 @@ class Migration(SchemaMigration):
             ('description', self.gf('django.db.models.fields.TextField')()),
             ('price', self.gf('django.db.models.fields.IntegerField')()),
             ('bids', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('apple_store_key', self.gf('django.db.models.fields.CharField')(max_length=55)),
             ('image', self.gf('django.db.models.fields.files.ImageField')(max_length=100, null=True, blank=True)),
         ))
         db.send_create_signal(u'bidding', ['BidPackage'])
@@ -212,6 +235,28 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'bidding', ['FBOrderInfo'])
 
+        # Adding model 'IOPaymentInfo'
+        db.create_table(u'bidding_iopaymentinfo', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('member', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bidding.Member'])),
+            ('package', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bidding.BidPackage'], null=True)),
+            ('transaction_id', self.gf('django.db.models.fields.CharField')(unique=True, max_length=255)),
+            ('quantity', self.gf('django.db.models.fields.IntegerField')()),
+            ('purchase_date', self.gf('django.db.models.fields.DateTimeField')(null=True)),
+        ))
+        db.send_create_signal(u'bidding', ['IOPaymentInfo'])
+
+        # Adding model 'PaypalPaymentInfo'
+        db.create_table(u'bidding_paypalpaymentinfo', (
+            (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('member', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bidding.Member'])),
+            ('package', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['bidding.BidPackage'], null=True)),
+            ('transaction_id', self.gf('django.db.models.fields.BigIntegerField')(unique=True)),
+            ('quantity', self.gf('django.db.models.fields.IntegerField')()),
+            ('purchase_date', self.gf('django.db.models.fields.DateTimeField')(null=True)),
+        ))
+        db.send_create_signal(u'bidding', ['PaypalPaymentInfo'])
+
         # Adding model 'ConfigKey'
         db.create_table(u'bidding_configkey', (
             (u'id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -227,6 +272,9 @@ class Migration(SchemaMigration):
         # Removing unique constraint on 'Bid', fields ['auction', 'bidder']
         db.delete_unique(u'bidding_bid', ['auction_id', 'bidder_id'])
 
+        # Deleting model 'Google_profile'
+        db.delete_table(u'bidding_google_profile')
+
         # Deleting model 'Member'
         db.delete_table(u'bidding_member')
 
@@ -236,8 +284,14 @@ class Migration(SchemaMigration):
         # Removing M2M table for field user_permissions on 'Member'
         db.delete_table('bidding_member_user_permissions')
 
+        # Deleting model 'Category'
+        db.delete_table(u'bidding_category')
+
         # Deleting model 'Item'
         db.delete_table(u'bidding_item')
+
+        # Removing M2M table for field categories on 'Item'
+        db.delete_table('bidding_item_categories')
 
         # Deleting model 'ItemImage'
         db.delete_table(u'bidding_itemimage')
@@ -248,8 +302,8 @@ class Migration(SchemaMigration):
         # Removing M2M table for field bidders on 'Auction'
         db.delete_table('bidding_auction_bidders')
 
-        # Deleting model 'PrePromotedAuction'
-        db.delete_table(u'bidding_prepromotedauction')
+        # Removing M2M table for field categories on 'Auction'
+        db.delete_table('bidding_auction_categories')
 
         # Deleting model 'PromotedAuction'
         db.delete_table(u'bidding_promotedauction')
@@ -275,6 +329,12 @@ class Migration(SchemaMigration):
         # Deleting model 'FBOrderInfo'
         db.delete_table(u'bidding_fborderinfo')
 
+        # Deleting model 'IOPaymentInfo'
+        db.delete_table(u'bidding_iopaymentinfo')
+
+        # Deleting model 'PaypalPaymentInfo'
+        db.delete_table(u'bidding_paypalpaymentinfo')
+
         # Deleting model 'ConfigKey'
         db.delete_table(u'bidding_configkey')
 
@@ -299,13 +359,17 @@ class Migration(SchemaMigration):
             'bid_type': ('django.db.models.fields.CharField', [], {'default': "'bid'", 'max_length': '5'}),
             'bidders': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': u"orm['bidding.Member']", 'null': 'True', 'blank': 'True'}),
             'bidding_time': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
+            'categories': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'auctions'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['bidding.Category']"}),
+            'finish_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
             'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
             'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
             'precap_bids': ('django.db.models.fields.IntegerField', [], {}),
+            'priority': ('django.db.models.fields.IntegerField', [], {'default': '-1'}),
             'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
             'start_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
+            'start_time': ('django.db.models.fields.TimeField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "'precap'", 'max_length': '15'}),
             'threshold1': ('django.db.models.fields.IntegerField', [], {'default': '7', 'null': 'True', 'blank': 'True'}),
             'threshold2': ('django.db.models.fields.IntegerField', [], {'default': '5', 'null': 'True', 'blank': 'True'}),
@@ -342,12 +406,20 @@ class Migration(SchemaMigration):
         },
         u'bidding.bidpackage': {
             'Meta': {'object_name': 'BidPackage'},
+            'apple_store_key': ('django.db.models.fields.CharField', [], {'max_length': '55'}),
             'bids': ('django.db.models.fields.IntegerField', [], {'default': '0'}),
             'description': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
             'price': ('django.db.models.fields.IntegerField', [], {}),
             'title': ('django.db.models.fields.CharField', [], {'max_length': '55'})
+        },
+        u'bidding.category': {
+            'Meta': {'object_name': 'Category'},
+            'description': ('django.db.models.fields.TextField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'null': 'True', 'blank': 'True'}),
+            'name': ('django.db.models.fields.CharField', [], {'max_length': '55'})
         },
         u'bidding.configkey': {
             'Meta': {'object_name': 'ConfigKey'},
@@ -377,6 +449,16 @@ class Migration(SchemaMigration):
             'package': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.BidPackage']"}),
             'status': ('django.db.models.fields.CharField', [], {'max_length': '25'})
         },
+        u'bidding.google_profile': {
+            'Meta': {'object_name': 'Google_profile'},
+            'displayName': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'email': ('django.db.models.fields.EmailField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'gender': ('django.db.models.fields.CharField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'profile_picture_url': ('django.db.models.fields.URLField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'profile_url': ('django.db.models.fields.URLField', [], {'max_length': '255', 'null': 'True', 'blank': 'True'}),
+            'user': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'google_profile'", 'to': u"orm['bidding.Member']"})
+        },
         u'bidding.invitation': {
             'Meta': {'object_name': 'Invitation'},
             'deleted': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
@@ -384,9 +466,18 @@ class Migration(SchemaMigration):
             'invited_facebook_id': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'inviter': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"})
         },
+        u'bidding.iopaymentinfo': {
+            'Meta': {'object_name': 'IOPaymentInfo'},
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
+            'package': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.BidPackage']", 'null': 'True'}),
+            'purchase_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
+            'quantity': ('django.db.models.fields.IntegerField', [], {}),
+            'transaction_id': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '255'})
+        },
         u'bidding.item': {
             'Meta': {'object_name': 'Item'},
-            'category': ('django.db.models.fields.CharField', [], {'max_length': '5', 'null': 'True', 'blank': 'True'}),
+            'categories': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'related_name': "'items'", 'null': 'True', 'symmetrical': 'False', 'to': u"orm['bidding.Category']"}),
             'description': ('django.db.models.fields.TextField', [], {}),
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
@@ -435,20 +526,14 @@ class Migration(SchemaMigration):
             'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'}),
             'website_url': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'})
         },
-        u'bidding.prepromotedauction': {
-            'Meta': {'ordering': "['-id']", 'object_name': 'PrePromotedAuction'},
-            'bid_type': ('django.db.models.fields.CharField', [], {'default': "'bid'", 'max_length': '5'}),
-            'bidding_time': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
+        u'bidding.paypalpaymentinfo': {
+            'Meta': {'object_name': 'PaypalPaymentInfo'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'item': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Item']"}),
-            'minimum_precap': ('django.db.models.fields.IntegerField', [], {'default': '10'}),
-            'precap_bids': ('django.db.models.fields.IntegerField', [], {}),
-            'saved_time': ('django.db.models.fields.IntegerField', [], {'default': '0', 'null': 'True', 'blank': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "'precap'", 'max_length': '15'}),
-            'threshold1': ('django.db.models.fields.IntegerField', [], {'default': '12', 'null': 'True', 'blank': 'True'}),
-            'threshold2': ('django.db.models.fields.IntegerField', [], {'default': '8', 'null': 'True', 'blank': 'True'}),
-            'threshold3': ('django.db.models.fields.IntegerField', [], {'default': '5', 'null': 'True', 'blank': 'True'})
+            'member': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.Member']"}),
+            'package': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['bidding.BidPackage']", 'null': 'True'}),
+            'purchase_date': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
+            'quantity': ('django.db.models.fields.IntegerField', [], {}),
+            'transaction_id': ('django.db.models.fields.BigIntegerField', [], {'unique': 'True'})
         },
         u'bidding.promotedauction': {
             'Meta': {'ordering': "['-id']", 'object_name': 'PromotedAuction', '_ormbases': [u'bidding.Auction']},

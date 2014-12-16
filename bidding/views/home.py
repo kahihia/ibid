@@ -3,13 +3,15 @@ Home page views.
 '''
 
 import logging
-
+import urllib2
+import json
+import bidding.client as client
 from django.conf import settings
 from django.contrib.flatpages.models import FlatPage
 from django.core.urlresolvers import reverse
 from django.db.models import Count
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.list import ListView
@@ -19,8 +21,15 @@ from bidding.models import ConvertHistory
 from bidding.models import Member
 from bidding.models import BidPackage
 from bidding.models import ConfigKey
+from bidding.models import Google_profile
 
-
+from django_facebook.middleware import FacebookCanvasMiddleWare
+from django_facebook.connect import connect_user
+from django_facebook.canvas import generate_oauth_url
+from django_facebook.exceptions import MissingPermissionsError
+from open_facebook.api import FacebookAuthorization
+from social_auth.db.django_models import UserSocialAuth
+from social_auth.backends.google import GoogleOAuth2
 logger = logging.getLogger('django')
 
 
@@ -28,31 +37,66 @@ def render_response(req, *args, **kwargs):
     kwargs['context_instance'] = RequestContext(req)
     return render_to_response(*args, **kwargs)
 
+def get_data(uid,access_token):
+    url = settings.GOOGLE_API_URL+'/%s/?access_token=%s' %(uid,access_token)
+    serialized_data = urllib2.urlopen(url).read()
+    data = json.loads(serialized_data)
+    return data 
+
 def canvashome(request):
     redirectTo = request.session.get('redirect_to', False)
     if redirectTo:
         del request.session['redirect_to']
         return HttpResponseRedirect(str(redirectTo))
-
-    fb_url = settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME)
+    member=None
+    fb_url = settings.FACEBOOK_APP_URL#.format(appname=settings.FACEBOOK_APP_NAME)
     share_title = ConfigKey.get('SHARE_APP_TITLE', 'iBidGames')
     share_description = ConfigKey.get('SHARE_APP_DESC', 'iBidGames is the first true online Interactive Auction, is the only interactive auction game within Facebook framework that allows players to win real items')
-
-    if not request.user.is_authenticated() :
-        #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
-        request.META['HTTP_REFERER'] = fb_url
-        data = {
-            'authorization_url': fb_url,
-            'app_url': fb_url,
-            'site_url': settings.SITE_NAME,
-            'share_title': share_title,
-            'share_description': share_description,
-        }
-        return render_response(request, 'fb_redirect.html', data)
+    if not request.user.is_authenticated():
         
-        
-    member = request.user
-
+        if not request.GET.get('facebook_login', None) and not request.GET.get('code', None):
+            return render_response(request, 'login.html')
+        else:    
+            if not request.GET.get('code', None):    
+                return redirect(generate_oauth_url())
+            access_token = FacebookAuthorization.convert_code(request.GET.get('code', None), fb_url)['access_token']
+            #Here the user dont came from facebook. The  dj-middleware redirects to this poin without authentication
+            data = {
+                'authorization_url': fb_url,
+                'app_url': fb_url,
+                'site_url': settings.SITE_NAME,
+                'share_title': share_title,
+                'share_description': share_description,
+            }
+            _action, _user = connect_user(request, access_token)
+            return render_response(request, 'fb_redirect.html', data)
+    #else:
+    #    social_auth_user = UserSocialAuth.objects.filter(provider='google-oauth2').filter(user_id=request.user.id)
+    #    if social_auth_user.count() > 0:
+    #        social_auth_user = social_auth_user[0]
+    #        data = get_data(social_auth_user.uid,social_auth_user.extra_data['access_token'])
+    #        google_profile = Google_profile.objects.filter(user_id=social_auth_user.user_id)
+    #        if google_profile.count() ==0:
+    #            google_profile = Google_profile.objects.create(
+    #                user_id= social_auth_user.user_id,
+    #                profile_url =  data['url'],
+    #                profile_picture_url = data['image']['url'],
+    #                displayName = data['displayName'],
+    #                email = data['emails'][0]['value'],
+    #                gender =data['gender']
+    #            )
+    #            member=Member.objects.get(id=social_auth_user.user_id)
+    #            member.bids_left = 0
+    #            member.tokens_left = 2000
+    #            member.save()
+    #            client.update_tokens(member)
+    #        else:
+    #            google_profile = google_profile[0]
+    #            profile_picture_url = data['image']['url']
+    #            google_profile.save()
+    
+    if not member:           
+        member = Member.objects.get(id=request.user.id)    
     #give free tokens from promo
     freeExtraTokens = request.session.get('freeExtraTokens', 0)
     if freeExtraTokens and not member.getSession('freeExtraTokens', None):
@@ -165,7 +209,8 @@ def winners(request, page):
                                .select_related('item', 'winner')
                                .order_by('-won_date'))
     for auction in auctions:
-        auction.winner_member = Member.objects.filter(id=auction.winner.id)[0]
+        if auction.winner:
+            auction.winner_member = Member.objects.filter(id=auction.winner.id)[0]
     #return render_response(request, 'bidding/winners.html',{'auctions': auctions, 'current_page': page})
     return render_response(request, 'bidding/ibidgames_winners.html',
                            {    'FACEBOOK_APP_URL':settings.FACEBOOK_APP_URL.format(appname=settings.FACEBOOK_APP_NAME),
@@ -242,3 +287,4 @@ def example_404(request):
 def example_500(request):
     response = render_response(request, '500.html')
     return response
+

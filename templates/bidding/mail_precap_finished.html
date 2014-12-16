@@ -1,0 +1,154 @@
+{% load staticfiles %}
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN"
+"http://www.w3.org/TR/html4/strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>HTML</title>
+		<meta name="iBidGames" content="iBidGames" />
+		<link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+
+		<!-- Date: 2013-03-04 -->
+		<style>
+			body {
+				width: 600px;
+				border: 1px solid #ebebeb;
+				font-family: 'Open Sans', Arial, sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+			p {
+				margin: 0px;
+				padding: 0px;
+			}
+			a {
+				color: #fff;
+				text-decoration: none;
+				margin: 0px;
+			}
+			#content {
+				background-color: #fff;
+				text-align: center;
+			}
+			#winner {
+				font-size: 18px;
+				font-style: italic;
+				color: #777;
+				margin-top: 20px;
+				line-height: 25px;
+			}
+			#winner p {
+				font-size: 30px;
+				font-style: normal;
+				color: #f26522;
+				font-weight: 600;
+			}
+			#item {
+				font-size: 14px;
+				color: #484848;
+			}
+			#item img {
+				border: 1px solid #91d3eb;
+				margin-top: 10px;
+			}
+			#click {
+				border-top: 1px solid #dcdcdc;
+				background-color: #ebebeb;
+				margin-top: 15px;
+				padding-bottom: 2px;
+				padding-top: 12px;
+			}
+			#btn {
+				background-image: url({{ images_site }}{% static 'images/mail/btn.jpg' %});
+				height: 52px;
+				width: 320px;
+				margin: 0 auto;
+				line-height: 50px;
+				font-size: 14px;
+				font-weight: 600;
+			}
+			#link {
+				font-size: 12px;
+				margin-top: 10px;
+				margin-bottom: 15px;
+				color: #666;
+			}
+			#link a {
+				color: #0574dc;
+			}
+
+		</style>
+
+	</head>
+	<body>
+		<div style="width:600px; text-align: center;">
+		<div id="top">
+			<img style="display:block; float:left !important" src="{{images_site}}{% static 'images/mail/top1.jpg' %}" height="116" width="194">
+			<a href="{{ images_site }}"><img style="display:block; float:left !important" src="{{ images_site }}{% static 'images/mail/top2.jpg' %}" height="116" width="221"></a>
+			<img style="display:block; float:left !important" src="{{ images_site }}{% static 'images/mail/top3.jpg' %}" height="116" width="185">
+		</div>
+		<div id="content">
+			<div id="winner" style="font-size: 18px;
+				font-style: italic;
+				color: #777;
+				margin-top: 20px;
+				line-height: 25px;">
+					{% if remainder %}
+						Remember!
+					{% else %}
+						Good Luck!
+					{% endif %}
+					<br/><br/>
+					<p style="font-size: 30px;
+						font-style: normal;
+						color: #f26522;
+						font-weight: 600;">
+						{{ user.display_name|title }}
+					</p>
+			</div>
+			<div style="margin-top:17px ; margin-bottom:17px ; color:#cbcbcb">
+				..........................................................
+			</div>
+			<div id="item" style="font-size: 18px;
+				color: #484848;">
+				The auction for <b>{{ auction.item.name }}</b> is begining : </br>
+				<p style="font-size: 25px;font-weight: bold">{{ auction.start_date|date }} at {{ auction.start_date|time }}<br/></p>
+				<p><img style="border: 1px solid #91d3eb;
+				margin-top: 10px;
+				max-height: 300px;
+				max-width: 300px;" src="{{auction.item.get_thumbnail}}" ></p>
+			</div>
+			{% if remainder %}
+				<p style="font-size: 30px;font-weight: bold;color:white;background-color: #f26522">JUST 1 HOUR TO GO!</p>
+			{% endif %}
+			<div id="click" style="	border-top: 1px solid #dcdcdc;
+			background-color: #ebebeb;
+			margin-top: 15px;
+			padding-bottom: 2px;
+			padding-top: 12px;">
+				<a href="{{ images_site }}?auction_type=credit">
+				<div id="btn" style="background-image: url({{ images_site }}{% static 'images/mail/btn.jpg' %}); height: 52px;
+				width: 320px;
+				margin: 0 auto;
+				line-height: 50px;
+				font-size: 14px;
+				font-weight: 600;
+				text-decoration: none;">
+					CLICK HERE TO PLAY FOR IT!
+				</div></a>
+				<div id="link" style="font-size: 12px;		margin-top: 10px;
+				margin-bottom: 15px;
+				color:#666;">
+					Or copy and paste it into your browser's address bar:<p><a style="color:#0574dc;" href="{{ site }}?auction_type=credit">{{ site }}?auction_type=credit</a></p>
+				</div>
+			</div>
+		</div>
+		<div><img src="{{ images_site }}{% static 'images/mail/foot.jpg' %}" width="600" height="104">
+		</div>
+
+		</div>
+	</div>
+	</body>
+</html>
+

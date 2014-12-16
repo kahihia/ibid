@@ -1,10 +1,14 @@
 from datetime import datetime
 from django import template
 from django.utils.safestring import mark_safe
-from bidding.models import BidPackage
+from bidding.models import BidPackage,FBOrderInfo
 from django.conf import settings
-
+import json
+from django.core.urlresolvers import reverse
+from paypal.standard.forms import PayPalPaymentsForm
 register = template.Library()
+import time
+import uuid
 
 
 @register.filter
@@ -51,8 +55,27 @@ def user_bids(user, auction):
     return 0
 
 @register.assignment_tag
-def get_packages():
-    return BidPackage.objects.all()
+def get_packages(request):
+    response=[]
+    packages = BidPackage.objects.all()
+    for package in packages:
+
+        paypal_dict = {
+        "business": settings.PAYPAL_RECEIVER_EMAIL,
+        "amount": package.price,
+        "item_name": package.title,
+        'invoice': uuid.uuid4(),
+        "notify_url": settings.SITE_NAME+reverse('paypal-ipn') ,
+        "return_url": settings.SITE_NAME+"canvashome/?auction_type=credit",
+        "cancel_return": settings.SITE_NAME+"canvashome/?auction_type=credit",
+        "custom": '{"member_id":%s,"package_id":%s}' %(request.user.id,package.id),
+       
+            
+
+        }
+        form = PayPalPaymentsForm(initial=paypal_dict)
+        response.append((package,form))
+    return response
 
 @register.simple_tag
 def get_pubnub_sub():

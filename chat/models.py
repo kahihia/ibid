@@ -34,6 +34,7 @@ class ChatUser(models.Model):
         return self.content_object.display_picture()
         
     def display_name(self):
+     
         return self.content_object.display_name()
     
     def user_link(self):

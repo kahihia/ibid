@@ -13,12 +13,9 @@
 		<link rel="stylesheet" href="{% static 'css/buttons.css' %}">
 		<link rel="stylesheet" href="{% static 'css/modals.css' %}">
 		<link rel="stylesheet" href="{% static 'css/notifications.css' %}">
-  <link rel="stylesheet" href="{% static 'css/tour.css' %}">
-
+        <link rel="stylesheet" href="{% static 'css/tour.css' %}">
 		<link rel="stylesheet" href="{% static 'css/item_details.css' %}">
-
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800" rel="stylesheet" type="text/css">
-
 		{{ js_error_tracker|safe }}
 		<script language="javascript">
 			function preloadImage(url) {
@@ -146,10 +143,11 @@
 								Buy credits and get more chance to win auctions!
 							    </p>
 							</div>
-							{% get_packages as packages %}
-							{% for package in packages %}
-							<div class="credits-btn btn btn-red" ng-click="buy_bids({{user.id}},{{ package.id }})">
+							{% get_packages request as packages %}
+							{% for package,form in packages %}
+							<div class="credits-btn btn btn-red" ng-click="buy_bids({{user.id}},{{ package.id }},$event)">
 							    {{ package.description|safe }}
+							    {{form.sandbox}}
 							</div>
 							{% endfor %}
 						</div>
@@ -318,8 +316,8 @@
 			</div>
 			<div id="content-wrapper" ng-controller="AuctionsPanelController">
 
-						<div id="menu-wrapper" {% if auction_type == 'token' %} ng-init="playForTokens()" {% endif %}
-						{% if auction_type == 'credit' %} ng-init="playForItems()" {% endif %}>
+						<div id="menu-wrapper" {% ifequal auction_type 'token' %} ng-init="playForTokens()" {% endifequal %}
+						{% ifequal auction_type 'credit' %} ng-init="playForItems()" {% endifequal %}>
 							<div id="menu">
 								{% block menu %}
 									<a class="btn-tokens" ng-href="/canvashome?auction_type=token"></a>

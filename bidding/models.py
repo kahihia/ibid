@@ -9,6 +9,7 @@ from decimal import Decimal
 from urllib2 import urlopen
 
 import open_facebook
+import django.dispatch
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.urlresolvers import reverse
@@ -76,6 +77,16 @@ BID_TYPE_CHOICES = (
 )
 
 
+
+class Google_profile(models.Model):
+    
+    profile_url =  models.URLField(null=True,blank=True,max_length=255)
+    profile_picture_url = models.URLField(null=True,blank=True,max_length=255)
+    displayName = models.CharField(null=True,blank=True,max_length=255)
+    email = models.EmailField(null=True,blank=True,max_length=255)
+    gender = models.CharField(null=True,blank=True,max_length=255)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='google_profile')
+    
 class Member(AbstractUser, FacebookModel):
     objects = UserManager()
 
@@ -207,7 +218,13 @@ class Member(AbstractUser, FacebookModel):
         return mark_safe(output)
 
     def display_picture(self):
-        return "https://graph.facebook.com/%s/picture" % self.facebook_id
+        
+        if self.facebook_id:
+            return "https://graph.facebook.com/%s/picture" % self.facebook_id
+        else:
+            if self.google_profile.count() > 0:
+                return self.google_profile.all()[0].profile_picture_url
+            return ""
 
     def can_chat(self, auction_id):
         """ Returns True if the user can chat in the given auction. """
@@ -355,6 +372,8 @@ class Auction(AbstractAuction):
     #scheduling options
     start_date = models.DateTimeField(help_text='Date and time the auction is scheduled to start',
                                       null=True, blank=True)
+    start_time = models.TimeField(help_text='Time of day the auction is scheduled to start',
+                                      null=True, blank=True)
 
     #treshold
     threshold1 = models.IntegerField('25% Threshold',
@@ -369,6 +388,11 @@ class Auction(AbstractAuction):
 
     class Meta:
         ordering = ['-id']
+
+    def save(self, *args, **kwargs):
+        if self.start_date:
+            self.start_date = self.start_date.replace(second=0, microsecond = 0)
+        super(Auction, self).save()
 
     def placed_bids(self):
         """ Returns the amount of bids commited in precap. """
@@ -475,22 +499,19 @@ class Auction(AbstractAuction):
         return 100
 
     def get_time_left(self):
+        time_left = None
         if self.status == 'waiting':
-            start_time = Decimal("%f" % time.mktime(
-                self.start_date.timetuple()))
-            return float(start_time) - time.time()
+            time_left = self.start_date - datetime.utcnow()
+            time_left = (time_left.microseconds + (time_left.seconds + time_left.days * 24 * 3600) * 10**6) / 10**6
         elif self.status == 'processing':
             bid = self.get_latest_bid()
             if bid:
                 if bid.used_amount == 0:
-                    #if its the first bid, the base is the start date
-                    start_time = Decimal("%f" % time.mktime(
-                        self.start_date.timetuple()))
+                    time_left = self.bidding_time
                 else:
-                    start_time = bid.unixtime
-                time_left = (float(self.bidding_time)
-                                 - time.time() + float(start_time))
-                return round(time_left) if time_left > 0 else 0
+                    time_left = (float(self.bidding_time) - time.time() + float(bid.unixtime))
+        if time_left:
+            return round(time_left) if time_left > 0 else 0
         return None
 
     def _precap_bids_needed(self):
@@ -573,8 +594,13 @@ class Auction(AbstractAuction):
         it.
         """
         self.status = 'waiting'
-        self.start_date = datetime.now() + timedelta(seconds=5)
-        self.finish_time = time.time() + 5.0
+        if self.bid_type == 'bid':
+            now = datetime.utcnow().replace(second=0, microsecond=0)
+            self.start_date = now.replace(hour=self.start_time.hour, minute=self.start_time.minute) + timedelta(days=1)
+            self.finish_time = 0 #time.mktime(time.strptime(str(self.start_date),'%Y-%m-%d %H:%M:%S'))
+        elif self.bid_type == 'token':
+            self.start_date = datetime.utcnow() + timedelta(seconds=5)
+            self.finish_time = time.time() + 5.0
         self.save()
         if self.always_alive:
             auction_copy = Auction.objects.create(item=self.item,
@@ -588,17 +614,19 @@ class Auction(AbstractAuction):
                                                   threshold2=self.threshold2,
                                                   threshold3=self.threshold3,
                                                   priority=self.priority,
-                                                  finish_time=self.finish_time)
+                                                  finish_time=self.finish_time,
+                                                  start_time=self.start_time)
             auction_copy.save()
 
         auctioneer.precap_finished_message(self)
         client.auctionAwait(self)
-        send_in_thread(precap_finished_signal, sender=self)
-
-        logger.debug('starting auction keeper')
-        keeper = AuctionKeeper()
-        keeper.auction_id = self.id
-        keeper.start()
+        if self.bid_type == 'bid':
+            send_in_thread(precap_finished_signal, sender=self)
+        elif self.bid_type == 'token':
+            logger.debug('starting auction keeper')
+            keeper = AuctionKeeper()
+            keeper.auction_id = self.id
+            keeper.start()
 
     def start(self):
         """ Starts the auction and saves the model. """
@@ -791,6 +819,7 @@ class BidPackage(models.Model):
     description = models.TextField()
     price = models.IntegerField()
     bids = models.IntegerField(default=0)
+    apple_store_key = models.CharField(max_length=55)
     image = models.ImageField(upload_to='bid_packages/', blank=True, null=True)
 
     def __unicode__(self):
@@ -815,18 +844,18 @@ class AuctionInvoice(AuditedModel):
 from paypal.standard.ipn.signals import payment_was_successful
 
 
-def addbids(sender, **kwargs):
-#TODO move to signals.py?
-    ipn_obj = sender
-    if ipn_obj.custom.startswith('item'):
-        invoice = AuctionInvoice.objects.get(uid=ipn_obj.invoice)
-        auction = invoice.auction
-        auction.status = 'paid'
-        auction.save()
-        invoice.status = 'paid'
-        invoice.save()
-        #TODO maybe pay method in auction. And delete bid objects there
-payment_was_successful.connect(addbids)
+#def addbids(sender, **kwargs):
+##TODO move to signals.py?
+#    ipn_obj = sender
+#    if ipn_obj.custom.startswith('item'):
+#        invoice = AuctionInvoice.objects.get(uid=ipn_obj.invoice)
+#        auction = invoice.auction
+#        auction.status = 'paid'
+#        auction.save()
+#        invoice.status = 'paid'
+#        invoice.save()
+#        #TODO maybe pay method in auction. And delete bid objects there
+#payment_was_successful.connect(addbids)
 
 
 class Invitation(AuditedModel):
@@ -892,20 +921,18 @@ class FBOrderInfo(AuditedModel):
         return repr(self.member) + ' -> ' + repr(self.package) + ' (' + self.status + ')'
 
 
-@receiver(post_save, sender=FBOrderInfo)
-def on_confirmed_order(sender, instance, **kwargs):
-    """Function to add order to the history when confirmed"""
-    if instance.status == 'confirmed':
-        ConvertHistory.objects.create(member=instance.member,
-                                      tokens_amount=0,
-                                      bids_amount=instance.package.bids,
-                                      total_tokens=instance.member.tokens_left,
-                                      total_bids=instance.member.bids_left,
-                                      total_bidsto=instance.member.bidsto_left,
-        )
-
 
 class IOPaymentInfo(AuditedModel):
+    member = models.ForeignKey(Member)
+    package = models.ForeignKey(BidPackage, null=True)
+    transaction_id = models.CharField(max_length=255,unique=True)  # this field should be unique
+    quantity = models.IntegerField()
+    purchase_date = models.DateTimeField(null=True)
+
+    def __unicode__(self):
+        return repr(self.member) + ' - ' + repr(self.package) + ' (' + str(self.purchase_date) + ')'
+
+class PaypalPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage, null=True)
     transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
@@ -914,6 +941,23 @@ class IOPaymentInfo(AuditedModel):
 
     def __unicode__(self):
         return repr(self.member) + ' - ' + repr(self.package) + ' (' + str(self.purchase_date) + ')'
+
+
+#@receiver(post_save, sender=FBOrderInfo)
+#@receiver(post_save, sender=IOPaymentInfo)
+buy_tokens = django.dispatch.Signal(providing_args=["instance"])
+def on_confirmed_order(sender,**kwargs):
+    """Function to add order to the history when confirmed"""
+    #if instance.status == 'confirmed':
+    instance=kwargs['instance']
+    ConvertHistory.objects.create(member=instance.member,
+                                  tokens_amount=0,
+                                  bids_amount=instance.package.bids,
+                                  total_tokens=instance.member.tokens_left,
+                                  total_bids=instance.member.bids_left,
+                                  total_bidsto=instance.member.bidsto_left,
+    )
+buy_tokens.connect(on_confirmed_order)
 
 
 CONFIG_KEY_TYPES = (('text', 'text'),
@@ -977,7 +1021,7 @@ class AuctionKeeper(threading.Thread):
         stop = False
         while not stop:
             time.sleep(self.check_delay)
-            auction = Auction.objects.select_for_update().filter(id=self.auction_id)[0]
+            auction = Auction.objects.select_for_update().get(id=self.auction_id)
             if auction.finish_time <= time.time():
                 if auction.status == 'processing':
                     auction.finish()

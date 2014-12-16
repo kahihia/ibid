@@ -134,6 +134,10 @@ def auctionAwait(auction):
     tmp = {}
     tmp['id'] = auction.id
     tmp['status'] = auction.status
+    if auction.bid_type == 'token':
+        tmp['startDate'] = 'SYNCING...'
+    else:
+        tmp['startDate'] = auction.start_date.strftime('%B %d - %H:%M')
 
     result = {'method': 'updateAuction', 'data': tmp}
     send_pubnub_message(result, '/topic/main/')
@@ -157,6 +161,7 @@ def auctionFinish(auction):
     tmp['status'] = auction.status
     tmp['winner'] = {'firstName': auction.winner.first_name if auction.winner else 'Nobody has bid!',
                      'displayName': auction.winner.display_name() if auction.winner else 'Nobody',
+                     'id': auction.winner.id if auction.winner else '',
                      'facebookId': auction.winner.facebook_id if auction.winner else ''}
     tmp['won_price'] = str(auction.won_price)
     

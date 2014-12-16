@@ -59,10 +59,8 @@ angular
             });
             $rootScope.user = data.user;
             $rootScope.convertTokens.tokenValueInCredits = data.app.tokenValueInCredits;
-<<<<<<< HEAD
-            $rootScope.subscribeToPaymentChannel($rootScope.user);
-=======
->>>>>>> 364b3d97b064c987f726638e449ae26453b85fd6
+            $rootScope.subscribeToPaymentChannel($rootScope.user.id);
+
         });
         
         // API request get user notifications

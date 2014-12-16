@@ -18,6 +18,7 @@ a {
 	transition: .2s;
 }
 
+
 a:hover {
 	color: #666;
 	-o-transition: .2s;
@@ -1256,7 +1257,7 @@ body {
 }
 
 #auction-play .syncing {
-	width: 400px;
+	width: 368px;
 	float: left;
 	margin: 21px 0 0 0;
 	color: #f3ec27;
@@ -1881,4 +1882,16 @@ opacity:0.8;
 .tokens-text {
     color: #64c4dc;
     text-shadow: 0px 0px 20px #000;
+}
+
+.hidden {
+	display:none;	
+}
+
+.purchase_popup div{
+	z-index: 1100;
+}
+
+.purchase_popup .joyride-content-wrapper p{
+	font-size: 19px;
 }

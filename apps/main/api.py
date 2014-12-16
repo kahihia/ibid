@@ -127,6 +127,7 @@ class MemberResource(IBGModelResource):
         return bundle
     
     def obj_get(self, bundle, **kwargs):
+        logger.debug('dasdasd')
         return super(MemberResource, self).obj_get(bundle=bundle, **kwargs)
     
 class ConverTokensResource(MemberResource):
@@ -322,6 +323,7 @@ class AuctionResource(IBGModelResource):
         filtering = {
             'status' : ['exact'],
             'categories' : ['exact'],
+            'winner' : ALL_WITH_RELATIONS,
         }
          
     def base_urls(self):
@@ -544,7 +546,10 @@ class AuctionResource(IBGModelResource):
             bundle.data['auctioneerMessages'].append(w)
     
         bundle.data['chatMessages'] = []
+        
         for mm in Message.objects.filter(object_id=bundle.obj.id).filter(_user__isnull=False).order_by('-created')[:10]:
+            
+            logger.debug('type ----->%s' % type(mm.get_user().content_object))
             w = {'text': mm.format_message(),
                  'date': mm.get_time(),
                  'user': {'displayName': mm.get_user().display_name(),
@@ -1055,7 +1060,7 @@ class AppleIbidPackageIdsResource(IBGModelResource):
     """ Resource to retrieve data of bid package objects """
     
     class Meta:
-        queryset = ConfigKey.objects.filter(key='APPLE_STORE_PACKAGES')
+        queryset = BidPackage.objects.all()
         resource_name = 'apple_ibid_packages'
         authorization = ReadOnlyAuthorization()
         #authentication = CustomAuthentication()
@@ -1069,5 +1074,18 @@ class AppleIbidPackageIdsResource(IBGModelResource):
     def get(self, request):
         """ Resource to retrieve data of bid package objects' relation with apple store """
         return super(AppleIbidPackageIdsResource,self).wrap_view('dispatch_list')
+    
+    def alter_list_data_to_serialize(self, request, data):
+        """
+        A hook to alter detail data just before it gets serialized & sent to the user.
+        Useful for restructuring/renaming aspects of the what's going to be
+        sent.
+        Should accommodate for receiving a single bundle of data.
+        """
+        result={}
+        for bundle in data['objects']:
+            result[bundle.obj.apple_store_key]=bundle.obj.id
+        data["objects"]=[{"value":result}]
+        return data
 
     
