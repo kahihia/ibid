@@ -208,7 +208,6 @@
 	</div>
 {% endblock %}
 
-
 {% block menu %}
 	<div class="btn-tokens" ng-click="playForTokens()" ng-class="{'active': playFor == AUCTION_TYPE_TOKENS}"></div>
 	<div class="btn-items" ng-click="playForItems()" ng-class="{'active': playFor == AUCTION_TYPE_CREDITS}"></div>
@@ -223,15 +222,12 @@
 		<div ng-repeat="auction in auctionList[playFor].mine">
 			<input type="hidden" class="auction-id"
 			value="{$ auction.id $}"/>
-
 			<div id="auction">
 				<div ng-switch on="auction.status">
 					<!-- TEMPLATE: precap -->
 					<div id="auction-top" ng-switch-when="precap">
 						<div class="img">
-
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
-
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -267,7 +263,9 @@
 					<!-- TEMPLATE: waiting -->
 					<div id="auction-top" ng-switch-when="waiting">
 						<div class="img">
+
 							<img ng-src="{$ auction.itemImage $}" onclick="loadItemDetails({$ auction $})">
+
 						</div>
 						<div id="auction-item-title" ng-class="{'title-token': playFor == AUCTION_TYPE_TOKENS, 'title-items': playFor == AUCTION_TYPE_CREDITS}">
 							{$ auction.itemName $}
@@ -482,20 +480,17 @@
 			</div>
 		</div>
 	</div>	
-
-
-
 		<!-- Notifications -->
 		<div id="notifications" class="notifications-container"></div>
 		<script id="template/notification.html" type="text/ng-template">
-										<div class="notification">
-														<div class="kenny">
-																		<img src="{% static 'images/tooltip-info-kenny.png' %}">
-														</div>
-														<div class="content">
-																		<div class="txt">{$ message $}</div>
-														</div>
-										</div>
+		<div class="notification">
+			<div class="kenny">
+				<img src="{% static 'images/tooltip-info-kenny.png' %}">
+			</div>
+			<div class="content">
+				<div class="txt">{$ message $}</div>
+			</div>
+		</div>
 		</script>
 	<div class="purchase_popup hidden" style="z-index:1100">
 		<div class="joyride-modal-bg" style="display: block;"></div>
@@ -509,6 +504,4 @@
 		</div>
 	</div>
 	</div>
-
-
 {% endblock %}

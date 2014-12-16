@@ -391,7 +391,7 @@ def addBids(request):
 
     requPOST = json.loads(request.body)
     auction_id = int(requPOST['id'])
-    auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
+    auction = Auction.objects.select_for_update().get(id=auction_id)
 
     member = request.user
 
@@ -433,7 +433,7 @@ def remBids(request):
 
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
-    auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
+    auction = Auction.objects.select_for_update().get(id=auction_id)
 
     member = request.user
     #minimum_precap means bid_price
@@ -501,9 +501,12 @@ def claim(request):
     The user uses the bids that has commit before to try to win the auction in
     process.
     """
+    logger.debug('CLAIM START...')
     requPOST = json.loads(request.body)
     auction_id = request.GET.get('id', int(requPOST['id']))
-    auction = Auction.objects.select_for_update().filter(id=auction_id)[0]
+    logger.debug('SELECT AUCTION...')
+    auction = Auction.objects.select_for_update().get(id=auction_id)
+    logger.debug('STARTING PROCESS...')
     bidNumber = request.GET.get('bidNumber', int(requPOST['bidNumber']))
 
     tmp = {}
@@ -511,9 +514,11 @@ def claim(request):
     if auction.status == 'processing' and \
         auction.can_bid(request.user) and \
         auction.used_bids() / auction.minimum_precap == bidNumber:
-
+        logger.debug('CLAIM 1...')
         bid = auction.bid(request.user, bidNumber)
+        logger.debug('CLAIM AUCTION SAVE...')
         auction.save()
+        logger.debug('CLAIM AUCTION POST-SAVE...')
         metrics.claim_auction(request.user, auction)
         tmp['id'] = auction_id
         tmp["placed_amount"] = bid.placed_amount
@@ -523,7 +528,9 @@ def claim(request):
         clientMessages = []
         clientMessages.append(client.someoneClaimedMessage(auction))
         clientMessages.append(auctioneer.member_claim_message(auction, request.user))
+        logger.debug('CLAIM PRE CLIENT...')
         client.sendPackedMessages(clientMessages)
+        logger.debug('CLAIM POST SAVE...')
     return HttpResponse(json.dumps(tmp), content_type="application/json")
 
 

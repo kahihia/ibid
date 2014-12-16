@@ -295,7 +295,9 @@ function userDetailsCtrl($scope, $rootScope, $http, notification) {
         dom_elem=$event.target
         $(dom_elem).find('form').submit();
     };
+
     
+
     $scope.fb_check_like= function() {
         $http.post('/fb_check_like/').success(
             function(data){
