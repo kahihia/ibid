@@ -9,22 +9,22 @@ from bidding import client
 from chat.views import do_send_message
 from chat.models import AuctioneerPhrase, Message,ChatUser
 
-def create_auctioneer_message(auction, message):
-   
+def create_auctioneer_message(auction, message,member=None):
     auction_type_id=ContentType.objects.filter(name='auction').all()[0]
-   
     message = Message.objects.create(text=message, content_type=auction_type_id, object_id=auction.id)
-
+    user = {}
     tmp = {}
-
+    if member:
+        chat_user, _ = ChatUser.objects.get_or_create(object_id=member.id) 
+        user['displayName'] = chat_user.display_name()
+        user['profileFotoLink'] = chat_user.picture()
+        user['profileLink'] = chat_user.user_link()
+        user['facebookId'] = chat_user.user_facebook_id()
     tmp['auctioneerMessages'] = [{'text':message.text,
         'date': message.get_time(),
+        'user': user,
         }]
-
-
-
     tmp['id'] = auction.id
-
     result = {'method':'receiveAuctioneerMessage', 'data': tmp}
     return (result, '/topic/main/%s' % auction.id)
 
@@ -38,8 +38,7 @@ def send_auctioneer_message(auction, message):
 def member_joined_message(auction, member):
     text = AuctioneerPhrase.objects.get(key='joined').text
     message = text.format(user=member.display_linked_facebook_profile(), facebook_id=member.facebook_id)
-
-    return create_auctioneer_message(auction, mark_safe(message))
+    return create_auctioneer_message(auction, mark_safe(message),member)
 
 
 def member_claim_message(auction, member):
@@ -55,8 +54,8 @@ def member_claim_message(auction, member):
 
 def member_left_message(auction, member):
     text = AuctioneerPhrase.objects.get(key='left').text
-    message = text.format(user=member.display_linked_facebook_profile(), facebook_id=member.facebook_id)
-    return create_auctioneer_message(auction, mark_safe(message))
+    message = text.format(user=member.display_linked_facebook_profile(), facebook_id=member.facebook_id)   
+    return create_auctioneer_message(auction, mark_safe(message),member)
 
 
 def precap_finished_message(auction):

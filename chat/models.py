@@ -76,7 +76,8 @@ class Message(models.Model):
     def get_time(self):
         """ Returns time when message was created in the readable form. """
         
-        return self.created.strftime("%m/%d/%y %H:%M:%S")
+        return self.created.strftime("%d %b %Y %H:%M:%S +0000")
+     
 
     
     def get_user(self):

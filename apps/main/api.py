@@ -4,7 +4,8 @@ logger = logging.getLogger('django')
 from datetime import datetime
 import json
 import time
-from urllib2 import urlopen
+import urllib2
+import urlparse
 from django.conf import settings
 from django.conf.urls import url
 from django.contrib.contenttypes.models import ContentType
@@ -21,11 +22,16 @@ from tastypie.utils import trailing_slash, dict_strip_unicode_keys
 from apps.main.models import Notification
 from apps.main.apiauth import *
 from bidding import client
-from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid, Category, Invitation, IOPaymentInfo
+from bidding.models import Member, Auction, Item, ConvertHistory, BidPackage, ConfigKey, Bid, Category, Invitation, IOPaymentInfo, PaypalPaymentInfo, buy_tokens
 from chat import auctioneer
 from chat.models import Message, ChatUser
 from lib import metrics
 
+import paypalrestsdk
+paypalrestsdk.configure({
+  "mode": settings.PAYPAL_MODE, # sandbox or live
+  "client_id": settings.PAYPAL_CLIENT_ID,
+  "client_secret": settings.PAYPAL_CLIENT_SECRET })
 
 #########################################
 from django.utils.decorators import classonlymethod
@@ -322,7 +328,6 @@ class AuctionResource(IBGModelResource):
         detail_allowed_methods = ['get']
         filtering = {
             'status' : ['exact'],
-            'categories' : ['exact'],
             'winner' : ALL_WITH_RELATIONS,
         }
          
@@ -489,7 +494,14 @@ class AuctionResource(IBGModelResource):
                     if search_status not in ['finished', 'playing','available'] :
                         status_list = status_list | obj_list.filter(status = search_status)
                 return_list = return_list & status_list
+            
+            if 'categories' in filters:
+                categories_ids=Category.objects.filter(name__in=filters['categories']).values_list('id',flat=True)
+                return_list=return_list.filter(categories__id__in=categories_ids)
+            
             filters_queryDict = request.GET.copy()
+            if 'categories' in filters_queryDict:
+                filters_queryDict.pop('categories')
             if 'status' in filters_queryDict:
                 filters_queryDict.pop('status')
             applicable_filters = super(AuctionResource, self).build_filters(filters_queryDict)
@@ -980,6 +992,110 @@ class ServerClockResource(Resource):
         client.clock_pubnub()
         return self.create_response(request, time.strftime("%d %b %Y %H:%M:%S +0000", time.gmtime()))
 
+class PaypalPaymentInfoResource(ModelResource):
+    """
+    Creates a new payment for a purchase via paypal
+    """
+    
+    class Meta:
+        resource_name = 'paypal_purchase'
+
+        authorization = Authorization()
+
+        queryset = PaypalPaymentInfo.objects.all()
+        collection_name = 'payments'
+        list_allowed_methods = ['post']
+        detail_allowed_methods = []
+        include_resource_uri = False
+
+    @classonlymethod
+    @api_doc_view(['POST'])
+    def post(self, request):
+        """
+        Saves paypal payment info.
+        
+        Body   :   {"transaction_id":char, "package_id":int}
+        """
+        return super(PaypalPaymentInfo,self).wrap_view('dispatch_list')
+    
+    def getAccessToken(self, basic_bundle):
+        nvp = "method=TransactionSearch&VERSION=119&STARTDATE={date}&TRANSACTIONID={transaction_id}&USER={user}&PWD={password}&SIGNATURE={signature}".format(
+            date="2015-01-14T00:00:00Z+0000", transaction_id = basic_bundle.data['transaction_id'],
+            user=settings.PAYPAL_USER, password=settings.PAYPAL_PWD, signature=settings.PAYPAL_SIGNATURE)
+        req = urllib2.Request("{url}?{NVP}".format(url=settings.PAYPAL_NVP_URL, NVP=nvp))
+        return urllib2.urlopen(req).read()
+    
+    def makePaypalTransaction(self, t_id, pckg_id):
+        error = None
+        try:
+            PaypalPaymentInfo.objects.get(transaction_id=str(t_id))
+            error = 'DUPLICATED PURCHASE'
+        except PaypalPaymentInfo.DoesNotExist:
+            if 'package_id' in basic_bundle.data:
+                try:
+                    member = request.user
+                    package = BidPackage.objects.get(pk=basic_bundle.data['package_id'])
+                    order = PaypalPaymentInfo.objects.create(package=package,member=member,transaction_id =str(t_id),quantity=1,purchase_date=datetime.now())
+                except Exception:
+                    error = 'ERROR IN THE PURCHASE'
+                member.bids_left += package.bids
+                member.save()
+                client.update_credits(member)
+                buy_tokens.send(sender=order.__class__, instance=order)
+                return True, None
+            else:
+                error = 'KEY MISSING : package_id'
+        return False, error
+    
+    def post_list(self, request, **kwargs):
+        error = None
+        logger.debug('REQUEST.BODY: %s' % request.body)
+        deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        basic_bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
+        t_id = None
+        if 'transaction_id' in basic_bundle.data:
+            verified_data = urlparse.parse_qs(self.getAccessToken(basic_bundle))
+            logger.debug('post response:%s'%verified_data)
+            if 'L_STATUS' in verified_data:
+                if verified_data['L_STATUS0'][0] == 'Completed':
+                    t_id = basic_bundle.data['transaction_id']
+                else:
+                    error = 'PAYMENT STATUS : %s' % verified_data['L_STATUS0'][0]
+            else:
+                if 'L_LONGMESSAGE0' in verified_data:
+                    error = verified_data['L_LONGMESSAGE0'][0]
+                else:
+                    error = verified_data
+        elif 'payment_resource' in basic_bundle.data:
+            try:
+                payment = paypalrestsdk.Payment.find(basic_bundle.data['payment_resource'])
+                status = payment.transactions[0].related_resources[0].sale.state
+                if status == "completed":
+                    t_id = payment.transactions[0].related_resources[0].sale.id
+            except Exception as e:
+                error = 'ERROR VERIFYING PAYMENT - %s' % basic_bundle.data['payment_resource']
+        else:
+            error = 'KEY MISSING : transaction_id or payment_resource'
+        if t_id:
+            try:
+                PaypalPaymentInfo.objects.get(transaction_id=str(t_id))
+                error = 'DUPLICATED PURCHASE'
+            except PaypalPaymentInfo.DoesNotExist:
+                if 'package_id' in basic_bundle.data:
+                    try:
+                        member = request.user
+                        package = BidPackage.objects.get(pk=basic_bundle.data['package_id'])
+                        order = PaypalPaymentInfo.objects.create(package=package,member=member,transaction_id =str(t_id),quantity=1,purchase_date=datetime.now())
+                    except Exception:
+                        error = 'ERROR IN THE PURCHASE'
+                    member.bids_left += package.bids
+                    member.save()
+                    client.update_credits(member)
+                    buy_tokens.send(sender=order.__class__, instance=order)
+                    return self.create_response(request, {} , response_class=http.HttpCreated)
+                else:
+                    error = 'KEY MISSING : package_id'
+        return self.create_response(request, {'error':error} , response_class=http.HttpBadRequest)
   
 class IOPaymentInfoResource(ModelResource):
     

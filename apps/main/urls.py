@@ -20,6 +20,7 @@ from apps.main.api import RemBidResource
 from apps.main.api import RegisterInvitationResource
 from apps.main.api import ServerClockResource
 
+from apps.main.api import PaypalPaymentInfoResource
 from apps.main.api import IOPaymentInfoResource
 from apps.main.api import AppleIbidPackageIdsResource
 
@@ -42,6 +43,7 @@ v1_api.register(ClaimBidResource())
 v1_api.register(MessageResource())
 v1_api.register(IOPaymentInfoResource())
 v1_api.register(AppleIbidPackageIdsResource())
+v1_api.register(PaypalPaymentInfoResource())
 
 
 urlpatterns = patterns('',

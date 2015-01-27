@@ -507,7 +507,7 @@ class Auction(AbstractAuction):
             bid = self.get_latest_bid()
             if bid:
                 if bid.used_amount == 0:
-                    time_left = self.bidding_time
+                    time_left = float(self.finish_time) - time.time()
                 else:
                     time_left = (float(self.bidding_time) - time.time() + float(bid.unixtime))
         if time_left:
@@ -596,11 +596,13 @@ class Auction(AbstractAuction):
         self.status = 'waiting'
         if self.bid_type == 'bid':
             now = datetime.utcnow().replace(second=0, microsecond=0)
+            if not self.start_time:
+                self.start_time = datetime.utcnow() + timedelta(seconds=5)
             self.start_date = now.replace(hour=self.start_time.hour, minute=self.start_time.minute) + timedelta(days=1)
-            self.finish_time = 0 #time.mktime(time.strptime(str(self.start_date),'%Y-%m-%d %H:%M:%S'))
+            #time.mktime(time.strptime(str(self.start_date),'%Y-%m-%d %H:%M:%S'))
         elif self.bid_type == 'token':
             self.start_date = datetime.utcnow() + timedelta(seconds=5)
-            self.finish_time = time.time() + 5.0
+        self.finish_time = 0 
         self.save()
         if self.always_alive:
             auction_copy = Auction.objects.create(item=self.item,
@@ -935,7 +937,7 @@ class IOPaymentInfo(AuditedModel):
 class PaypalPaymentInfo(AuditedModel):
     member = models.ForeignKey(Member)
     package = models.ForeignKey(BidPackage, null=True)
-    transaction_id = models.BigIntegerField(unique=True)  # this field should be unique
+    transaction_id = models.CharField(max_length=19, help_text="PayPal transaction ID.", db_index=True, unique=True)  # this field should be unique
     quantity = models.IntegerField()
     purchase_date = models.DateTimeField(null=True)
 

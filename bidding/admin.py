@@ -32,9 +32,17 @@ def winner_name(obj):
     else:
         return "[None]"
 
-
+class InlineCategory(admin.TabularInline):
+    model = Auction.categories.through
+    verbose_name = u"Category"
+    verbose_name_plural = u"Categories"
+    extra = 1
+    
 class AuctionAdmin(admin.ModelAdmin):
     form = AuctionAdminForm
+    inlines = [
+        InlineCategory,
+    ]
     list_display = ('item',
                     'bid_type',
                     'status',
@@ -51,7 +59,10 @@ class AuctionAdmin(admin.ModelAdmin):
     list_filter = ('is_active', 'status', 'start_time', 'bid_type')
     fieldsets = (
         (None, {
-            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active','start_time', 'start_date','finish_time','always_alive')
+            'fields': ('item', 'bid_type', 'precap_bids', 'minimum_precap', 'is_active','start_time','always_alive')
+        }),
+        ('DEBUG FIELDS', {
+            'fields': ('start_date','finish_time',)
         }),
         ('Bidding time', {
             'fields': ('bidding_time', 'threshold1', 'threshold2', 'threshold3',)

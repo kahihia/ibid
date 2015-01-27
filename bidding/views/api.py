@@ -469,7 +469,7 @@ def stopBidding(request):
 
 def scheduledAuctions(request):
     key = request.POST.get('key','')
-    if key == ConfigKey.get('SCHEDULE_KEY'):
+    if key == ConfigKey.get('SCHEDULE_KEY', 'isolutionspro'):
         actual_time = datetime.utcnow()
         actual_time = actual_time.replace(second=0,microsecond=0) # round up or down to on the clock minute time
         datetime_limit = actual_time + timedelta(hours=1) # limit is now plus one hour
@@ -572,17 +572,17 @@ def sendMessage(request):
         requPOST = json.loads(request.body)
         auction_id = request.GET.get('id', int(requPOST['id']))
         auction = Auction.objects.get(id=auction_id)
-
+    
         text = request.GET.get('text', requPOST['text'])
         user_type_id = ContentType.objects.get(name='user')
         user = ChatUser.objects.get_or_create(object_id=request.user.id, content_type=user_type_id)[0]
-
+    
         if user.can_chat(auction.id):
             db_msg = Message.objects.create(text=text, user=user, content_type=auction_type_id, object_id=auction.id)
-
+    
             #do_send_message(db_msg)
             client.do_send_chat_message(auction, db_msg)
-
+    
             return HttpResponse('{"success":true}', content_type="application/json")
 
     return HttpResponse('{"success":false}', content_type="application/json")

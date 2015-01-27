@@ -62,12 +62,10 @@ def payment_callback(sender, **kwargs):
         member = Member.objects.get(id=custom_params['member_id'])
         if 'package_id' in custom_params:
             package = BidPackage.objects.get(pk=custom_params['package_id'])
+            order = PaypalPaymentInfo.objects.create(package=package,member=member,transaction_id =ipn_obj.txn_id,quantity=1,purchase_date=datetime.datetime.now())
             member.bids_left += package.bids
             member.save()
-            logger.debug("antes de pubnub....")
             client.update_credits(member)
-            logger.debug("depues pubnub....")
-            order = PaypalPaymentInfo.objects.create(package=package,member=member,transaction_id =ipn_obj.txn_id,quantity=1,purchase_date=datetime.datetime.now())
             buy_tokens.send(sender=order.__class__, instance=order)
         elif ipn_obj.item_name and ipn_obj.item_number:
             item=Item.objects.get(id=ipn_obj.item_number)

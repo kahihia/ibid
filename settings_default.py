@@ -34,7 +34,7 @@ ADMINS = (
 )
 MANAGERS = ADMINS
 
-ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1')
+ALLOWED_HOSTS = ('localhost:8000', 'localhost', '127.0.0.1','dev.ibidgames.com')
 
 #AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',
 #                           'django_facebook.auth_backends.FacebookBackend',)
@@ -268,7 +268,7 @@ FACEBOOK_AUTH_URL          = 'https://www.facebook.com/dialog/oauth?client_id={a
 FACEBOOK_APP_URL           = 'https://apps.facebook.com/{appname}/'
 FACEBOOK_CANVAS_HOME_URL   = 'https://apps.facebook.com/{appname}/canvashome/'
 FACEBOOK_AUTH_REDIRECT_URL = FACEBOOK_CANVAS_HOME_URL
-FACEBOOK_DEFAULT_SCOPE = ['email', 'user_birthday']
+FACEBOOK_DEFAULT_SCOPE = ['public_profile', 'user_friends']
 # Needed by django-facebook to use the middleware with the canvas (django_facebook.canvas.py)
 # It's the redirect url that the middleware sends when asking facebook for the permissions dialog
 FACEBOOK_CANVAS_PAGE       = 'https://apps.facebook.com/ibidgames/canvashome/'

@@ -238,8 +238,6 @@ def do_send_chat_message(auction, message):
     user['profileFotoLink'] = message.get_user().picture()
     user['profileLink'] = message.get_user().user_link()
     user['facebookId'] = message.get_user().user_facebook_id()
-    user['tokens'] = 0
-    user['credits'] = 0
     result = {'method':'receiveChatMessage', 'data':{'id':auction.id, 'user': user, 'text': text}}
     send_pubnub_message(result, '/topic/chat/%s' % auction.id)
 
